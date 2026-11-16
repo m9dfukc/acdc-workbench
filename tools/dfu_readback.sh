@@ -17,27 +17,27 @@ REL="firmware/releases/v22.5.0/ACDC.bin"
 FLASH_ADDR=0x08000000
 FLASH_LEN=131072   # STM32H750: 128 KB internes Flash
 
-command -v dfu-util >/dev/null || { echo "dfu-util fehlt, bitte installieren" >&2; exit 2; }
+command -v dfu-util >/dev/null || { echo "dfu-util not found, please install it" >&2; exit 2; }
 mkdir -p "$OUT"
 
-echo "== DFU-Geräte"
+echo "== DFU devices"
 dfu-util -l 2>&1 | tee "$OUT/dfu-util_list.txt"
 # STM32-ROM-DFU: VID:PID 0483:df11
 if ! grep -q "0483:df11" "$OUT/dfu-util_list.txt"; then
-  echo "Kein STM32-DFU-Gerät (0483:df11) gefunden. Andere Buchse probieren (nie beide gleichzeitig)." >&2
+  echo "No STM32 DFU device (0483:df11) found. Try the other USB socket (never both at the same time)." >&2
   exit 3
 fi
 
 ALT=$(grep "0483:df11" "$OUT/dfu-util_list.txt" | grep -i "Internal Flash" | sed -n 's/.*alt=\([0-9]*\).*/\1/p' | head -1)
-[ -n "$ALT" ] || { echo "Alt-Setting für 'Internal Flash' nicht gefunden, siehe $OUT/dfu-util_list.txt" >&2; exit 4; }
+[ -n "$ALT" ] || { echo "Alt setting for 'Internal Flash' not found, see $OUT/dfu-util_list.txt" >&2; exit 4; }
 
 IMG="$OUT/acdc1_internal_flash.bin"
-[ -e "$IMG" ] && { echo "$IMG existiert schon, nicht überschreiben." >&2; exit 5; }
+[ -e "$IMG" ] && { echo "$IMG already exists, not overwriting." >&2; exit 5; }
 
-echo "== Lesen: alt=$ALT, $FLASH_ADDR, $FLASH_LEN Byte -> $IMG"
+echo "== Reading: alt=$ALT, $FLASH_ADDR, $FLASH_LEN bytes -> $IMG"
 dfu-util -d 0483:df11 -a "$ALT" -s "$FLASH_ADDR:$FLASH_LEN" -U "$IMG" 2>&1 | tee "$OUT/dfu-util_upload.txt"
 
 ls -l "$IMG"
 shasum -a 256 "$IMG" | tee "$OUT/sha256.txt"
 [ -f "$REL" ] && shasum -a 256 "$REL" | tee -a "$OUT/sha256.txt"
-echo "Fertig. Auswertung: python3 tools/compare_firmware.py $IMG $REL"
+echo "Done. Evaluate with: python3 tools/compare_firmware.py $IMG $REL"

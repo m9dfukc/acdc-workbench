@@ -1,36 +1,37 @@
 #!/usr/bin/env python3
-"""Prüft einen AC/DC-Build mit heißem Pfad im ITCM (Build 4, docs/05 „Build 4“ Q11).
+"""Checks an AC/DC build with the hot path in ITCM (build 4, docs/05 "Build 4" Q11).
 
-Nur lesend: arbeitet am ELF und am Binary mit den Werkzeugen der Toolchain
-(objdump, nm, objcopy), braucht keine Python-Pakete außer der Standardbibliothek.
+Read-only: works on the ELF and the binary with the toolchain tools
+(objdump, nm, objcopy) and needs no Python packages beyond the standard library.
 
-Prüfungen (FAIL bricht mit Exit-Code 1 ab, WARN nur Hinweis):
-  1. Sections und Symbole: .itcm_vectors/.itcm_text im CCMRAM hinter .ccmdata,
-     _CCMRAM == _eitcm_text, Ausrichtung (Vektoren 1 KB, Code und LMA 8 B wegen ECC),
-     LMA == _litcm_text, Größe von ACDC.bin <= 131072 B, Bytes im Binary == ELF.
-  2. Vektortabelle: die heißen Interrupt-Handler zeigen ins ITCM, die Kopie hat Platz.
-  3. Heiße Funktionen (Liste HOT) liegen alle im ITCM.
-  4. Sprünge aus dem ITCM: kein bl/b direkt hinaus, Veneers ITCM -> Flash sind alle
-     in COLD (Fehler- oder seltene Ereignispfade) mit Grund eingetragen.
-  5. Literale im ITCM-Code, die in den Flash zeigen (Adressen von Code oder .rodata).
-  6. Funktionszeiger der USB-Audio-Klasse (USBD_AUDIO) für die heißen Callbacks im ITCM.
-  7. Vor dem Kopieren (SystemInit) wird nichts im ITCM aufgerufen.
-  8. Optional --ref: nm-Vergleich gegen einen Referenz-Build (z. B. 3d).
-  9. Optional --same-itcm: ITCM-Inhalt (Code und Vektorkopie) bytegleich mit einem
-     anderen Build (Füllvariante fx3ip gegen fx3i), dazu wie viel im Flash verschoben ist.
+Checks (FAIL exits with code 1, WARN is only a note):
+  1. Sections and symbols: .itcm_vectors/.itcm_text in CCMRAM after .ccmdata,
+     _CCMRAM == _eitcm_text, alignment (vectors 1 KB, code and LMA 8 bytes because of ECC),
+     LMA == _litcm_text, size of ACDC.bin <= 131072 bytes, bytes in the binary == ELF.
+  2. Vector table: the hot interrupt handlers point into ITCM, the copy fits.
+  3. Hot functions (list HOT) are all in ITCM.
+  4. Branches out of ITCM: no direct bl/b out, the veneers ITCM -> flash are all
+     listed in COLD (error paths or rare event paths) with a reason.
+  5. Literals in ITCM code that point into flash (addresses of code or .rodata).
+  6. Function pointers of the USB audio class (USBD_AUDIO) for the hot callbacks in ITCM.
+  7. Nothing in ITCM is called before the copy (SystemInit).
+  8. Optional --ref: nm comparison against a reference build (e.g. 3d).
+  9. Optional --same-itcm: ITCM content (code and vector copy) byte-identical to
+     another build (padded variant fx3ip against fx3i), plus how much has moved in flash.
 
-Halbierungs-Varianten (Build 4x, docs/05): --groups wählt die Gruppen, die im ITCM liegen
-sollen (Buchstaben A–H und L, Standard: alle). Funktionen und Vektoren der übrigen Gruppen
-müssen dann im Flash liegen; Veneers aus dem ITCM zu ihnen sind gewollt (eigene Kategorie).
-Der Anker wird bei Varianten nur gewarnt. --no-vector-copy: Reset_Handler kopiert die
-Vektortabelle nicht und setzt VTOR nicht (Variante novt).
+Bisection variants (build 4x, docs/05): --groups selects the groups that should be in ITCM
+(letters A–H and L, default: all). Functions and vectors of the other groups must then
+be in flash; veneers from ITCM to them are intended (separate category).
+For variants a failed anchor check is only a warning. --no-vector-copy: Reset_Handler does
+not copy the vector table and does not set VTOR (variant novt).
 
-Aufruf:
+Usage:
   uv run python tools/check_itcm.py firmware/builds/acdc1-build4-fx3i \
       [--ref firmware/builds/acdc1-build3d-fx2] [--same-itcm firmware/builds/…] [--out DIR]
       [--groups ABCEFGHL] [--no-vector-copy]
-Ein Build-Verzeichnis (mit ACDC.elf und ACDC.bin) oder direkt ein ELF. Bericht als
-Markdown und JSON nach --out (Standard: das Build-Verzeichnis, Dateien check_itcm.*).
+Takes a build directory (with ACDC.elf and ACDC.bin) or an ELF directly. The report is
+written as Markdown and JSON to --out (default: the build directory, files check_itcm.*)
+and printed. The report text is German.
 """
 from __future__ import annotations
 
@@ -690,19 +691,19 @@ def finish(r: Report, elf_path: Path, out_dir: str | None) -> int:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("build", help="Build-Verzeichnis (ACDC.elf, ACDC.bin) oder ELF")
-    ap.add_argument("--ref", help="Referenz-Build für den nm-Vergleich (z. B. firmware/builds/acdc1-build3d-fx2)")
-    ap.add_argument("--same-itcm", help="anderer Build, dessen ITCM-Inhalt bytegleich sein muss")
-    ap.add_argument("--out", help="Ausgabeverzeichnis für check_itcm.md/.json (Standard: Build-Verzeichnis)")
+    ap.add_argument("build", help="build directory (ACDC.elf, ACDC.bin) or ELF")
+    ap.add_argument("--ref", help="reference build for the nm comparison (e.g. firmware/builds/acdc1-build3d-fx2)")
+    ap.add_argument("--same-itcm", help="other build whose ITCM content must be byte-identical")
+    ap.add_argument("--out", help="output directory for check_itcm.md/.json (default: build directory)")
     ap.add_argument("--groups", default=ALL_GROUPS,
-                    help=f"Gruppen im ITCM als Buchstaben (Standard: {ALL_GROUPS}; z. B. ABCEFGHL für noD)")
+                    help=f"groups in ITCM as letters (default: {ALL_GROUPS}; e.g. ABCEFGHL for noD)")
     ap.add_argument("--no-vector-copy", action="store_true",
-                    help="Variante ohne Vektorkopie/VTOR (novt)")
+                    help="variant without vector copy/VTOR (novt)")
     a = ap.parse_args()
     groups = a.groups.replace(",", "").replace(" ", "").upper()
     bad = set(groups) - set(ALL_GROUPS)
     if bad or not groups:
-        ap.error(f"unbekannte Gruppen {sorted(bad)}; erlaubt: {ALL_GROUPS}")
+        ap.error(f"unknown groups {sorted(bad)}; allowed: {ALL_GROUPS}")
     return check(a.build, a.ref, a.same_itcm, a.out, groups, not a.no_vector_copy)
 
 

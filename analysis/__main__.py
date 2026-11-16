@@ -39,27 +39,27 @@ def analyse(rec, device_fs, top, win_s, mains=50.0, with_timing=True):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="python -m analysis", description="AC/DC-Rauschanalyse (docs/03).")
-    ap.add_argument("inputs", nargs="+", help="Manifest-ID (z. B. M1) oder eine/mehrere WAV-Dateien")
+    ap = argparse.ArgumentParser(prog="python -m analysis", description="AC/DC noise analysis (docs/03).")
+    ap.add_argument("inputs", nargs="+", help="Manifest ID (e.g. M1) or one or more WAV files")
     ap.add_argument("--manifest", type=Path, default=Path("recordings/manifest.toml"))
-    ap.add_argument("--out", type=Path, default=Path("out"), help="Basisordner, Ergebnis in <out>/<name>/")
-    ap.add_argument("--name", help="Name des Ergebnisordners (Standard: Manifest-ID oder Dateiname)")
-    ap.add_argument("--ref", nargs="+", help="Referenz (Manifest-ID oder Dateien) zum Überlagern/Vergleichen")
-    ap.add_argument("--device-fs", type=float, default=48000.0, help="Nominale Samplerate des AC/DC")
-    ap.add_argument("--mains", type=float, default=50.0, help="Netzfrequenz [Hz]")
-    ap.add_argument("--top", type=int, default=40, help="Anzahl Linien in der Peak-Liste")
+    ap.add_argument("--out", type=Path, default=Path("out"), help="Base directory, results go to <out>/<name>/")
+    ap.add_argument("--name", help="Name of the result directory (default: manifest ID or file name)")
+    ap.add_argument("--ref", nargs="+", help="Reference (manifest ID or files) to overlay and compare")
+    ap.add_argument("--device-fs", type=float, default=48000.0, help="Nominal sample rate of the AC/DC [Hz]")
+    ap.add_argument("--mains", type=float, default=50.0, help="Mains frequency [Hz]")
+    ap.add_argument("--top", type=int, default=40, help="Number of lines in the peak list")
     ap.add_argument("--win", type=float, default=10.0,
-                    help="Fensterlänge Zeitverhalten [s]. ≥ 10 s, damit Linien im Abstand 0,3 Hz getrennt bleiben")
-    ap.add_argument("--vmin", type=float, help="Farbskala Spektrogramm unten [dBFS]")
-    ap.add_argument("--vmax", type=float, help="Farbskala Spektrogramm oben [dBFS]")
-    ap.add_argument("--no-spectrogram", action="store_true", help="Spektrogramm überspringen (schneller)")
+                    help="Window length for the time behaviour [s]. ≥ 10 s keeps lines 0.3 Hz apart separated")
+    ap.add_argument("--vmin", type=float, help="Lower limit of the spectrogram colour scale [dBFS]")
+    ap.add_argument("--vmax", type=float, help="Upper limit of the spectrogram colour scale [dBFS]")
+    ap.add_argument("--no-spectrogram", action="store_true", help="Skip the spectrogram (faster)")
     a = ap.parse_args(argv)
 
     rec = resolve(a.inputs, a.manifest)
     name = a.name or rec.name
     out = a.out / name
     out.mkdir(parents=True, exist_ok=True)
-    print(f"{name}: {rec.n_channels} Kanäle, {rec.fs} Hz, {rec.duration:.1f} s → {out}/")
+    print(f"{name}: {rec.n_channels} channels, {rec.fs} Hz, {rec.duration:.1f} s → {out}/")
 
     warnings = []
     up = upsampling_check(rec.data[:, 0], rec.fs, a.device_fs)
@@ -112,12 +112,12 @@ def main(argv=None):
     write_markdown(data, out / f"{name}_report.md", images)
 
     for w in warnings:
-        print("  Hinweis:", w)
+        print("  Note:", w)
     for c in channels:
         r = c["result"]
         fams = ", ".join(f"{f['key']} {f['f0']:.4f} Hz ({f['n']}×, {f['share'] * 100:.0f} %)" for f in r["families"])
-        print(f"  {c['label']}: RMS {r['rms_db']:.1f} dB, Störanteil {r['lines_share'] * 100:.0f} %, "
-              f"Notch-Gewinn {r['notch_gain_db']:.1f} dB, Klicks {c['clicks']['n']} | {fams}")
+        print(f"  {c['label']}: RMS {r['rms_db']:.1f} dB, interference share {r['lines_share'] * 100:.0f} %, "
+              f"notch gain {r['notch_gain_db']:.1f} dB, clicks {c['clicks']['n']} | {fams}")
     print(f"  Report: {out / f'{name}_report.md'}")
 
 

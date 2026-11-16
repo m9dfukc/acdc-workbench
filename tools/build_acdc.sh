@@ -1,28 +1,28 @@
 #!/usr/bin/env bash
-# Reproduzierbarer AC/DC-Firmware-Build (OpenWare), ohne Schreibzugriff auf den Git-Klon.
+# Reproducible AC/DC firmware build (OpenWare), without write access to the git clone.
 #
-# Ablauf:
-#   1. Quellbaum per `git archive <commit>` aus firmware/OpenWare nach firmware/_work/<name>/ (Wegwerf-Baum, jederzeit neu erzeugbar)
-#   2. Libraries-Tarball (fester Commit, z. B. firmware/downloads/OpenWareLibraries-9e8f64e.tar.gz)
-#      nach firmware/_work/<name>/Libraries/
-#   3. Patches (patch -p1) in der angegebenen Reihenfolge anwenden
-#   4. make -C ACDC CONFIG=Release mit fester Toolchain (TOOLROOT)
-#   5. Größe gegen 131072 B prüfen, Ergebnis mit Log nach firmware/builds/<name>/
+# Steps:
+#   1. Source tree via `git archive <commit>` from firmware/OpenWare to firmware/_work/<name>/ (throwaway tree, can be recreated any time)
+#   2. Libraries tarball (pinned commit, e.g. firmware/downloads/OpenWareLibraries-9e8f64e.tar.gz)
+#      to firmware/_work/<name>/Libraries/
+#   3. Apply the patches (patch -p1) in the given order
+#   4. make -C ACDC CONFIG=Release with a fixed toolchain (TOOLROOT)
+#   5. Check the size against 131072 B, copy the result and the log to firmware/builds/<name>/
 #
-# Flasht nichts. Plan: docs/05-firmware-plan.md, Abschnitt „Abgestimmter Plan“ (E5).
+# Flashes nothing. Plan: docs/05-firmware-plan.md, section "Abgestimmter Plan" (E5).
 #
-# Aufruf:
+# Usage:
 #   tools/build_acdc.sh <name> <commit> <libraries.tar.gz> [patch ...]
-# Beispiel (Reproduktions-Build):
+# Example (reproduction build):
 #   FW_VERSION=v22.5.0 tools/build_acdc.sh repro-7f3cc41 7f3cc41 \
 #       firmware/downloads/OpenWareLibraries-9e8f64e.tar.gz firmware/patches/01-gcc12-extern-uint8.patch
 #
-# Umgebung:
-#   FW_VERSION  ersetzt FIRMWARE_VERSION in Source/device.h (z. B. v22.4.s-thru1)
-#   TOOLROOT  Toolchain-bin-Verzeichnis mit Schrägstrich am Ende
-#             (Standard: /Applications/ArmGNUToolchain/12.2.rel1/arm-none-eabi/bin/)
-#   FORCE=1   vorhandenes firmware/builds/<name>/ überschreiben (sonst Abbruch)
-#   JOBS      parallele make-Jobs (Standard: 8)
+# Environment:
+#   FW_VERSION  replaces FIRMWARE_VERSION in Source/device.h (e.g. v22.4.s-thru1)
+#   TOOLROOT  toolchain bin directory with a trailing slash
+#             (default: /Applications/ArmGNUToolchain/12.2.rel1/arm-none-eabi/bin/)
+#   FORCE=1   overwrite an existing firmware/builds/<name>/ (otherwise abort)
+#   JOBS      parallel make jobs (default: 8)
 set -euo pipefail
 
 if [ $# -lt 3 ]; then
@@ -41,12 +41,12 @@ TOOLROOT="${TOOLROOT:-/Applications/ArmGNUToolchain/12.2.rel1/arm-none-eabi/bin/
 JOBS="${JOBS:-8}"
 FLASH_MAX=131072
 
-case "$NAME" in (*/*|""|.|..) echo "Ungültiger Name: $NAME" >&2; exit 2;; esac
-[ -x "${TOOLROOT}arm-none-eabi-gcc" ] || { echo "Toolchain fehlt: ${TOOLROOT}arm-none-eabi-gcc" >&2; exit 2; }
-[ -f "$LIBTAR" ] || { echo "Libraries-Tarball fehlt: $LIBTAR" >&2; exit 2; }
-for p in "${PATCHES[@]+"${PATCHES[@]}"}"; do [ -f "$p" ] || { echo "Patch fehlt: $p" >&2; exit 2; }; done
+case "$NAME" in (*/*|""|.|..) echo "Invalid name: $NAME" >&2; exit 2;; esac
+[ -x "${TOOLROOT}arm-none-eabi-gcc" ] || { echo "Toolchain not found: ${TOOLROOT}arm-none-eabi-gcc" >&2; exit 2; }
+[ -f "$LIBTAR" ] || { echo "Libraries tarball not found: $LIBTAR" >&2; exit 2; }
+for p in "${PATCHES[@]+"${PATCHES[@]}"}"; do [ -f "$p" ] || { echo "Patch not found: $p" >&2; exit 2; }; done
 if [ -e "$OUT" ] && [ "${FORCE:-0}" != 1 ]; then
-  echo "$OUT existiert schon (FORCE=1 zum Überschreiben). Geflashte Builds nie überschreiben." >&2
+  echo "$OUT already exists (FORCE=1 to overwrite). Never overwrite builds that were flashed." >&2
   exit 2
 fi
 
@@ -72,8 +72,8 @@ done
 
 # 3b. Versionsstring (Source/device.h), falls FW_VERSION gesetzt
 if [ -n "${FW_VERSION:-}" ]; then
-  case "$FW_VERSION" in (*[!A-Za-z0-9._-]*) echo "FW_VERSION nur [A-Za-z0-9._-]" >&2; exit 2;; esac
-  grep -q '^#define FIRMWARE_VERSION "' "$TREE/Source/device.h" || { echo "FIRMWARE_VERSION nicht gefunden" >&2; exit 1; }
+  case "$FW_VERSION" in (*[!A-Za-z0-9._-]*) echo "FW_VERSION may only contain [A-Za-z0-9._-]" >&2; exit 2;; esac
+  grep -q '^#define FIRMWARE_VERSION "' "$TREE/Source/device.h" || { echo "FIRMWARE_VERSION not found" >&2; exit 1; }
   sed -i '' "s/^#define FIRMWARE_VERSION \".*\"/#define FIRMWARE_VERSION \"$FW_VERSION\"/" "$TREE/Source/device.h"
 fi
 
@@ -81,14 +81,14 @@ fi
 LOG="$TREE/build.log"
 echo "== make ($SHORT, $(basename "$LIBTAR"))"
 make -C "$TREE/ACDC" -j"$JOBS" CONFIG=Release TOOLROOT="$TOOLROOT" \
-  GIT_REVISION="$SHORT Release" all > "$LOG" 2>&1 || { tail -40 "$LOG" >&2; echo "Build fehlgeschlagen, Log: $LOG" >&2; exit 1; }
+  GIT_REVISION="$SHORT Release" all > "$LOG" 2>&1 || { tail -40 "$LOG" >&2; echo "Build failed, log: $LOG" >&2; exit 1; }
 
 BIN="$TREE/ACDC/Build/ACDC.bin"
 ELF="$TREE/ACDC/Build/ACDC.elf"
 SIZE_BIN=$(stat -f %z "$BIN")
 "${TOOLROOT}arm-none-eabi-size" "$ELF" | tee -a "$LOG"
 if [ "$SIZE_BIN" -gt "$FLASH_MAX" ]; then
-  echo "ACDC.bin ist $SIZE_BIN B > $FLASH_MAX B" >&2; exit 1
+  echo "ACDC.bin is $SIZE_BIN B > $FLASH_MAX B" >&2; exit 1
 fi
 
 # 5. Ablage

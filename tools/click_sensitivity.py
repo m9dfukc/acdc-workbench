@@ -1,12 +1,12 @@
-"""Empfindlichkeit des Klick-Detektors (analysis.timing.clicks) an einer echten Aufnahme prüfen.
+"""Check the sensitivity of the click detector (analysis.timing.clicks) on a real recording.
 
-Schneidet ein Stück aus der Aufnahme, baut künstliche USB-Fehler ein und meldet, ob der Detektor sie findet:
-  dropN  N Samples fehlen (Puffer-Unterlauf, Frame verloren)
-  dupN   N Samples doppelt (Puffer-Überlauf, Frame wiederholt)
-  zeroN  N Samples Null (Lücke mit Stille)
-Optional wird ein Sinus addiert (--sine Hz --level dBFS), um eine Rückführung Out → In nachzubilden.
+Cuts a section out of the recording, injects artificial USB faults and reports whether the detector finds them:
+  dropN  N samples missing (buffer underrun, frame lost)
+  dupN   N samples duplicated (buffer overrun, frame repeated)
+  zeroN  N samples zero (gap filled with silence)
+Optionally a sine is added (--sine Hz --level dBFS) to emulate a loopback Out → In.
 
-Aufruf:
+Usage:
   UV_CACHE_DIR=.uv-cache uv run python tools/click_sensitivity.py <wav> [--start 60] [--dur 60] [--sine 440 --level -12]
 """
 import argparse
@@ -36,10 +36,10 @@ def inject(y, p, name):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("wav", type=Path)
-    ap.add_argument("--start", type=float, default=60.0, help="Startzeit des Ausschnitts [s]")
-    ap.add_argument("--dur", type=float, default=60.0, help="Länge des Ausschnitts [s]")
-    ap.add_argument("--sine", type=float, help="Sinus addieren [Hz] (Rückführung nachbilden)")
-    ap.add_argument("--level", type=float, default=-12.0, help="Pegel des Sinus [dBFS Spitze]")
+    ap.add_argument("--start", type=float, default=60.0, help="start time of the section [s]")
+    ap.add_argument("--dur", type=float, default=60.0, help="length of the section [s]")
+    ap.add_argument("--sine", type=float, help="add a sine [Hz] (emulate a loopback)")
+    ap.add_argument("--level", type=float, default=-12.0, help="level of the sine [dBFS peak]")
     a = ap.parse_args()
 
     info = sf.info(str(a.wav))
@@ -56,8 +56,8 @@ def main():
         for name in FAULTS:
             c = timing.clicks(inject(base, p, name), fs)[0]
             hit = [e for e in c["events"] if abs(e["t"] - p / fs) < 0.01]
-            res.append(f"{name}:" + (f"ja ({hit[0]['peak_over_median_db']:.0f} dB)" if hit else "NEIN"))
-        print(f"Kanal {ch + 1} (Fehlalarme ohne Eingriff: {n0}): " + "  ".join(res))
+            res.append(f"{name}:" + (f"yes ({hit[0]['peak_over_median_db']:.0f} dB)" if hit else "NO"))
+        print(f"Channel {ch + 1} (false alarms without injection: {n0}): " + "  ".join(res))
 
 
 if __name__ == "__main__":

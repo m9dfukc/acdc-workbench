@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""Familienpegel mehrerer Messungen als Markdown-Tabelle (Auswertung wie D34/D35).
+"""Family levels of several measurements as a Markdown table (evaluation as in D34/D35).
 
-Liest out/<ID>/<ID>.json (python -m analysis) und mittelt je Größe über die 4 Kanäle
-in Leistung: RMS >= 20 Hz, Rest ohne Störlinien, Kamm (usb1k), fs/8, Mischprodukte (imd).
-Werte in Datei-dBFS (wie die Analyse). Optional --ref: Spalte Δ gegen den Mittelwert der
-Referenz-IDs (z. B. die Kontrolle derselben Sitzung).
+Reads out/<ID>/<ID>.json (python -m analysis) and averages each quantity over the 4 channels
+in power: RMS >= 20 Hz, residual without interference lines ("Rest"), comb ("Kamm", usb1k),
+fs/8, intermodulation products ("Mischprod.", imd). Values in file dBFS (like the analysis).
+Optional --ref: Δ in parentheses against the mean of the reference IDs (e.g. the control
+of the same session). The table text is German because it goes into the project reports.
 
-Aufruf:
+Usage:
   uv run python tools/family_table.py B4-3d-r1 B4-3d-r2 B4-fx3i-r1 … [--ref B4-3d-r1 B4-3d-r2]
-                                       [--group B4-3d=B4-3d-r1,B4-3d-r2 …] [--out datei.md]
+                                       [--group B4-3d=B4-3d-r1,B4-3d-r2 …] [--out file.md]
 """
 from __future__ import annotations
 
@@ -49,10 +50,10 @@ def mean_of(ids: list[str]) -> dict[str, float]:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("ids", nargs="+", help="Manifest-IDs (out/<ID>/<ID>.json)")
-    ap.add_argument("--ref", nargs="+", help="Referenz-IDs für Δ (Mittel in Leistung)")
-    ap.add_argument("--group", action="append", default=[], help="NAME=ID1,ID2: zusätzliche Mittelwert-Zeile")
-    ap.add_argument("--out", help="Markdown zusätzlich in diese Datei schreiben")
+    ap.add_argument("ids", nargs="+", help="manifest IDs (out/<ID>/<ID>.json)")
+    ap.add_argument("--ref", nargs="+", help="reference IDs for Δ (mean in power)")
+    ap.add_argument("--group", action="append", default=[], help="NAME=ID1,ID2: additional row with the mean")
+    ap.add_argument("--out", help="also write the Markdown to this file")
     a = ap.parse_args()
     ref = mean_of(a.ref) if a.ref else None
     head = "| Messung | " + " | ".join(t for _, t in COLS) + " | Kamm-f0 Hz |"

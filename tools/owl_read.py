@@ -1,30 +1,30 @@
-"""Nur-lesendes OWL/OpenWare-SysEx-Werkzeug für das AC/DC.
+"""Read-only OWL/OpenWare SysEx tool for the AC/DC.
 
-Fragt Geräte-Info, Patch-/Ressourcen-Namen und Settings ab und lädt gespeicherte
-Slots/Ressourcen (z. B. __SETTINGS__) als .syx herunter. Protokoll aus
+Queries device info, patch and resource names and settings, and downloads stored
+slots/resources (e.g. __SETTINGS__) as .syx. Protocol taken from
 OpenWare v22.5.0 (`Source/MidiHandler.cpp`, `MidiController.cpp`,
 `OpenWareMidiControl.h`).
 
-Sicherheit: Das Tool kann ausschließlich
-  - CC67 (REQUEST_SETTINGS) mit den Werten in ALLOWED_REQUESTS und
-  - SysEx 0x18 (SYSEX_FIRMWARE_SEND, "Slot zurücksenden") mit Slot >= 1
-  - optional (--program N) einen MIDI Program Change auf einen belegten Slot
-senden. Program Change setzt `settings.program_index` nur im RAM
-(ProgramManager.cpp:730), gespeichert wird erst per SysEx 0x16; nach einem
-Aus-/Einschalten läuft wieder der gespeicherte Slot.
-  - optional (--reset-to-dfu --yes) SysEx 0x7E: Neustart in den ST-ROM-DFU-
-    Bootloader (`device_dfu()`, wie „Reset to bootloader“ auf openwarelab).
-    Löscht nichts. Zurück: Case aus/ein. Store, Erase, Settings-Store/-Reset, Reset, Bootloader, CC7 (Volume),
-CC26 usw. sind nicht erreichbar.
+Safety: the tool can only send
+  - CC67 (REQUEST_SETTINGS) with the values in ALLOWED_REQUESTS and
+  - SysEx 0x18 (SYSEX_FIRMWARE_SEND, "send slot back") with slot >= 1
+  - optionally (--program N) a MIDI Program Change to an occupied slot.
+Program Change sets `settings.program_index` in RAM only
+(ProgramManager.cpp:730); it is stored only by SysEx 0x16. After a
+power cycle the stored slot runs again.
+  - optionally (--reset-to-dfu --yes) SysEx 0x7E: restart into the ST ROM DFU
+    bootloader (`device_dfu()`, like "Reset to bootloader" on openwarelab).
+    Erases nothing. To get back: power-cycle the case. Store, erase, settings store/reset, reset, bootloader,
+CC7 (volume), CC26 etc. cannot be reached.
 
-Aufruf (rtmidi hat für Python 3.14 kein Wheel, CoreMIDI ist im Claude-Sandbox gesperrt):
+Usage (rtmidi has no wheel for Python 3.14, CoreMIDI is not available inside a sandbox):
   UV_CACHE_DIR=.uv-cache UV_NO_BUILD=1 uv run --no-project --python 3.12 \
       --with mido --with python-rtmidi python tools/owl_read.py [--out DIR] [--dump]
 
-Ablage: <out>/<gerät>/<JJJJMMTT>/device_report.json (Standard-out: out/owl_read). Mit --dump
-landen Report und Slots in <out>/<gerät>/<JJJJMMTT>/owl/, für ein Backup also `--out backup --dump`
-→ backup/acdc1/<datum>/owl/. Ist der Zielordner schon belegt, wird nichts überschrieben: Der Ordner
-bekommt dann die Uhrzeit angehängt (z. B. 20261114_231500 bzw. owl_231500).
+Output: <out>/<device>/<YYYYMMDD>/device_report.json (default out: out/owl_read). With --dump
+the report and the slots go to <out>/<device>/<YYYYMMDD>/owl/, so for a backup use `--out backup --dump`
+→ backup/acdc1/<date>/owl/. If the target folder is not empty, nothing is overwritten: the folder
+name gets the time of day appended (e.g. 20261114_231500 or owl_231500).
 """
 
 from __future__ import annotations
@@ -182,7 +182,7 @@ class Owl:
 
     def program_change(self, slot: int):
         if not (1 <= slot < MAX_NUMBER_OF_PATCHES):
-            raise ValueError(f"Slot {slot} ungültig")
+            raise ValueError(f"invalid slot {slot}")
         self.out.send(mido.Message("program_change", channel=0, program=slot))
 
     def reset_to_dfu(self):
@@ -190,7 +190,7 @@ class Owl:
 
     def request(self, value: int, quiet=0.6, timeout=5.0) -> list[mido.Message]:
         if value not in ALLOWED_REQUESTS:
-            raise ValueError(f"CC67={value} nicht erlaubt")
+            raise ValueError(f"CC67={value} not allowed")
         self.drain()
         self.out.send(mido.Message("control_change", channel=0,
                                    control=REQUEST_SETTINGS, value=value))
@@ -198,7 +198,7 @@ class Owl:
 
     def download(self, slot: int, quiet=1.5, timeout=60.0) -> list[mido.Message]:
         if not (1 <= slot < MAX_NUMBER_OF_PATCHES + 12):
-            raise ValueError(f"Slot {slot} ungültig")
+            raise ValueError(f"invalid slot {slot}")
         self.drain()
         self.out.send(mido.Message("sysex", data=[MANUFACTURER, OMNI_DEVICE,
                                                   SYSEX_FIRMWARE_SEND, *encode_int(slot)]))
@@ -274,19 +274,19 @@ def reassemble(msgs: list[mido.Message]) -> dict:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--port", default="OWL-ACDC", help="MIDI-Portname (Teilstring)")
-    ap.add_argument("--out", type=Path, default=Path("out/owl_read"), help="Basisordner (Backup: backup)")
-    ap.add_argument("--dump", action="store_true", help="alle Slots und Ressourcen herunterladen")
-    ap.add_argument("--slots", type=int, nargs="*", help="nur diese Slots herunterladen (1..39, Ressourcen 40+n)")
-    ap.add_argument("--reset-to-dfu", action="store_true", help="Neustart in den ROM-DFU-Bootloader (braucht --yes)")
-    ap.add_argument("--yes", action="store_true", help="Bestätigung für --reset-to-dfu")
-    ap.add_argument("--program", type=int, help="nur Program Change auf diesen Slot (RAM, nicht gespeichert), dann Ende")
+    ap.add_argument("--port", default="OWL-ACDC", help="MIDI port name (substring)")
+    ap.add_argument("--out", type=Path, default=Path("out/owl_read"), help="base folder (for a backup: backup)")
+    ap.add_argument("--dump", action="store_true", help="download all slots and resources")
+    ap.add_argument("--slots", type=int, nargs="*", help="download only these slots (1..39, resources 40+n)")
+    ap.add_argument("--reset-to-dfu", action="store_true", help="restart into the ROM DFU bootloader (needs --yes)")
+    ap.add_argument("--yes", action="store_true", help="confirmation for --reset-to-dfu")
+    ap.add_argument("--program", type=int, help="only send a Program Change to this slot (RAM, not stored), then exit")
     args = ap.parse_args(argv)
 
     ins = [n for n in mido.get_input_names() if args.port in n]
     outs = [n for n in mido.get_output_names() if args.port in n]
     if len(ins) != 1 or len(outs) != 1:
-        print(f"Port nicht eindeutig: in={ins} out={outs}", file=sys.stderr)
+        print(f"MIDI port not found or ambiguous: in={ins} out={outs}", file=sys.stderr)
         return 2
     owl = Owl(ins[0])
     try:
@@ -295,27 +295,27 @@ def main(argv=None) -> int:
         uuid = next((e["text"] for e in dev if e.get("cmd") == "DEVICE_ID"), None)
         name = KNOWN_DEVICES.get(uuid or "", "unknown")
         report.update(device_id=uuid, device=name)
-        print(f"Gerät: {name} ({uuid})")
+        print(f"Device: {name} ({uuid})")
         if args.reset_to_dfu:
             if not args.yes:
-                print("--reset-to-dfu braucht --yes", file=sys.stderr)
+                print("--reset-to-dfu needs --yes", file=sys.stderr)
                 return 4
             if name != "acdc1":
-                print(f"Abbruch: DFU-Reset nur für acdc1, verbunden ist {name}", file=sys.stderr)
+                print(f"Aborted: DFU reset is only allowed for acdc1, connected device is {name}", file=sys.stderr)
                 return 5
             owl.reset_to_dfu()
-            print("SysEx 0x7E gesendet: acdc1 startet in den DFU-Bootloader.")
+            print("SysEx 0x7E sent: acdc1 restarts into the DFU bootloader.")
             return 0
         if args.program is not None:
             names = {e["index"]: e["name"] for e in parse(owl.request(0x01, quiet=1.0))
                      if e.get("cmd") == "PRESET_NAME"}
             if args.program not in names or args.program == 0:
-                print(f"Slot {args.program} ist nicht belegt: {names}", file=sys.stderr)
+                print(f"Slot {args.program} is empty: {names}", file=sys.stderr)
                 return 3
             owl.program_change(args.program)
             time.sleep(1.0)
             run = [e for e in parse(owl.request(0x01, quiet=1.0)) if e.get("index") == 0]
-            print(f"Program Change -> Slot {args.program} ({names[args.program]}). Läuft jetzt: {run}")
+            print(f"Program Change -> slot {args.program} ({names[args.program]}). Now running: {run}")
             return 0
 
         report["info"] = parse(owl.request(127, quiet=1.0))

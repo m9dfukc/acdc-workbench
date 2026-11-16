@@ -65,50 +65,50 @@ def main(argv=None):
     for key, (f0, levels) in truth.items():
         fam = fams.get(key)
         if not fam:
-            errors.append(f"{key}: Familie nicht gefunden")
+            errors.append(f"{key}: family not found")
             continue
         df = abs(fam["f0"] - f0)
-        print(f"{key:8s} f0 {fam['f0']:.5f} Hz (soll {f0}, Δ {df * 1000:.2f} mHz), {fam['n']} Linien")
+        print(f"{key:8s} f0 {fam['f0']:.5f} Hz (expected {f0}, Δ {df * 1000:.2f} mHz), {fam['n']} lines")
         if df > 0.005:
-            errors.append(f"{key}: f0-Fehler {df:.4f} Hz")
+            errors.append(f"{key}: f0 error {df:.4f} Hz")
         found = {h["k"]: h for h in fam["harmonics"]}
         for k, lvl in levels.items():
             h = found.get(k)
             if h is None and unresolvable(key, k * f0):
-                print(f"  {key} k={k}: nicht auflösbar bei {bin_hz:.3f} Hz Bin-Breite (erwartet)")
+                print(f"  {key} k={k}: not resolvable at {bin_hz:.3f} Hz bin width (expected)")
             elif h is None:
-                errors.append(f"{key} k={k}: nicht gefunden")
+                errors.append(f"{key} k={k}: not found")
             elif abs(h["level_db"] - lvl) > 0.5 and not unresolvable(key, k * f0):
-                errors.append(f"{key} k={k}: Pegel {h['level_db']:.2f} statt {lvl}")
+                errors.append(f"{key} k={k}: level {h['level_db']:.2f} instead of {lvl}")
         extra = set(found) - set(levels)
         if extra:
-            errors.append(f"{key}: falsche Harmonische {sorted(extra)}")
+            errors.append(f"{key}: spurious harmonics {sorted(extra)}")
     got_imd = {(h["n"], h["m"]): h for h in fams.get("imd", {"harmonics": []})["harmonics"]}
     for n, m, lvl in imd_truth:
         f = n * 1000.053 + m * 6000.0
         h = got_imd.get((n, m))
         if h is None and not unresolvable("imd", f):
-            errors.append(f"Mischprodukt {n}·f1{m:+d}·f2 ({f:.3f} Hz) nicht gefunden")
+            errors.append(f"mixing product {n}·f1{m:+d}·f2 ({f:.3f} Hz) not found")
         elif h is not None and abs(h["level_db"] - lvl) > 0.7 and not unresolvable("imd", f):
-            errors.append(f"Mischprodukt {n},{m}: Pegel {h['level_db']:.2f} statt {lvl}")
+            errors.append(f"mixing product {n},{m}: level {h['level_db']:.2f} instead of {lvl}")
     extra_imd = set(got_imd) - {(n, m) for n, m, _ in imd_truth}
-    print(f"Mischprodukte gefunden: {sorted(got_imd)}")
+    print(f"Mixing products found: {sorted(got_imd)}")
     if extra_imd:
-        errors.append(f"falsche Mischprodukte {sorted(extra_imd)}")
+        errors.append(f"spurious mixing products {sorted(extra_imd)}")
     ms_true = sum(10 ** (lv / 10) / 2 for _, lv_ in truth.values() for lv in lv_.values())
     ms_true += sum(10 ** (lv / 10) / 2 for *_, lv in imd_truth)
     share_true = ms_true / np.mean(x**2)
-    print(f"Linienanteil {res['lines_share'] * 100:.1f} % (soll ≈ {share_true * 100:.1f} %)")
+    print(f"Line share {res['lines_share'] * 100:.1f} % (expected ≈ {share_true * 100:.1f} %)")
     if abs(res["lines_share"] - share_true) > 0.03:
-        errors.append("Linienanteil weicht ab")
+        errors.append("line share deviates")
     clk, _ = timing.clicks(x, a.fs)
     got = [e["t"] for e in clk["events"]]
-    print(f"Klicks bei {[round(t, 3) for t in got]} (soll {click_t})")
+    print(f"Clicks at {[round(t, 3) for t in got]} (expected {click_t})")
     if len(got) != len(click_t) or any(abs(g - c) > 0.002 for g, c in zip(got, click_t)):
-        errors.append("Klick-Detektion falsch")
+        errors.append("click detection wrong")
     for e in errors:
-        print("FEHLER:", e)
-    print("OK" if not errors else f"{len(errors)} Fehler")
+        print("ERROR:", e)
+    print("OK" if not errors else f"{len(errors)} error(s)")
     return 1 if errors else 0
 
 

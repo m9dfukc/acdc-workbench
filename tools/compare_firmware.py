@@ -1,9 +1,9 @@
-"""Vergleicht ein Firmware-Abbild (DFU-Readback) mit einer Referenz-.bin.
+"""Compares a firmware image (DFU readback) with a reference .bin.
 
-Ausgabe: Größe, Ende der Nutzdaten (vor 0xFF-Padding), SHA-256, Übereinstimmung,
-Vektortabelle, Versions- und Hinweis-Strings. Rein lesend, nur Standardbibliothek.
+Output: size, end of the payload (before the 0xFF padding), SHA-256, match,
+vector table, version and marker strings. Read-only, standard library only.
 
-Aufruf: python3 tools/compare_firmware.py <readback.bin> <referenz.bin> [--json out.json]
+Usage: python3 tools/compare_firmware.py <readback.bin> <reference.bin> [--json out.json]
 """
 
 from __future__ import annotations

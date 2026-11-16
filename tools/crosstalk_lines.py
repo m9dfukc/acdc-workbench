@@ -1,9 +1,9 @@
-"""Pegel von Testtönen und ihren Mischprodukten je Eingang messen (Übersprechen Ausgänge → Eingänge).
+"""Measure the level of test tones and their intermodulation products per input (crosstalk outputs → inputs).
 
-Gemittelte Hann-FFT (Segmente à 2^22 Samples), Pegel als Sinus-Amplitude in dBFS, dazu der Abstand zum
-lokalen Boden (Median ±20 Hz). Geprüft werden die Grundtöne, ihre 2. Harmonischen und alle Summen/Differenzen.
+Averaged Hann FFT (segments of 2^22 samples), level as sine amplitude in dBFS, plus the distance to the
+local floor (median ±20 Hz). Checked are the fundamentals, their 2nd harmonics and all sums/differences.
 
-Aufruf:
+Usage:
   UV_CACHE_DIR=.uv-cache uv run python tools/crosstalk_lines.py <wav> --freqs 220 330 470 590
 """
 import argparse
@@ -16,7 +16,7 @@ import soundfile as sf
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("wav")
-    ap.add_argument("--freqs", type=float, nargs="+", required=True, help="Testtöne je Ausgang (Out 1, Out 2, …)")
+    ap.add_argument("--freqs", type=float, nargs="+", required=True, help="test tones per output (Out 1, Out 2, …)")
     ap.add_argument("--nfft", type=int, default=2**22)
     a = ap.parse_args()
 
@@ -42,7 +42,7 @@ def main():
     for (i, f1), (j, f2) in combinations(enumerate(a.freqs), 2):
         lo, hi = sorted((f1, f2))
         rows += [(f"{hi:g}−{lo:g}={hi - lo:g} (O{i + 1}/O{j + 1})", hi - lo), (f"{f1:g}+{f2:g}={f1 + f2:g} (O{i + 1}/O{j + 1})", f1 + f2)]
-    print(f"{'Linie':<28}" + "".join(f"{'In' + str(c + 1):>14}" for c in range(x.shape[1])) + "   dBFS (Abstand zum Boden)")
+    print(f"{'Line':<28}" + "".join(f"{'In' + str(c + 1):>14}" for c in range(x.shape[1])) + "   dBFS (distance to floor)")
     for name, f in rows:
         print(f"{name:<28}" + "".join(f"{lvl(c, f):8.1f} ({lvl(c, f) - floor(c, f):+3.0f})" for c in range(x.shape[1])))
 

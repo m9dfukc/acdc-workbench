@@ -1,36 +1,37 @@
 #!/usr/bin/env python3
-"""Mehrkanal-Aufnahme vom AC/DC (oder einem anderen Audiogerät): Ersatz für eine Host-Software mit Mehrkanal-Recorder.
+"""Multichannel recording from the AC/DC (or another audio device): replaces host software with a multichannel recorder.
 
-Standard-Aufnahmewerkzeug des Projekts (CLAUDE.md, „Aufnahmen“). Bildet den früheren Ablauf mit einer Host-Software nach:
-- Gerät per Namen öffnen (Standard „OWL-ACDC-FX“), 48 kHz, Blockgröße 256,
-- **duplex**: Der Ausgang bekommt Nullen, wie das Audio-Modul einer Host-Software ohne Kabel. Das Gerät ist also im selben
-  Zustand wie bei allen Host-Messungen (mit Stream = Ausgang ist USB-Playback). `--input-only` lässt den
-  Ausgang zu (macOS kann ihn trotzdem starten),
-- mehrere Wiederholungen, zwischen denen der Stream geschlossen und neu geöffnet wird (Ersatz für den
-  Neustart der Host-Software),
-- vor dem Schreiben `--settle` Sekunden verwerfen (Einschwingen nach dem Öffnen),
-- optional **Testsignale an die Ausgänge** statt Nullen (Ersatz für Software-Oszillatoren): `--sine F1 F2 F3 F4`
-  = Sinus je Ausgang (0 = still), Pegel `--sine-level` in Geräte-dBFS (Standard −6 dBFS = 0,5 wie der
-  Software-Oszillator mit 5 V Spitze), weiches Einblenden `--sine-fade`. Echter Sinus (der Software-Oszillator war parabolisch,
-  ungerade Obertöne ≈ −29 dBc, messlog D8). Beispiel USB-Loop-Test (Patchkabel Out n → In n):
-  `--sine 440 530 670 790 --duration 600` und danach `tools/phase_slips.py <wav> --freqs 440 530 670 790`.
-- **Gleichanteil je Ausgang** `--dc V1 V2 …` in Vollausschlag (−1…1, 1 = 0 dBFS ≈ 10 V am Ausgang), allein oder
-  zusammen mit `--sine`. `--dc-ramp SEK` fährt ihn langsam von 0 hoch (z. B. Clip-Schwelle suchen),
-  sehr langsame Wechselsignale gehen mit `--sine 0.05 …`. Beispiel Clip-Test (Out n → In n):
-  `--sine 440 440 440 440 --sine-level -3 -1 -0.3 0` oder `--dc 0.9 0.95 0.98 1.0 --dc-ramp 20`.
+Standard recording tool of this project (CLAUDE.md, section on recordings). It reproduces the earlier workflow with
+host software:
+- open the device by name (default "OWL-ACDC-FX"), 48 kHz, block size 256,
+- **duplex**: the output gets zeros, like the audio module of host software with no cable connected. The device is
+  therefore in the same state as in all host measurements (with a stream, the output is USB playback).
+  `--input-only` leaves the output closed (macOS may start it anyway),
+- several repetitions, with the stream closed and reopened in between (replaces restarting the
+  host software),
+- discard `--settle` seconds before writing (settling after opening),
+- optional **test signals to the outputs** instead of zeros (replaces software oscillators): `--sine F1 F2 F3 F4`
+  = one sine per output (0 = silent), level `--sine-level` in device dBFS (default −6 dBFS = 0.5, like the
+  software oscillator with 5 V peak), soft fade-in `--sine-fade`. A true sine (the software oscillator was parabolic,
+  odd harmonics ≈ −29 dBc, messlog D8). Example USB loop test (patch cable Out n → In n):
+  `--sine 440 530 670 790 --duration 600` and afterwards `tools/phase_slips.py <wav> --freqs 440 530 670 790`.
+- **DC offset per output** `--dc V1 V2 …` in full scale (−1…1, 1 = 0 dBFS ≈ 10 V at the output), alone or
+  together with `--sine`. `--dc-ramp SEC` ramps it up slowly from 0 (e.g. to find the clip threshold),
+  very slow AC signals work with `--sine 0.05 …`. Example clip test (Out n → In n):
+  `--sine 440 440 440 440 --sine-level -3 -1 -0.3 0` or `--dc 0.9 0.95 0.98 1.0 --dc-ramp 20`.
 
-Ausgabe: eine Mehrkanal-WAV je Wiederholung, Name nach Konvention
-`YYYYMMDD_<geraet>_<test>[-rN]_<gain>_<usb>.wav` in `recordings/`, plus Eintrag in
-`recordings/manifest.toml`. Standardformat 16 Bit PCM = genau die USB-Daten. Der Manifest-Eintrag bekommt
-`scale = 2.0`, die Analyse rechnet damit in dieselben Datei-dBFS wie Host-Aufnahmen um (Host-Faktor 2).
-Geräte-dBFS = Datei-dBFS − 6,02 dB, wie bisher.
+Output: one multichannel WAV per repetition, named by the convention
+`YYYYMMDD_<device>_<test>[-rN]_<gain>_<usb>.wav` in `recordings/`, plus an entry in
+`recordings/manifest.toml`. Default format 16-bit PCM = exactly the USB data. The manifest entry gets
+`scale = 2.0`; the analysis uses it to convert to the same file dBFS as host recordings (host factor 2).
+Device dBFS = file dBFS − 6.02 dB, as before.
 
-Läuft wegen CoreAudio nur außerhalb des Sandbox. Aufruf:
+Needs CoreAudio, so it does not run inside a sandbox. Usage:
     uv run python tools/acdc_rec.py --list
     uv run python tools/acdc_rec.py --id B4-fx3i --test fx3i-open-inputs --reps 2 --duration 60 \\
-        --device-desc "acdc1, Build v22.4.r-fx3i" --test-desc "A/B gegen 3d" --owl-read --analyze --ref B3-fx2d-r1
-Ohne Gerät testen: `--simulate` (Rauschen + 1-kHz-Ton statt Gerät, mit `--manifest` auf eine Kopie). Mit
-`--sine` landet das Ausgangssignal im simulierten Eingang (wie Patchkabel Out n → In n).
+        --device-desc "acdc1, Build v22.4.r-fx3i" --test-desc "A/B against 3d" --owl-read --analyze --ref B3-fx2d-r1
+Testing without a device: `--simulate` (noise + 1 kHz tone instead of a device, with `--manifest` pointing to a
+copy). With `--sine` the output signal ends up in the simulated input (like patch cables Out n → In n).
 """
 
 from __future__ import annotations
@@ -73,8 +74,8 @@ def find_device(sd, name: str, n_in: int, n_out: int) -> int:
     ok = exact or ok
     if len(ok) != 1:
         lst = "\n".join(f"  [{i}] {d['name']} ({d['max_input_channels']} in / {d['max_output_channels']} out)" for i, d in devs)
-        why = "nicht gefunden" if not ok else "mehrdeutig"
-        raise SystemExit(f"Gerät „{name}“ mit ≥ {n_in} in / ≥ {n_out} out {why}. Vorhanden:\n{lst}")
+        why = "not found" if not ok else "ambiguous"
+        raise SystemExit(f"Device \"{name}\" with ≥ {n_in} in / ≥ {n_out} out {why}. Available:\n{lst}")
     return ok[0][0]
 
 
@@ -90,36 +91,39 @@ class SineOut:
         freqs = list(freqs or [])
         dc = list(dc or [])
         if len(freqs) > n_out or len(dc) > n_out:
-            raise SystemExit(f"--sine/--dc: mehr Werte als {n_out} Ausgänge")
+            raise SystemExit(f"--sine/--dc: more values than the {n_out} outputs")
         if freqs and len(levels_db) not in (1, len(freqs)):
-            raise SystemExit("--sine-level: ein Wert für alle oder einer je Frequenz")
+            raise SystemExit("--sine-level: one value for all or one per frequency")
         for f in freqs:
             if not 0 <= f < fs / 2:
-                raise SystemExit(f"--sine {f:g} Hz: erlaubt 0 (still) bis < fs/2")
+                raise SystemExit(f"--sine {f:g} Hz: allowed range is 0 (silent) to < fs/2")
         lv = (levels_db * len(freqs) if len(levels_db) == 1 else levels_db) if freqs else []
         if lv and max(lv) > 0:
-            raise SystemExit("--sine-level über 0 dBFS")
+            raise SystemExit("--sine-level above 0 dBFS")
         self.f = np.array(freqs + [0.0] * (n_out - len(freqs)))
         self.amp = np.array([10 ** (l / 20) if f > 0 else 0.0 for f, l in zip(freqs, lv)] + [0.0] * (n_out - len(freqs)))
         self.dc = np.array(dc + [0.0] * (n_out - len(dc)), dtype=float)
         peak = self.amp + np.abs(self.dc)
         if np.any(peak > 1.0 + 1e-9):
             bad = [f"Out {i + 1}: {p:.3f}" for i, p in enumerate(peak) if p > 1.0 + 1e-9]
-            raise SystemExit(f"Sinus + Gleichanteil über Vollausschlag ({', '.join(bad)})")
+            raise SystemExit(f"Sine + DC offset above full scale ({', '.join(bad)})")
         self.fs, self.fade, self.n = fs, max(1, int(round(fade_s * fs))), 0
         self.ramp = int(round(dc_ramp_s * fs))
 
-    def describe(self) -> str:
+    def describe(self, console: bool = False) -> str:
+        """Beschreibung des Testsignals. Standard: deutscher Text fürs Manifest (nicht ändern).
+        `console=True`: englischer Text für die Konsole."""
+        sine, ramp, head = ("sine", "ramp", "test signal") if console else ("Sinus", "Rampe", "Testsignal")
         parts = []
         for i, (f, a, d) in enumerate(zip(self.f, self.amp, self.dc)):
             p = []
             if a > 0:
-                p.append(f"Sinus {f:g} Hz @ {20 * np.log10(a):.1f} dBFS")
+                p.append(f"{sine} {f:g} Hz @ {20 * np.log10(a):.1f} dBFS")
             if d != 0:
-                p.append(f"DC {d:+.3f} FS" + (f" (Rampe {self.ramp / self.fs:g} s)" if self.ramp else ""))
+                p.append(f"DC {d:+.3f} FS" + (f" ({ramp} {self.ramp / self.fs:g} s)" if self.ramp else ""))
             if p:
                 parts.append(f"Out {i + 1} " + " + ".join(p))
-        return "Testsignal " + ", ".join(parts)
+        return f"{head} " + ", ".join(parts)
 
     def next(self, frames: int) -> np.ndarray:
         idx = self.n + np.arange(frames)
@@ -204,7 +208,7 @@ class Take:
                     try:
                         blk = get()
                     except queue.Empty:
-                        raise SystemExit("Keine Daten vom Gerät seit 5 s – Stream hängt?")
+                        raise SystemExit("No data from the device for 5 s – stream stalled?")
                     if skip:
                         drop = min(skip, len(blk))
                         blk, skip = blk[drop:], skip - drop
@@ -245,7 +249,7 @@ def append_manifest(path: Path, entry: dict) -> None:
 
 def owl_read_hook(out_dir: Path):
     def hook():
-        print(f"  owl_read → {out_dir} (Stream bleibt offen)", flush=True)
+        print(f"  owl_read → {out_dir} (stream stays open)", flush=True)
         r = subprocess.run(OWL_READ + ["--out", str(out_dir)], cwd=ROOT, capture_output=True, text=True)
         tail = (r.stdout + r.stderr).strip().splitlines()[-8:]
         for line in tail:
@@ -257,60 +261,60 @@ def owl_read_hook(out_dir: Path):
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0],
                                  formatter_class=argparse.RawDescriptionHelpFormatter, epilog=__doc__)
-    g = ap.add_argument_group("Gerät und Stream")
-    g.add_argument("--list", action="store_true", help="Audiogeräte auflisten und beenden")
-    g.add_argument("--device", default="OWL-ACDC-FX", help="Gerätename (exakt oder Teilstring)")
-    g.add_argument("--channels", type=int, default=4, help="Eingangskanäle")
-    g.add_argument("--out-channels", type=int, default=4, help="Ausgangskanäle (bekommen Nullen)")
-    g.add_argument("--input-only", action="store_true", help="nur Eingang öffnen (kein Duplex)")
+    g = ap.add_argument_group("Device and stream")
+    g.add_argument("--list", action="store_true", help="list audio devices and exit")
+    g.add_argument("--device", default="OWL-ACDC-FX", help="device name (exact or substring)")
+    g.add_argument("--channels", type=int, default=4, help="input channels")
+    g.add_argument("--out-channels", type=int, default=4, help="output channels (get zeros)")
+    g.add_argument("--input-only", action="store_true", help="open the input only (no duplex)")
     g.add_argument("--fs", type=int, default=48000)
-    g.add_argument("--blocksize", type=int, default=256, help="Blockgröße (256, wie bei den frühen Aufnahmen)")
-    g.add_argument("--latency", default="high", help="PortAudio-Latenz: low/high oder Sekunden")
+    g.add_argument("--blocksize", type=int, default=256, help="block size (256, as in the early recordings)")
+    g.add_argument("--latency", default="high", help="PortAudio latency: low/high or seconds")
     g.add_argument("--format", choices=sorted(FORMATS), default="pcm16")
-    g.add_argument("--simulate", action="store_true", help="kein Gerät, synthetische Daten (Test)")
-    o = ap.add_argument_group("Testsignal an die Ausgänge (statt Nullen)")
+    g.add_argument("--simulate", action="store_true", help="no device, synthetic data (for testing)")
+    o = ap.add_argument_group("Test signal to the outputs (instead of zeros)")
     o.add_argument("--sine", type=float, nargs="+", metavar="HZ",
-                   help="Sinus je Ausgang in Reihenfolge Out 1, Out 2, …; 0 = still, fehlende = still")
+                   help="sine per output in the order Out 1, Out 2, …; 0 = silent, missing = silent")
     o.add_argument("--sine-level", type=float, nargs="+", default=[-6.0], metavar="DBFS",
-                   help="Pegel in Geräte-dBFS, einer für alle oder einer je Frequenz (Standard −6 ≙ 5 V Spitze am Ausgang)")
-    o.add_argument("--sine-fade", type=float, default=0.05, help="Einblenden in Sekunden")
+                   help="level in device dBFS, one for all or one per frequency (default −6 ≙ 5 V peak at the output)")
+    o.add_argument("--sine-fade", type=float, default=0.05, help="fade-in in seconds")
     o.add_argument("--dc", type=float, nargs="+", metavar="FS",
-                   help="Gleichanteil je Ausgang in Vollausschlag (−1…1, 1 = 0 dBFS ≈ 10 V), auch zusammen mit --sine; "
-                        "sehr langsame Signale: --sine 0.05 …")
-    o.add_argument("--dc-ramp", type=float, default=0.0, metavar="SEK",
-                   help="Gleichanteil linear über SEK Sekunden von 0 hochfahren (Schwelle suchen), sonst wie --sine-fade")
+                   help="DC offset per output in full scale (−1…1, 1 = 0 dBFS ≈ 10 V), also together with --sine; "
+                        "very slow signals: --sine 0.05 …")
+    o.add_argument("--dc-ramp", type=float, default=0.0, metavar="SEC",
+                   help="ramp the DC offset up linearly from 0 over SEC seconds (to find a threshold), otherwise like --sine-fade")
 
-    t = ap.add_argument_group("Ablauf")
-    t.add_argument("--duration", type=float, default=60.0, help="Sekunden je Aufnahme")
-    t.add_argument("--settle", type=float, default=3.0, help="Sekunden nach dem Öffnen verwerfen")
-    t.add_argument("--reps", type=int, default=1, help="Anzahl Wiederholungen")
-    t.add_argument("--first-rep", type=int, default=1, help="Nummer der ersten Wiederholung (Suffix -rN)")
-    t.add_argument("--pause", type=float, default=5.0, help="Sekunden Pause zwischen Wiederholungen (Stream zu)")
-    t.add_argument("--prompt", action="store_true", help="vor jeder Aufnahme auf Enter warten")
-    t.add_argument("--owl-read", action="store_true", help="nach jeder Aufnahme, vor dem Schließen, owl_read.py")
+    t = ap.add_argument_group("Sequence")
+    t.add_argument("--duration", type=float, default=60.0, help="seconds per recording")
+    t.add_argument("--settle", type=float, default=3.0, help="seconds to discard after opening")
+    t.add_argument("--reps", type=int, default=1, help="number of repetitions")
+    t.add_argument("--first-rep", type=int, default=1, help="number of the first repetition (suffix -rN)")
+    t.add_argument("--pause", type=float, default=5.0, help="seconds to pause between repetitions (stream closed)")
+    t.add_argument("--prompt", action="store_true", help="wait for Enter before each recording")
+    t.add_argument("--owl-read", action="store_true", help="run owl_read.py after each recording, before closing the stream")
 
-    n = ap.add_argument_group("Name und Manifest")
-    n.add_argument("--id", help="Manifest-ID (bei mehreren Wiederholungen + -rN)")
-    n.add_argument("--test", help="Test-Teil des Dateinamens, z. B. fx3i-open-inputs")
-    n.add_argument("--label", default="acdc1", help="Geräte-Teil des Dateinamens")
-    n.add_argument("--gain", default="g12", help="Gain-Teil des Dateinamens")
-    n.add_argument("--usb", default="usb-stream", help="USB-Teil des Dateinamens")
-    n.add_argument("--date", default=dt.date.today().strftime("%Y%m%d"), help="Datum YYYYMMDD")
+    n = ap.add_argument_group("Name and manifest")
+    n.add_argument("--id", help="manifest ID (with several repetitions + -rN)")
+    n.add_argument("--test", help="test part of the file name, e.g. fx3i-open-inputs")
+    n.add_argument("--label", default="acdc1", help="device part of the file name")
+    n.add_argument("--gain", default="g12", help="gain part of the file name")
+    n.add_argument("--usb", default="usb-stream", help="USB part of the file name")
+    n.add_argument("--date", default=dt.date.today().strftime("%Y%m%d"), help="date YYYYMMDD")
     n.add_argument("--dir", type=Path, default=ROOT / "recordings")
     n.add_argument("--manifest", type=Path, default=ROOT / "recordings" / "manifest.toml")
     n.add_argument("--no-manifest", action="store_true")
-    n.add_argument("--device-desc", help="Manifest „device“ (Gerät + Firmware)")
-    n.add_argument("--test-desc", help="Manifest „test“")
-    n.add_argument("--usb-desc", help="Manifest „usb“ (Standard: Alltags-Kette + Stream-Art automatisch)")
+    n.add_argument("--device-desc", help="manifest \"device\" (device + firmware)")
+    n.add_argument("--test-desc", help="manifest \"test\"")
+    n.add_argument("--usb-desc", help="manifest \"usb\" (default: everyday USB chain + stream type, filled in automatically)")
     n.add_argument("--patch", default="Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme")
-    n.add_argument("--title", help="Manifest „title“ (Standard: automatisch)")
-    n.add_argument("--note", default="", help="zusätzlicher Notiztext")
-    n.add_argument("--scale", type=float, default=2.0, help="Manifest „scale“ (2.0 = Datei-dBFS wie die frühen Aufnahmen, Host-Faktor 2)")
+    n.add_argument("--title", help="manifest \"title\" (default: generated)")
+    n.add_argument("--note", default="", help="additional note text")
+    n.add_argument("--scale", type=float, default=2.0, help="manifest \"scale\" (2.0 = file dBFS as in the early recordings, host factor 2)")
 
-    x = ap.add_argument_group("Analyse")
-    x.add_argument("--analyze", action="store_true", help="danach python -m analysis je Aufnahme")
-    x.add_argument("--ref", nargs="+", help="Referenz für die Analyse (Manifest-ID oder Dateien)")
-    x.add_argument("--spectrogram", action="store_true", help="Spektrogramm nicht überspringen")
+    x = ap.add_argument_group("Analysis")
+    x.add_argument("--analyze", action="store_true", help="afterwards run python -m analysis for each recording")
+    x.add_argument("--ref", nargs="+", help="reference for the analysis (manifest ID or files)")
+    x.add_argument("--spectrogram", action="store_true", help="do not skip the spectrogram")
     a = ap.parse_args()
 
     sd = None
@@ -320,23 +324,26 @@ def main() -> None:
         print(sd.query_devices())
         return
     if not a.test:
-        ap.error("--test fehlt (Test-Teil des Dateinamens)")
+        ap.error("--test is missing (test part of the file name)")
     if not a.no_manifest and not a.id:
-        ap.error("--id fehlt (oder --no-manifest)")
+        ap.error("--id is missing (or use --no-manifest)")
     for part in (a.label, a.test, a.gain, a.usb, a.date):
         if not part or any(c in part for c in "/_ "):
-            ap.error(f"Namensteil „{part}“: keine Leerzeichen, '/' oder '_'")
+            ap.error(f"name part \"{part}\": no spaces, '/' or '_'")
 
     signal = bool(a.sine or a.dc)
     if signal and a.input_only:
-        ap.error("--sine/--dc brauchen den Ausgang, vertragen sich nicht mit --input-only")
+        ap.error("--sine/--dc need the output and cannot be combined with --input-only")
 
     def make_gen():
         return SineOut(a.sine, a.sine_level, a.fs, a.out_channels, a.sine_fade, a.dc, a.dc_ramp) if signal else None
 
     make_gen()  # früh prüfen
+    # out_desc geht ins Manifest (deutsch, nicht ändern), out_desc_en nur auf die Konsole
     out_desc = ("nur Eingang" if a.input_only else "duplex, Ausgang "
                 + (make_gen().describe() if signal else "Nullen"))
+    out_desc_en = ("input only" if a.input_only else "duplex, output "
+                   + (make_gen().describe(console=True) if signal else "zeros"))
     usb_desc = a.usb_desc or f"usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py {out_desc}"
 
     reps = list(range(a.first_rep, a.first_rep + a.reps))
@@ -352,36 +359,36 @@ def main() -> None:
     existing = set() if a.no_manifest else manifest_ids(a.manifest)
     for k, mid, path in plan:
         if path.exists():
-            raise SystemExit(f"{path} existiert schon – nie überschreiben")
+            raise SystemExit(f"{path} already exists – never overwrite")
         if mid in existing:
-            raise SystemExit(f"Manifest-ID {mid} gibt es schon in {a.manifest}")
+            raise SystemExit(f"Manifest ID {mid} already exists in {a.manifest}")
 
     dev = None
     if not a.simulate:
         dev = find_device(sd, a.device, a.channels, 0 if a.input_only else a.out_channels)
         info = sd.query_devices(dev)
-        print(f"Gerät [{dev}] {info['name']}, {a.fs} Hz, Block {a.blocksize}, {a.format}, "
-              f"{out_desc}")
+        print(f"Device [{dev}] {info['name']}, {a.fs} Hz, block {a.blocksize}, {a.format}, "
+              f"{out_desc_en}")
     a.dir.mkdir(parents=True, exist_ok=True)
 
     done = []
     for i, (k, mid, path) in enumerate(plan):
         if i and a.pause > 0:
-            print(f"Pause {a.pause:g} s (Stream geschlossen)")
+            print(f"Pause {a.pause:g} s (stream closed)")
             time.sleep(a.pause)
         if a.prompt:
-            input(f"Enter startet Aufnahme {mid or path.name} … ")
-        print(f"Aufnahme {mid or ''} → {path.name} ({a.duration:g} s + {a.settle:g} s Einschwingen)", flush=True)
+            input(f"Press Enter to start recording {mid or path.name} … ")
+        print(f"Recording {mid or ''} → {path.name} ({a.duration:g} s + {a.settle:g} s settling)", flush=True)
         hook = owl_read_hook(ROOT / "out" / "owl_read" / (mid or path.stem)) if a.owl_read and not a.simulate else None
         gen = make_gen()
         take = Take(a, path, gen)
         try:
             res = take.run(sd, dev, hook)
         except KeyboardInterrupt:
-            print(f"\nAbgebrochen. Unvollständige Datei bleibt liegen: {path} (kein Manifest-Eintrag)")
+            print(f"\nAborted. The incomplete file is left in place: {path} (no manifest entry)")
             sys.exit(130)
         flags = res["status"]
-        print(f"  fertig: {res['frames']} Frames, Stream-Meldungen: {len(flags)}"
+        print(f"  done: {res['frames']} frames, stream status messages: {len(flags)}"
               + (f" ({sorted(set(flags))})" if flags else ""))
         if not a.no_manifest:
             start = res["start"].strftime("%H:%M:%S") if res["start"] else "?"
@@ -423,7 +430,7 @@ def main() -> None:
                 cmd += ["--ref", *a.ref]
             if not a.spectrogram:
                 cmd.append("--no-spectrogram")
-            print("Analyse:", " ".join(cmd[1:]), flush=True)
+            print("Analysis:", " ".join(cmd[1:]), flush=True)
             subprocess.run(cmd, cwd=ROOT, check=False)
 
 

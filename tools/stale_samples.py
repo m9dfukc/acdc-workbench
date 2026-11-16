@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""Einzelne falsche Samples in einer Loop-Aufnahme (Out n → In n, Sinus je Kanal) finden.
+"""Find single wrong samples in a loopback recording (Out n → In n, one sine per channel).
 
-Ergänzt tools/phase_slips.py: Slips verschieben die Phase, ein einzelner falscher Sample
-(z. B. veralteter DMA-Puffer) kaum. Pro Kanal wird ein Sinus (Frequenz fein gesucht) plus
-Gleichanteil robust angepasst; Samples mit |Rest| > k · Median(|Rest|) gelten als falsch.
+Complements tools/phase_slips.py: slips shift the phase, a single wrong sample
+(e.g. a stale DMA buffer) hardly does. Per channel a sine (frequency searched finely) plus
+DC offset is fitted robustly; samples with |residual| > k · median(|residual|) count as wrong.
 
-Ausgabe je Kanal:
-  - Amplitude aus allen Samples und aus den sauberen Samples (Δ = Pegelverlust durch Fehler)
-  - Anzahl falscher Samples und ihre Lage im Block-Raster (Index mod --block)
-  - Welcher Abstand die falschen Werte am besten erklärt: Wert ≈ Modell[n + lag]
-    (lag = −2·Block → veralteter Wert aus dem vorigen Umlauf des Doppelpuffers)
+Output per channel:
+  - amplitude from all samples and from the clean samples (Δ = level loss caused by the errors)
+  - number of wrong samples and their position in the block grid (index mod --block)
+  - which lag explains the wrong values best: value ≈ model[n + lag]
+    (lag = −2·block → stale value from the previous pass of the double buffer)
 
-Befund D40: fx3i/noD, Kanal 4, ein Sample pro 8-Frame-Block = Wert von 16 Frames vorher.
+Finding D40: fx3i/noD, channel 4, one sample per 8-frame block = value from 16 frames earlier.
 
-Aufruf:
+Usage:
   UV_CACHE_DIR=.uv-cache uv run python tools/stale_samples.py <wav> --freqs 440 530 670 790 \
       [--skip 3] [--dur 2] [--block 8] [--k 8] [--json out.json]
 """
@@ -50,12 +50,12 @@ def main() -> int:
     global K
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("wav")
-    ap.add_argument("--freqs", type=float, nargs="+", required=True, help="Ton je Kanal (In 1, In 2, …)")
-    ap.add_argument("--skip", type=float, default=3.0, help="Anfang überspringen [s] (Einblenden)")
-    ap.add_argument("--dur", type=float, default=2.0, help="ausgewertete Länge [s]")
-    ap.add_argument("--block", type=int, default=8, help="Audio-Blockgröße [Frames] für das Raster")
-    ap.add_argument("--k", type=float, default=8.0, help="Schwelle in Vielfachen des Median-Rests")
-    ap.add_argument("--json", help="Ergebnis zusätzlich als JSON")
+    ap.add_argument("--freqs", type=float, nargs="+", required=True, help="tone per channel (In 1, In 2, …)")
+    ap.add_argument("--skip", type=float, default=3.0, help="skip the beginning [s] (fade-in)")
+    ap.add_argument("--dur", type=float, default=2.0, help="analysed length [s]")
+    ap.add_argument("--block", type=int, default=8, help="audio block size [frames] for the grid")
+    ap.add_argument("--k", type=float, default=8.0, help="threshold in multiples of the median residual")
+    ap.add_argument("--json", help="also write the result as JSON")
     a = ap.parse_args()
     K = a.k
     x, fs = sf.read(a.wav, dtype="float64", always_2d=True)
@@ -63,7 +63,7 @@ def main() -> int:
     x = x[i0:i0 + int(a.dur * fs)]
     lags = sorted({0, -a.block, -2 * a.block, -3 * a.block, -4 * a.block, a.block, 2 * a.block, -1, 1})
     out = []
-    print(f"{a.wav}: {len(x)} Frames ab {a.skip} s, Block {a.block}, Schwelle {a.k}×Median")
+    print(f"{a.wav}: {len(x)} frames from {a.skip} s, block {a.block}, threshold {a.k}×median")
     for ch, f0 in enumerate(a.freqs[: x.shape[1]]):
         s = x[:, ch]
         f, model, c, c_all, good = fit(s, fs, f0)
@@ -73,16 +73,16 @@ def main() -> int:
         hist = np.bincount(bad % a.block, minlength=a.block).tolist()
         row = dict(channel=ch + 1, freq=round(f, 4), amp_all_dbfs=round(amp_all, 2), amp_good_dbfs=round(amp_good, 2),
                    bad=len(bad), blocks=len(s) // a.block, bad_per_block_pos=hist)
-        line = (f"Kanal {ch + 1} ({f:.4f} Hz): Amplitude {amp_all:.2f} dBFS (sauber {amp_good:.2f}, Δ {amp_all - amp_good:+.2f} dB), "
-                f"falsche Samples {len(bad)} von {len(s)} ({100 * len(bad) / max(1, len(s) // a.block):.1f} % der Blöcke), "
-                f"Lage mod {a.block}: {hist}")
+        line = (f"Channel {ch + 1} ({f:.4f} Hz): amplitude {amp_all:.2f} dBFS (clean {amp_good:.2f}, Δ {amp_all - amp_good:+.2f} dB), "
+                f"wrong samples {len(bad)} of {len(s)} ({100 * len(bad) / max(1, len(s) // a.block):.1f} % of blocks), "
+                f"position mod {a.block}: {hist}")
         if len(bad):
             errs = {lag: float(np.mean(np.abs(s[bad] - model[np.clip(bad + lag, 0, len(s) - 1)]))) for lag in lags}
             best = min(errs, key=errs.get)
             noise = float(np.median(np.abs(s[good] - model[good])))
             row.update(best_lag=best, best_lag_err=errs[best], lag_err=errs, resid_median=noise)
-            line += (f"\n    Wert ≈ Modell[n{best:+d}] (mittl. Fehler {errs[best]:.5f}, Rauschen {noise:.5f}; "
-                     f"n+0: {errs[0]:.4f}) → " + ("veralteter Wert" if best < 0 and errs[best] < 5 * noise + 1e-4 else "unklar"))
+            line += (f"\n    value ≈ model[n{best:+d}] (mean error {errs[best]:.5f}, noise {noise:.5f}; "
+                     f"n+0: {errs[0]:.4f}) → " + ("stale value" if best < 0 and errs[best] < 5 * noise + 1e-4 else "unclear"))
         print(line)
         out.append(row)
     if a.json:

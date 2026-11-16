@@ -45,14 +45,14 @@ def load_files(paths, name=None, meta=None, labels=None, channels=None, scale=1.
         if fs is None:
             fs = sr
         elif sr != fs:
-            raise SystemExit(f"{p}: {sr} Hz, die anderen Dateien haben {fs} Hz")
+            raise SystemExit(f"{p}: {sr} Hz, but the other files have {fs} Hz")
         cols.extend(x.T)
     n = min(len(c) for c in cols)
     data = np.stack([c[:n] for c in cols], axis=1)
     if channels:
         bad = [c for c in channels if not 1 <= c <= data.shape[1]]
         if bad:
-            raise SystemExit(f"Kanal {bad} gibt es nicht, die Aufnahme hat {data.shape[1]} Kanäle")
+            raise SystemExit(f"Channel {bad} does not exist, the recording has {data.shape[1]} channels")
         data = data[:, [c - 1 for c in channels]]
     if scale != 1.0:
         data = data * float(scale)
@@ -80,5 +80,5 @@ def resolve(inputs: list[str], manifest: Path) -> Recording:
                               scale=e.get("scale", 1.0))
     missing = [p for p in inputs if not Path(p).exists()]
     if missing:
-        raise SystemExit(f"Weder Manifest-ID noch Datei: {', '.join(missing)} (Manifest: {manifest})")
+        raise SystemExit(f"Neither a manifest ID nor a file: {', '.join(missing)} (manifest: {manifest})")
     return load_files(inputs)
