@@ -68,7 +68,7 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 ### 6. Veröffentlichung
 - [x] Repo `acdc-workbench` lokal angelegt (2026-11-16): `.gitignore`, Lizenzen, `README.md`/`README.de.md`, `firmware/OpenWare` als Submodul, englische Fassung der Docs 01–05 und 99 in `docs/en/`
 - [x] Fork-README ohne Programmnamen gepusht 2026-11-16 (`acdc/fx1d` `3e3a74fd`, `acdc/thru-usb-feedback` `edb32852`)
-- [ ] `acdc-workbench` privat auf GitHub anlegen und pushen, durchsehen, öffentlich schalten
+- [x] `acdc-workbench` auf GitHub angelegt, gepusht und öffentlich geschaltet (2026-11-16): https://github.com/m9dfukc/acdc-workbench
 - [x] Releases am Fork angelegt 2026-11-16: `acdc-v22.4.r-fx2d` (3d, Tag auf `abc3a72a`) und `acdc-v22.4.r-fx3l` (Vorabversion, Tag auf `3e3a74fd`), je `ACDC-<version>.bin` und `BUILD_INFO`. Anhänge heruntergeladen und gegen die SHA-256 geprüft
 - [ ] fx3l-Release von „Vorabversion“ auf Release stellen, wenn Alltagstest und zweite Rauschsitzung bestanden sind
 - [ ] Eventuell: Ergebnisse als GitHub-Issue anlegen. Wo (Upstream `RebelTechnology/OpenWare` oder eigenes Repo) ist offen

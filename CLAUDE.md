@@ -194,7 +194,7 @@ Je Flash ein Ordner in `firmware/flashlog/`. Ein fertiges Skript gibt es noch ni
 
 ## Git-Repo `acdc-workbench`
 
-Das Projekt ist seit 2026-11-16 ein Git-Repo, gedacht für `github.com/m9dfukc/acdc-workbench` (öffentlich).
+Das Projekt ist seit 2026-11-16 ein Git-Repo und liegt öffentlich auf https://github.com/m9dfukc/acdc-workbench (Remote `origin`, Branch `main`).
 
 - **Im Repo:** `docs/`, `tools/`, `analysis/`, `firmware/patches/`, `firmware/itcm-prep/`, `TODO.md`, `CLAUDE.md`, READMEs, `.claude/skills/`, `recordings/manifest.toml`. Aus `out/` nur `*_report.md` und `*-session-table.md`. Aus `firmware/builds/` und `firmware/flashlog/` nur Textdateien.
 - **Nur lokal (`.gitignore`):** WAVs, Plots und JSON in `out/`, `.bin`/`.elf`/Readbacks, `backup/`, `owl-patches/`, `vcv-patches/`, `firmware/_work/`, `firmware/downloads/`, `firmware/releases/`, der Screenshot `docs/img/20261114_d8_vcv-patch.webp`, das Forum-Foto in `docs/research/img/`.
