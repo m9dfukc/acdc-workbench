@@ -161,7 +161,7 @@ Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`)
 - **Fork:** https://github.com/m9dfukc/OpenWare
   - `acdc/thru-usb-feedback` = Build 1d + README, Spitze `edb32852`.
   - `acdc/fx1d` = Build 2 → 3d → fx3l + README, Spitze `3e3a74fd`. Ein Build von `5cb2c17c` ist bytegleich mit fx3l (`firmware/builds/verify-fx1d-5cb2c17c`), danach kamen nur README-Commits.
-  - Die beiden Spitzen (README ohne Programmnamen, 2026-11-16) sind lokal committet und **noch nicht gepusht**. Gepusht sind `41fb9480` und `b7062ef2`.
+  - Beide Spitzen sind README-Commits ohne Programmnamen, gepusht 2026-11-16.
 - **Später geplant:** Merge mit v22.5.0 bzw. dem aktuellen Upstream-`master` samt Fixes. Das ist eine Portierung (`docs/research/notes/upstream_master_2026-11-16.md`).
 
 ### Flash-Ablauf (ohne Pads, DFU über die vordere USB-B-Buchse)
