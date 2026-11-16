@@ -26,7 +26,8 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [ ] Flash-Ablauf: Prüfen, ob `dfu-util … :leave` den Neustart (Case aus, USB ab) ersetzen kann, A1 + Loop gegen Kaltstart (Nutzer-Frage 2026-11-16)
 - [ ] Abhängigkeiten von `tools/owl_read.py` festhalten: Python 3.12, `mido`, `python-rtmidi`. `pyproject.toml` verlangt Python ≥ 3.14 und nennt beide Pakete nicht
 - [ ] Werkzeuge in einem Doc beschreiben. Heute stehen sie nur in `CLAUDE.md` und in `--help`, `docs/03` beschreibt nur `analysis/`
-- [ ] Englische Hilfe- und Konsolentexte für `tools/` und `analysis/` (zusammen mit dem öffentlichen Repo)
+- [x] Englische Hilfe- und Konsolentexte für `tools/` und `analysis/` (2026-11-16). Kommentare im Code und Reports bleiben deutsch
+- [ ] Sprachschalter `--lang en|de` für die Reports der Analyse, Standard deutsch
 - [ ] Analyse-Tool: Clipping-Hinweis bei Float-Dateien nur bei flachen Kuppen melden (Fehlalarm in D15)
 - [ ] **acdc2 nur lesend sichern**, mit eigener Freigabe: `tools/owl_read.py` (Slots, Settings, Report) und DFU-Readback des internen Flash. Der Readback schreibt nichts, braucht aber einen Neustart von acdc2 in den DFU-Modus. Bisher gibt es von v22.4.q kein Abbild
 - [ ] Optional: Build aus dem Fork-Branch `acdc/thru-usb-feedback`, SHA mit Build 1d vergleichen (Freigabe). Für `acdc/fx1d` ist das erledigt (`verify-fx1d-5cb2c17c`)
@@ -65,7 +66,9 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [ ] Optional: alte Firmware (Readback) disassemblieren, ob ihr Feedback eine Pufferstand-Korrektur hat (D16)
 
 ### 6. Veröffentlichung
-- [ ] Öffentliches Repo `acdc-workbench`: erster Commit, `README.md`, englische Fassung der Docs 01–05 und 99
+- [x] Repo `acdc-workbench` lokal angelegt (2026-11-16): `.gitignore`, Lizenzen, `README.md`/`README.de.md`, `firmware/OpenWare` als Submodul, englische Fassung der Docs 01–05 und 99 in `docs/en/`
+- [ ] Fork-README ohne Programmnamen pushen (`acdc/fx1d` `3e3a74fd`, `acdc/thru-usb-feedback` `edb32852`), danach `acdc-workbench` privat auf GitHub anlegen, durchsehen, öffentlich schalten
+- [ ] Release-Anhänge am Fork: fx3l (Vorabversion, solange der Alltagstest läuft) und 3d als `ACDC.bin`
 - [ ] Eventuell: Ergebnisse als GitHub-Issue anlegen. Wo (Upstream `RebelTechnology/OpenWare` oder eigenes Repo) ist offen
 
 ## Offene Fragen

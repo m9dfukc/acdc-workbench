@@ -57,6 +57,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 | `docs/messlog.md` | **Alle eigenen Messungen** (M1 … D49): Setup, Dateien, Linien-Tabelle, Deutung, Einschränkungen |
 | `docs/uebergaben/` | Übergaben zwischen Sitzungen (2026-11-14 bis 2026-11-16), alle erledigt. Weiter nützlich: Prüfablauf Loop-Test, Flash-Schnipsel und Fallstricke in `uebergabe-2026-11-16-patch12b.md`, Hotpath-Fakten in `uebergabe-2026-11-16-itcm.md` |
 | `docs/99-quellen.md` | Alle Links |
+| `docs/en/` | Englische Fassungen von `01`–`05` und `99`, aus dem Deutschen erzeugt. Nie von Hand ändern. Übersicht, Marker-Legende und Glossar in `docs/en/README.md` |
 | `analysis/` | Analyse-Tool: `uv run python -m analysis <ID\|wav…> [--ref …]`, Selbsttest `python -m analysis.selftest`. Module und Grenzen: `docs/03-messplan-python.md` |
 | `recordings/manifest.toml` | Metadaten jeder Messung (ID, Gerät, Gain, USB, Patch, Dateien, Notiz). **Neue Aufnahmen hier eintragen** |
 | `recordings/*.wav` | Rohaufnahmen nach Namenskonvention (M1–M3 in `_legacy/`: 96 kHz / 16 Bit, mono pro Kanal) |
@@ -79,6 +80,7 @@ Bei Detailfragen zuerst `docs/research/notes/` durchsuchen, bevor neu recherchie
 | `dfu_readback.sh`, `compare_firmware.py` | Internes Flash lesen und mit einer Referenz vergleichen |
 | `build_acdc.sh` | Reproduzierbarer Firmware-Build aus Commit + Libraries-Tarball + Patches |
 | `setup_repo.sh` | Frischen Klon einrichten: Submodul, `upstream`-Remote, Libraries-Tarball und offizielle `ACDC.bin` mit SHA-Prüfung |
+| `i18n_check.py` | Listet veraltete englische Fassungen in `docs/en/` auf (Prüfsumme der deutschen Quelle im Kopf). `--stamp` schreibt den Kopf nach einer neuen Übersetzung |
 | `check_itcm.py` | ITCM-Build am ELF prüfen (`--groups` für Varianten, `--same-itcm` für Füllvarianten) |
 | `phase_slips.py`, `stale_samples.py` | Loop-Aufnahmen auf Sample-Slips und einzelne veraltete Samples prüfen |
 | `family_table.py` | Familienpegel mehrerer Messungen, Δ gegen die Kontrolle |
@@ -199,6 +201,8 @@ Das Projekt ist seit 2026-11-16 ein Git-Repo, gedacht für `github.com/m9dfukc/a
 - **Commit und Push nur mit Freigabe.** Git-Schreibzugriffe (auch `git add`) sperrt die Sandbox (`.git/`), sie brauchen die Ausnahme. Push immer einzeln nachfragen, auch im Submodul.
 - **Vor jedem Commit prüfen:** `git status --short` darf keine Binaries, WAVs oder Dateien aus `backup/` zeigen. Nichts Privates über Geräte-UUIDs, Heimpfad und Vorname hinaus (Nutzer-Entscheidung 2026-11-16).
 - **Sprache:** Deutsch ist die Quelle (Docs, Messlog, Übergaben, `TODO.md`, `CLAUDE.md`, Kommentare im Code, Reports der Analyse). Englisch sind `README.md`, `LICENSE.md` sowie Hilfe- und Konsolentexte der Werkzeuge. Ein Sprachschalter für die Reports ist ein offener Punkt in `TODO.md`.
+- **Konsolentexte der Werkzeuge sind seit 2026-11-16 englisch.** Ältere Einträge im Messlog zitieren noch die deutschen Zeilen (z. B. „Kanal 1 … Ereignisse: 0“ = heute „Channel 1 … Events: 0“). Was in Dateien landet (Reports, Tabellen von `family_table.py`, `check_itcm.md`, Manifest, JSON), bleibt deutsch.
+- **Englische Fassungen (`docs/en/`):** Claude erzeugt sie vollständig aus der deutschen Quelle und stempelt sie mit `tools/i18n_check.py --stamp <datei>`. Aufgefrischt wird zu Meilensteinen (z. B. wenn ein Build zur Alltags-Firmware wird) und vor einem Push, wenn `tools/i18n_check.py` „stale“ meldet und der Nutzer zustimmt. Marker: [belegt] = [sourced], [Code] = [code], [Hypothese] = [hypothesis], [gemessen] = [measured]. Glossar in `docs/en/README.md`. Neue Paare in `PAIRS` im Skript eintragen.
 
 ## Skills (projektlokal, `.claude/skills/`)
 
