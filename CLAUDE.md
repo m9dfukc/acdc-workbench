@@ -162,6 +162,7 @@ Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`)
   - `acdc/thru-usb-feedback` = Build 1d + README, Spitze `edb32852`.
   - `acdc/fx1d` = Build 2 → 3d → fx3l + README, Spitze `3e3a74fd`. Ein Build von `5cb2c17c` ist bytegleich mit fx3l (`firmware/builds/verify-fx1d-5cb2c17c`), danach kamen nur README-Commits.
   - Beide Spitzen sind README-Commits ohne Programmnamen, gepusht 2026-11-16.
+  - **Releases am Fork** (2026-11-16): `acdc-v22.4.r-fx2d` (Build 3d, Tag auf `abc3a72a`) und `acdc-v22.4.r-fx3l` (Vorabversion, Tag auf `3e3a74fd`), je mit `ACDC-<version>.bin` und `BUILD_INFO`. Ein neuer Alltags-Build bekommt ein eigenes Release, nur nach Freigabe. `gh` immer mit `--repo m9dfukc/OpenWare` aufrufen, sonst zielt es auf das Upstream-Repo.
 - **Später geplant:** Merge mit v22.5.0 bzw. dem aktuellen Upstream-`master` samt Fixes. Das ist eine Portierung (`docs/research/notes/upstream_master_2026-11-16.md`).
 
 ### Flash-Ablauf (ohne Pads, DFU über die vordere USB-B-Buchse)
