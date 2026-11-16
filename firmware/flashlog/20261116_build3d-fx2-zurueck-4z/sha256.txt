@@ -1,0 +1,3 @@
+d212cf8def6f239db997cd45a73304db9bcaf981375e55fdfc2ca2862718832a  firmware/builds/acdc1-build3d-fx2/ACDC.bin
+fb02aeee8d00f36ccd234b5904e15ad12ab409899a516f7a1d263350db72cfc9  firmware/flashlog/20261116_build3d-fx2-zurueck-4z/readback_after.bin
+d212cf8def6f239db997cd45a73304db9bcaf981375e55fdfc2ca2862718832a  readback_after.bin[0:106788]

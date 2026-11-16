@@ -1,0 +1,48 @@
+Patch 12: Audio-Block erst freigeben, wenn die RX-DMA die Hälfte fertig geschrieben hat (messlog D40).
+
+Befund: Mit dem Audio-Task im ITCM (fx3i, fx3i-noD) ist auf Kanal 4 in 94–96 % der Blöcke der
+letzte Eingangs-Sample 16 Frames alt (Wert aus dem vorigen Umlauf des Doppelpuffers), −1,1 dB.
+Ursache [Code]: Im PCM3168A-Zweig löst die TX-DMA (SAI1-B) audioCallback aus, die RX-DMA
+(SAI1-A, DMA1_Stream0) hängt hinterher. Der schnelle Task liest das letzte RX-Wort zu früh.
+Betrifft auch den Patch-Eingang (Standalone), mit 3d nicht messbar (0 von 96 000).
+
+Änderung (nur Source/Codec.cpp, PCM3168A-Zweig): Vor audioCallback in den TX-Callbacks auf den
+RX-Zähler NDTR warten (erste Hälfte fertig: NDTR <= blocksize·Kanäle; zweite: NDTR > …),
+höchstens 4096 Lesezugriffe (≈ 0,1 ms), danach weiter wie bisher. Erwartete Wartezeit: ≤ 1 Wort.
+Die Callbacks liegen in fx3i/noD im ITCM (Gruppe A), der Zusatzcode also auch.
+
+Auf 01 02 04 05 06 03 07d 08 + 11/11a/11e (oder ohne ITCM-Patch).
+
+--- a/Source/Codec.cpp
++++ b/Source/Codec.cpp
+@@ -236,10 +236,30 @@
+     audioCallback(codec_rxbuf+codec_blocksize*AUDIO_CHANNELS, codec_txbuf+codec_blocksize*AUDIO_CHANNELS, codec_blocksize);
+   }
+ #else // PCM3168A: TX is slave
++  /* AC/DC fork, Patch 12 (acdc project messlog D40): the block is released by the TX DMA
++     interrupt (SAI1 block B), but the RX DMA (SAI1 block A, DMA1_Stream0) lags behind:
++     when the TX half/complete interrupt fires, the last RX word of the half is often not
++     written yet. A fast audio task (code in ITCM) then reads the stale value from the
++     previous buffer cycle (16 frames old, last sample of each block = channel 4).
++     Wait until the RX DMA has left the half that is handed out. The RX transfer counts
++     2*blocksize*channels words; NDTR is the number of words left in the current cycle.
++     Bounded, so a stopped DMA cannot hang the interrupt. */
++  extern DMA_HandleTypeDef hdma_sai1_a;
++  static inline void codec_wait_rx(bool second_half){
++    volatile uint32_t* ndtr = &((DMA_Stream_TypeDef*)hdma_sai1_a.Instance)->NDTR;
++    const uint32_t half = (uint32_t)codec_blocksize * AUDIO_CHANNELS;
++    for(uint32_t i = 0; i < 4096; ++i){
++      uint32_t left = *ndtr;
++      if(second_half ? (left > half) : (left <= half))
++        return;
++    }
++  }
+   void HAL_SAI_TxHalfCpltCallback(SAI_HandleTypeDef *hsai){
++    codec_wait_rx(false);
+     audioCallback(codec_rxbuf, codec_txbuf, codec_blocksize);
+   }
+   void HAL_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai){
++    codec_wait_rx(true);
+     audioCallback(codec_rxbuf+codec_blocksize*AUDIO_CHANNELS, codec_txbuf+codec_blocksize*AUDIO_CHANNELS, codec_blocksize);
+   }
+ #endif

@@ -1,0 +1,902 @@
+Gemeinsamer Code aus upstream master (v22.5.0 = 62a01877; Source/ seitdem unveraendert) auf die Hack-Basis db9d3dd (v22.4.r):
+git diff dd7f7fe3 (merge-base) upstream/master -- Source/ ':!Source/device.h'
+Enthaelt 5108fc56 + fe6eff4f, Patch 01 also NICHT zusaetzlich anwenden. Versionsstring per FW_VERSION.
+Ohne Libraries-Submodul (HAL bleibt 9e8f64e), ohne Geraeteordner, ohne Hardware/ (siehe Patch 08).
+Inhalt: Watchdog-Funktionen umbenannt (579faefa), Settings auch in nicht gemapptem Flash (6acdb532), Critical Section aus
+Storage::writeResource in die Aufrufer (44ea65c3), MidiStatus/MidiMessage aus OwlProgram (c0e05a5d), USB-Host-Logging/-Fixes,
+USBH-Power (7d093a98), Pin::getPort/getPin (11b45327), volatile flash*ToWrite.
+
+diff --git a/Source/ApplicationSettings.cpp b/Source/ApplicationSettings.cpp
+index 990b0ff7..806ba56d 100644
+--- a/Source/ApplicationSettings.cpp
++++ b/Source/ApplicationSettings.cpp
+@@ -1,13 +1,11 @@
++#include <string.h>
+ #include "ApplicationSettings.h"
+-// #include "eepromcontrol.h"
+ #include "MidiStatus.h"
++#include "FirmwareLoader.hpp"
+ #include "Storage.h"
+-#include <string.h>
+-
+-// #define APPLICATION_SETTINGS_ADDR ADDR_FLASH_SECTOR_1
+-// #define APPLICATION_SETTINGS_SECTOR FLASH_Sector_1
++#include "cmsis_os.h"
+ 
+-void ApplicationSettings::init(){
++void ApplicationSettings::init() {
+   checksum = sizeof(*this) ^ 0xf0f0f0f0;
+   if(settingsInFlash())
+     loadFromFlash();
+@@ -46,9 +44,10 @@ void ApplicationSettings::reset(){
+ 
+ bool ApplicationSettings::settingsInFlash(){
+   Resource* resource = storage.getResourceByName(APPLICATION_SETTINGS_NAME);
+-  if(resource && resource->isMemoryMapped()){
+-    ApplicationSettings* data = (ApplicationSettings*)resource->getData();
+-    return data->checksum == checksum;
++  if(resource){
++    ApplicationSettings data;
++    storage.readResource(resource->getHeader(), &data, 0, sizeof(data));
++    return data.checksum == checksum;
+   }
+   return false;
+ }
+@@ -59,9 +58,18 @@ void ApplicationSettings::loadFromFlash(){
+     storage.readResource(resource->getHeader(), this, 0, sizeof(*this));
+ }
+ 
+-void ApplicationSettings::saveToFlash(){
+-  uint16_t totalsize = sizeof(ResourceHeader) + sizeof(*this);
+-  uint8_t buffer[totalsize];
+-  memcpy(buffer+sizeof(ResourceHeader), this, sizeof(*this));
+-  storage.writeResource(APPLICATION_SETTINGS_NAME, buffer, sizeof(*this), RESOURCE_SYSTEM_RESOURCE|RESOURCE_MEMORY_MAPPED);
++void ApplicationSettings::saveToFlash(bool isr) {
++  UBaseType_t uxSavedInterruptStatus;
++  uint8_t buffer[sizeof(ResourceHeader) + sizeof(ApplicationSettings)];
++  memset(buffer, 0, sizeof(ResourceHeader));
++  memcpy(buffer+sizeof(ResourceHeader), this, sizeof(ApplicationSettings));
++  if(isr)
++    uxSavedInterruptStatus = taskENTER_CRITICAL_FROM_ISR();
++  else
++    taskENTER_CRITICAL();
++  storage.writeResource(APPLICATION_SETTINGS_NAME, buffer, sizeof(*this), FLASH_DEFAULT_FLAGS);
++  if(isr)
++    taskEXIT_CRITICAL_FROM_ISR(uxSavedInterruptStatus);
++  else
++    taskEXIT_CRITICAL();
+ }
+diff --git a/Source/ApplicationSettings.h b/Source/ApplicationSettings.h
+index c16d8ab4..9c229b72 100644
+--- a/Source/ApplicationSettings.h
++++ b/Source/ApplicationSettings.h
+@@ -38,7 +38,7 @@ public:
+   void reset();
+   bool settingsInFlash();
+   void loadFromFlash();
+-  void saveToFlash();
++  void saveToFlash(bool isr);
+ };
+ 
+ extern ApplicationSettings settings;
+diff --git a/Source/FirmwareLoader.hpp b/Source/FirmwareLoader.hpp
+index c35a63e2..0c9c39f0 100644
+--- a/Source/FirmwareLoader.hpp
++++ b/Source/FirmwareLoader.hpp
+@@ -62,26 +62,28 @@ public:
+   }
+ 
+   void allocateBuffer(size_t size){
++    size += sizeof(ResourceHeader);
+ #if defined OWL_XIBECA
+-    extern char _HEAP_D2, _HEAP_D2_SIZE;
++    extern uint8_t _HEAP_D2, _HEAP_D2_SIZE;
+     if(size <= (size_t)&_HEAP_D2_SIZE){
+       // load into spare space without stopping patch first
+-      buffer = (uint8_t*)&_HEAP_D2;
++      buffer = &_HEAP_D2;
+     }else{
++      // stop patch and use patch memory
+       program.exitProgram(true);
+-      extern char _EXTRAM; // defined in link script
+-      buffer = (uint8_t*)&_EXTRAM;
++      extern uint8_t _EXTRAM; // defined in link script
++      buffer = &_EXTRAM;
+     }
+ #elif defined USE_EXTERNAL_RAM
+     // stop running program and free its memory
+     program.exitProgram(true);
+-    extern char _EXTRAM; // defined in link script
+-    buffer = (uint8_t*)&_EXTRAM;
++    extern uint8_t _EXTRAM; // defined in link script
++    buffer = &_EXTRAM;
+ #else // required by devices with no ext mem
+     // stop running program and free its memory
+     program.exitProgram(true);
+-    extern char _PATCHRAM;
+-    buffer = (uint8_t*)&_PATCHRAM; 
++    extern uint8_t _PATCHRAM;
++    buffer = &_PATCHRAM; 
+ #endif
+     memset(buffer, 0, sizeof(ResourceHeader));
+     index = sizeof(ResourceHeader); // start writing data after resource header
+@@ -185,6 +187,18 @@ public:
+     else
+       return setError("Invalid SysEx size"); // wrong size
+   }
++
++  void write(uint8_t* data, size_t length){
++    clear();
++    setErrorStatus(NO_ERROR);
++    allocateBuffer(length);
++    memcpy(buffer+index, data, length);
++    index += length;
++    crc = crc32(data, length, 0);
++    size = length;
++  }
+ };
+ 
++extern FirmwareLoader loader;
++
+ #endif // __FirmwareLoader_H__
+diff --git a/Source/MidiBoot.cpp b/Source/MidiBoot.cpp
+index faf80101..42e390ee 100644
+--- a/Source/MidiBoot.cpp
++++ b/Source/MidiBoot.cpp
+@@ -228,6 +228,7 @@ extern "C" {
+       sendResourceNames();
+     }
+     midi_tx.transmit();
++    device_watchdog_tickle();
+   }
+ 
+ }
+diff --git a/Source/MidiHandler.cpp b/Source/MidiHandler.cpp
+index 24dd7121..3567fd40 100644
+--- a/Source/MidiHandler.cpp
++++ b/Source/MidiHandler.cpp
+@@ -16,6 +16,7 @@
+ #include "Storage.h"
+ #ifndef USE_BOOTLOADER_MODE
+ #include "BootloaderStorage.h"
++#include "cmsis_os.h"
+ #endif
+ #ifdef USE_DIGITALBUS
+ #include "bus.h"
+@@ -28,7 +29,7 @@
+ #define max(a,b) ((a)>(b)?(a):(b))
+ #endif
+ 
+-static FirmwareLoader loader;
++FirmwareLoader loader;
+ 
+ MidiHandler::MidiHandler() : channel(MIDI_OMNI_CHANNEL) {
+   // memset(midi_values, 0, NOF_PARAMETERS*sizeof(uint16_t));
+@@ -275,7 +276,7 @@ void MidiHandler::handleSettingsResetCommand(uint8_t* data, uint16_t size){
+ }
+ 
+ void MidiHandler::handleSettingsStoreCommand(uint8_t* data, uint16_t size){
+-  settings.saveToFlash();
++  settings.saveToFlash(true);
+ }
+ 
+ void MidiHandler::handleFirmwareUploadCommand(uint8_t* data, uint16_t size){
+@@ -328,8 +329,7 @@ void MidiHandler::handleFirmwareFlashCommand(uint8_t* data, uint16_t size){
+         error(PROGRAM_ERROR, "Invalid hardware ID");
+       }
+       else {
+-        //program.eraseFromFlash(-2);
+-        program.saveToFlash(-2, loader.getData(), loader.getDataSize());
++        program.saveToFlash(0xfe, loader.getData(), loader.getDataSize());
+         program.resetProgram(true);
+       }
+     }else{
+@@ -359,7 +359,7 @@ void MidiHandler::handleFirmwareStoreCommand(uint8_t* data, uint16_t size){
+   if(loader.isReady() && size == 5){
+     uint32_t slot = loader.decodeInt(data);
+     if(loader.setPatchSlot(slot))
+-      program.saveToFlash(slot, loader.getResourceHeader(), loader.getTotalSize());
++      program.saveToFlash(slot, loader.getResourceHeader(), loader.getDataSize());
+   }else{
+     error(PROGRAM_ERROR, "Invalid STORE command");
+   }
+@@ -370,7 +370,7 @@ void MidiHandler::handleFirmwareSaveCommand(uint8_t* data, uint16_t size){
+   if(loader.isReady() && size > 1){
+     const char* name = (const char*)data;
+     if(loader.setResourceName(name))
+-      program.saveToFlash(0, loader.getResourceHeader(), loader.getTotalSize());      
++      program.saveToFlash(0, loader.getResourceHeader(), loader.getDataSize());      
+   }else{
+     error(PROGRAM_ERROR, "Invalid SAVE command");
+   }
+diff --git a/Source/MidiMessage.h b/Source/MidiMessage.h
+index 10826dda..6bd4bf8d 100644
+--- a/Source/MidiMessage.h
++++ b/Source/MidiMessage.h
+@@ -72,13 +72,22 @@ class MidiMessage {
+   uint8_t getChannelPressure(){
+     return data[2];
+   }
++  uint8_t getPolyKeyPressure(){
++    return data[3];
++  }
+   uint8_t getProgramChange(){
+     return data[1];
+   }
++  /**
++   * Get pitch bend value as a signed integer between -8192 and 8191
++   */
+   int16_t getPitchBend(){
+     int16_t pb = (data[2] | (data[3]<<7)) - 8192;
+     return pb;
+   }
++  bool isNote(){
++    return isNoteOn() || isNoteOff();
++  }
+   bool isNoteOn(){
+     return ((data[1] & MIDI_STATUS_MASK) == NOTE_ON) && getVelocity() != 0;
+   }
+@@ -100,6 +109,9 @@ class MidiMessage {
+   bool isChannelPressure(){
+     return (data[1] & MIDI_STATUS_MASK) == CHANNEL_PRESSURE;
+   }
++  bool isPolyKeyPressure(){
++    return (data[1] & MIDI_STATUS_MASK) == POLY_KEY_PRESSURE;
++  }
+   bool isPitchBend(){
+     return (data[1] & MIDI_STATUS_MASK) == PITCH_BEND_CHANGE;
+   }
+diff --git a/Source/MidiStatus.h b/Source/MidiStatus.h
+index 649b46d3..391fc44c 100644
+--- a/Source/MidiStatus.h
++++ b/Source/MidiStatus.h
+@@ -1,8 +1,6 @@
+ #ifndef _MidiStatus_h_
+ #define _MidiStatus_h_
+ 
+-#define MIDI_OMNI_CHANNEL            (-1)
+-
+ enum MidiStatus {
+   STATUS_BYTE			= 0x80,
+   NOTE_OFF			= 0x80,
+@@ -20,7 +18,7 @@ enum MidiStatus {
+   RESERVED_F4                   = 0xF4,
+   RESERVED_F5                   = 0xF5,
+   TUNE_REQUEST                  = 0xF6,
+-  SYSEX_EOX                     = 0xF7,		
++  SYSEX_EOX                     = 0xF7,
+   SYSTEM_REAL_TIME		= 0xF8,
+   TIMING_CLOCK		        = 0xF8,
+   RESERVED_F9                   = 0xF9,
+@@ -35,26 +33,32 @@ enum MidiStatus {
+ };
+ 
+ enum MidiControlChange {
+-  MIDI_CC_MODULATION       = 0x01,
+-  MIDI_CC_BREATH           = 0x02,
+-  MIDI_CC_VOLUME           = 0x07,
+-  MIDI_CC_BALANCE          = 0x08,
+-  MIDI_CC_PAN              = 0x0a,
+-  MIDI_CC_EXPRESSION       = 0x0b,
+-  MIDI_CC_EFFECT_CTRL_1    = 0x0c,
+-  MIDI_CC_EFFECT_CTRL_2    = 0x0d,
+-  MIDI_CC_SUSTAIN_PEDAL    = 0x40,
+-  MIDI_CC_PORTAMENTO       = 0x41,
+-  MIDI_CC_FILTER_RESONANCE = 0x47,
+-  MIDI_CC_FREQUENCY_CUTOFF = 0x4a, /* CC74 also used by MPE */
+-  MIDI_ALL_SOUND_OFF       = 0x78,
+-  MIDI_RESET_ALL_CTRLS     = 0x79,
+-  MIDI_LOCAL_CONTROL       = 0x7a,
+-  MIDI_ALL_NOTES_OFF       = 0x7b,
+-  MIDI_OMNI_MODE_OFF       = 0x7c,
+-  MIDI_OMNI_MODE_ON        = 0x7d,
+-  MIDI_MONO_MODE_ON        = 0x7e,
+-  MIDI_POLY_MODE_ON        = 0x7f
++  MIDI_CC_MODULATION    = 1,
++  MIDI_CC_BREATH        = 2,
++  MIDI_CC_DATAENTRY_MSB = 6,
++  MIDI_CC_VOLUME        = 7,
++  MIDI_CC_BALANCE       = 8,
++  MIDI_CC_PAN           = 10,
++  MIDI_CC_EXPRESSION    = 11,
++  MIDI_CC_EFFECT_CTRL_1 = 12,
++  MIDI_CC_EFFECT_CTRL_2 = 13,
++  MIDI_CC_DATAENTRY_LSB = 38,
++  MIDI_CC_SUSTAIN       = 64,
++  MIDI_CC_PORTAMENTO    = 65,
++  MIDI_CC_SOSTENUTO     = 66,
++  MIDI_CC_FREQ_CUTOFF   = 74,
++  MIDI_CC_DATA_INCR     = 96,
++  MIDI_CC_DATA_DECR     = 97,
++  MIDI_CC_RPN_LSB       = 100,
++  MIDI_CC_RPN_MSB       = 101,
++  MIDI_ALL_SOUND_OFF    = 120,
++  MIDI_RESET_ALL_CTRLS  = 121,
++  MIDI_LOCAL_CONTROL    = 122,
++  MIDI_ALL_NOTES_OFF    = 123,
++  MIDI_OMNI_MODE_OFF    = 124,
++  MIDI_OMNI_MODE_ON     = 125,
++  MIDI_MONO_MODE_ON     = 126,
++  MIDI_POLY_MODE_ON     = 127
+ };
+ 
+ enum UsbMidi {
+@@ -85,4 +89,13 @@ enum OwlProtocol {
+   OWL_COMMAND_RESET               = 0xf0,
+ };
+ 
++enum MidiRPN {
++  MIDI_RPN_PITCH_BEND_RANGE       = 0x0000, // GM1
++  MIDI_RPN_FINE_TUNING            = 0x0001, // GM1
++  MIDI_RPN_COARSE_TUNING          = 0x0002, // GM1
++  MIDI_RPN_MODULATION_DEPTH_RANGE = 0x0005, // GM2
++  MIDI_RPN_MPE_CONFIGURATION      = 0x0006, // MPE
++  MIDI_RPN_RESET                  = 0x3fff,
++};
++
+ #endif /* _MidiStatus_h_ */
+diff --git a/Source/Owl.cpp b/Source/Owl.cpp
+index 620d87ed..06bada1f 100644
+--- a/Source/Owl.cpp
++++ b/Source/Owl.cpp
+@@ -18,6 +18,7 @@
+ #include "message.h"
+ #include "Storage.h"
+ #include "PatchRegistry.h"
++#include "support.h"
+ 
+ #if defined USE_RGB_LED
+ #include "rainbow.h"
+@@ -68,28 +69,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin){
+ static TickType_t xLastWakeTime;
+ static TickType_t xFrequency;
+ 
+-static void iwdg_setup(){
+-#ifdef USE_IWDG
+-#ifdef STM32H7xx
+-  IWDG1->KR = 0xCCCC; // Enable IWDG and turn on LSI
+-  IWDG1->KR = 0x5555; // ensure watchdog register write is allowed
+-  IWDG1->PR = 0x05;   // prescaler 128
+-  IWDG1->RLR = 0x753; // reload 8 seconds
+-  while(IWDG1->SR != 0x00u); // wait to count down
+-  IWDG1->KR = 0xaaaa; // reset the watchdog timer
+-#else
+-  IWDG->KR = 0xCCCC; // Enable IWDG and turn on LSI
+-  IWDG->KR = 0x5555; // ensure watchdog register write is allowed
+-  IWDG->PR = 0x05;   // prescaler 128
+-  IWDG->RLR = 0x753; // reload 8 seconds
+-  while(IWDG->SR != 0x00u); // wait to count down
+-  IWDG->KR = 0xaaaa; // reset the watchdog timer
+-#endif
+-#endif  
+-}
+-
+ void Owl::setup(void){
+-  iwdg_setup();
++  device_watchdog_setup();
+ #ifdef USE_BKPSRAM
+   HAL_PWR_EnableBkUpAccess();
+ #endif
+@@ -183,7 +164,7 @@ void Owl::loop(){
+   busstatus = bus_status();
+ #endif
+   vTaskDelayUntil(&xLastWakeTime, xFrequency);
+-  device_watchdog();
++  device_watchdog_tickle();
+   if(backgroundTask != NULL)
+     backgroundTask->loop();
+ }
+diff --git a/Source/PatchDefinition.hpp b/Source/PatchDefinition.hpp
+index b55bbf01..17306481 100644
+--- a/Source/PatchDefinition.hpp
++++ b/Source/PatchDefinition.hpp
+@@ -90,11 +90,11 @@ public:
+     //   return false;
+     if(programFunction == NULL || programVector == NULL)
+       return false;
+-    extern char _PATCHRAM, _PATCHRAM_SIZE;
++    extern uint8_t _PATCHRAM, _PATCHRAM_SIZE;
+     if(linkAddress == (uint32_t*)&_PATCHRAM)
+       return programSize <= (uint32_t)(&_PATCHRAM_SIZE);
+ #ifdef USE_PLUS_RAM
+-    extern char _PLUSRAM, _PLUSRAM_SIZE;
++    extern uint8_t _PLUSRAM, _PLUSRAM_SIZE;
+     if(linkAddress == (uint32_t*)&_PLUSRAM)
+       return programSize <= (uint32_t)(&_PLUSRAM_SIZE);
+ #endif
+diff --git a/Source/Pin.h b/Source/Pin.h
+index 5b01f5be..c3a0dd98 100644
+--- a/Source/Pin.h
++++ b/Source/Pin.h
+@@ -29,6 +29,12 @@ private:
+   pin_t pin;
+ public:
+   Pin(GPIO_TypeDef* port, uint16_t pin) : port(port), pin(POSITION_VAL(pin)) {}
++  GPIO_TypeDef* getPort(){
++    return port;
++  }
++  pin_t getPin(){
++    return pin;
++  }
+   bool get(){
+     return port->IDR & (1<<pin);
+   }
+@@ -39,6 +45,7 @@ public:
+     port->BSRR = (1<<(pin+16U));
+   }
+   void set(bool on){
++    // HAL_GPIO_WritePin(port, pin, on ? GPIO_PIN_SET : GPIO_PIN_RESET);
+     port->BSRR = (1<<(pin+(16U*!on)));
+   }
+   void toggle(){
+diff --git a/Source/ProgramManager.cpp b/Source/ProgramManager.cpp
+index 3d2a6971..1ae20f9f 100644
+--- a/Source/ProgramManager.cpp
++++ b/Source/ProgramManager.cpp
+@@ -437,9 +437,9 @@ void updateProgramVector(ProgramVector* pv, PatchDefinition* def){
+   pv->message = NULL;
+ }
+ 
+-uint8_t flashSectorToWrite;
+-void* flashAddressToWrite;
+-uint32_t flashSizeToWrite;
++volatile uint8_t flashSectorToWrite;
++volatile void* flashAddressToWrite;
++volatile uint32_t flashSizeToWrite;
+ Resource* flashResourceToSend = NULL;
+ 
+ void programFlashTask(void* p){
+@@ -450,7 +450,9 @@ void programFlashTask(void* p){
+   if(index == 0xff){
+     error(PROGRAM_ERROR, "Enter bootloader to flash firmware");
+   }else if(index == 0xfe){
++    // store bootloader
+     if(size <= MAX_SYSEX_BOOTLOADER_SIZE){
++      debugMessage("Storing bootloader");
+       taskENTER_CRITICAL();
+       bootloader.erase();
+       extern char _BOOTLOADER, _BOOTLOADER_END;
+@@ -466,9 +468,13 @@ void programFlashTask(void* p){
+       error(PROGRAM_ERROR, "Bootloader too big");
+     }
+   }else{
++    // store patch or resource
++    debugMessage("Storing", index);
+     ResourceHeader* header = (ResourceHeader*)flashAddressToWrite;
++    taskENTER_CRITICAL();
+     storage.writeResource(header);
+     registry.init();
++    taskEXIT_CRITICAL();
+     if(index == 0){
+       onResourceUpdate();
+     }else{
+diff --git a/Source/Storage.cpp b/Source/Storage.cpp
+index a75c9c77..5e375987 100644
+--- a/Source/Storage.cpp
++++ b/Source/Storage.cpp
+@@ -49,7 +49,7 @@ uint32_t findFirstFreePage(uint32_t start, uint32_t end, size_t align){
+       break;
+     address -= sizeof(quad);
+     progress = (end-address)*4095LL/(end-start);
+-    device_watchdog();
++    device_watchdog_tickle();
+   }
+   if(address > start)
+     return (address+sizeof(quad) + (align-1)) & ~(align-1) ;
+@@ -274,7 +274,7 @@ void Storage::erase(uint32_t flags){
+     for(uint32_t address=0; address < endaddress; address += blocksize){
+       setProgress(address*4095LL/endaddress, "Erasing");
+       flash_erase(address, blocksize); // 450 to 1150 mS each
+-      device_watchdog();
++      device_watchdog_tickle();
+ #ifndef USE_BOOTLOADER_MODE
+       vTaskDelay(2);
+ #endif
+@@ -381,9 +381,6 @@ size_t Storage::writeResource(ResourceHeader* header){
+     error(FLASH_ERROR, "No free resources");
+     return 0;
+   }
+-#ifndef USE_BOOTLOADER_MODE
+-  taskENTER_CRITICAL();
+-#endif
+   int status = -1;
+   if(dest->isMemoryMapped()){
+ #ifdef USE_FLASH
+@@ -396,15 +393,8 @@ size_t Storage::writeResource(ResourceHeader* header){
+ #ifdef USE_NOR_FLASH
+     uint32_t address = dest->getAddress();
+     status = flash_write(address, data, length);
+-    // if(status == 0)
+-      // status = flash_read(address, (uint8_t*)dest->getHeader(), sizeof(ResourceHeader)); // read back resource header
+-    if(status == 0 && flash_read(address, (uint8_t*)dest->getHeader(), sizeof(ResourceHeader)) != 0)
+-      error(FLASH_ERROR, "Readback failed");
+ #endif
+   }
+-#ifndef USE_BOOTLOADER_MODE
+-  taskEXIT_CRITICAL();
+-#endif
+   if(status){
+     error(FLASH_ERROR, "Write failed");
+   }else if(dest->getTotalSize() < length){ // allow for storage-specific alignment
+diff --git a/Source/calibration.hpp b/Source/calibration.hpp
+index 8da9892e..5f25f75c 100644
+--- a/Source/calibration.hpp
++++ b/Source/calibration.hpp
+@@ -144,7 +144,7 @@ class InputCalibration : public BaseCalibration {
+   void storeResults() {
+     settings.input_scalar = scalar;
+     settings.input_offset = offset;
+-    settings.saveToFlash();
++    settings.saveToFlash(false);
+   }
+ };
+ 
+@@ -199,7 +199,7 @@ public:
+   void storeResults() {
+     settings.output_scalar = scalar;
+     settings.output_offset = offset;
+-    settings.saveToFlash();
++    settings.saveToFlash(false);
+   }
+ 
+   void nextState(){
+diff --git a/Source/callbacks.cpp b/Source/callbacks.cpp
+index 9bfa81a7..dfb21847 100644
+--- a/Source/callbacks.cpp
++++ b/Source/callbacks.cpp
+@@ -167,6 +167,10 @@ __weak void setup(){
+ #ifdef USE_USB_HOST
+   /* NOTE: we get frequent boot failures if host is called before device */
+   MX_USB_HOST_Init();
++#if defined USB_HOST_PWR_EN_Pin
++  // enable USB Host power
++  HAL_GPIO_WritePin(USB_HOST_PWR_EN_GPIO_Port, USB_HOST_PWR_EN_Pin, GPIO_PIN_SET);
++#endif
+ #endif
+ }
+ 
+diff --git a/Source/message.h b/Source/message.h
+index 45220d9c..91f8764a 100644
+--- a/Source/message.h
++++ b/Source/message.h
+@@ -25,7 +25,6 @@
+ 
+    void debugMessage(const char* msg);
+    const char* getDebugMessage();
+-   void error(int8_t code, const char* reason);
+    void assert_failed(uint8_t* location, uint32_t line);
+ 
+    char* msg_itoa(int val, int base);
+diff --git a/Source/support.c b/Source/support.c
+index a5b71ad6..88fd81b4 100644
+--- a/Source/support.c
++++ b/Source/support.c
+@@ -1,5 +1,11 @@
+ #include "support.h"
+ 
++#ifdef STM32H7xx
++#define WATCHDOG_HANDLE             IWDG1
++#else
++#define WATCHDOG_HANDLE             IWDG
++#endif
++
+ void device_dfu(){
+   /* Set the address of the entry point to bootloader */
+ #ifdef STM32H7xx
+@@ -75,12 +81,21 @@ void device_cache_invalidate(){
+ #endif
+ }
+ 
+-void device_watchdog(){
++void device_watchdog_setup(){
+ #ifdef USE_IWDG
+-#ifdef STM32H7xx
+-  IWDG1->KR = 0xaaaa; // reset the watchdog timer (if enabled)
+-#else
+-  IWDG->KR = 0xaaaa; // reset the watchdog timer (if enabled)
++  WATCHDOG_HANDLE->KR = 0xCCCC; // Enable IWDG and turn on LSI
++  WATCHDOG_HANDLE->KR = 0x5555; // ensure watchdog register write is allowed
++  WATCHDOG_HANDLE->PR = 0x05;   // prescaler 128
++  WATCHDOG_HANDLE->RLR = 0x753; // reload 8 seconds
++  while(WATCHDOG_HANDLE->SR != 0x00u); // wait to count down
++  WATCHDOG_HANDLE->KR = 0xaaaa; // reset the watchdog timer
+ #endif
++}
++
++void device_watchdog_tickle(){
++#ifdef USE_IWDG
++  // reset the watchdog timer (if enabled)
++  /* __HAL_IWDG_RELOAD_COUNTER(WATCHDOG_HANDLE); */
++  WATCHDOG_HANDLE->KR = 0xaaaa; 
+ #endif
+ }
+diff --git a/Source/support.h b/Source/support.h
+index ab61ea35..a861a9c2 100644
+--- a/Source/support.h
++++ b/Source/support.h
+@@ -16,7 +16,8 @@
+    void device_reset_to(uint32_t address);
+ 
+    void device_cache_invalidate();
+-   void device_watchdog(); // tickle the IWDG to prevent reset
++   void device_watchdog_setup();
++   void device_watchdog_tickle(); // tickle the IWDG to prevent reset
+ 
+ #ifdef __cplusplus
+ }
+diff --git a/Source/usb_host.c b/Source/usb_host.c
+index aceca11e..9ffde1bb 100644
+--- a/Source/usb_host.c
++++ b/Source/usb_host.c
+@@ -150,7 +150,7 @@ void MX_USB_HOST_Init(void)
+ static void USBH_UserProcess  (USBH_HandleTypeDef *phost, uint8_t id)
+ {
+   /* USER CODE BEGIN CALL_BACK_1 */
+-  USBH_UsrLog("USBH UserProcess %d %d %d", phost->EnumState, phost->gState, id);
++  USBH_DbgLog("USBH UserProcess %d %d %d", phost->EnumState, phost->gState, id);
+   switch(id)
+   {
+   case HOST_USER_SELECT_CONFIGURATION:
+diff --git a/Source/usbh_conf.h b/Source/usbh_conf.h
+index 08a50317..557e2aef 100644
+--- a/Source/usbh_conf.h
++++ b/Source/usbh_conf.h
+@@ -33,14 +33,10 @@
+ #include "main.h"
+ 
+ /* USER CODE BEGIN INCLUDE */
+-#ifdef DEBUG
+-#define DEBUG_LEVEL     3
+-#else
+-#define DEBUG_LEVEL     0
+-#endif
+    void *pvPortMalloc( size_t xSize );
+    void vPortFree( void *pv );
+-
++   void error(int8_t code, const char* reason);
++   void debugMessage(const char* msg);
+ /* USER CODE END INCLUDE */
+ 
+ /** @addtogroup STM32_USB_HOST_LIBRARY
+@@ -79,7 +75,7 @@
+ #define USBH_KEEP_CFG_DESCRIPTOR      1U
+ 
+ /*----------   -----------*/
+-#define USBH_MAX_NUM_SUPPORTED_CLASS      5U
++#define USBH_MAX_NUM_SUPPORTED_CLASS      2U
+ 
+ /*----------   -----------*/
+ #define USBH_MAX_SIZE_CONFIGURATION      256U
+@@ -88,7 +84,11 @@
+ #define USBH_MAX_DATA_BUFFER      512U
+ 
+ /*----------   -----------*/
+-#define USBH_DEBUG_LEVEL      DEBUG_LEVEL
++#ifdef DEBUG
++#define USBH_DEBUG_LEVEL     3
++#else
++#define USBH_DEBUG_LEVEL     0
++#endif
+ 
+ /*----------   -----------*/
+ #define USBH_USE_OS      0U
+@@ -129,32 +129,16 @@
+ 
+ /* DEBUG macros */
+ 
+-#if (USBH_DEBUG_LEVEL > 0U)
+-#define  USBH_UsrLog(...)   do { \
+-                            printf(__VA_ARGS__); \
+-                            printf("\n"); \
+-} while (0)
+-#else
+-#define USBH_UsrLog(...) do {} while (0)
+-#endif
++#define  USBH_ErrLog(msg, ...) error(0x90, msg)
+ 
+ #if (USBH_DEBUG_LEVEL > 1U)
+-
+-#define  USBH_ErrLog(...) do { \
+-                            printf("ERROR: ") ; \
+-                            printf(__VA_ARGS__); \
+-                            printf("\n"); \
+-} while (0)
++#define  USBH_UsrLog(msg, ...) debugMessage(msg)
+ #else
+-#define USBH_ErrLog(...) do {} while (0)
+-#endif
++#define USBH_UsrLog(...) do {} while (0)
++#endif   
+ 
+-#if (USBH_DEBUG_LEVEL > 2U)
+-#define  USBH_DbgLog(...)   do { \
+-                            printf("DEBUG : ") ; \
+-                            printf(__VA_ARGS__); \
+-                            printf("\n"); \
+-} while (0)
++#if (USBH_DEBUG_LEVEL > 2U)  
++#define  USBH_DbgLog(msg, ...) debugMessage(msg)
+ #else
+ #define USBH_DbgLog(...) do {} while (0)
+ #endif
+diff --git a/Source/usbh_midi.cpp b/Source/usbh_midi.cpp
+index 847312ca..2900721d 100644
+--- a/Source/usbh_midi.cpp
++++ b/Source/usbh_midi.cpp
+@@ -1,6 +1,7 @@
+ #include "usbh_midi.h"
+ #include "usb_host.h"
+ #include "midi.h"
++#include "errorhandlers.h"
+ #include "SerialBuffer.hpp"
+ 
+ /**
+@@ -45,69 +46,73 @@ static SerialBuffer<USB_HOST_RX_BUFF_SIZE> rxbuffer;
+ static MIDI_HandleTypeDef staticMidiHandle;
+ 
+ static USBH_StatusTypeDef USBH_MIDI_InterfaceInit (USBH_HandleTypeDef *phost){
+-  USBH_StatusTypeDef status = USBH_FAIL ;
+-  //USB_MIDI_ChangeConnectionState(0);
+ 
++  if(phost->pActiveClass == NULL){
++    /* No Active Class */
++    error(USB_ERROR, "No active class");
++    return USBH_FAIL;
++  }
++  
+   uint8_t interface = USBH_FindInterface(phost, USB_AUDIO_CLASS, USB_MIDISTREAMING_SUBCLASS, 0xFF);
+   USBH_DbgLog ("USBH InterfaceInit 0x%x", interface);
+ 
+   if(interface == 0xFF){
+     /* No Valid Interface */
+-    USBH_DbgLog ("Cannot Find the interface for MIDI Interface Class %s.", phost->pActiveClass->Name);
+-    status = USBH_FAIL;
+-  }else{
+-    USBH_SelectInterface (phost, interface);
+-    MIDI_HandleTypeDef* MIDI_Handle = &staticMidiHandle;
+-    memset(MIDI_Handle, 0, sizeof(staticMidiHandle));
+-    phost->pActiveClass->pData = MIDI_Handle;
+-
+-    if(phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[0].bEndpointAddress & 0x80){
+-      MIDI_Handle->InEp = (phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[0].bEndpointAddress);
+-      MIDI_Handle->InEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[0].wMaxPacketSize;
+-    }else{
+-      MIDI_Handle->OutEp = (phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[0].bEndpointAddress);
+-      MIDI_Handle->OutEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[0].wMaxPacketSize;
+-    }
++    error(USB_ERROR, "No interface");
++    USBH_DbgLog ("Cannot find the interface for Class %s.", phost->pActiveClass->Name);
++    return USBH_FAIL;
++  }
+ 
+-    if(phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[1].bEndpointAddress & 0x80){
+-      MIDI_Handle->InEp = (phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[1].bEndpointAddress);
+-      MIDI_Handle->InEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[1].wMaxPacketSize;
+-    }else{
+-      MIDI_Handle->OutEp = (phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[1].bEndpointAddress);
+-      MIDI_Handle->OutEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[1].wMaxPacketSize;
+-    }
++  //USB_MIDI_ChangeConnectionState(0);
++  USBH_SelectInterface (phost, interface);
++  MIDI_HandleTypeDef* MIDI_Handle = &staticMidiHandle;
++  memset(MIDI_Handle, 0, sizeof(staticMidiHandle));
++  phost->pActiveClass->pData = MIDI_Handle;
++
++  if(phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[0].bEndpointAddress & 0x80){
++    MIDI_Handle->InEp = (phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[0].bEndpointAddress);
++    MIDI_Handle->InEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[0].wMaxPacketSize;
++  }else{
++    MIDI_Handle->OutEp = (phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[0].bEndpointAddress);
++    MIDI_Handle->OutEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[0].wMaxPacketSize;
++  }
+ 
+-    MIDI_Handle->OutPipe = USBH_AllocPipe(phost, MIDI_Handle->OutEp);
+-    MIDI_Handle->InPipe = USBH_AllocPipe(phost, MIDI_Handle->InEp);
++  if(phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[1].bEndpointAddress & 0x80){
++    MIDI_Handle->InEp = (phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[1].bEndpointAddress);
++    MIDI_Handle->InEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[1].wMaxPacketSize;
++  }else{
++    MIDI_Handle->OutEp = (phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[1].bEndpointAddress);
++    MIDI_Handle->OutEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[1].wMaxPacketSize;
++  }
+ 
++  MIDI_Handle->OutPipe = USBH_AllocPipe(phost, MIDI_Handle->OutEp);
++  MIDI_Handle->InPipe = USBH_AllocPipe(phost, MIDI_Handle->InEp);
+ 
+-    /* Open the new channels */
+-    USBH_OpenPipe  (phost,
+-		    MIDI_Handle->OutPipe,
+-		    MIDI_Handle->OutEp,
+-		    phost->device.address,
+-		    phost->device.speed,
+-		    USB_EP_TYPE_BULK,
+-		    MIDI_Handle->OutEpSize);
+ 
+-    USBH_OpenPipe  (phost,
+-		    MIDI_Handle->InPipe,
+-		    MIDI_Handle->InEp,
+-		    phost->device.address,
+-		    phost->device.speed,
+-		    USB_EP_TYPE_BULK,
+-		    MIDI_Handle->InEpSize);
++  /* Open the new channels */
++  USBH_OpenPipe  (phost,
++		  MIDI_Handle->OutPipe,
++		  MIDI_Handle->OutEp,
++		  phost->device.address,
++		  phost->device.speed,
++		  USB_EP_TYPE_BULK,
++		  MIDI_Handle->OutEpSize);
+ 
+-    //USB_MIDI_ChangeConnectionState(1);
+-    MIDI_Handle->state = MIDI_IDLE_STATE;
++  USBH_OpenPipe  (phost,
++		  MIDI_Handle->InPipe,
++		  MIDI_Handle->InEp,
++		  phost->device.address,
++		  phost->device.speed,
++		  USB_EP_TYPE_BULK,
++		  MIDI_Handle->InEpSize);
+ 
++  //USB_MIDI_ChangeConnectionState(1);
++  MIDI_Handle->state = MIDI_IDLE_STATE;
+ 
+-    USBH_LL_SetToggle  (phost, MIDI_Handle->InPipe,0);
+-    USBH_LL_SetToggle  (phost, MIDI_Handle->OutPipe,0);
++  USBH_LL_SetToggle  (phost, MIDI_Handle->InPipe,0);
++  USBH_LL_SetToggle  (phost, MIDI_Handle->OutPipe,0);
+ 
+-    status = USBH_OK;
+-  }
+-  return status;
++  return USBH_OK;
+ }
+ 
+ /**
+@@ -118,7 +123,7 @@ static USBH_StatusTypeDef USBH_MIDI_InterfaceInit (USBH_HandleTypeDef *phost){
+  */
+ USBH_StatusTypeDef USBH_MIDI_InterfaceDeInit (USBH_HandleTypeDef *phost){
+   USBH_DbgLog ("USBH InterfaceDeInit");
+-  if(phost->pActiveClass->pData){
++  if(phost->pActiveClass && phost->pActiveClass->pData){
+     MIDI_HandleTypeDef* MIDI_Handle = (MIDI_HandleTypeDef*)phost->pActiveClass->pData;
+ 
+     if ( MIDI_Handle->OutPipe){
+@@ -161,11 +166,13 @@ static USBH_StatusTypeDef USBH_MIDI_ClassRequest (USBH_HandleTypeDef *phost){
+   */
+ USBH_StatusTypeDef  USBH_MIDI_Stop(USBH_HandleTypeDef *phost){
+   USBH_DbgLog ("USBH Stop 0x%x", phost->gState);
+-  MIDI_HandleTypeDef *MIDI_Handle = (MIDI_HandleTypeDef*)phost->pActiveClass->pData;
+-  if(phost->gState == HOST_CLASS){
+-    MIDI_Handle->state = MIDI_IDLE_STATE;
+-    USBH_ClosePipe(phost, MIDI_Handle->InPipe);
+-    USBH_ClosePipe(phost, MIDI_Handle->OutPipe);
++  if(phost->pActiveClass && phost->pActiveClass->pData){
++    MIDI_HandleTypeDef *MIDI_Handle = (MIDI_HandleTypeDef*)phost->pActiveClass->pData;
++    if(phost->gState == HOST_CLASS){
++      MIDI_Handle->state = MIDI_IDLE_STATE;
++      USBH_ClosePipe(phost, MIDI_Handle->InPipe);
++      USBH_ClosePipe(phost, MIDI_Handle->OutPipe);
++    }
+   }
+   return USBH_OK;
+ }
+@@ -173,11 +180,13 @@ USBH_StatusTypeDef  USBH_MIDI_Stop(USBH_HandleTypeDef *phost){
+ extern "C"{
+   void HAL_HCD_HC_NotifyURBChange_Callback(HCD_HandleTypeDef *hhcd, uint8_t chnum, HCD_URBStateTypeDef urb_state){
+     USBH_HandleTypeDef *phost = (USBH_HandleTypeDef*)hhcd->pData;
+-    MIDI_HandleTypeDef *MIDI_Handle = (MIDI_HandleTypeDef*)phost->pActiveClass->pData;
+-    if(urb_state == URB_DONE && chnum == MIDI_Handle->InPipe &&
+-       MIDI_Handle->state == MIDI_TRANSFER_DATA){
+-      size_t len = USBH_LL_GetLastXferSize(phost, MIDI_Handle->InPipe);
+-      USBH_MIDI_ReceiveCallback((USBH_HandleTypeDef*)hhcd->pData, MIDI_Handle->pRxData, len);
++    if(phost->pActiveClass && phost->pActiveClass->pData){
++      MIDI_HandleTypeDef *MIDI_Handle = (MIDI_HandleTypeDef*)phost->pActiveClass->pData;
++      if(urb_state == URB_DONE && chnum == MIDI_Handle->InPipe &&
++	 MIDI_Handle->state == MIDI_TRANSFER_DATA){
++	size_t len = USBH_LL_GetLastXferSize(phost, MIDI_Handle->InPipe);
++	USBH_MIDI_ReceiveCallback((USBH_HandleTypeDef*)hhcd->pData, MIDI_Handle->pRxData, len);
++      }
+     }
+   }
+ }

@@ -1,0 +1,14 @@
+Ausgangspegel wie die alte Firmware von acdc1 (Readback: Default audio_output_gain 125).
+114 gibt laut Kommentar im Hack-Branch bei 10 Vpp Eingang nur ~5 Vpp aus (Durchleitung halbiert),
+125 ergibt in der Rückführung Out -> In ≈ −0,5 dB (messlog D8/D11).
+--- a/ACDC/Core/Inc/hardware.h
++++ b/ACDC/Core/Inc/hardware.h
+@@ -31,7 +31,7 @@
+ 
+ #define AUDIO_INPUT_GAIN            88 // half decibel steps
+ // 106 too low 114 too high
+-#define AUDIO_OUTPUT_GAIN           114 // half decibel steps
++#define AUDIO_OUTPUT_GAIN           125 // half decibel steps (acdc1: wie alte Firmware, messlog D11)
+ 
+ /* 88 / 114 : 10Vpp in, 5.3/4.99Vpp out */
+ 

@@ -1,0 +1,230 @@
+Build-Chain aus upstream master (PR #89, 2026-11-15): Cherry-Pick von d5b6409a
+"Build with GCC 13+: drop -ffreestanding, add -D_GLIBCXX_USE_STD_SPEC_FUNCS=0".
+Nur Compiler-Flags in Hardware/*.mk (fuer das AC/DC: Hardware/xibeca.mk). Upstream: mit GCC 12.3 bytegleich.
+Quelle: https://github.com/RebelTechnology/OpenWare/commit/d5b6409a9953c0474b522fa9b8295ad101b33598
+
+diff --git a/Expander/Makefile b/Expander/Makefile
+index 77a124f2..5d3b644e 100644
+--- a/Expander/Makefile
++++ b/Expander/Makefile
+@@ -26,9 +26,9 @@ CPPFLAGS += -fdata-sections
+ CPPFLAGS += -ffunction-sections
+ #CPPFLAGS +=  -mno-unaligned-access
+ #CPPFLAGS  += -fno-omit-frame-pointer
+-CPPFLAGS += -nostdlib -nostartfiles -fno-builtin -ffreestanding
++CPPFLAGS += -nostdlib -nostartfiles -fno-builtin
+ CPPFLAGS += -mtune=cortex-m7
+-CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++11
++CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++11 -D_GLIBCXX_USE_STD_SPEC_FUNCS=0
+ CFLAGS  += -std=gnu99
+ 
+ C_SRC = $(notdir $(wildcard Src/*.c)) $(notdir $(wildcard Source/*.c)) # $(notdir $(wildcard MDK-ARM/*.c))
+diff --git a/Hardware/STM32F051K4.mk b/Hardware/STM32F051K4.mk
+index 0c6b3add..fd927884 100644
+--- a/Hardware/STM32F051K4.mk
++++ b/Hardware/STM32F051K4.mk
+@@ -21,8 +21,8 @@ CPPFLAGS += -fdata-sections
+ CPPFLAGS += -ffunction-sections
+ #CPPFLAGS +=  -mno-unaligned-access
+ #CPPFLAGS  += -fno-omit-frame-pointer
+-CPPFLAGS += -nostdlib -nostartfiles -fno-builtin -ffreestanding
+-CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17
++CPPFLAGS += -nostdlib -nostartfiles -fno-builtin
++CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17 -D_GLIBCXX_USE_STD_SPEC_FUNCS=0
+ CFLAGS  += -std=gnu99
+ ARCH_FLAGS = -mcpu=cortex-m0 -mthumb # -mfloat-abi=hard -mfpu=fpv4-sp-d16
+ ARCH_FLAGS += -fsingle-precision-constant
+diff --git a/Hardware/STM32F439ZG.mk b/Hardware/STM32F439ZG.mk
+index 46cc14e5..5041a3ce 100644
+--- a/Hardware/STM32F439ZG.mk
++++ b/Hardware/STM32F439ZG.mk
+@@ -21,8 +21,8 @@ CPPFLAGS += -fdata-sections
+ CPPFLAGS += -ffunction-sections
+ #CPPFLAGS +=  -mno-unaligned-access
+ #CPPFLAGS  += -fno-omit-frame-pointer
+-CPPFLAGS += -nostdlib -nostartfiles -fno-builtin -ffreestanding
+-CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17
++CPPFLAGS += -nostdlib -nostartfiles -fno-builtin
++CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17 -D_GLIBCXX_USE_STD_SPEC_FUNCS=0
+ CFLAGS  += -std=gnu99
+ ARCH_FLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
+ ARCH_FLAGS += -fsingle-precision-constant
+diff --git a/Hardware/STM32F745VG.mk b/Hardware/STM32F745VG.mk
+index 56cba002..1feb739b 100644
+--- a/Hardware/STM32F745VG.mk
++++ b/Hardware/STM32F745VG.mk
+@@ -21,8 +21,8 @@ CPPFLAGS += -fdata-sections
+ CPPFLAGS += -ffunction-sections
+ #CPPFLAGS +=  -mno-unaligned-access
+ #CPPFLAGS  += -fno-omit-frame-pointer
+-CPPFLAGS += -nostdlib -nostartfiles -fno-builtin -ffreestanding
+-CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17
++CPPFLAGS += -nostdlib -nostartfiles -fno-builtin
++CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17 -D_GLIBCXX_USE_STD_SPEC_FUNCS=0
+ CFLAGS  += -std=gnu99
+ ARCH_FLAGS = -mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-sp-d16
+ ARCH_FLAGS += -fsingle-precision-constant
+diff --git a/Hardware/STM32F746VE.mk b/Hardware/STM32F746VE.mk
+index 2d054c05..8368e12e 100644
+--- a/Hardware/STM32F746VE.mk
++++ b/Hardware/STM32F746VE.mk
+@@ -21,8 +21,8 @@ CPPFLAGS += -fdata-sections
+ CPPFLAGS += -ffunction-sections
+ #CPPFLAGS +=  -mno-unaligned-access
+ #CPPFLAGS  += -fno-omit-frame-pointer
+-CPPFLAGS += -nostdlib -nostartfiles -fno-builtin -ffreestanding
+-CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17
++CPPFLAGS += -nostdlib -nostartfiles -fno-builtin
++CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17 -D_GLIBCXX_USE_STD_SPEC_FUNCS=0
+ CFLAGS  += -std=gnu99
+ ARCH_FLAGS = -mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-sp-d16
+ ARCH_FLAGS += -fsingle-precision-constant
+diff --git a/Hardware/STM32F746ZG.mk b/Hardware/STM32F746ZG.mk
+index 1ff21c41..1773a220 100644
+--- a/Hardware/STM32F746ZG.mk
++++ b/Hardware/STM32F746ZG.mk
+@@ -21,8 +21,8 @@ CPPFLAGS += -fdata-sections
+ CPPFLAGS += -ffunction-sections
+ #CPPFLAGS +=  -mno-unaligned-access
+ #CPPFLAGS  += -fno-omit-frame-pointer
+-CPPFLAGS += -nostdlib -nostartfiles -fno-builtin -ffreestanding
+-CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17
++CPPFLAGS += -nostdlib -nostartfiles -fno-builtin
++CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17 -D_GLIBCXX_USE_STD_SPEC_FUNCS=0
+ CFLAGS  += -std=gnu99
+ ARCH_FLAGS = -mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-sp-d16
+ ARCH_FLAGS += -fsingle-precision-constant
+diff --git a/Hardware/mussol.mk b/Hardware/mussol.mk
+index 10b1ef47..5fcc29d4 100644
+--- a/Hardware/mussol.mk
++++ b/Hardware/mussol.mk
+@@ -16,7 +16,7 @@ ifeq ($(CONFIG),Debug)
+   LDLIBS += -lrdimon
+   LDFLAGS += -specs=rdimon.specs
+ else
+-  CPPFLAGS += -nostdlib -nostartfiles -fno-builtin -ffreestanding
++  CPPFLAGS += -nostdlib -nostartfiles -fno-builtin
+   C_SRC += libnosys_gnu.c
+   LDFLAGS += --specs=nano.specs
+ endif
+@@ -29,9 +29,9 @@ LDLIBS += -lc -lm
+ # CPPFLAGS += -fpic -fpie
+ CPPFLAGS += -fdata-sections
+ CPPFLAGS += -ffunction-sections
+-CPPFLAGS += -fno-builtin -ffreestanding
+-LDFLAGS += -fno-builtin -ffreestanding
+-CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17
++CPPFLAGS += -fno-builtin
++LDFLAGS += -fno-builtin
++CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17 -D_GLIBCXX_USE_STD_SPEC_FUNCS=0
+ CFLAGS  += -std=gnu99
+ ARCH_FLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
+ ARCH_FLAGS += -fsingle-precision-constant
+diff --git a/Hardware/owl1.mk b/Hardware/owl1.mk
+index c7b95093..3b2b7d86 100644
+--- a/Hardware/owl1.mk
++++ b/Hardware/owl1.mk
+@@ -13,7 +13,7 @@ ifeq ($(CONFIG),Debug)
+   LDLIBS += -lrdimon
+   LDFLAGS += -specs=rdimon.specs
+ else
+-  CPPFLAGS += -nostdlib -nostartfiles -fno-builtin -ffreestanding
++  CPPFLAGS += -nostdlib -nostartfiles -fno-builtin
+   C_SRC += libnosys_gnu.c
+   LDFLAGS += --specs=nano.specs
+ endif
+@@ -25,9 +25,9 @@ LDLIBS += -lc -lm
+ CPPFLAGS += -Wdouble-promotion -Werror=double-promotion
+ CPPFLAGS += -fdata-sections
+ CPPFLAGS += -ffunction-sections
+-CPPFLAGS += -fno-builtin -ffreestanding
+-LDFLAGS += -fno-builtin -ffreestanding
+-CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17
++CPPFLAGS += -fno-builtin
++LDFLAGS += -fno-builtin
++CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17 -D_GLIBCXX_USE_STD_SPEC_FUNCS=0
+ CFLAGS  += -std=gnu99
+ ARCH_FLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
+ ARCH_FLAGS += -fsingle-precision-constant
+diff --git a/Hardware/owl2.mk b/Hardware/owl2.mk
+index 44169727..10f8fa6b 100644
+--- a/Hardware/owl2.mk
++++ b/Hardware/owl2.mk
+@@ -13,7 +13,7 @@ ifeq ($(CONFIG),Debug)
+   LDLIBS += -lrdimon
+   LDFLAGS += -specs=rdimon.specs
+ else
+-  CPPFLAGS += -nostdlib -nostartfiles -fno-builtin -ffreestanding
++  CPPFLAGS += -nostdlib -nostartfiles -fno-builtin
+   C_SRC += libnosys_gnu.c
+   LDFLAGS += --specs=nano.specs
+ endif
+@@ -24,9 +24,9 @@ LDSCRIPT ?= $(OPENWARE)/Hardware/owl2.ld
+ LDLIBS += -lc -lm
+ CPPFLAGS += -Wdouble-promotion -Werror=double-promotion
+ CPPFLAGS += -fdata-sections -ffunction-sections
+-CPPFLAGS += -fno-builtin -ffreestanding
+-LDFLAGS += -fno-builtin -ffreestanding
+-CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17
++CPPFLAGS += -fno-builtin
++LDFLAGS += -fno-builtin
++CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17 -D_GLIBCXX_USE_STD_SPEC_FUNCS=0
+ CFLAGS  += -std=gnu99
+ ARCH_FLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
+ ARCH_FLAGS += -fsingle-precision-constant
+diff --git a/Hardware/owl3.mk b/Hardware/owl3.mk
+index aa32d14f..ab602114 100644
+--- a/Hardware/owl3.mk
++++ b/Hardware/owl3.mk
+@@ -24,9 +24,9 @@ LDSCRIPT ?= $(OPENWARE)/Hardware/owl3.ld
+ LDLIBS += -lc -lm
+ CPPFLAGS += -Wdouble-promotion -Werror=double-promotion
+ CPPFLAGS += -fdata-sections -ffunction-sections
+-CPPFLAGS += -fno-builtin -ffreestanding
+-LDFLAGS += -fno-builtin -ffreestanding
+-CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17
++CPPFLAGS += -fno-builtin
++LDFLAGS += -fno-builtin
++CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17 -D_GLIBCXX_USE_STD_SPEC_FUNCS=0
+ CFLAGS  += -std=gnu99
+ ARCH_FLAGS = -mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-d16
+ ARCH_FLAGS += -fsingle-precision-constant
+diff --git a/Hardware/xibeca.mk b/Hardware/xibeca.mk
+index b08d9f85..3c3b9acb 100644
+--- a/Hardware/xibeca.mk
++++ b/Hardware/xibeca.mk
+@@ -13,7 +13,7 @@ ifeq ($(CONFIG),Debug)
+   LDLIBS += -lrdimon
+   LDFLAGS += -specs=rdimon.specs
+ else
+-  CPPFLAGS += -nostdlib -nostartfiles -fno-builtin -ffreestanding
++  CPPFLAGS += -nostdlib -nostartfiles -fno-builtin
+   C_SRC += libnosys_gnu.c
+   LDFLAGS += --specs=nano.specs
+ endif
+@@ -24,9 +24,9 @@ LDSCRIPT ?= $(OPENWARE)/Hardware/xibeca.ld
+ LDLIBS += -lc -lm
+ CPPFLAGS += -Wdouble-promotion -Werror=double-promotion
+ CPPFLAGS += -fdata-sections -ffunction-sections
+-CPPFLAGS += -fno-builtin -ffreestanding
+-LDFLAGS += -fno-builtin -ffreestanding
+-CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17
++CPPFLAGS += -fno-builtin
++LDFLAGS += -fno-builtin
++CXXFLAGS = -fno-rtti -fno-exceptions -std=gnu++17 -D_GLIBCXX_USE_STD_SPEC_FUNCS=0
+ CFLAGS  += -std=gnu99
+ ARCH_FLAGS = -mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-d16
+ ARCH_FLAGS += -fsingle-precision-constant
+diff --git a/MidiBLE/Makefile b/MidiBLE/Makefile
+index 77a2f751..4e2f4422 100644
+--- a/MidiBLE/Makefile
++++ b/MidiBLE/Makefile
+@@ -114,7 +114,7 @@ C_INCLUDES += -ILibrary/CMSIS/Device/ST/BlueNRG1/Include
+ C_INCLUDES += -ILibrary/Bluetooth_LE/inc
+ 
+ # compile gcc flags
+-CPPFLAGS += -nostdlib -nostartfiles -fno-builtin -ffreestanding -nodefaultlibs
++CPPFLAGS += -nostdlib -nostartfiles -fno-builtin -nodefaultlibs
+ # CPPFLAGS += -mtune=cortex-m7
+ # CPPFLAGS += -fpic
+ # CPPFLAGS += -fpie

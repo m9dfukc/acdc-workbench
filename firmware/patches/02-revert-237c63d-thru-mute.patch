@@ -1,0 +1,17 @@
+Revert 237c63d ("hack to prevent ACDC audio thru"): ohne aktiven USB-RX-Stream
+bleibt der Patch-Ausgang stehen statt genullt zu werden. Build 1 (docs/05 E1/E2).
+
+--- a/Source/ProgramManager.cpp	2026-11-14 13:26:07
++++ b/Source/ProgramManager.cpp	2026-11-14 13:26:07
+@@ -113,11 +113,6 @@
+ #endif
+     }
+ #endif
+-  }else{
+-#ifdef OWL_ACDC
+-    // TODO: remove hack to prevent ACDC audio pass-through
+-    memset(dst, 0, len*sizeof(int32_t));
+-#endif
+   }
+ }
+ 

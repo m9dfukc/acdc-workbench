@@ -1,0 +1,24 @@
+Option A (Basis upstream master / v22.5.0): Gegenstueck zu Patch 03 fuer die master-hardware.h
+(dort fehlen USBD_SELF_POWERED und USBD_AUDIO_*_CHANNELS, darum passt 03 nicht).
+USE_USBD_AUDIO_TX_PRE_FX (USB-Aufnahme = rohe ADC-Daten vor dem Patch), Produktstring OWL-ACDC-FX.
+Patch 02 ist auf master nicht noetig (237c63d gibt es dort nicht).
+
+--- a/ACDC/Core/Inc/hardware.h
++++ b/ACDC/Core/Inc/hardware.h
+@@ -4,7 +4,7 @@
+ #define OWL_XIBECA
+ #define HARDWARE_ID                  XIBECA_HARDWARE
+ #define HARDWARE_VERSION             "AC/DC"
+-#define USBD_PRODUCT_STRING_FSHS     "OWL-ACDC"
++#define USBD_PRODUCT_STRING_FSHS     "OWL-ACDC-FX"
+ 
+ /* #define NO_EXTERNAL_RAM */
+ /* #define NO_CCM_RAM */
+@@ -50,6 +50,7 @@
+ #define USE_USBD_AUDIO_FEATURES
+ #define USE_USBD_AUDIO_TX           // microphone
+ #define USE_USBD_AUDIO_RX           // speaker
++#define USE_USBD_AUDIO_TX_PRE_FX    // Rechner bekommt die rohen Eingaenge (vor dem Patch)
+ #define USE_USBD_RX_FB
+ #define USE_USBD_FS
+ #define USBD_AUDIO_BUFFER_PACKETS   3

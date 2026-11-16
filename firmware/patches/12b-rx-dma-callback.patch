@@ -1,0 +1,59 @@
+Patch 12b: Audio-Block aus dem RX-DMA-Interrupt freigeben statt aus dem TX-DMA-Interrupt
+(messlog D40/D42, docs/05 „Build 4z“). Ersatz für Patch 12, NICHT zusätzlich anwenden.
+
+Befund: Mit dem Audio-Task im ITCM (fx3i, fx3i-noD) ist auf Kanal 4 in 94–96 % der Blöcke der
+letzte Eingangs-Sample 16 Frames alt (Wert aus dem vorigen Umlauf des Doppelpuffers), −1,1 dB.
+Patch 12 (Abfrage-Schleife auf RX-NDTR) behebt das, hebt aber fs/8 um ≈ 10,6 dB (D42).
+Ursache [Code]: Im PCM3168A-Zweig löst die TX-DMA (SAI1-B, DMA1_Stream1) audioCallback aus, die
+RX-DMA (SAI1-A, DMA1_Stream0) hängt hinterher. Der schnelle Task liest das letzte RX-Wort zu früh.
+
+Änderung (nur Source/Codec.cpp, PCM3168A-Zweig): audioCallback aus HAL_SAI_RxHalfCpltCallback /
+HAL_SAI_RxCpltCallback, mit denselben Argumenten wie bisher (Muster des CS4271-Zweigs). Die
+RX-DMA-Interrupts liefen schon vorher (schwache, leere HAL-Callbacks), es entsteht also kein
+zusätzlicher Interrupt und keine Abfrage. Der Block startet ≈ 1 Wort (≈ 5 µs) später.
+Die TX-Callbacks bleiben als starke, leere Definitionen in Codec.o, damit die ITCM-Regel
+*Codec.o(.text.HAL_SAI_Tx*CpltCallback) weiter greift und kein Veneer in die HAL-Fassung führt.
+Für ITCM-Builds gehört dazu Patch 11f (RX-Callbacks aus Codec.o in Gruppe A).
+
+[Code] codec.getSampleCounter() liest weiter den TX-NDTR. Er springt ≈ 1 Wort vor dem
+Blockstart auf 0. Das Fenster, in dem Patch 06 (Füllstand) und usbd_audio_get_rx_count den
+Block schon als verbraucht zählen, wird um ≈ 5 µs länger; es gab es schon vorher (Aufwach-
+latenz des Tasks, usbd_rx_convert zählt im Task). Selbstkorrigierend, Prüfung im Loop-Test.
+
+Auf 01 02 04 05 06 03 07d 08 (+ 11f für ITCM, oder ohne ITCM-Patch).
+
+--- a/Source/Codec.cpp
++++ b/Source/Codec.cpp
+@@ -236,12 +236,30 @@
+     audioCallback(codec_rxbuf+codec_blocksize*AUDIO_CHANNELS, codec_txbuf+codec_blocksize*AUDIO_CHANNELS, codec_blocksize);
+   }
+ #else // PCM3168A: TX is slave
+-  void HAL_SAI_TxHalfCpltCallback(SAI_HandleTypeDef *hsai){
++  /* AC/DC fork, Patch 12b (acdc project messlog D40/D42): release the audio block from
++     the RX DMA interrupt (SAI1 block A, DMA1_Stream0), as in the CS4271 branch above.
++     The TX DMA (SAI1 block B) runs ahead of the RX DMA: when the TX half/complete
++     interrupt fires, the last RX word of the half is often not written yet, and a fast
++     audio task (code in ITCM) read the stale value from the previous buffer cycle
++     (16 frames old, last sample of each block = channel 4). When the RX interrupt fires,
++     the RX half is complete. The TX half handed out is the one the TX DMA has just
++     finished (it is at most its FIFO depth into the other half), so the task still has
++     almost a full block to write it. No polling (Patch 12 raised fs/8 by ~10 dB).
++     codec.getSampleCounter() still reads the TX NDTR; the block now starts about one
++     word later relative to it. */
++  void HAL_SAI_RxHalfCpltCallback(SAI_HandleTypeDef *hsai){
+     audioCallback(codec_rxbuf, codec_txbuf, codec_blocksize);
+   }
+-  void HAL_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai){
++  void HAL_SAI_RxCpltCallback(SAI_HandleTypeDef *hsai){
+     audioCallback(codec_rxbuf+codec_blocksize*AUDIO_CHANNELS, codec_txbuf+codec_blocksize*AUDIO_CHANNELS, codec_blocksize);
+   }
++  /* Kept as strong, empty definitions in Codec.o: the ITCM linker rules (Patch 11*) place
++     them by object file, so the TX DMA interrupt does not call the weak HAL version in
++     flash through a veneer. */
++  void HAL_SAI_TxHalfCpltCallback(SAI_HandleTypeDef *hsai){
++  }
++  void HAL_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai){
++  }
+ #endif
+   void HAL_SAI_ErrorCallback(SAI_HandleTypeDef *hsai){
+     error(CONFIG_ERROR, "SAI DMA Error");

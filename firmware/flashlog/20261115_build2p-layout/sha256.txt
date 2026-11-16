@@ -1,0 +1,3 @@
+cbf45166672a02337d45b9514096dd63ab28a7ba7b23baa1d287d91bb08521f9  firmware/builds/acdc1-build2p-layout/ACDC.bin
+e8b982d669d6327749c32d3f7e65d0a5ee3ac56cbcaf02a0f2c67757f6c0251f  firmware/flashlog/20261115_build2p-layout/readback_after.bin
+cbf45166672a02337d45b9514096dd63ab28a7ba7b23baa1d287d91bb08521f9  readback_after.bin[0:106304]

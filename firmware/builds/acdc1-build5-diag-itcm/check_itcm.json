@@ -1,0 +1,1961 @@
+{
+ "groups": "ABCDEFGHL",
+ "vector_copy": true,
+ "sizes": {
+  "itcm_vectors": 664,
+  "itcm_text": 13976,
+  "itcm_total": 14648,
+  "patch_heap_ccm": 38600,
+  "bin": 108904
+ },
+ "symbols": {
+  "_sitcm_vect": "0x3000",
+  "_eitcm_vect": "0x3298",
+  "_sitcm_text": "0x32a0",
+  "_eitcm_text": "0x6938",
+  "_litcm_text": "0x8000298",
+  "_CCMRAM": "0x6938",
+  "_CCMRAM_END": "0x10000",
+  "_CCMRAM_SIZE": "0x96c8",
+  "_ISR_VECTOR": "0x8000000",
+  "_ISR_VECTOR_SIZE": "0x298"
+ },
+ "hot": [
+  {
+   "group": "A SAI-DMA-ISR",
+   "name": "DMA1_Stream0_IRQHandler",
+   "addr": "0x32a0",
+   "size": 12,
+   "itcm": true
+  },
+  {
+   "group": "A SAI-DMA-ISR",
+   "name": "DMA1_Stream1_IRQHandler",
+   "addr": "0x32ac",
+   "size": 12,
+   "itcm": true
+  },
+  {
+   "group": "A SAI-DMA-ISR",
+   "name": "HAL_DMA_IRQHandler",
+   "addr": "0x32b8",
+   "size": 1704,
+   "itcm": true
+  },
+  {
+   "group": "A SAI-DMA-ISR",
+   "name": "SAI_DMATxHalfCplt",
+   "addr": "0x39bc",
+   "size": 10,
+   "itcm": true
+  },
+  {
+   "group": "A SAI-DMA-ISR",
+   "name": "SAI_DMATxCplt",
+   "addr": "0x3960",
+   "size": 92,
+   "itcm": true
+  },
+  {
+   "group": "A SAI-DMA-ISR",
+   "name": "SAI_DMARxHalfCplt",
+   "addr": "0x3a24",
+   "size": 10,
+   "itcm": true
+  },
+  {
+   "group": "A SAI-DMA-ISR",
+   "name": "SAI_DMARxCplt",
+   "addr": "0x39c8",
+   "size": 92,
+   "itcm": true
+  },
+  {
+   "group": "A SAI-DMA-ISR",
+   "name": "HAL_SAI_RxHalfCpltCallback",
+   "addr": "0x3a30",
+   "size": 24,
+   "itcm": true
+  },
+  {
+   "group": "A SAI-DMA-ISR",
+   "name": "HAL_SAI_RxCpltCallback",
+   "addr": "0x3a48",
+   "size": 32,
+   "itcm": true
+  },
+  {
+   "group": "A SAI-DMA-ISR",
+   "name": "HAL_SAI_TxHalfCpltCallback",
+   "addr": "0x3a68",
+   "size": 2,
+   "itcm": true
+  },
+  {
+   "group": "A SAI-DMA-ISR",
+   "name": "HAL_SAI_TxCpltCallback",
+   "addr": "0x3a6c",
+   "size": 2,
+   "itcm": true
+  },
+  {
+   "group": "A SAI-DMA-ISR",
+   "name": "audioCallback",
+   "addr": "0x3a70",
+   "size": 148,
+   "itcm": true
+  },
+  {
+   "group": "A SAI-DMA-ISR",
+   "name": "vTaskNotifyGiveFromISR",
+   "addr": "0x3b04",
+   "size": 212,
+   "itcm": true
+  },
+  {
+   "group": "A SAI-DMA-ISR",
+   "name": "vPortValidateInterruptPriority",
+   "addr": "0x3bd8",
+   "size": 92,
+   "itcm": true
+  },
+  {
+   "group": "B Scheduler",
+   "name": "PendSV_Handler",
+   "addr": "0x3ca0",
+   "size": 100,
+   "itcm": true
+  },
+  {
+   "group": "B Scheduler",
+   "name": "vTaskSwitchContext",
+   "addr": "0x3e18",
+   "size": 164,
+   "itcm": true
+  },
+  {
+   "group": "B Scheduler",
+   "name": "ulTaskNotifyTake",
+   "addr": "0x3ebc",
+   "size": 104,
+   "itcm": true
+  },
+  {
+   "group": "B Scheduler",
+   "name": "prvAddCurrentTaskToDelayedList",
+   "addr": "0x3d04",
+   "size": 140,
+   "itcm": true
+  },
+  {
+   "group": "B Scheduler",
+   "name": "vPortEnterCritical",
+   "addr": "0x3c34",
+   "size": 68,
+   "itcm": true
+  },
+  {
+   "group": "B Scheduler",
+   "name": "vPortExitCritical",
+   "addr": "0x3c78",
+   "size": 40,
+   "itcm": true
+  },
+  {
+   "group": "B Scheduler",
+   "name": "uxListRemove",
+   "addr": "0x3f70",
+   "size": 40,
+   "itcm": true
+  },
+  {
+   "group": "B Scheduler",
+   "name": "vListInsertEnd",
+   "addr": "0x3f24",
+   "size": 28,
+   "itcm": true
+  },
+  {
+   "group": "B Scheduler",
+   "name": "vListInsert",
+   "addr": "0x3f40",
+   "size": 48,
+   "itcm": true
+  },
+  {
+   "group": "B Scheduler",
+   "name": "prvIdleTask",
+   "addr": "0x3d90",
+   "size": 136,
+   "itcm": true
+  },
+  {
+   "group": "C Audio-Task",
+   "name": "onProgramReady",
+   "addr": "0x40d4",
+   "size": 248,
+   "itcm": true
+  },
+  {
+   "group": "C Audio-Task",
+   "name": "_Z15usbd_tx_convertPlj",
+   "addr": "0x4054",
+   "size": 128,
+   "itcm": true
+  },
+  {
+   "group": "C Audio-Task",
+   "name": "_Z15usbd_rx_convertPlj",
+   "addr": "0x3f98",
+   "size": 188,
+   "itcm": true
+  },
+  {
+   "group": "C Audio-Task",
+   "name": "updateParameters",
+   "addr": "0x41d8",
+   "size": 54,
+   "itcm": true
+  },
+  {
+   "group": "C Audio-Task",
+   "name": "_ZN10MidiWriter8transmitEv",
+   "addr": "0x4210",
+   "size": 76,
+   "itcm": true
+  },
+  {
+   "group": "C Audio-Task",
+   "name": "_ZN12MidiReceiver7receiveEv",
+   "addr": "0x425c",
+   "size": 104,
+   "itcm": true
+  },
+  {
+   "group": "C Audio-Task",
+   "name": "usbd_midi_ready",
+   "addr": "0x42fc",
+   "size": 36,
+   "itcm": true
+  },
+  {
+   "group": "C Audio-Task",
+   "name": "usbd_midi_tx",
+   "addr": "0x42c4",
+   "size": 56,
+   "itcm": true
+  },
+  {
+   "group": "C Audio-Task",
+   "name": "getProgramVector",
+   "addr": "0x41cc",
+   "size": 12,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "OTG_FS_IRQHandler",
+   "addr": "0x4320",
+   "size": 12,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "HAL_PCD_IRQHandler",
+   "addr": "0x432c",
+   "size": 1624,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USB_ReadInterrupts",
+   "addr": "0x4d54",
+   "size": 8,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USB_ReadDevAllOutEpInterrupt",
+   "addr": "0x4d5c",
+   "size": 14,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USB_ReadDevAllInEpInterrupt",
+   "addr": "0x4d6c",
+   "size": 14,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USB_ReadDevOutEPInterrupt",
+   "addr": "0x4d7c",
+   "size": 18,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USB_ReadDevInEPInterrupt",
+   "addr": "0x4d90",
+   "size": 32,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USB_GetMode",
+   "addr": "0x4db0",
+   "size": 8,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USB_ReadPacket",
+   "addr": "0x4d0c",
+   "size": 72,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USB_WritePacket",
+   "addr": "0x4ce0",
+   "size": 42,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USB_EPStartXfer",
+   "addr": "0x4abc",
+   "size": 548,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "HAL_PCD_SOFCallback",
+   "addr": "0x4de0",
+   "size": 8,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USBD_LL_SOF",
+   "addr": "0x4f68",
+   "size": 36,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "_ZL14USBD_AUDIO_SOFP19_USBD_HandleTypeDef",
+   "addr": "0x55c0",
+   "size": 156,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "usbd_audio_sof_callback",
+   "addr": "0x54dc",
+   "size": 228,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "usbd_audio_get_rx_count",
+   "addr": "0x565c",
+   "size": 40,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "HAL_PCD_DataOutStageCallback",
+   "addr": "0x4db8",
+   "size": 20,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USBD_LL_DataOutStage",
+   "addr": "0x4e48",
+   "size": 104,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "_ZL18USBD_AUDIO_DataOutP19_USBD_HandleTypeDefh",
+   "addr": "0x5224",
+   "size": 696,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USBD_LL_GetRxDataSize",
+   "addr": "0x4e40",
+   "size": 8,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "HAL_PCD_EP_GetRxCount",
+   "addr": "0x49d4",
+   "size": 18,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USBD_LL_PrepareReceive",
+   "addr": "0x4e28",
+   "size": 22,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "HAL_PCD_EP_Receive",
+   "addr": "0x4984",
+   "size": 78,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "HAL_PCD_DataInStageCallback",
+   "addr": "0x4dcc",
+   "size": 18,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USBD_LL_DataInStage",
+   "addr": "0x4eb0",
+   "size": 182,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "_ZL17USBD_AUDIO_DataInP19_USBD_HandleTypeDefh",
+   "addr": "0x50b8",
+   "size": 364,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USBD_LL_Transmit",
+   "addr": "0x4e10",
+   "size": 22,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "HAL_PCD_EP_Transmit",
+   "addr": "0x49e8",
+   "size": 78,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "_ZN5Codec16getSampleCounterEv",
+   "addr": "0x5684",
+   "size": 32,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "codec_ndtr",
+   "addr": "0x56a4",
+   "size": 20,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "HAL_PCD_ISOINIncompleteCallback",
+   "addr": "0x4df0",
+   "size": 8,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USBD_LL_IsoINIncomplete",
+   "addr": "0x4f8c",
+   "size": 36,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "_ZL26USBD_AUDIO_IsoINIncompleteP19_USBD_HandleTypeDefh",
+   "addr": "0x4fe4",
+   "size": 212,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USBD_LL_FlushEP",
+   "addr": "0x4df8",
+   "size": 22,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "HAL_PCD_EP_Flush",
+   "addr": "0x4a38",
+   "size": 62,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USB_FlushTxFifo",
+   "addr": "0x4a78",
+   "size": 36,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USB_FlushRxFifo",
+   "addr": "0x4a9c",
+   "size": 32,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "HAL_PCD_ISOOUTIncompleteCallback",
+   "addr": "0x4de8",
+   "size": 8,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "USBD_LL_IsoOUTIncomplete",
+   "addr": "0x4fb0",
+   "size": 36,
+   "itcm": true
+  },
+  {
+   "group": "D USB",
+   "name": "_ZL27USBD_AUDIO_IsoOutIncompleteP19_USBD_HandleTypeDefh",
+   "addr": "0x4fd4",
+   "size": 16,
+   "itcm": true
+  },
+  {
+   "group": "E SysTick",
+   "name": "SysTick_Handler",
+   "addr": "0x56b8",
+   "size": 24,
+   "itcm": true
+  },
+  {
+   "group": "E SysTick",
+   "name": "HAL_IncTick",
+   "addr": "0x56d0",
+   "size": 24,
+   "itcm": true
+  },
+  {
+   "group": "E SysTick",
+   "name": "HAL_GetTick",
+   "addr": "0x56e8",
+   "size": 12,
+   "itcm": true
+  },
+  {
+   "group": "E SysTick",
+   "name": "xTaskGetSchedulerState",
+   "addr": "0x5818",
+   "size": 32,
+   "itcm": true
+  },
+  {
+   "group": "E SysTick",
+   "name": "xPortSysTickHandler",
+   "addr": "0x5838",
+   "size": 44,
+   "itcm": true
+  },
+  {
+   "group": "E SysTick",
+   "name": "xTaskIncrementTick",
+   "addr": "0x57f4",
+   "size": 36,
+   "itcm": true
+  },
+  {
+   "group": "E SysTick",
+   "name": "xTaskIncrementTick.part.0",
+   "addr": "0x56f4",
+   "size": 256,
+   "itcm": true
+  },
+  {
+   "group": "F ADC-DMA",
+   "name": "DMA1_Stream3_IRQHandler",
+   "addr": "0x5864",
+   "size": 12,
+   "itcm": true
+  },
+  {
+   "group": "F ADC-DMA",
+   "name": "ADC_DMAConvCplt",
+   "addr": "0x5884",
+   "size": 108,
+   "itcm": true
+  },
+  {
+   "group": "F ADC-DMA",
+   "name": "ADC_DMAHalfConvCplt",
+   "addr": "0x5878",
+   "size": 10,
+   "itcm": true
+  },
+  {
+   "group": "F ADC-DMA",
+   "name": "HAL_ADC_ConvCpltCallback",
+   "addr": "0x5870",
+   "size": 2,
+   "itcm": true
+  },
+  {
+   "group": "F ADC-DMA",
+   "name": "HAL_ADC_ConvHalfCpltCallback",
+   "addr": "0x5874",
+   "size": 2,
+   "itcm": true
+  },
+  {
+   "group": "G onLoop (07d)",
+   "name": "_ZL20acdcMeasureRawInputsv",
+   "addr": "0x58f0",
+   "size": 372,
+   "itcm": true
+  },
+  {
+   "group": "G onLoop (07d)",
+   "name": "_ZL14acdcOnLoopLatev",
+   "addr": "0x6090",
+   "size": 440,
+   "itcm": true
+  },
+  {
+   "group": "G onLoop (07d)",
+   "name": "setLed",
+   "addr": "0x62e8",
+   "size": 204,
+   "itcm": true
+  },
+  {
+   "group": "G onLoop (07d)",
+   "name": "setLed.constprop.0",
+   "addr": "0x6248",
+   "size": 160,
+   "itcm": true
+  },
+  {
+   "group": "G onLoop (07d)",
+   "name": "getParameterValue",
+   "addr": "0x63b4",
+   "size": 20,
+   "itcm": true
+  },
+  {
+   "group": "G onLoop (07d)",
+   "name": "setParameterValue",
+   "addr": "0x63c8",
+   "size": 16,
+   "itcm": true
+  },
+  {
+   "group": "H Hauptschleife (2 ms)",
+   "name": "StartDefaultTask",
+   "addr": "0x63d8",
+   "size": 12,
+   "itcm": true
+  },
+  {
+   "group": "H Hauptschleife (2 ms)",
+   "name": "loop",
+   "addr": "0x63e4",
+   "size": 20,
+   "itcm": true
+  },
+  {
+   "group": "H Hauptschleife (2 ms)",
+   "name": "onLoop",
+   "addr": "0x63f8",
+   "size": 4,
+   "itcm": true
+  },
+  {
+   "group": "H Hauptschleife (2 ms)",
+   "name": "_ZN3Owl4loopEv",
+   "addr": "0x65c8",
+   "size": 76,
+   "itcm": true
+  },
+  {
+   "group": "H Hauptschleife (2 ms)",
+   "name": "_ZN14ProgramManager16isProgramRunningEv",
+   "addr": "0x6614",
+   "size": 16,
+   "itcm": true
+  },
+  {
+   "group": "H Hauptschleife (2 ms)",
+   "name": "device_watchdog",
+   "addr": "0x6624",
+   "size": 16,
+   "itcm": true
+  },
+  {
+   "group": "H Hauptschleife (2 ms)",
+   "name": "vTaskDelayUntil",
+   "addr": "0x6758",
+   "size": 176,
+   "itcm": true
+  },
+  {
+   "group": "H Hauptschleife (2 ms)",
+   "name": "vTaskSuspendAll",
+   "addr": "0x6808",
+   "size": 16,
+   "itcm": true
+  },
+  {
+   "group": "H Hauptschleife (2 ms)",
+   "name": "xTaskResumeAll",
+   "addr": "0x6818",
+   "size": 32,
+   "itcm": true
+  },
+  {
+   "group": "H Hauptschleife (2 ms)",
+   "name": "xTaskResumeAll.part.0",
+   "addr": "0x6634",
+   "size": 292,
+   "itcm": true
+  },
+  {
+   "group": "L libc-Helfer",
+   "name": "memset",
+   "addr": "0x6840",
+   "size": 16,
+   "itcm": true
+  },
+  {
+   "group": "L libc-Helfer",
+   "name": "memcpy",
+   "addr": "0x6850",
+   "size": 28,
+   "itcm": true
+  },
+  {
+   "group": "L libc-Helfer",
+   "name": "abs",
+   "addr": "0x6838",
+   "size": 8,
+   "itcm": true
+  }
+ ],
+ "hot_in_flash": [],
+ "veneers_out": [
+  {
+   "veneer": "__usbd_audio_rx_start_callback_veneer",
+   "addr": "0x6870",
+   "target": "usbd_audio_rx_start_callback",
+   "target_addr": "0x08004055",
+   "callers": [
+    "_ZL18USBD_AUDIO_DataOutP19_USBD_HandleTypeDefh"
+   ],
+   "reason": "Ereignis: Playback-Stream startet"
+  },
+  {
+   "veneer": "__USB_EP0_OutStart_veneer",
+   "addr": "0x6878",
+   "target": "USB_EP0_OutStart",
+   "target_addr": "0x08003e51",
+   "callers": [
+    "HAL_PCD_IRQHandler"
+   ],
+   "reason": "Ereignis: Control-Transfer/Enumeration (EP0)"
+  },
+  {
+   "veneer": "__HAL_PCDEx_LPM_Callback_veneer",
+   "addr": "0x6880",
+   "target": "HAL_PCDEx_LPM_Callback",
+   "target_addr": "0x08003b8d",
+   "callers": [
+    "HAL_PCD_IRQHandler"
+   ],
+   "reason": "Ereignis: USB-LPM"
+  },
+  {
+   "veneer": "__USBD_CtlContinueSendData_veneer",
+   "addr": "0x6888",
+   "target": "USBD_CtlContinueSendData",
+   "target_addr": "0x08003b91",
+   "callers": [
+    "USBD_LL_DataInStage"
+   ],
+   "reason": "Ereignis: Control-Transfer (EP0)"
+  },
+  {
+   "veneer": "__usbd_midi_rx_veneer",
+   "addr": "0x6890",
+   "target": "usbd_midi_rx",
+   "target_addr": "0x08003ff9",
+   "callers": [
+    "_ZL18USBD_AUDIO_DataOutP19_USBD_HandleTypeDefh"
+   ],
+   "reason": "Ereignis: MIDI-Eingang vom Rechner"
+  },
+  {
+   "veneer": "__HAL_ADC_ErrorCallback_veneer",
+   "addr": "0x6898",
+   "target": "HAL_ADC_ErrorCallback",
+   "target_addr": "0x08003f29",
+   "callers": [
+    "ADC_DMAConvCplt"
+   ],
+   "reason": "Fehler: ADC-DMA-Fehler"
+  },
+  {
+   "veneer": "__USB_SetTurnaroundTime_veneer",
+   "addr": "0x68a0",
+   "target": "USB_SetTurnaroundTime",
+   "target_addr": "0x08003be9",
+   "callers": [
+    "HAL_PCD_IRQHandler"
+   ],
+   "reason": "Ereignis: Enumeration"
+  },
+  {
+   "veneer": "__HAL_PCD_ResetCallback_veneer",
+   "addr": "0x68a8",
+   "target": "HAL_PCD_ResetCallback",
+   "target_addr": "0x08003b01",
+   "callers": [
+    "HAL_PCD_IRQHandler"
+   ],
+   "reason": "Ereignis: USB-Bus-Reset"
+  },
+  {
+   "veneer": "__USB_ActivateSetup_veneer",
+   "addr": "0x68b0",
+   "target": "USB_ActivateSetup",
+   "target_addr": "0x08003e25",
+   "callers": [
+    "HAL_PCD_IRQHandler"
+   ],
+   "reason": "Ereignis: Enumeration"
+  },
+  {
+   "veneer": "__HAL_PCD_SetupStageCallback_veneer",
+   "addr": "0x68b8",
+   "target": "HAL_PCD_SetupStageCallback",
+   "target_addr": "0x08003af5",
+   "callers": [
+    "HAL_PCD_IRQHandler"
+   ],
+   "reason": "Ereignis: Control-Transfer (EP0 Setup)"
+  },
+  {
+   "veneer": "__USBD_LL_StallEP_veneer",
+   "addr": "0x68c0",
+   "target": "USBD_LL_StallEP",
+   "target_addr": "0x08003b75",
+   "callers": [
+    "USBD_LL_DataInStage"
+   ],
+   "reason": "Fehler/Control: Endpoint stallen"
+  },
+  {
+   "veneer": "__USBD_CtlReceiveStatus_veneer",
+   "addr": "0x68c8",
+   "target": "USBD_CtlReceiveStatus",
+   "target_addr": "0x08003bd1",
+   "callers": [
+    "USBD_LL_DataInStage"
+   ],
+   "reason": "Ereignis: Control-Transfer (EP0)"
+  },
+  {
+   "veneer": "__USB_GetDevSpeed_veneer",
+   "addr": "0x68d0",
+   "target": "USB_GetDevSpeed",
+   "target_addr": "0x08003cdd",
+   "callers": [
+    "HAL_PCD_IRQHandler"
+   ],
+   "reason": "Ereignis: Enumeration"
+  },
+  {
+   "veneer": "__HAL_RCC_GetHCLKFreq_veneer",
+   "addr": "0x68d8",
+   "target": "HAL_RCC_GetHCLKFreq",
+   "target_addr": "0x08003ea9",
+   "callers": [
+    "HAL_PCD_IRQHandler"
+   ],
+   "reason": "Ereignis: Enumeration (Turnaround-Zeit)"
+  },
+  {
+   "veneer": "__HAL_PCD_ResumeCallback_veneer",
+   "addr": "0x68e0",
+   "target": "HAL_PCD_ResumeCallback",
+   "target_addr": "0x08003b5d",
+   "callers": [
+    "HAL_PCD_IRQHandler"
+   ],
+   "reason": "Ereignis: USB-Resume"
+  },
+  {
+   "veneer": "__USBD_CtlSendStatus_veneer",
+   "addr": "0x68e8",
+   "target": "USBD_CtlSendStatus",
+   "target_addr": "0x08003bb9",
+   "callers": [
+    "USBD_LL_DataOutStage"
+   ],
+   "reason": "Ereignis: Control-Transfer (EP0)"
+  },
+  {
+   "veneer": "__setup_veneer",
+   "addr": "0x68f0",
+   "target": "setup",
+   "target_addr": "0x080041ed",
+   "callers": [
+    "StartDefaultTask"
+   ],
+   "reason": "Ereignis: einmal beim Start der Hauptschleife (StartDefaultTask)"
+  },
+  {
+   "veneer": "__USBD_CtlContinueRx_veneer",
+   "addr": "0x68f8",
+   "target": "USBD_CtlContinueRx",
+   "target_addr": "0x08003ba5",
+   "callers": [
+    "USBD_LL_DataOutStage"
+   ],
+   "reason": "Ereignis: Control-Transfer (EP0)"
+  },
+  {
+   "veneer": "__USB_EP0StartXfer_veneer",
+   "addr": "0x6900",
+   "target": "USB_EP0StartXfer",
+   "target_addr": "0x08003cf5",
+   "callers": [
+    "HAL_PCD_EP_Receive",
+    "HAL_PCD_EP_Transmit"
+   ],
+   "reason": "Ereignis: Control-Transfer (EP0)"
+  },
+  {
+   "veneer": "__HAL_PCD_ConnectCallback_veneer",
+   "addr": "0x6908",
+   "target": "HAL_PCD_ConnectCallback",
+   "target_addr": "0x08003b65",
+   "callers": [
+    "HAL_PCD_IRQHandler"
+   ],
+   "reason": "Ereignis: USB-Connect"
+  },
+  {
+   "veneer": "__HAL_PCD_SuspendCallback_veneer",
+   "addr": "0x6910",
+   "target": "HAL_PCD_SuspendCallback",
+   "target_addr": "0x08003b2d",
+   "callers": [
+    "HAL_PCD_IRQHandler"
+   ],
+   "reason": "Ereignis: USB-Suspend"
+  },
+  {
+   "veneer": "__usbd_audio_error_veneer",
+   "addr": "0x6918",
+   "target": "usbd_audio_error",
+   "target_addr": "0x080040e1",
+   "callers": [
+    "_Z15usbd_rx_convertPlj",
+    "_Z15usbd_tx_convertPlj",
+    "_ZL17USBD_AUDIO_DataInP19_USBD_HandleTypeDefh",
+    "_ZL18USBD_AUDIO_DataOutP19_USBD_HandleTypeDefh"
+   ],
+   "reason": "Fehler: USB-Puffer über-/unterlaufen (Debug-Meldung)"
+  },
+  {
+   "veneer": "__vPortFree_veneer",
+   "addr": "0x6920",
+   "target": "vPortFree",
+   "target_addr": "0x08003f2d",
+   "callers": [
+    "prvIdleTask"
+   ],
+   "reason": "Ereignis: Idle-Task räumt gelöschte Tasks auf (Patch-Wechsel)"
+  },
+  {
+   "veneer": "__vApplicationStackOverflowHook_veneer",
+   "addr": "0x6928",
+   "target": "vApplicationStackOverflowHook",
+   "target_addr": "0x08004075",
+   "callers": [
+    "vTaskSwitchContext"
+   ],
+   "reason": "Fehler: Stack-Überlauf (FreeRTOS)"
+  },
+  {
+   "veneer": "__HAL_PCD_DisconnectCallback_veneer",
+   "addr": "0x6930",
+   "target": "HAL_PCD_DisconnectCallback",
+   "target_addr": "0x08003b6d",
+   "callers": [
+    "HAL_PCD_IRQHandler"
+   ],
+   "reason": "Ereignis: USB-Disconnect"
+  }
+ ],
+ "veneers_in": [
+  "__memcpy_veneer",
+  "__getParameterValue_veneer",
+  "__vTaskSuspendAll_veneer",
+  "__setLed_veneer",
+  "__device_watchdog_veneer",
+  "__xTaskResumeAll_veneer",
+  "__vPortValidateInterruptPriority_veneer",
+  "__HAL_GetTick_veneer",
+  "__vPortEnterCritical_veneer",
+  "___ZN5Codec16getSampleCounterEv_veneer",
+  "__vTaskSwitchContext_veneer",
+  "__getProgramVector_veneer",
+  "__usbd_midi_ready_veneer",
+  "__usbd_midi_tx_veneer",
+  "__vListInsertEnd_veneer",
+  "__USBD_LL_PrepareReceive_veneer",
+  "__setParameterValue_veneer",
+  "__HAL_ADC_ConvCpltCallback_veneer",
+  "__memset_veneer",
+  "__prvAddCurrentTaskToDelayedList_veneer",
+  "__vPortExitCritical_veneer",
+  "__HAL_DMA_IRQHandler_veneer",
+  "__setLed.constprop.0_veneer",
+  "__uxListRemove_veneer",
+  "__xTaskResumeAll.part.0_veneer",
+  "__USBD_LL_FlushEP_veneer",
+  "__USBD_LL_Transmit_veneer"
+ ],
+ "flash_literals": {
+  "[.text+0x8e4]": [
+   "_Z15usbd_rx_convertPlj"
+  ],
+  "[.text+0x8ec]": [
+   "_Z15usbd_tx_convertPlj"
+  ],
+  "[.text+0x8d4]": [
+   "_ZL17USBD_AUDIO_DataInP19_USBD_HandleTypeDefh"
+  ],
+  "[.text+0x8dc]": [
+   "_ZL18USBD_AUDIO_DataOutP19_USBD_HandleTypeDefh"
+  ],
+  "[.rodata+0x9f4]": [
+   "_ZL17acdcUsbDiagReportm"
+  ],
+  "[.rodata+0x9f8]": [
+   "_ZL17acdcUsbDiagReportm"
+  ],
+  "[.rodata+0x9fc]": [
+   "_ZL17acdcUsbDiagReportm"
+  ],
+  "[.rodata+0xa00]": [
+   "_ZL17acdcUsbDiagReportm"
+  ],
+  "[.rodata+0xa04]": [
+   "_ZL17acdcUsbDiagReportm"
+  ],
+  "[.rodata+0xa08]": [
+   "_ZL17acdcUsbDiagReportm"
+  ],
+  "[.rodata+0xa0c]": [
+   "_ZL17acdcUsbDiagReportm"
+  ],
+  "[.rodata+0xa10]": [
+   "_ZL17acdcUsbDiagReportm"
+  ],
+  "[.rodata+0xa14]": [
+   "_ZL17acdcUsbDiagReportm"
+  ],
+  "[.rodata+0xa18]": [
+   "_ZL17acdcUsbDiagReportm"
+  ],
+  "[.rodata+0xa1c]": [
+   "_ZL17acdcUsbDiagReportm"
+  ],
+  "[.rodata+0xa20]": [
+   "_ZL17acdcUsbDiagReportm"
+  ],
+  "[.rodata+0xa24]": [
+   "_ZL17acdcUsbDiagReportm"
+  ],
+  "[.rodata+0xa28]": [
+   "_ZL17acdcUsbDiagReportm"
+  ]
+ },
+ "anchor": {
+  "start": "0x8003930",
+  "end": "0x8004223",
+  "refs": [
+   "ADC3_IRQHandler",
+   "ADC_IRQHandler",
+   "BusFault_Handler",
+   "DMA1_Stream2_IRQHandler",
+   "DebugMon_Handler",
+   "FPU_IRQHandler",
+   "HAL_ADC_ErrorCallback",
+   "HAL_PCDEx_LPM_Callback",
+   "HAL_PCD_ConnectCallback",
+   "HAL_PCD_DisconnectCallback",
+   "HAL_PCD_ResetCallback",
+   "HAL_PCD_ResumeCallback",
+   "HAL_PCD_SetupStageCallback",
+   "HAL_PCD_SuspendCallback",
+   "HAL_RCC_GetHCLKFreq",
+   "HardFault_Handler",
+   "MemManage_Handler",
+   "NMI_Handler",
+   "PVD_AVD_IRQHandler",
+   "QUADSPI_IRQHandler",
+   "Reset_Handler",
+   "SAI1_IRQHandler",
+   "SPI3_IRQHandler",
+   "SVC_Handler",
+   "USBD_CtlContinueRx",
+   "USBD_CtlContinueSendData",
+   "USBD_CtlReceiveStatus",
+   "USBD_CtlSendStatus",
+   "USBD_LL_StallEP",
+   "USB_ActivateSetup",
+   "USB_EP0StartXfer",
+   "USB_EP0_OutStart",
+   "USB_GetDevSpeed",
+   "USB_SetTurnaroundTime",
+   "UsageFault_Handler",
+   "WWDG_IRQHandler",
+   "[.rodata+0x9f4]",
+   "[.rodata+0x9f8]",
+   "[.rodata+0x9fc]",
+   "[.rodata+0xa00]",
+   "[.rodata+0xa04]",
+   "[.rodata+0xa08]",
+   "[.rodata+0xa0c]",
+   "[.rodata+0xa10]",
+   "[.rodata+0xa14]",
+   "[.rodata+0xa18]",
+   "[.rodata+0xa1c]",
+   "[.rodata+0xa20]",
+   "[.rodata+0xa24]",
+   "[.rodata+0xa28]",
+   "[.text+0x8d4]",
+   "[.text+0x8dc]",
+   "[.text+0x8e4]",
+   "[.text+0x8ec]",
+   "setup",
+   "usbd_audio_error",
+   "usbd_audio_rx_start_callback",
+   "usbd_midi_rx",
+   "vApplicationStackOverflowHook",
+   "vPortFree"
+  ]
+ },
+ "nm_compare": {
+  "ref": "firmware/builds/acdc1-build4z-fx3k",
+  "common": 726,
+  "moved_itcm": 105,
+  "same_addr": 33,
+  "size_diff": [
+   "_ZL14acdcOnLoopLatev",
+   "usbd_audio_error",
+   "_ZL27USBD_AUDIO_IsoOutIncompleteP19_USBD_HandleTypeDefh",
+   "_ZL26USBD_AUDIO_IsoINIncompleteP19_USBD_HandleTypeDefh",
+   "_ZL18USBD_AUDIO_DataOutP19_USBD_HandleTypeDefh",
+   "_ZL17USBD_AUDIO_DataInP19_USBD_HandleTypeDefh",
+   "usbd_audio_sof_callback",
+   "_ZL14USBD_AUDIO_SOFP19_USBD_HandleTypeDef"
+  ],
+  "only_ref": [
+   "_GLOBAL__sub_I_rx_buffer",
+   "_Z12debugMessagePKcff"
+  ],
+  "only_new": [
+   "_GLOBAL__sub_I_acdc_usb_diag",
+   "_ZL11acdcDiagPutPcS_PKcm.constprop.0",
+   "_ZL11acdcDiagPutPcS_PKcm.constprop.1",
+   "_ZL17acdcUsbDiagReportm"
+  ],
+  "data_common": 178,
+  "data_same": 116,
+  "rows": [
+   {
+    "name": "DMA1_Stream0_IRQHandler",
+    "ref": "0x32a0",
+    "new": "0x32a0",
+    "ref_size": 12,
+    "new_size": 12
+   },
+   {
+    "name": "DMA1_Stream1_IRQHandler",
+    "ref": "0x32ac",
+    "new": "0x32ac",
+    "ref_size": 12,
+    "new_size": 12
+   },
+   {
+    "name": "HAL_DMA_IRQHandler",
+    "ref": "0x32b8",
+    "new": "0x32b8",
+    "ref_size": 1704,
+    "new_size": 1704
+   },
+   {
+    "name": "SAI_DMATxHalfCplt",
+    "ref": "0x39bc",
+    "new": "0x39bc",
+    "ref_size": 10,
+    "new_size": 10
+   },
+   {
+    "name": "SAI_DMATxCplt",
+    "ref": "0x3960",
+    "new": "0x3960",
+    "ref_size": 92,
+    "new_size": 92
+   },
+   {
+    "name": "SAI_DMARxHalfCplt",
+    "ref": "0x3a24",
+    "new": "0x3a24",
+    "ref_size": 10,
+    "new_size": 10
+   },
+   {
+    "name": "SAI_DMARxCplt",
+    "ref": "0x39c8",
+    "new": "0x39c8",
+    "ref_size": 92,
+    "new_size": 92
+   },
+   {
+    "name": "HAL_SAI_RxHalfCpltCallback",
+    "ref": "0x3a30",
+    "new": "0x3a30",
+    "ref_size": 24,
+    "new_size": 24
+   },
+   {
+    "name": "HAL_SAI_RxCpltCallback",
+    "ref": "0x3a48",
+    "new": "0x3a48",
+    "ref_size": 32,
+    "new_size": 32
+   },
+   {
+    "name": "HAL_SAI_TxHalfCpltCallback",
+    "ref": "0x3a68",
+    "new": "0x3a68",
+    "ref_size": 2,
+    "new_size": 2
+   },
+   {
+    "name": "HAL_SAI_TxCpltCallback",
+    "ref": "0x3a6c",
+    "new": "0x3a6c",
+    "ref_size": 2,
+    "new_size": 2
+   },
+   {
+    "name": "audioCallback",
+    "ref": "0x3a70",
+    "new": "0x3a70",
+    "ref_size": 148,
+    "new_size": 148
+   },
+   {
+    "name": "vTaskNotifyGiveFromISR",
+    "ref": "0x3b04",
+    "new": "0x3b04",
+    "ref_size": 212,
+    "new_size": 212
+   },
+   {
+    "name": "vPortValidateInterruptPriority",
+    "ref": "0x3bd8",
+    "new": "0x3bd8",
+    "ref_size": 92,
+    "new_size": 92
+   },
+   {
+    "name": "PendSV_Handler",
+    "ref": "0x3ca0",
+    "new": "0x3ca0",
+    "ref_size": 100,
+    "new_size": 100
+   },
+   {
+    "name": "vTaskSwitchContext",
+    "ref": "0x3e18",
+    "new": "0x3e18",
+    "ref_size": 164,
+    "new_size": 164
+   },
+   {
+    "name": "ulTaskNotifyTake",
+    "ref": "0x3ebc",
+    "new": "0x3ebc",
+    "ref_size": 104,
+    "new_size": 104
+   },
+   {
+    "name": "prvAddCurrentTaskToDelayedList",
+    "ref": "0x3d04",
+    "new": "0x3d04",
+    "ref_size": 140,
+    "new_size": 140
+   },
+   {
+    "name": "vPortEnterCritical",
+    "ref": "0x3c34",
+    "new": "0x3c34",
+    "ref_size": 68,
+    "new_size": 68
+   },
+   {
+    "name": "vPortExitCritical",
+    "ref": "0x3c78",
+    "new": "0x3c78",
+    "ref_size": 40,
+    "new_size": 40
+   },
+   {
+    "name": "uxListRemove",
+    "ref": "0x3f70",
+    "new": "0x3f70",
+    "ref_size": 40,
+    "new_size": 40
+   },
+   {
+    "name": "vListInsertEnd",
+    "ref": "0x3f24",
+    "new": "0x3f24",
+    "ref_size": 28,
+    "new_size": 28
+   },
+   {
+    "name": "vListInsert",
+    "ref": "0x3f40",
+    "new": "0x3f40",
+    "ref_size": 48,
+    "new_size": 48
+   },
+   {
+    "name": "prvIdleTask",
+    "ref": "0x3d90",
+    "new": "0x3d90",
+    "ref_size": 136,
+    "new_size": 136
+   },
+   {
+    "name": "onProgramReady",
+    "ref": "0x40d4",
+    "new": "0x40d4",
+    "ref_size": 248,
+    "new_size": 248
+   },
+   {
+    "name": "_Z15usbd_tx_convertPlj",
+    "ref": "0x4054",
+    "new": "0x4054",
+    "ref_size": 128,
+    "new_size": 128
+   },
+   {
+    "name": "_Z15usbd_rx_convertPlj",
+    "ref": "0x3f98",
+    "new": "0x3f98",
+    "ref_size": 188,
+    "new_size": 188
+   },
+   {
+    "name": "updateParameters",
+    "ref": "0x41d8",
+    "new": "0x41d8",
+    "ref_size": 54,
+    "new_size": 54
+   },
+   {
+    "name": "_ZN10MidiWriter8transmitEv",
+    "ref": "0x4210",
+    "new": "0x4210",
+    "ref_size": 76,
+    "new_size": 76
+   },
+   {
+    "name": "_ZN12MidiReceiver7receiveEv",
+    "ref": "0x425c",
+    "new": "0x425c",
+    "ref_size": 104,
+    "new_size": 104
+   },
+   {
+    "name": "usbd_midi_ready",
+    "ref": "0x42fc",
+    "new": "0x42fc",
+    "ref_size": 36,
+    "new_size": 36
+   },
+   {
+    "name": "usbd_midi_tx",
+    "ref": "0x42c4",
+    "new": "0x42c4",
+    "ref_size": 56,
+    "new_size": 56
+   },
+   {
+    "name": "getProgramVector",
+    "ref": "0x41cc",
+    "new": "0x41cc",
+    "ref_size": 12,
+    "new_size": 12
+   },
+   {
+    "name": "OTG_FS_IRQHandler",
+    "ref": "0x8002080",
+    "new": "0x4320",
+    "ref_size": 12,
+    "new_size": 12
+   },
+   {
+    "name": "HAL_PCD_IRQHandler",
+    "ref": "0x800855c",
+    "new": "0x432c",
+    "ref_size": 1624,
+    "new_size": 1624
+   },
+   {
+    "name": "USB_ReadInterrupts",
+    "ref": "0x8009898",
+    "new": "0x4d54",
+    "ref_size": 8,
+    "new_size": 8
+   },
+   {
+    "name": "USB_ReadDevAllOutEpInterrupt",
+    "ref": "0x80098a0",
+    "new": "0x4d5c",
+    "ref_size": 14,
+    "new_size": 14
+   },
+   {
+    "name": "USB_ReadDevAllInEpInterrupt",
+    "ref": "0x80098b0",
+    "new": "0x4d6c",
+    "ref_size": 14,
+    "new_size": 14
+   },
+   {
+    "name": "USB_ReadDevOutEPInterrupt",
+    "ref": "0x80098c0",
+    "new": "0x4d7c",
+    "ref_size": 18,
+    "new_size": 18
+   },
+   {
+    "name": "USB_ReadDevInEPInterrupt",
+    "ref": "0x80098d4",
+    "new": "0x4d90",
+    "ref_size": 32,
+    "new_size": 32
+   },
+   {
+    "name": "USB_GetMode",
+    "ref": "0x80098f4",
+    "new": "0x4db0",
+    "ref_size": 8,
+    "new_size": 8
+   },
+   {
+    "name": "USB_ReadPacket",
+    "ref": "0x800972c",
+    "new": "0x4d0c",
+    "ref_size": 72,
+    "new_size": 72
+   },
+   {
+    "name": "USB_WritePacket",
+    "ref": "0x8009700",
+    "new": "0x4ce0",
+    "ref_size": 42,
+    "new_size": 42
+   },
+   {
+    "name": "USB_EPStartXfer",
+    "ref": "0x80094dc",
+    "new": "0x4abc",
+    "ref_size": 548,
+    "new_size": 548
+   },
+   {
+    "name": "HAL_PCD_SOFCallback",
+    "ref": "0x800a23c",
+    "new": "0x4de0",
+    "ref_size": 8,
+    "new_size": 8
+   },
+   {
+    "name": "USBD_LL_SOF",
+    "ref": "0x8009b84",
+    "new": "0x4f68",
+    "ref_size": 36,
+    "new_size": 36
+   },
+   {
+    "name": "_ZL14USBD_AUDIO_SOFP19_USBD_HandleTypeDef",
+    "ref": "0x800aff8",
+    "new": "0x55c0",
+    "ref_size": 36,
+    "new_size": 156
+   },
+   {
+    "name": "usbd_audio_sof_callback",
+    "ref": "0x800aed0",
+    "new": "0x54dc",
+    "ref_size": 296,
+    "new_size": 228
+   },
+   {
+    "name": "usbd_audio_get_rx_count",
+    "ref": "0x80154fc",
+    "new": "0x565c",
+    "ref_size": 40,
+    "new_size": 40
+   },
+   {
+    "name": "HAL_PCD_DataOutStageCallback",
+    "ref": "0x800a214",
+    "new": "0x4db8",
+    "ref_size": 20,
+    "new_size": 20
+   },
+   {
+    "name": "USBD_LL_DataOutStage",
+    "ref": "0x80099d4",
+    "new": "0x4e48",
+    "ref_size": 104,
+    "new_size": 104
+   },
+   {
+    "name": "_ZL18USBD_AUDIO_DataOutP19_USBD_HandleTypeDefh",
+    "ref": "0x800aab4",
+    "new": "0x5224",
+    "ref_size": 572,
+    "new_size": 696
+   },
+   {
+    "name": "USBD_LL_GetRxDataSize",
+    "ref": "0x800a364",
+    "new": "0x4e40",
+    "ref_size": 8,
+    "new_size": 8
+   },
+   {
+    "name": "HAL_PCD_EP_GetRxCount",
+    "ref": "0x8008d18",
+    "new": "0x49d4",
+    "ref_size": 18,
+    "new_size": 18
+   },
+   {
+    "name": "USBD_LL_PrepareReceive",
+    "ref": "0x800a34c",
+    "new": "0x4e28",
+    "ref_size": 22,
+    "new_size": 22
+   },
+   {
+    "name": "HAL_PCD_EP_Receive",
+    "ref": "0x8008cc8",
+    "new": "0x4984",
+    "ref_size": 78,
+    "new_size": 78
+   },
+   {
+    "name": "HAL_PCD_DataInStageCallback",
+    "ref": "0x800a228",
+    "new": "0x4dcc",
+    "ref_size": 18,
+    "new_size": 18
+   },
+   {
+    "name": "USBD_LL_DataInStage",
+    "ref": "0x8009a3c",
+    "new": "0x4eb0",
+    "ref_size": 182,
+    "new_size": 182
+   },
+   {
+    "name": "_ZL17USBD_AUDIO_DataInP19_USBD_HandleTypeDefh",
+    "ref": "0x800acf0",
+    "new": "0x50b8",
+    "ref_size": 480,
+    "new_size": 364
+   },
+   {
+    "name": "USBD_LL_Transmit",
+    "ref": "0x800214c",
+    "new": "0x4e10",
+    "ref_size": 22,
+    "new_size": 22
+   },
+   {
+    "name": "HAL_PCD_EP_Transmit",
+    "ref": "0x8008d2c",
+    "new": "0x49e8",
+    "ref_size": 78,
+    "new_size": 78
+   },
+   {
+    "name": "_ZN5Codec16getSampleCounterEv",
+    "ref": "0x8014a2c",
+    "new": "0x5684",
+    "ref_size": 32,
+    "new_size": 32
+   },
+   {
+    "name": "codec_ndtr",
+    "ref": "0x8003ff8",
+    "new": "0x56a4",
+    "ref_size": 20,
+    "new_size": 20
+   },
+   {
+    "name": "HAL_PCD_ISOINIncompleteCallback",
+    "ref": "0x800a24c",
+    "new": "0x4df0",
+    "ref_size": 8,
+    "new_size": 8
+   },
+   {
+    "name": "USBD_LL_IsoINIncomplete",
+    "ref": "0x8009ba8",
+    "new": "0x4f8c",
+    "ref_size": 36,
+    "new_size": 36
+   },
+   {
+    "name": "_ZL26USBD_AUDIO_IsoINIncompleteP19_USBD_HandleTypeDefh",
+    "ref": "0x800a9f4",
+    "new": "0x4fe4",
+    "ref_size": 192,
+    "new_size": 212
+   },
+   {
+    "name": "USBD_LL_FlushEP",
+    "ref": "0x800a2dc",
+    "new": "0x4df8",
+    "ref_size": 22,
+    "new_size": 22
+   },
+   {
+    "name": "HAL_PCD_EP_Flush",
+    "ref": "0x8008e7c",
+    "new": "0x4a38",
+    "ref_size": 62,
+    "new_size": 62
+   },
+   {
+    "name": "USB_FlushTxFifo",
+    "ref": "0x800934c",
+    "new": "0x4a78",
+    "ref_size": 36,
+    "new_size": 36
+   },
+   {
+    "name": "USB_FlushRxFifo",
+    "ref": "0x8009370",
+    "new": "0x4a9c",
+    "ref_size": 32,
+    "new_size": 32
+   },
+   {
+    "name": "HAL_PCD_ISOOUTIncompleteCallback",
+    "ref": "0x800a244",
+    "new": "0x4de8",
+    "ref_size": 8,
+    "new_size": 8
+   },
+   {
+    "name": "USBD_LL_IsoOUTIncomplete",
+    "ref": "0x8009bcc",
+    "new": "0x4fb0",
+    "ref_size": 36,
+    "new_size": 36
+   },
+   {
+    "name": "_ZL27USBD_AUDIO_IsoOutIncompleteP19_USBD_HandleTypeDefh",
+    "ref": "0x800a548",
+    "new": "0x4fd4",
+    "ref_size": 4,
+    "new_size": 16
+   },
+   {
+    "name": "SysTick_Handler",
+    "ref": "0x4320",
+    "new": "0x56b8",
+    "ref_size": 24,
+    "new_size": 24
+   },
+   {
+    "name": "HAL_IncTick",
+    "ref": "0x4338",
+    "new": "0x56d0",
+    "ref_size": 24,
+    "new_size": 24
+   },
+   {
+    "name": "HAL_GetTick",
+    "ref": "0x4350",
+    "new": "0x56e8",
+    "ref_size": 12,
+    "new_size": 12
+   },
+   {
+    "name": "xTaskGetSchedulerState",
+    "ref": "0x4480",
+    "new": "0x5818",
+    "ref_size": 32,
+    "new_size": 32
+   },
+   {
+    "name": "xPortSysTickHandler",
+    "ref": "0x44a0",
+    "new": "0x5838",
+    "ref_size": 44,
+    "new_size": 44
+   },
+   {
+    "name": "xTaskIncrementTick",
+    "ref": "0x445c",
+    "new": "0x57f4",
+    "ref_size": 36,
+    "new_size": 36
+   },
+   {
+    "name": "xTaskIncrementTick.part.0",
+    "ref": "0x435c",
+    "new": "0x56f4",
+    "ref_size": 256,
+    "new_size": 256
+   },
+   {
+    "name": "DMA1_Stream3_IRQHandler",
+    "ref": "0x44cc",
+    "new": "0x5864",
+    "ref_size": 12,
+    "new_size": 12
+   },
+   {
+    "name": "ADC_DMAConvCplt",
+    "ref": "0x44ec",
+    "new": "0x5884",
+    "ref_size": 108,
+    "new_size": 108
+   },
+   {
+    "name": "ADC_DMAHalfConvCplt",
+    "ref": "0x44e0",
+    "new": "0x5878",
+    "ref_size": 10,
+    "new_size": 10
+   },
+   {
+    "name": "HAL_ADC_ConvCpltCallback",
+    "ref": "0x44d8",
+    "new": "0x5870",
+    "ref_size": 2,
+    "new_size": 2
+   },
+   {
+    "name": "HAL_ADC_ConvHalfCpltCallback",
+    "ref": "0x44dc",
+    "new": "0x5874",
+    "ref_size": 2,
+    "new_size": 2
+   },
+   {
+    "name": "_ZL20acdcMeasureRawInputsv",
+    "ref": "0x4558",
+    "new": "0x58f0",
+    "ref_size": 372,
+    "new_size": 372
+   },
+   {
+    "name": "_ZL14acdcOnLoopLatev",
+    "ref": "0x46cc",
+    "new": "0x6090",
+    "ref_size": 448,
+    "new_size": 440
+   },
+   {
+    "name": "setLed",
+    "ref": "0x492c",
+    "new": "0x62e8",
+    "ref_size": 204,
+    "new_size": 204
+   },
+   {
+    "name": "setLed.constprop.0",
+    "ref": "0x488c",
+    "new": "0x6248",
+    "ref_size": 160,
+    "new_size": 160
+   },
+   {
+    "name": "getParameterValue",
+    "ref": "0x49f8",
+    "new": "0x63b4",
+    "ref_size": 20,
+    "new_size": 20
+   },
+   {
+    "name": "setParameterValue",
+    "ref": "0x4a0c",
+    "new": "0x63c8",
+    "ref_size": 16,
+    "new_size": 16
+   },
+   {
+    "name": "StartDefaultTask",
+    "ref": "0x4a1c",
+    "new": "0x63d8",
+    "ref_size": 12,
+    "new_size": 12
+   },
+   {
+    "name": "loop",
+    "ref": "0x4a28",
+    "new": "0x63e4",
+    "ref_size": 20,
+    "new_size": 20
+   },
+   {
+    "name": "onLoop",
+    "ref": "0x4a3c",
+    "new": "0x63f8",
+    "ref_size": 4,
+    "new_size": 4
+   },
+   {
+    "name": "_ZN3Owl4loopEv",
+    "ref": "0x4c0c",
+    "new": "0x65c8",
+    "ref_size": 76,
+    "new_size": 76
+   },
+   {
+    "name": "_ZN14ProgramManager16isProgramRunningEv",
+    "ref": "0x4c58",
+    "new": "0x6614",
+    "ref_size": 16,
+    "new_size": 16
+   },
+   {
+    "name": "device_watchdog",
+    "ref": "0x4c68",
+    "new": "0x6624",
+    "ref_size": 16,
+    "new_size": 16
+   },
+   {
+    "name": "vTaskDelayUntil",
+    "ref": "0x4d9c",
+    "new": "0x6758",
+    "ref_size": 176,
+    "new_size": 176
+   },
+   {
+    "name": "vTaskSuspendAll",
+    "ref": "0x4e4c",
+    "new": "0x6808",
+    "ref_size": 16,
+    "new_size": 16
+   },
+   {
+    "name": "xTaskResumeAll",
+    "ref": "0x4e5c",
+    "new": "0x6818",
+    "ref_size": 32,
+    "new_size": 32
+   },
+   {
+    "name": "xTaskResumeAll.part.0",
+    "ref": "0x4c78",
+    "new": "0x6634",
+    "ref_size": 292,
+    "new_size": 292
+   },
+   {
+    "name": "memset",
+    "ref": "0x4e84",
+    "new": "0x6840",
+    "ref_size": 16,
+    "new_size": 16
+   },
+   {
+    "name": "memcpy",
+    "ref": "0x4e94",
+    "new": "0x6850",
+    "ref_size": 28,
+    "new_size": 28
+   },
+   {
+    "name": "abs",
+    "ref": "0x4e7c",
+    "new": "0x6838",
+    "ref_size": 8,
+    "new_size": 8
+   },
+   {
+    "name": "onLoop",
+    "ref": "0x4a3c",
+    "new": "0x63f8",
+    "ref_size": 4,
+    "new_size": 4
+   },
+   {
+    "name": "main",
+    "ref": "0x8002b48",
+    "new": "0x8004508",
+    "ref_size": 2332,
+    "new_size": 2332
+   },
+   {
+    "name": "SystemInit",
+    "ref": "0x8003f04",
+    "new": "0x80058c4",
+    "ref_size": 240,
+    "new_size": 240
+   },
+   {
+    "name": "Reset_Handler",
+    "ref": "0x8001ee0",
+    "new": "0x8003930",
+    "ref_size": 128,
+    "new_size": 128
+   },
+   {
+    "name": "_ZN11MidiHandler11handleSysExEPht",
+    "ref": "0x801440c",
+    "new": "0x8014b00",
+    "ref_size": 1252,
+    "new_size": 1252
+   }
+  ]
+ },
+ "fails": [
+  "60 Flash-Ziele des ITCM (Vektoren, Veneer-Ziele, Literale) liegen im Anker 0x08003930–0x08004223 (2291 B); außerhalb: [.rodata+0x9f4], [.rodata+0x9f8], [.rodata+0x9fc], [.rodata+0xa00], [.rodata+0xa04], [.rodata+0xa08], [.rodata+0xa0c], [.rodata+0xa10], [.rodata+0xa14], [.rodata+0xa18], [.rodata+0xa1c], [.rodata+0xa20], [.rodata+0xa24], [.rodata+0xa28]"
+ ],
+ "warns": [
+  "keine unerwarteten Funktionen im ITCM: _ZL11acdcDiagPutPcS_PKcm.constprop.0, _ZL11acdcDiagPutPcS_PKcm.constprop.1, _ZL17acdcUsbDiagReportm"
+ ],
+ "passed": false
+}

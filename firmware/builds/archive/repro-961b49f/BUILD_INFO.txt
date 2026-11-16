@@ -1,0 +1,11 @@
+# Build repro-961b49f
+datum:      2026-11-14T12:22:26Z
+commit:     961b49f58ba3beeda7a1afde9074e38a33f04de6
+libraries:  OpenWareLibraries-9e8f64e.tar.gz sha256 c56a465cf59086b2a1f742b7cb9848e17af4b3957108cc1289540b180ad69d88
+toolchain:  arm-none-eabi-gcc (Arm GNU Toolchain 12.2 (Build arm-12.24)) 12.2.1 20221205
+make:       CONFIG=Release GIT_REVISION="961b49f Release"
+fw_version: v22.5.0
+patch:      01-gcc12-extern-uint8.patch sha256 51a3f66d1c91db10d537a4061e3c273ba13552e38a2357cd64a8ce36ecc77762
+bin_size:   104296
+bin_sha256: 924bc72b07a3eaff593d1be2f18dbd5016d8eb4e931425edcda9c1a09b6baf55
+version:    AC/DC v22.5.0

@@ -1,0 +1,3 @@
+7f9f9a34b5b19a0245f0ab15426d891adc4f00505c86236cadec167e0402925b  firmware/builds/acdc1-build2-fx1d/ACDC.bin
+654892c152220d052a9d1774df28cda81c830bccb2ef9d96d80b08e3f4a17556  firmware/flashlog/20261115_build2-fx1d-kontrolle/readback_after.bin
+7f9f9a34b5b19a0245f0ab15426d891adc4f00505c86236cadec167e0402925b  readback_after.bin[0:105968]

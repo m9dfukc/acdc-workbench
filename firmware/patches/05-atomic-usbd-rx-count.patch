@@ -1,0 +1,20 @@
+usbd_audio_get_rx_count() atomar machen (messlog D13).
+Der SOF-Interrupt (OTG_FS, Priorität 6) liest usbd_audio_rx_count und überschreibt ihn danach.
+Der SAI-DMA-Interrupt (Priorität 5) kann dazwischenfahren und += len (ein Block) addieren,
+das dann verloren geht. Folge: Das Feedback meldet einen Block zu wenig, der Rechner schickt
+8 Frames zu wenig, und der RX-Puffer läuft später um genau einen Block leer (A6: 6 × 8 Samples in 10 min).
+--- a/Source/ProgramManager.cpp
++++ b/Source/ProgramManager.cpp
+@@ -37,9 +37,12 @@
+ 
+ /* Get number of samples transmitted since previous request */
+ uint32_t usbd_audio_get_rx_count(){
++  uint32_t primask = __get_PRIMASK();
++  __disable_irq();
+   uint32_t samples = codec.getSampleCounter();
+   uint32_t pos = usbd_audio_rx_count + samples;
+   usbd_audio_rx_count = -samples; // next block will increment by a full blocksize
++  __set_PRIMASK(primask);
+   return pos;
+ }
+ 

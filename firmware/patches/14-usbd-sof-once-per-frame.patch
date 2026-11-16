@@ -1,0 +1,35 @@
+Patch 14: USBD_AUDIO_SOF nur einmal pro Frame auswerten (messlog D45/D46, docs/05 „Build 5“).
+
+Befund [gemessen, Diagnose-Patches 13/13b]: Mit dem USB-Code im ITCM (Gruppe D) läuft die SOF-Kette
+in fast jedem Frame zweimal (125 276 Aufrufe, davon 61 784 mit derselben Frame-Nummer, in ≈ 63 s).
+Die Feedback-Periode (FB_RATE = 32 Aufrufe) umfasst dann nur ≈ 16 Frames, gemessen werden 24–45
+statt 48 Samples pro Frame, gesendet 47,5–48,5. Der Host liefert falsch, der RX-Puffer läuft leer
+(fb clamp, Slips, D39). ISO-OUT-Pakete gehen dabei keine verloren.
+[Hypothese] Der schnelle Handler springt erneut ein, bevor das gelöschte GINTSTS.SOF im
+USB-Taktbereich wirkt. Mit dem Code im Flash ist er langsam genug (0 Doppelte).
+
+Änderung (nur Source/usbd_audio.cpp): USBD_AUDIO_SOF merkt sich die Frame-Nummer (DSTS.FNSOF) und
+kehrt bei einem zweiten Aufruf im selben Frame sofort zurück. Mit USB im Flash wirkungslos.
+
+Auf 01 02 04 05 06 03 07d 08 + 12b und 11g (USB im ITCM), auch mit 11f oder ohne ITCM-Patch
+anwendbar. usbd_audio.cpp hat CRLF.
+
+--- a/Source/usbd_audio.cpp
++++ b/Source/usbd_audio.cpp
+@@ -1436,6 +1436,16 @@
+   /* SOF (Start of Frame) Every millisecond the USB host transmits a special SOF (start of frame) token, containing an 11-bit incrementing frame number in place of a device address. This is used to synchronize isochronous and interrupt data transfers. */
+   USBD_AUDIO_HandleTypeDef* haudio;
+   haudio = (USBD_AUDIO_HandleTypeDef*)pdev->pClassData;  
++  /* AC/DC fork, Patch 14 (acdc project messlog D46): count every frame once. With the
++     USB interrupt handler in ITCM this callback ran twice in almost every frame
++     (measured), presumably because the handler re-enters before the cleared
++     GINTSTS.SOF flag has taken effect in the USB clock domain. The feedback period (FB_RATE SOFs) then covered only about half
++     the time, the feedback sent to the host was wrong and the RX buffer ran empty. */
++  static uint16_t sof_last_fn = 0xffff;
++  uint16_t sof_fn = USB_SOF_NUMBER();
++  if(sof_fn == sof_last_fn)
++    return USBD_OK;
++  sof_last_fn = sof_fn;
+ #if defined(USE_USBD_RX_FB)
+   static uint32_t sof_count = 0;
+   if(++sof_count == FB_RATE){

@@ -1,0 +1,2 @@
+Quelle: https://github.com/mattpocock/skills @ 5863806 (2026-11-12)
+Installiert: grill-me, grilling, handoff, research (nur SKILL.md, ohne agents/openai.yaml)

@@ -1,0 +1,3 @@
+2c140449cd44b4f93cc43405bca4553ac12d1c6e0ace30cfcb5c336772cfcd59  firmware/builds/acdc1-build4x-noD/ACDC.bin
+1b8637db50ba1d496b2bc6458e8188c753e588e6fd52120a41422ebc57c4b7a2  firmware/flashlog/20261116_build4x-noD/readback_after.bin
+2c140449cd44b4f93cc43405bca4553ac12d1c6e0ace30cfcb5c336772cfcd59  readback_after.bin[0:107116]

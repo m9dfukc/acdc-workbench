@@ -1,0 +1,3 @@
+9611f646d7fa68a1149fcc063cc72f1cc37b16154a8610007367eaff89e9c2e5  firmware/builds/acdc1-build5b-diag-itcm/ACDC.bin
+1a15874a1f823912cb252c4faac331e6c16499b1a5cfe99e32953597d6922e52  firmware/flashlog/20261116_build5b-diag-itcm/readback_after.bin
+9611f646d7fa68a1149fcc063cc72f1cc37b16154a8610007367eaff89e9c2e5  readback_after.bin[0:109104]

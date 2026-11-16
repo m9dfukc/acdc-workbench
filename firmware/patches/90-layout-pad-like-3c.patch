@@ -1,0 +1,20 @@
+Layout-Test (kein Funktions-Patch): Build 2 + ungenutzte Fuellfunktion (0x150 B Code) und
+Fuell-RAM (0x28 B) in ACDC.cpp, sodass alle Adressen nach onLoop wie in Build 3c liegen.
+Frage: Verschiebt allein die Lage im Flash/RAM fs/8, Kamm und Mischprodukte? (messlog D32/D33)
+Setzt 03 voraus. Nicht fuer den Alltag.
+
+--- a/ACDC/Core/Src/ACDC.cpp	2022-07-13 10:07:13
++++ b/ACDC/Core/Src/ACDC.cpp	2026-11-15 18:13:26
+@@ -229,3 +229,12 @@
+ #include "FastLogTable.h"
+ #include "FastPowTable.h"
+ #endif
++
++/* Layout test only, never called: shifts the code (+0x150 B) and RAM (+0x28 B)
++ * after onLoop exactly like Build 3c (onLoop with the raw LED measurement),
++ * without any functional change. The padding shares the input sections of
++ * onLoop and fast_log_table_size so that --gc-sections keeps it. messlog D33. */
++extern "C" __attribute__((used, naked, noinline, section(".text.onLoop"))) void acdc_layout_pad(void){
++  __asm__ volatile(".space 0x150");
++}
++__attribute__((used, aligned(4), section(".bss.fast_log_table_size"))) static uint8_t acdc_layout_pad_bss[0x28];

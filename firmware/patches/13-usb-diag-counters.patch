@@ -1,0 +1,266 @@
+Patch 13: Diagnose-Zähler für den USB-Audio-Pfad (docs/05 „Build 5“). Nur für Diagnose-Builds.
+
+Frage: Warum gehen mit dem USB-Code im ITCM (Gruppe D, fx3i/noC/onlyD, messlog D39) ISO-OUT-Pakete
+verloren (Slips, fb clamp)? [Code] USBD_AUDIO_DataOut setzt den OUT-Endpunkt nach jedem Paket neu
+auf (USB_EPStartXfer: Frame-Parität = Gegenteil des aktuellen Frames). Geschieht das erst nach dem
+nächsten SOF, verpasst der Endpunkt ein Paket; USBD_AUDIO_IsoOutIncomplete ist leer.
+
+Zähler (Source/acdc_usb_diag.h), alle in den USB-Funktionen selbst (always_inline, wandern also mit
+Gruppe D ins ITCM), zurückgesetzt beim ersten OUT-Paket eines Streams:
+  l/g  fehlende Frame-Nummern zwischen ISO-OUT-Paketen (Summe) / Anzahl Lücken
+  k    zwei OUT-Pakete mit derselben Frame-Nummer
+  L    Frame-Nummer hat sich zwischen Eintritt in DataOut und Neu-Aufsetzen geändert
+  b    Paketlänge außerhalb 47..49 Frames
+  i    INCOMPISOOUT;  t/f  ISO-IN-incomplete Audio-TX- bzw. Feedback-Endpunkt
+  c/d  fb clamp / verworfene Feedback-Messung (ersetzen die Meldungen "fb clamp" und "fb")
+  e    usbd_audio_error (rx ovf/unf, tx ovf/unf; deren Meldung bleibt)
+  s    fehlende SOF-Nummern
+  p    µs vom SOF-Interrupt bis DataOut, min-max (DWT-Zykluszähler, wird im SOF eingeschaltet)
+Meldung alle 500 ms aus onLoop (07d-Code in .late_text): "l.. g.. k.. L.. b.. i.. t.. f.. c.. d.. e.. s.. p<min>-<max>",
+sobald ein OUT-Stream lief. Lesen mit owl_read.py vor dem Schließen des Streams (acdc_rec.py --owl-read).
+
+Auf 01 02 04 05 06 03 07d 08 + 12b und 11f (USB im Flash) bzw. 11g (USB im ITCM).
+usbd_audio.cpp hat CRLF. Neue Datei Source/acdc_usb_diag.h.
+
+--- /dev/null
++++ b/Source/acdc_usb_diag.h
+@@ -0,0 +1,32 @@
++/* AC/DC fork, Patch 13 (diagnostic build, acdc project docs/05 "Build 5"):
++   counters for the USB audio path, reported by onLoop (ACDC.cpp) as program message.
++   Not for release builds. */
++#ifndef __ACDC_USB_DIAG_H
++#define __ACDC_USB_DIAG_H
++#include <stdint.h>
++struct AcdcUsbDiag {
++  uint32_t out_lost;     /* l: missing frame numbers between ISO OUT packets (sum of gap-1) */
++  uint32_t out_gaps;     /* g: number of such gaps */
++  uint32_t out_dup;      /* k: two ISO OUT packets with the same frame number */
++  uint32_t out_late;     /* L: frame number changed between DataOut entry and re-arm */
++  uint32_t out_badlen;   /* b: packet length outside 47..49 frames */
++  uint32_t out_incomp;   /* i: INCOMPISOOUT interrupts */
++  uint32_t in_tx_incomp; /* t: ISO IN incomplete, audio TX endpoint */
++  uint32_t in_fb_incomp; /* f: ISO IN incomplete, feedback endpoint */
++  uint32_t fb_clamp;     /* c: feedback controller at its limit (replaces message "fb clamp") */
++  uint32_t fb_disc;      /* d: feedback measurement discarded (replaces message "fb") */
++  uint32_t err;          /* e: usbd_audio_error calls (rx ovf/unf, tx ovf/unf) */
++  uint32_t sof_lost;     /* s: missing SOF frame numbers */
++  uint32_t pos_min;      /* p: CPU cycles from SOF interrupt to DataOut, min and max */
++  uint32_t pos_max;
++  uint32_t sof_cyc;
++  uint16_t last_out_fn;
++  uint16_t last_sof_fn;
++  uint8_t out_valid;
++  uint8_t sof_valid;
++  uint8_t active;
++};
++#ifdef __cplusplus
++extern "C" AcdcUsbDiag acdc_usb_diag;
++#endif
++#endif
+--- a/Source/usbd_audio.cpp
++++ b/Source/usbd_audio.cpp
+@@ -22,12 +22,69 @@
+ 
+ #include "CircularBuffer.h"
+ #include "Codec.h"
++#include "acdc_usb_diag.h"
++
++/* AC/DC fork, Patch 13: diagnostic counters (acdc_usb_diag.h). The helpers are
++   always inlined, so they stay in the USB functions (and move with them into ITCM). */
++AcdcUsbDiag acdc_usb_diag;
++static inline __attribute__((always_inline)) uint16_t acdc_diag_fn(void){
++  return (uint16_t)USB_SOF_NUMBER();
++}
++static inline __attribute__((always_inline)) void acdc_diag_sof(void){
++  AcdcUsbDiag& d = acdc_usb_diag;
++  if(!(DWT->CTRL & DWT_CTRL_CYCCNTENA_Msk)){
++    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
++    DWT->LAR = 0xC5ACCE55;
++    DWT->CYCCNT = 0;
++    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
++  }
++  d.sof_cyc = DWT->CYCCNT;
++  uint16_t fn = acdc_diag_fn();
++  if(d.sof_valid){
++    uint16_t gap = (fn - d.last_sof_fn) & 0x7ff;
++    if(gap > 1)
++      d.sof_lost += gap - 1;
++  }
++  d.last_sof_fn = fn;
++  d.sof_valid = 1;
++}
++static inline __attribute__((always_inline)) uint16_t acdc_diag_out_enter(bool first){
++  AcdcUsbDiag& d = acdc_usb_diag;
++  uint32_t pos = DWT->CYCCNT - d.sof_cyc;
++  uint16_t fn = acdc_diag_fn();
++  if(first){
++    uint8_t sof_valid = d.sof_valid;
++    uint16_t last_sof_fn = d.last_sof_fn;
++    uint32_t sof_cyc = d.sof_cyc;
++    memset(&d, 0, sizeof(d));
++    d.sof_valid = sof_valid;
++    d.last_sof_fn = last_sof_fn;
++    d.sof_cyc = sof_cyc;
++    d.pos_min = 0xffffffff;
++    d.active = 1;
++  }else if(d.out_valid){
++    uint16_t gap = (fn - d.last_out_fn) & 0x7ff;
++    if(gap == 0){
++      d.out_dup++;
++    }else if(gap > 1){
++      d.out_gaps++;
++      d.out_lost += gap - 1;
++    }
++  }
++  if(pos < d.pos_min) d.pos_min = pos;
++  if(pos > d.pos_max) d.pos_max = pos;
++  d.last_out_fn = fn;
++  d.out_valid = 1;
++  return fn;
++}
+ 
++
+ // TODO: not static/global; move the buffers out of this compilation unit
+ CircularBuffer<audio_t> rx_buffer;
+ CircularBuffer<audio_t> tx_buffer;
+ 
+ void usbd_audio_error(const char* msg, int diff){
++  acdc_usb_diag.err++; // Patch 13
+   size_t samples = 0; // codec.getSampleCounter();
+   float rx = (rx_buffer.getWriteCapacity()+samples)*1.0f/rx_buffer.getSize();
+   float tx = (tx_buffer.getReadCapacity()+samples)*1.0f/tx_buffer.getSize();
+@@ -1407,10 +1464,10 @@
+     int32_t corr = -((fb_err_ema >> FB_EMA_SHIFT) * FB_GAIN) / USBD_AUDIO_RX_CHANNELS;
+     if(corr > FB_CORR_MAX){
+       corr = FB_CORR_MAX;
+-      debugMessage("fb clamp", (int)err, (int)corr);
++      acdc_usb_diag.fb_clamp++; // Patch 13, was debugMessage("fb clamp", ...)
+     }else if(corr < -FB_CORR_MAX){
+       corr = -FB_CORR_MAX;
+-      debugMessage("fb clamp", (int)err, (int)corr);
++      acdc_usb_diag.fb_clamp++; // Patch 13, was debugMessage("fb clamp", ...)
+     }
+     fb_corr = corr;
+   }
+@@ -1421,7 +1478,7 @@
+     haudio->fb_data.val = samples * 2 + fb_corr; // adjust for devices with 1/2 readings
+   }else if(haudio->fb_data.val){
+     size_t capacity = rx_buffer.getWriteCapacity() + codec.getSampleCounter();
+-    debugMessage("fb", haudio->fb_data.val*1.0f/(1<<14), samples*1.0f/(1<<14));
++    acdc_usb_diag.fb_disc++; // Patch 13, was debugMessage("fb", ...)
+   }
+ #endif
+ }
+@@ -1436,6 +1493,7 @@
+   /* SOF (Start of Frame) Every millisecond the USB host transmits a special SOF (start of frame) token, containing an 11-bit incrementing frame number in place of a device address. This is used to synchronize isochronous and interrupt data transfers. */
+   USBD_AUDIO_HandleTypeDef* haudio;
+   haudio = (USBD_AUDIO_HandleTypeDef*)pdev->pClassData;  
++  acdc_diag_sof(); // Patch 13
+ #if defined(USE_USBD_RX_FB)
+   static uint32_t sof_count = 0;
+   if(++sof_count == FB_RATE){
+@@ -1467,6 +1525,7 @@
+ #ifdef USE_USBD_RX_FB
+   if(pdev->ep_in[AUDIO_FB_EP & 0xFU].is_used && 
+      IS_ISO_IN_INCOMPLETE_EP(AUDIO_FB_EP & 0x0FU, current_sof, haudio->fb_soffn)){
++    acdc_usb_diag.in_fb_incomp++; // Patch 13
+     USB_CLEAR_INCOMPLETE_IN_EP(AUDIO_FB_EP);
+     USBD_LL_FlushEP(pdev, AUDIO_FB_EP);
+     haudio->fb_soffn = current_sof;
+@@ -1478,6 +1537,7 @@
+ #ifdef USE_USBD_AUDIO_TX
+   if(pdev->ep_in[AUDIO_TX_EP & 0xFU].is_used && 
+      IS_ISO_IN_INCOMPLETE_EP(AUDIO_TX_EP & 0x0FU, current_sof, haudio->tx_soffn)){
++    acdc_usb_diag.in_tx_incomp++; // Patch 13
+     USB_CLEAR_INCOMPLETE_IN_EP(AUDIO_TX_EP);
+     USBD_LL_FlushEP(pdev, AUDIO_TX_EP);
+     haudio->tx_soffn = current_sof;
+@@ -1500,6 +1560,7 @@
+   */
+ static uint8_t  USBD_AUDIO_IsoOutIncomplete (USBD_HandleTypeDef *pdev, uint8_t epnum)
+ {
++  acdc_usb_diag.out_incomp++; // Patch 13
+   return USBD_OK;
+ }
+ 
+@@ -1521,8 +1582,11 @@
+   switch(epnum){
+ #ifdef USE_USBD_AUDIO_RX
+   case AUDIO_RX_EP:{
++    const uint16_t diag_fn = acdc_diag_out_enter(haudio->audio_rx_active == 0); // Patch 13
+     // we are required to support null packets: len may be zero
+     size_t len = USBD_LL_GetRxDataSize(pdev, AUDIO_RX_EP) / sizeof(audio_t);
++    if(len < 47*USBD_AUDIO_RX_CHANNELS || len > 49*USBD_AUDIO_RX_CHANNELS)
++      acdc_usb_diag.out_badlen++; // Patch 13
+ 
+     if(haudio->audio_rx_active == 0){
+       // It is the first time DataOut is called since rx was activated
+@@ -1568,6 +1632,8 @@
+ #endif
+     /* Prepare Out endpoint to receive next audio packet */
+     USBD_LL_PrepareReceive(pdev, AUDIO_RX_EP, (uint8_t*)haudio->audio_rx_transmit, AUDIO_RX_PACKET_SIZE);
++    if(acdc_diag_fn() != diag_fn)
++      acdc_usb_diag.out_late++; // Patch 13: re-armed after the next SOF
+ 
+     break;
+   }
+--- a/ACDC/Core/Src/ACDC.cpp
++++ b/ACDC/Core/Src/ACDC.cpp
+@@ -255,6 +255,49 @@
+   for(size_t ch=0; ch<4; ++ch)
+     acdc_raw.levels[ch] = acdc_raw.levels[ch] * ACDC_RAW_SMOOTHING + (sum[ch] / frames) * (1 - ACDC_RAW_SMOOTHING);
+   return clip;
++}
++
++/* AC/DC fork, Patch 13 (diagnostic build): USB counters as program message every
++   500 ms while a USB audio stream has been seen, see Source/acdc_usb_diag.h.
++   "l g k L b i t f c d e s p<min>-<max>" (p in us after the SOF interrupt). */
++#include "acdc_usb_diag.h"
++extern "C" uint32_t SystemCoreClock;
++static char acdc_diag_msg[64];
++__attribute__((noinline, section(".late_text")))
++static char* acdcDiagPut(char* p, char* end, const char* tag, uint32_t v){
++  char t[10];
++  int n = 0;
++  do{ t[n++] = '0' + v % 10; v /= 10; }while(v && n < 10);
++  while(*tag && p < end) *p++ = *tag++;
++  while(n && p < end) *p++ = t[--n];
++  return p;
++}
++__attribute__((noinline, section(".late_text")))
++static void acdcUsbDiagReport(uint32_t now){
++  static uint32_t last = 0;
++  const AcdcUsbDiag& d = acdc_usb_diag;
++  if(!d.active || now - last < 500)
++    return;
++  last = now;
++  const uint32_t mhz = SystemCoreClock / 1000000;
++  char* p = acdc_diag_msg;
++  char* end = acdc_diag_msg + sizeof(acdc_diag_msg) - 1;
++  p = acdcDiagPut(p, end, "l", d.out_lost);
++  p = acdcDiagPut(p, end, " g", d.out_gaps);
++  p = acdcDiagPut(p, end, " k", d.out_dup);
++  p = acdcDiagPut(p, end, " L", d.out_late);
++  p = acdcDiagPut(p, end, " b", d.out_badlen);
++  p = acdcDiagPut(p, end, " i", d.out_incomp);
++  p = acdcDiagPut(p, end, " t", d.in_tx_incomp);
++  p = acdcDiagPut(p, end, " f", d.in_fb_incomp);
++  p = acdcDiagPut(p, end, " c", d.fb_clamp);
++  p = acdcDiagPut(p, end, " d", d.fb_disc);
++  p = acdcDiagPut(p, end, " e", d.err);
++  p = acdcDiagPut(p, end, " s", d.sof_lost);
++  p = acdcDiagPut(p, end, " p", d.pos_min == 0xffffffff ? 0 : d.pos_min / mhz);
++  p = acdcDiagPut(p, end, "-", d.pos_max / mhz);
++  *p = 0;
++  getProgramVector()->message = acdc_diag_msg;
+ }
+ 
+ __attribute__((noinline, used, section(".late_text")))
+@@ -292,6 +335,7 @@
+     setLed(i+5, tx_levels[i]*4096);
+     setParameterValue(PARAMETER_BA+i, tx_levels[i]*4096);
+   }
++  acdcUsbDiagReport(now); // Patch 13
+ }
+ 
+ void onLoop(void){

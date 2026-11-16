@@ -1,0 +1,2 @@
+Gerät: acdc1 (0039001c:31315101:39333437)
+Report: patches/backup/acdc1/20261114/device_report.json

@@ -1,0 +1,3 @@
+b55b94d8734baf1cf763dfefb380a561029bd00d4a645cdcef3b75d99e6f010e  firmware/builds/acdc1-build5c-fx3l/ACDC.bin
+ba7fdc9f8379c06230c8e16efd5e7db3cd64a27b3f144c4a5d051c61b2abb30d  firmware/flashlog/20261116_build5c-fx3l-alltag/readback_after.bin
+b55b94d8734baf1cf763dfefb380a561029bd00d4a645cdcef3b75d99e6f010e  readback_after.bin[0:107340]

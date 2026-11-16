@@ -1,0 +1,144 @@
+Patch 13b: weitere Diagnose-Zähler für SOF und Feedback, auf Patch 13 (docs/05 „Build 5“). Nur Diagnose.
+
+Befund mit 13 (messlog D45): Mit USB im ITCM geht kein ISO-OUT-Paket verloren (l0 g0 L0 i0), aber
+der Regler klemmt (c2370 in ≈ 63 s), obwohl er nur alle 32 SOF läuft (≈ 2000 Perioden). Verdacht:
+zusätzliche SOF-Aufrufe bzw. falsche Feedback-Messung.
+
+Neue Meldung (ersetzt die von 13): "n.. S.. P.. d.. c.. R<min>/<max> V<min>/<max> E<min>/<max> u.."
+  n  SOF-Aufrufe (USBD_AUDIO_SOF)        S  davon mit derselben Frame-Nummer wie der vorige
+  P  Feedback-Perioden (usbd_audio_sof_callback)
+  d/c verworfene Messungen / Klemmen (wie 13)
+  R  gemessene Samples pro Frame, min/max, als (Wert − 48) in 1/1000 Sample
+  V  gesendeter Feedback-Wert nach dem Update, min/max, ebenso
+  E  Füllstandsfehler einer Periode (Patch 06), min/max in Samples
+  u  kürzester Abstand zweier SOF-Aufrufe in µs
+
+Auf 01 02 04 05 06 03 07d 08 + 11f/11g + 12b + 13. usbd_audio.cpp hat CRLF.
+
+--- a/Source/acdc_usb_diag.h
++++ b/Source/acdc_usb_diag.h
+@@ -17,6 +17,14 @@
+   uint32_t fb_disc;      /* d: feedback measurement discarded (replaces message "fb") */
+   uint32_t err;          /* e: usbd_audio_error calls (rx ovf/unf, tx ovf/unf) */
+   uint32_t sof_lost;     /* s: missing SOF frame numbers */
++  /* Patch 13b */
++  uint32_t sof_n;        /* n: SOF callbacks */
++  uint32_t sof_dup;      /* S: SOF callbacks with the same frame number as the previous one */
++  uint32_t sof_dmin;     /* u: shortest time between two SOF callbacks (cycles) */
++  uint32_t fb_n;         /* P: feedback periods (usbd_audio_sof_callback) */
++  int32_t smp_min, smp_max; /* R: measured samples per frame (n.14) */
++  int32_t fbv_min, fbv_max; /* V: feedback value after the update (n.14) */
++  int32_t err_min, err_max; /* E: level error of a period (samples, Patch 06) */
+   uint32_t pos_min;      /* p: CPU cycles from SOF interrupt to DataOut, min and max */
+   uint32_t pos_max;
+   uint32_t sof_cyc;
+--- a/Source/usbd_audio.cpp
++++ b/Source/usbd_audio.cpp
+@@ -38,13 +38,19 @@
+     DWT->CYCCNT = 0;
+     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+   }
+-  d.sof_cyc = DWT->CYCCNT;
++  uint32_t cyc = DWT->CYCCNT;
+   uint16_t fn = acdc_diag_fn();
+   if(d.sof_valid){
+     uint16_t gap = (fn - d.last_sof_fn) & 0x7ff;
+     if(gap > 1)
+       d.sof_lost += gap - 1;
++    if(gap == 0)
++      d.sof_dup++; // Patch 13b
++    if(d.active && cyc - d.sof_cyc < d.sof_dmin)
++      d.sof_dmin = cyc - d.sof_cyc; // Patch 13b
+   }
++  d.sof_n++; // Patch 13b
++  d.sof_cyc = cyc;
+   d.last_sof_fn = fn;
+   d.sof_valid = 1;
+ }
+@@ -61,6 +67,9 @@
+     d.last_sof_fn = last_sof_fn;
+     d.sof_cyc = sof_cyc;
+     d.pos_min = 0xffffffff;
++    d.sof_dmin = 0xffffffff; // Patch 13b
++    d.smp_min = d.fbv_min = d.err_min = 0x7fffffff;
++    d.smp_max = d.fbv_max = d.err_max = -0x7fffffff;
+     d.active = 1;
+   }else if(d.out_valid){
+     uint16_t gap = (fn - d.last_out_fn) & 0x7ff;
+@@ -1458,6 +1467,8 @@
+   /* Patch 06: Regler aus dem Fuellstand dieser Periode */
+   if(fb_level_n > 0){
+     int32_t err = fb_level_sum / fb_level_n - (int32_t)FB_LEVEL_TARGET; // > 0: zu voll
++    if(err < acdc_usb_diag.err_min) acdc_usb_diag.err_min = err; // Patch 13b
++    if(err > acdc_usb_diag.err_max) acdc_usb_diag.err_max = err;
+     fb_level_sum = 0;
+     fb_level_n = 0;
+     fb_err_ema += err - (fb_err_ema >> FB_EMA_SHIFT);
+@@ -1472,6 +1483,9 @@
+     fb_corr = corr;
+   }
+   int current = haudio->fb_data.val - fb_corr; // Vergleich ohne Korrektur
++  acdc_usb_diag.fb_n++; // Patch 13b
++  if(samples < acdc_usb_diag.smp_min) acdc_usb_diag.smp_min = samples;
++  if(samples > acdc_usb_diag.smp_max) acdc_usb_diag.smp_max = samples;
+   if(std::abs(current - samples) < 0x4000){ // maximum 1 sample difference from current setting
+     haudio->fb_data.val = samples + fb_corr;
+   }else if(std::abs(current - samples * 2) < 0x4000){
+@@ -1480,6 +1494,8 @@
+     size_t capacity = rx_buffer.getWriteCapacity() + codec.getSampleCounter();
+     acdc_usb_diag.fb_disc++; // Patch 13, was debugMessage("fb", ...)
+   }
++  if((int32_t)haudio->fb_data.val < acdc_usb_diag.fbv_min) acdc_usb_diag.fbv_min = haudio->fb_data.val; // Patch 13b
++  if((int32_t)haudio->fb_data.val > acdc_usb_diag.fbv_max) acdc_usb_diag.fbv_max = haudio->fb_data.val;
+ #endif
+ }
+ 
+--- a/ACDC/Core/Src/ACDC.cpp
++++ b/ACDC/Core/Src/ACDC.cpp
+@@ -271,6 +271,12 @@
+   while(*tag && p < end) *p++ = *tag++;
+   while(n && p < end) *p++ = t[--n];
+   return p;
++}
++__attribute__((noinline, section(".late_text")))
++static char* acdcDiagPutS(char* p, char* end, const char* tag, int32_t v){
++  while(*tag && p < end) *p++ = *tag++;
++  if(v < 0 && p < end){ *p++ = '-'; v = -v; }
++  return acdcDiagPut(p, end, "", (uint32_t)v);
+ }
+ __attribute__((noinline, section(".late_text")))
+ static void acdcUsbDiagReport(uint32_t now){
+@@ -282,20 +288,20 @@
+   const uint32_t mhz = SystemCoreClock / 1000000;
+   char* p = acdc_diag_msg;
+   char* end = acdc_diag_msg + sizeof(acdc_diag_msg) - 1;
+-  p = acdcDiagPut(p, end, "l", d.out_lost);
+-  p = acdcDiagPut(p, end, " g", d.out_gaps);
+-  p = acdcDiagPut(p, end, " k", d.out_dup);
+-  p = acdcDiagPut(p, end, " L", d.out_late);
+-  p = acdcDiagPut(p, end, " b", d.out_badlen);
+-  p = acdcDiagPut(p, end, " i", d.out_incomp);
+-  p = acdcDiagPut(p, end, " t", d.in_tx_incomp);
+-  p = acdcDiagPut(p, end, " f", d.in_fb_incomp);
+-  p = acdcDiagPut(p, end, " c", d.fb_clamp);
++  /* Patch 13b: second message layout "n S P d c R V E u" (R, V: per frame minus 48, in 1/1000 sample) */
++  auto milli = [](int32_t v14){ return (int32_t)(((int64_t)v14 * 1000) >> 14) - 48000; };
++  p = acdcDiagPut(p, end, "n", d.sof_n);
++  p = acdcDiagPut(p, end, " S", d.sof_dup);
++  p = acdcDiagPut(p, end, " P", d.fb_n);
+   p = acdcDiagPut(p, end, " d", d.fb_disc);
+-  p = acdcDiagPut(p, end, " e", d.err);
+-  p = acdcDiagPut(p, end, " s", d.sof_lost);
+-  p = acdcDiagPut(p, end, " p", d.pos_min == 0xffffffff ? 0 : d.pos_min / mhz);
+-  p = acdcDiagPut(p, end, "-", d.pos_max / mhz);
++  p = acdcDiagPut(p, end, " c", d.fb_clamp);
++  p = acdcDiagPutS(p, end, " R", d.fb_n ? milli(d.smp_min) : 0);
++  p = acdcDiagPutS(p, end, "/", d.fb_n ? milli(d.smp_max) : 0);
++  p = acdcDiagPutS(p, end, " V", d.fb_n ? milli(d.fbv_min) : 0);
++  p = acdcDiagPutS(p, end, "/", d.fb_n ? milli(d.fbv_max) : 0);
++  p = acdcDiagPutS(p, end, " E", d.err_min == 0x7fffffff ? 0 : d.err_min);
++  p = acdcDiagPutS(p, end, "/", d.err_max == -0x7fffffff ? 0 : d.err_max);
++  p = acdcDiagPut(p, end, " u", d.sof_dmin == 0xffffffff ? 0 : d.sof_dmin / mhz);
+   *p = 0;
+   getProgramVector()->message = acdc_diag_msg;
+ }

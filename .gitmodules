@@ -1,0 +1,4 @@
+[submodule "firmware/OpenWare"]
+	path = firmware/OpenWare
+	url = https://github.com/m9dfukc/OpenWare.git
+	branch = acdc/fx1d

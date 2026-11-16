@@ -1,0 +1,209 @@
+Build 5 (USB im ITCM mit RX-Callbacks aus Codec.o): Ersatz für Patch 11 / 11a–11f (docs/05 „Build 5“).
+
+Vollständige Alternative zu 11-itcm-hotpath.patch und den Varianten, NICHT zusätzlich anwenden.
+Inhalt wie 11 (alle Gruppen A–H im ITCM, auch D = USB), dazu in Gruppe A die Regel
+  *Codec.o(.text.HAL_SAI_RxHalfCpltCallback .text.HAL_SAI_RxCpltCallback)
+für Patch 12b (wie 11f für die noD-Variante).
+
+Prüfung: tools/check_itcm.py <build> (alle Gruppen)
+Auf Patches 01 02 04 05 06 03 07d 08 (Basis db9d3dd + Libraries 9e8f64e), dazu 12b. startup_owl3.s hat CRLF.
+
+--- a/Hardware/xibeca.ld
++++ b/Hardware/xibeca.ld
+@@ -46,11 +46,136 @@
+     PROVIDE ( _ISR_VECTOR_END = . );
+   } >FLASH
+   _ISR_VECTOR_SIZE = _ISR_VECTOR_END - _ISR_VECTOR;
++
++  /* CCM section, vars must be located here explicitly */
++  /* Example: int foo __attribute__ ((section (".ccmdata"))); */
++  /* AC/DC fork: moved up from below so that it stays at the start of CCMRAM
++     (0x1000, PROGRAMSTACK) and .itcm_text follows it. NOLOAD, so moving it in
++     the script changes no flash address. */
++  .ccmdata (NOLOAD) :
++  {
++    *(.ccmdata)
++    . = ALIGN(8);
++  } >CCMRAM
++
++  /* AC/DC fork: hot path in ITCM.
++     On this hardware the position of code in flash shifts the block synchronous
++     noise lines (fs/8, USB SOF comb, mixing products). Everything that runs
++     periodically (SAI DMA ISR, FreeRTOS scheduler and idle task, audio task,
++     USB OTG ISR and audio class, SysTick, ADC DMA, onLoop LED code) runs from
++     ITCM instead, together with a copy of the vector table (VTOR), so that its
++     timing no longer depends on the flash layout.
++     - Placed after PROGRAMSTACK and before _CCMRAM: the patch heap segment
++       [_CCMRAM, _CCMRAM_END) is zeroed at every patch start (ProgramManager.cpp).
++     - Must come before .text: an input section goes to the first rule it matches.
++     - ITCM has 64 bit ECC: start, end and load address are 8 byte aligned and
++       Reset_Handler copies 64 bit words (Source/startup_owl3.s).
++     - Nothing here may run before that copy (SystemInit, constructors).
++     - Calls out to flash go through linker veneers placed in ITCM; they are
++       audited with tools/check_itcm.py (only cold or error paths may leave). */
++  .itcm_vectors (NOLOAD) :
++  {
++    . = ALIGN(1024);   /* VTOR: 166 entries -> 1 KB alignment */
++    _sitcm_vect = .;
++    . = . + _ISR_VECTOR_SIZE;
++    . = ALIGN(8);
++    _eitcm_vect = .;
++  } >CCMRAM
++
++  .itcm_text : ALIGN(8)
++  {
++    _sitcm_text = .;
++    /* A: SAI1 DMA ISR (6 kHz) */
++    *stm32h7xx_it.o(.text.DMA1_Stream0_IRQHandler .text.DMA1_Stream1_IRQHandler)
++    *stm32h7xx_hal_dma.o(.text.HAL_DMA_IRQHandler)
++    *stm32h7xx_hal_sai.o(.text.SAI_DMATxHalfCplt .text.SAI_DMATxCplt .text.SAI_DMARxHalfCplt .text.SAI_DMARxCplt)
++    *stm32h7xx_hal_sai.o(.text.HAL_SAI_RxHalfCpltCallback .text.HAL_SAI_RxCpltCallback)
++    /* Patch 11g: with Patch 12b the strong RX callbacks (audioCallback) are in Codec.o */
++    *Codec.o(.text.HAL_SAI_RxHalfCpltCallback .text.HAL_SAI_RxCpltCallback)
++    *Codec.o(.text.HAL_SAI_TxHalfCpltCallback .text.HAL_SAI_TxCpltCallback)
++    *ProgramManager.o(.text.audioCallback)
++    *tasks.o(.text.vTaskNotifyGiveFromISR)
++    *port.o(.text.vPortValidateInterruptPriority)
++    /* B: scheduler and idle task */
++    *port.o(.text.PendSV_Handler .text.vPortEnterCritical .text.vPortExitCritical)
++    *tasks.o(.text.vTaskSwitchContext .text.ulTaskNotifyTake .text.prvAddCurrentTaskToDelayedList .text.prvIdleTask)
++    *list.o(.text.uxListRemove .text.vListInsertEnd .text.vListInsert)
++    /* C: audio task (onProgramReady, USB conversion, parameters, MIDI) */
++    *ProgramManager.o(.text.onProgramReady .text._Z15usbd_tx_convertPlj .text._Z15usbd_rx_convertPlj .text.getProgramVector)
++    *ACDC.o(.text.updateParameters)
++    *MidiWriter.o(.text._ZN10MidiWriter8transmitEv)
++    *MidiReceiver.o(.text._ZN12MidiReceiver7receiveEv)
++    *usbd_audio.o(.text.usbd_midi_ready .text.usbd_midi_tx)
++    /* D: USB OTG FS ISR, USBD core and audio class, feedback (1 kHz SOF) */
++    *stm32h7xx_it.o(.text.OTG_FS_IRQHandler)
++    *stm32h7xx_hal_pcd.o(.text.HAL_PCD_IRQHandler .text.HAL_PCD_EP_GetRxCount .text.HAL_PCD_EP_Receive .text.HAL_PCD_EP_Transmit .text.HAL_PCD_EP_Flush)
++    *stm32h7xx_ll_usb.o(.text.USB_ReadInterrupts .text.USB_ReadDevAllOutEpInterrupt .text.USB_ReadDevAllInEpInterrupt .text.USB_ReadDevOutEPInterrupt .text.USB_ReadDevInEPInterrupt .text.USB_GetMode .text.USB_ReadPacket .text.USB_WritePacket .text.USB_EPStartXfer .text.USB_FlushTxFifo .text.USB_FlushRxFifo)
++    *usbd_conf.o(.text.HAL_PCD_SOFCallback .text.HAL_PCD_DataOutStageCallback .text.HAL_PCD_DataInStageCallback .text.HAL_PCD_ISOINIncompleteCallback .text.HAL_PCD_ISOOUTIncompleteCallback .text.USBD_LL_GetRxDataSize .text.USBD_LL_PrepareReceive .text.USBD_LL_Transmit .text.USBD_LL_FlushEP)
++    *usbd_core.o(.text.USBD_LL_SOF .text.USBD_LL_DataOutStage .text.USBD_LL_DataInStage .text.USBD_LL_IsoINIncomplete .text.USBD_LL_IsoOUTIncomplete)
++    *usbd_audio.o(.text._ZL14USBD_AUDIO_SOFP19_USBD_HandleTypeDef .text._ZL18USBD_AUDIO_DataOutP19_USBD_HandleTypeDefh .text._ZL17USBD_AUDIO_DataInP19_USBD_HandleTypeDefh .text._ZL26USBD_AUDIO_IsoINIncompleteP19_USBD_HandleTypeDefh .text._ZL27USBD_AUDIO_IsoOutIncompleteP19_USBD_HandleTypeDefh .text.usbd_audio_sof_callback)
++    *ProgramManager.o(.text.usbd_audio_get_rx_count)
++    *Codec.o(.text._ZN5Codec16getSampleCounterEv)
++    *pcm3168a.o(.text.codec_ndtr)
++    /* E: SysTick */
++    *stm32h7xx_it.o(.text.SysTick_Handler)
++    *stm32h7xx_hal.o(.text.HAL_IncTick .text.HAL_GetTick)
++    *tasks.o(.text.xTaskGetSchedulerState .text.xTaskIncrementTick .text.xTaskIncrementTick.part.0)
++    *port.o(.text.xPortSysTickHandler)
++    /* F: ADC DMA */
++    *stm32h7xx_it.o(.text.DMA1_Stream3_IRQHandler)
++    *stm32h7xx_hal_adc.o(.text.ADC_DMAConvCplt .text.ADC_DMAHalfConvCplt .text.HAL_ADC_ConvCpltCallback .text.HAL_ADC_ConvHalfCpltCallback)
++    /* onLoop (every 2 ms): 07d input LED code and its helpers */
++    KEEP(*ACDC.o(.late_text .late_text.*))
++    *ACDC.o(.text.setLed .text.setLed.constprop.0)
++    *ProgramManager.o(.text.getParameterValue .text.setParameterValue)
++    /* H: main loop (StartDefaultTask -> loop -> onLoop, Owl::loop, every 2 ms) */
++    *main.o(.text.StartDefaultTask)
++    *callbacks.o(.text.loop)
++    *ACDC.o(.text.onLoop)
++    *Owl.o(.text._ZN3Owl4loopEv)
++    *ProgramManager.o(.text._ZN14ProgramManager16isProgramRunningEv)
++    *support.o(.text.device_watchdog)
++    *tasks.o(.text.vTaskDelayUntil .text.vTaskSuspendAll .text.xTaskResumeAll .text.xTaskResumeAll.part.0)
++    /* libc helpers called from the above */
++    *libc_nano.a:*(.text.memset .text.memcpy .text.abs)
++    . = ALIGN(8);
++    _eitcm_text = .;
++  } >CCMRAM AT>FLASH
++  _litcm_text = LOADADDR(.itcm_text);
++  PROVIDE (_CCMRAM = _eitcm_text);
++  ASSERT((_sitcm_vect & 0x3FF) == 0, "ITCM vector table not 1 KB aligned")
++  ASSERT((_sitcm_text & 7) == 0 && (_eitcm_text & 7) == 0 && (_litcm_text & 7) == 0, ".itcm_text not 8 byte aligned (ITCM ECC)")
+ 
+   /* The program code and other data goes into FLASH */
+   .text :
+   {
+     . = ALIGN(4);
++    /* AC/DC fork: flash code and strings whose addresses the ITCM block holds
++       (vector table entries, veneer targets on cold/error paths, debug strings
++       of the hot functions). Kept together at the start of .text, so that code
++       behind them can move (layout test fx3ip) without changing one byte of the
++       ITCM content. tools/check_itcm.py checks that nothing referenced from ITCM
++       lies behind _eitcm_anchor. */
++    _sitcm_anchor = .;
++    *startup_owl3.o(.text.Reset_Handler .text.Default_Handler)
++    *errorhandlers.o(.text.*_Handler .text.*_IRQHandler)
++    *stm32h7xx_it.o(.text.*_IRQHandler)
++    *port.o(.text.SVC_Handler)
++    *usbd_conf.o(.text.HAL_PCD_SetupStageCallback .text.HAL_PCD_ResetCallback .text.HAL_PCD_ConnectCallback .text.HAL_PCD_DisconnectCallback .text.HAL_PCD_ResumeCallback .text.HAL_PCD_SuspendCallback .text.USBD_LL_StallEP)
++    *stm32h7xx_hal_pcd_ex.o(.text.HAL_PCDEx_LPM_Callback)
++    *usbd_ioreq.o(.text.USBD_CtlContinueRx .text.USBD_CtlContinueSendData .text.USBD_CtlReceiveStatus .text.USBD_CtlSendStatus)
++    *stm32h7xx_ll_usb.o(.text.USB_EP0StartXfer .text.USB_EP0_OutStart .text.USB_ActivateSetup .text.USB_GetDevSpeed .text.USB_SetTurnaroundTime)
++    *stm32h7xx_hal_rcc.o(.text.HAL_RCC_GetHCLKFreq)
++    *stm32h7xx_hal_adc.o(.text.HAL_ADC_ErrorCallback)
++    *heap_4.o(.text.vPortFree)
++    *MidiReceiver.o(.text.usbd_midi_rx)
++    *ProgramManager.o(.text.usbd_audio_rx_start_callback .text.vApplicationStackOverflowHook)
++    *usbd_audio.o(.text.usbd_audio_error)
++    *message.o(.text._Z12debugMessagePKcff .text._Z12debugMessagePKcfff)
++    *callbacks.o(.text.setup)
++    *usbd_audio.o(.rodata._ZL18USBD_AUDIO_DataOutP19_USBD_HandleTypeDefh.str* .rodata._ZL17USBD_AUDIO_DataInP19_USBD_HandleTypeDefh.str* .rodata.usbd_audio_sof_callback.str*)
++    *ProgramManager.o(.rodata._Z15usbd_rx_convertPlj.str* .rodata._Z15usbd_tx_convertPlj.str*)
++    _eitcm_anchor = .;
+     *(.text)           /* .text sections (code) */
+     *(.text*)          /* .text* sections (code) */
+     *(.glue_7)         /* glue arm to thumb code */
+@@ -153,14 +278,7 @@
+   } >ITCMRAM
+   _estack = ORIGIN(ITCMRAM)+LENGTH(ITCMRAM);
+ 
+-  /* CCM section, vars must be located here explicitly */
+-  /* Example: int foo __attribute__ ((section (".ccmdata"))); */
+-  .ccmdata (NOLOAD) :
+-  {
+-    *(.ccmdata)
+-    . = ALIGN(8);
+-    PROVIDE (_CCMRAM = .);
+-  } >CCMRAM
++  /* AC/DC fork: .ccmdata moved up in front of .itcm_text (see there) */
+   _CCMRAM_END = ORIGIN(CCMRAM) + LENGTH(CCMRAM);
+   _CCMRAM_SIZE = _CCMRAM_END - _CCMRAM;
+ 
+--- a/Source/startup_owl3.s
++++ b/Source/startup_owl3.s
+@@ -99,7 +99,41 @@
+   ldr  r3, = _ebss
+   cmp  r2, r3
+   bcc  FillZerobss
++
++/* AC/DC fork: copy the vector table and the hot path (.itcm_text) from flash
++   into ITCM, then point VTOR at the copy. ITCM has 64 bit ECC, so both copies
++   write whole 64 bit words (start, end and source are 8 byte aligned, see
++   Hardware/xibeca.ld). Nothing in ITCM may run before this point. */
++  ldr  r0, =_ISR_VECTOR
++  ldr  r1, =_sitcm_vect
++  ldr  r2, =_eitcm_vect
++  b  LoopCopyItcmVect
++CopyItcmVect:
++  ldrd  r3, r12, [r0], #8
++  strd  r3, r12, [r1], #8
++LoopCopyItcmVect:
++  cmp  r1, r2
++  bcc  CopyItcmVect
++
++  ldr  r0, =_litcm_text
++  ldr  r1, =_sitcm_text
++  ldr  r2, =_eitcm_text
++  b  LoopCopyItcmText
++CopyItcmText:
++  ldrd  r3, r12, [r0], #8
++  strd  r3, r12, [r1], #8
++LoopCopyItcmText:
++  cmp  r1, r2
++  bcc  CopyItcmText
++  dsb
++  isb
+ 
++  ldr  r0, =0xE000ED08     /* SCB->VTOR */
++  ldr  r1, =_sitcm_vect
++  str  r1, [r0]
++  dsb
++  isb
++
+ /* Call static constructors */
+     bl __libc_init_array
+ /* Call the application's entry point.*/

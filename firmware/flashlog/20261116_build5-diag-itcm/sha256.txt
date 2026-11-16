@@ -1,0 +1,3 @@
+27390dcadfd911e2697e0cf6caf1d83e4008c2b4918f5736f25796cb2d8faf48  firmware/builds/acdc1-build5-diag-itcm/ACDC.bin
+485791a6ff554bd0a25ab70f492a7ae4b1faa2d3b7e0ad4681d03d36facea5c2  firmware/flashlog/20261116_build5-diag-itcm/readback_after.bin
+27390dcadfd911e2697e0cf6caf1d83e4008c2b4918f5736f25796cb2d8faf48  readback_after.bin[0:108904]

@@ -1,0 +1,6 @@
+make: error: couldn't create cache file '/var/folders/b1/ynq3h0k90njc9syzng7czrxc0000gn/T/xcrun_db-E0Jauph9' (errno=Operation not permitted)
+make: error: couldn't create cache file '/var/folders/b1/ynq3h0k90njc9syzng7czrxc0000gn/T/xcrun_db-Ac7fFcff' (errno=Operation not permitted)
+/Applications/ArmGNUToolchain/12.2.rel1/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/12.2.1/../../../../arm-none-eabi/bin/ld: warning: Build/ACDC.elf has a LOAD segment with RWX permissions
+Built ACDC Release firmware in ./Build/ACDC.bin
+   text	   data	    bss	    dec	    hex	filename
+ 106724	    580	 128656	 235960	  399b8	/Users/m9dfukc/Desktop/acdc/firmware/_work/acdc1-build4-fx3i/ACDC/Build/ACDC.elf

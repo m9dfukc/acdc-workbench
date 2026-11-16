@@ -1,0 +1,24 @@
+Füllvariante fx3ip zu Build 4 (docs/05 „Build 4“ Q2 b): 0x150 B Füllbytes im Flash hinter
+dem ITCM-Anker (wie 0x150 B in Build 3c bzw. fx1p/Patch 90, D33).
+
+Wirkung: Alle Flash-Funktionen hinter _eitcm_anchor (übriger Code, Flash→ITCM-Veneers),
+.rodata, .ARM, init_array und das .data-Ladeabbild rücken um 0x150 B nach hinten.
+Unverändert bleiben der ITCM-Inhalt (Code, Veneers, Vektorkopie, bytegleich mit fx3i,
+geprüft mit tools/check_itcm.py --same-itcm), der Anker selbst und alle RAM-Adressen.
+Patch 90 passt nicht auf 07d (onLoop ist dort ein Sprung mit Füllfunktion), deshalb
+liegt die Füllung hier im Linkerskript. Nur auf 01 02 04 05 06 03 07d 08 11.
+
+a
+b
+--- a/Hardware/xibeca.ld
++++ b/Hardware/xibeca.ld
+@@ -174,6 +174,9 @@
+     *usbd_audio.o(.rodata._ZL18USBD_AUDIO_DataOutP19_USBD_HandleTypeDefh.str* .rodata._ZL17USBD_AUDIO_DataInP19_USBD_HandleTypeDefh.str* .rodata.usbd_audio_sof_callback.str*)
+     *ProgramManager.o(.rodata._Z15usbd_rx_convertPlj.str* .rodata._Z15usbd_tx_convertPlj.str*)
+     _eitcm_anchor = .;
++    /* AC/DC fork, layout test fx3ip (Patch 91): 0x150 B padding like Build 3c/fx1p.
++       Moves all flash code behind the anchor, the ITCM content stays byte equal. */
++    . = . + 0x150;
+     *(.text)           /* .text sections (code) */
+     *(.text*)          /* .text* sections (code) */
+     *(.glue_7)         /* glue arm to thumb code */

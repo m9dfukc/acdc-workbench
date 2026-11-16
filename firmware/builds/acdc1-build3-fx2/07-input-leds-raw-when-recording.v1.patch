@@ -1,0 +1,136 @@
+Build 3 (v22.4.r-fx2): Eingangs-LEDs 1-4 zeigen bei aktivem TX-Stream (Rechner nimmt auf)
+den rohen Eingangspegel (raw_in_levels, gemessen in usbd_tx_convert, Quadratmittel x 4096,
+tau 4 ms), Rot 300 ms ab Spitze >= -0,1 dBFS. Ohne TX-Stream unveraendert (Patch-Wert AA).
+Setzt 03 (USE_USBD_AUDIO_TX_PRE_FX) voraus. Grill-Runde 2026-11-15, docs/05 "Build 3".
+
+--- a/Source/ProgramManager.cpp	2026-11-15 17:17:04
++++ b/Source/ProgramManager.cpp	2026-11-15 17:17:43
+@@ -46,7 +46,51 @@
+   return pos;
+ }
+ 
++#ifdef USE_USBD_AUDIO_TX_PRE_FX
++/* Raw input levels (ADC data as sent to USB), measured only while the host
++ * records (TX stream active). Shown on the input LEDs by onLoop() instead of
++ * the patch value, see ACDC/Core/Src/ACDC.cpp.
++ * raw_in_levels: mean square per block (full scale = 1.0), exponentially smoothed
++ * per block, tau = 4 ms at 6 kHz block rate (48 kHz / AUDIO_BLOCK_SIZE 8).
++ * raw_in_clip: one bit per channel, set when a sample reaches -0.1 dBFS
++ * (24 bit full scale 8388607), cleared by onLoop(). */
++float raw_in_levels[AUDIO_CHANNELS];
++volatile uint8_t raw_in_clip = 0;
++static constexpr float RAW_IN_SMOOTHING = 0.9592f; // exp(-1/(6000 * 0.004))
++static constexpr int32_t RAW_IN_CLIP_LEVEL = 8293000;     // -0.1 dBFS
++
++bool usbd_audio_tx_active(){
++  return usbd_tx != NULL;
++}
++
++static void raw_in_levels_update(const int32_t* src, size_t len){
++  constexpr float mul = 1.0f/0x00800000;
++  float sum[AUDIO_CHANNELS] = {};
++  uint8_t clip = 0;
++  const size_t frames = len / AUDIO_CHANNELS;
++  if(frames == 0)
++    return;
++  for(size_t i=0; i<frames; ++i){
++    for(size_t ch=0; ch<AUDIO_CHANNELS; ++ch){
++      int32_t s = *src++;
++      if(s >= RAW_IN_CLIP_LEVEL || s <= -RAW_IN_CLIP_LEVEL)
++        clip |= 1<<ch;
++      float f = s * mul;
++      sum[ch] += f * f;
++    }
++  }
++  for(size_t ch=0; ch<AUDIO_CHANNELS; ++ch)
++    raw_in_levels[ch] = raw_in_levels[ch] * RAW_IN_SMOOTHING + (sum[ch] / frames) * (1 - RAW_IN_SMOOTHING);
++  if(clip)
++    __atomic_fetch_or(&raw_in_clip, clip, __ATOMIC_RELAXED);
++}
++#endif /* USE_USBD_AUDIO_TX_PRE_FX */
++
+ void usbd_audio_tx_start_callback(size_t rate, uint8_t channels, void* cb){
++#ifdef USE_USBD_AUDIO_TX_PRE_FX
++  memset(raw_in_levels, 0, sizeof(raw_in_levels));
++  raw_in_clip = 0;
++#endif
+   usbd_tx = (CircularBuffer<audio_t>*)cb;
+ #ifdef DEBUG
+   printf("start tx %u %u %u\n", rate, channels, usbd_tx->getSize());
+@@ -55,6 +99,10 @@
+ 
+ void usbd_audio_tx_stop_callback(){
+   usbd_tx = NULL;
++#ifdef USE_USBD_AUDIO_TX_PRE_FX
++  memset(raw_in_levels, 0, sizeof(raw_in_levels));
++  raw_in_clip = 0;
++#endif
+ #ifdef DEBUG
+   printf("stop tx\n");
+ #endif
+@@ -122,6 +170,9 @@
+ void usbd_tx_convert(int32_t* src, size_t len){
+   CircularBuffer<audio_t>* tx = usbd_tx;
+   if(tx){
++#ifdef USE_USBD_AUDIO_TX_PRE_FX
++    raw_in_levels_update(src, len); // raw input levels for the input LEDs
++#endif
+     size_t cap = tx->getWriteCapacity();
+     if(cap < len){
+       // tx buffer overflow
+--- a/ACDC/Core/Src/ACDC.cpp	2022-07-13 10:07:13
++++ b/ACDC/Core/Src/ACDC.cpp	2026-11-15 17:17:43
+@@ -191,12 +191,52 @@
+   led_in1.afMode();
+ }
+ 
+-void onLoop(void){  
++#ifdef USE_USBD_AUDIO_TX_PRE_FX
++/* While the host records (TX stream), the knobs do not affect the recording
++ * (TX pre-FX) nor the outputs (RX post-FX). The input LEDs then show the raw
++ * input level measured by the firmware (raw_in_levels, mean square x 4096 like the
++ * patch value) and turn red for 300 ms after a sample reached -0.1 dBFS.
++ * Without TX stream they show the patch value (PARAMETER_AA) as before. */
++static constexpr uint32_t ACDC_RAW_CLIP_HOLD_MS = 300;
++extern float raw_in_levels[4];
++extern volatile uint8_t raw_in_clip;
++bool usbd_audio_tx_active();
++#endif
++
++void onLoop(void){
++#ifdef USE_USBD_AUDIO_TX_PRE_FX
++  static uint32_t clip_tick[4];
++  static bool clip_hold[4];
++  const bool raw = usbd_audio_tx_active();
++  const uint8_t clip = raw ? __atomic_exchange_n(&raw_in_clip, 0, __ATOMIC_RELAXED) : 0;
++  const uint32_t now = HAL_GetTick();
++#endif
+   for(size_t i=0; i<4; ++i){
++#ifdef USE_USBD_AUDIO_TX_PRE_FX
++    if(raw){
++      if(clip & (1<<i)){
++        clip_tick[i] = now;
++        clip_hold[i] = true;
++      }else if(clip_hold[i] && now - clip_tick[i] >= ACDC_RAW_CLIP_HOLD_MS){
++        clip_hold[i] = false;
++      }
++      if(clip_hold[i])
++        setLed(i+1, RED_COLOUR);
++      else
++      {
++        float level = raw_in_levels[i]*4096;
++        setLed(i+1, level < 4095.0f ? (uint32_t)level : 4095);
++      }
++    }else{
++      clip_hold[i] = false;
++#endif
+     int16_t value = getParameterValue(PARAMETER_AA+i);
+     setLed(i+1, value);
+     if(value >= ACDC_CLIPPING_LEVEL)
+       setLed(i+1, RED_COLOUR);
++#ifdef USE_USBD_AUDIO_TX_PRE_FX
++    }
++#endif
+     extern float tx_levels[4];
+     setLed(i+5, tx_levels[i]*4096);
+     setParameterValue(PARAMETER_BA+i, tx_levels[i]*4096);

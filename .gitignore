@@ -1,0 +1,42 @@
+# Python / uv
+.venv/
+.uv-cache/
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Claude Code: nur die Skills sind Teil des Repos
+/.claude/*
+!/.claude/skills/
+.cc-writes/
+
+# Aufnahmen bleiben lokal, nur das Manifest ist versioniert
+/recordings/*
+!/recordings/manifest.toml
+
+# Auswertungen: nur Reports und Sitzungstabellen.
+# Plots und JSON erzeugt `uv run python -m analysis <ID>` aus den Aufnahmen neu.
+/out/**
+!/out/**/
+!/out/**/*_report.md
+!/out/*-session-table.md
+
+# Firmware: Quellen kommen aus dem Submodul, Binaries sind über BUILD_INFO.txt nachbaubar
+/firmware/_work/
+/firmware/downloads/
+/firmware/releases/
+/firmware/builds/**/*.bin
+/firmware/builds/**/*.elf
+/firmware/builds/**/*.hex
+/firmware/builds/**/*.map
+/firmware/flashlog/**/*.bin
+/firmware/flashlog/**/*.syx
+
+# Geräte-Backups und fremde Dateien bleiben lokal
+/backup/
+/owl-patches/
+/vcv-patches/
+/docs/img/20261114_d8_vcv-patch.webp
+/docs/research/img/forum2083-4_xibeca-boot-pads.jpeg

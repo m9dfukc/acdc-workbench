@@ -1,0 +1,10 @@
+# Build repro-c79cf7a
+datum:      2026-11-14T12:22:34Z
+commit:     c79cf7a278897bea876b24b5858703181a443278
+libraries:  OpenWareLibraries-9e8f64e.tar.gz sha256 c56a465cf59086b2a1f742b7cb9848e17af4b3957108cc1289540b180ad69d88
+toolchain:  arm-none-eabi-gcc (Arm GNU Toolchain 12.2 (Build arm-12.24)) 12.2.1 20221205
+make:       CONFIG=Release GIT_REVISION="c79cf7a Release"
+fw_version: v22.5.0
+bin_size:   104288
+bin_sha256: f1d3026c566cfe06d5f15e11f7b3b7e4c717cce24226f8761b1900e1eab71d6f
+version:    AC/DC v22.5.0

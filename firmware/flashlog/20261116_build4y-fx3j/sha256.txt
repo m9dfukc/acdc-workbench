@@ -1,0 +1,3 @@
+707d9cd3324baa7ea20f3178df972e60c2822466e3a7c7bc826b7b456c5546ac  firmware/builds/acdc1-build4y-fx3j/ACDC.bin
+634bb48dd9d3fa411eb2bd003585dcac2f48a1cf7f5231b02bb7927bac159c36  firmware/flashlog/20261116_build4y-fx3j/readback_after.bin
+707d9cd3324baa7ea20f3178df972e60c2822466e3a7c7bc826b7b456c5546ac  readback_after.bin[0:107176]

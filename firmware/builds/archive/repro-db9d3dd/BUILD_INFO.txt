@@ -1,0 +1,11 @@
+# Build repro-db9d3dd
+datum:      2026-11-14T12:20:24Z
+commit:     db9d3ddcd17dfacce697b58bf2db7c70a0c8a2be
+libraries:  OpenWareLibraries-9e8f64e.tar.gz sha256 c56a465cf59086b2a1f742b7cb9848e17af4b3957108cc1289540b180ad69d88
+toolchain:  arm-none-eabi-gcc (Arm GNU Toolchain 12.2 (Build arm-12.24)) 12.2.1 20221205
+make:       CONFIG=Release GIT_REVISION="db9d3dd Release"
+fw_version: v22.5.0
+patch:      01-gcc12-extern-uint8.patch sha256 51a3f66d1c91db10d537a4061e3c273ba13552e38a2357cd64a8ce36ecc77762
+bin_size:   105664
+bin_sha256: 1fce4352aa15badeb824b0ae976e02454733048fe898cb59b58dcb85defba5e6
+version:    AC/DC v22.5.0

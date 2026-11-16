@@ -1,0 +1,3 @@
+06e868d16ea8c601ac1433bd2f67fc14a31edd7737885bcf4754d0c08de3dea8  firmware/builds/acdc1-build4z-fx3k/ACDC.bin
+c32cd21b34d9412c4666da9b0344f5774010adba2c6c407da75dc89859d88167  firmware/flashlog/20261116_build4z-fx3k/readback_after.bin
+06e868d16ea8c601ac1433bd2f67fc14a31edd7737885bcf4754d0c08de3dea8  readback_after.bin[0:107112]

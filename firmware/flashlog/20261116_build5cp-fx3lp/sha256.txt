@@ -1,0 +1,3 @@
+a4deba3e6263e1b96b7098a6f03b5117d18abb724cdefac987fb28eba556939f  firmware/builds/acdc1-build5cp-fx3lp/ACDC.bin
+15027c3e803bf02fddb41a458aebdce2e8695f44c85f7fa469aef576f8d40345  firmware/flashlog/20261116_build5cp-fx3lp/readback_after.bin
+a4deba3e6263e1b96b7098a6f03b5117d18abb724cdefac987fb28eba556939f  readback_after.bin[0:107676]

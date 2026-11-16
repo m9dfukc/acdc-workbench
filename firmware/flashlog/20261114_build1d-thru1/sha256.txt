@@ -1,0 +1,2 @@
+f522560eb3d3c329c37753a1ebfdb326e45bae02192f81e866693b363f044c28  firmware/builds/acdc1-build1d-thru1/ACDC.bin
+a6492fd27dccf1ee58fabd8c1c955fffcbd0da23134d7c8b4837819b2cf8931f  firmware/flashlog/20261114_build1d-thru1/readback_after.bin

@@ -1,0 +1,12 @@
+# Build acdc1-build1b-thru1
+datum:      2026-11-14T17:05:25Z
+commit:     db9d3ddcd17dfacce697b58bf2db7c70a0c8a2be
+libraries:  OpenWareLibraries-9e8f64e.tar.gz sha256 c56a465cf59086b2a1f742b7cb9848e17af4b3957108cc1289540b180ad69d88
+toolchain:  arm-none-eabi-gcc (Arm GNU Toolchain 12.2 (Build arm-12.24)) 12.2.1 20221205
+make:       CONFIG=Release GIT_REVISION="db9d3dd Release"
+fw_version: v22.4.r-thru1
+patch:      01-gcc12-extern-uint8.patch sha256 51a3f66d1c91db10d537a4061e3c273ba13552e38a2357cd64a8ce36ecc77762
+patch:      02-revert-237c63d-thru-mute.patch sha256 b60617ceb26113b040a676771d62c74ad8d43af53250e549daa79ddd79c58bf5
+bin_size:   105656
+bin_sha256: 406709e9644bb12fe09b1d21353cdbe136b97ca303e5ef3490426a992d73ee35
+version:    AC/DC v22.4.r-thru1

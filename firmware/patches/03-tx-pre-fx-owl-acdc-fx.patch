@@ -1,0 +1,22 @@
+Build 2: USE_USBD_AUDIO_TX_PRE_FX (USB-Aufnahme = rohe ADC-Daten vor dem Patch),
+Produktstring OWL-ACDC-FX. Setzt 02 voraus (docs/05 E2/E6).
+
+--- a/ACDC/Core/Inc/hardware.h	2026-11-14 13:26:07
++++ b/ACDC/Core/Inc/hardware.h	2026-11-14 13:26:07
+@@ -5,7 +5,7 @@
+ #define OWL_XIBECA
+ #define HARDWARE_ID                  XIBECA_HARDWARE
+ #define HARDWARE_VERSION             "AC/DC"
+-#define USBD_PRODUCT_STRING_FSHS     "OWL-ACDC"
++#define USBD_PRODUCT_STRING_FSHS     "OWL-ACDC-FX"
+ #define USBD_SELF_POWERED            1U
+ 
+ /* #define NO_EXTERNAL_RAM */
+@@ -61,6 +61,7 @@
+ #define USE_USBD_AUDIO_FEATURES
+ #define USE_USBD_AUDIO_TX           // microphone
+ #define USE_USBD_AUDIO_RX           // speaker
++#define USE_USBD_AUDIO_TX_PRE_FX    // Rechner bekommt die rohen Eingaenge (vor dem Patch)
+ #define USE_USBD_RX_FB
+ #define USE_USBD_FS
+ #define USBD_AUDIO_TX_CHANNELS      4
