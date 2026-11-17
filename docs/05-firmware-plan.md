@@ -644,12 +644,12 @@ Jeder Schritt kommt als eigener Abschnitt in `docs/messlog.md` (D4 ff.), Aufnahm
 
 **Entscheidung (Nutzer, 2026-11-17, D59): fx4b ist die Alltags-Firmware von acdc1.**
 
-**Fork-Branch `acdc/fx1d` (2026-11-17, committet, nicht gepusht):**
+**Fork-Branch `acdc/fx1d` (gepusht 2026-11-17):**
 1. `7ef6284a` Boot-Menü (= Patch 15b)
 2. `2c963e3a` Version `v22.4.r-fx4b`
 3. `27d3630b` README: Abschnitt „Boot menu“, Tabellen und Teststand
 
-Ein Build von `2c963e3a` ohne Patches ist bytegleich mit fx4b (`firmware/builds/verify-fx1d-2c963e3a`, `a21f35c9…`). Push und ein Release `acdc-v22.4.r-fx4b` brauchen je eine eigene Freigabe.
+Ein Build von `2c963e3a` ohne Patches ist bytegleich mit fx4b (`firmware/builds/verify-fx1d-2c963e3a`, `a21f35c9…`). Dazu das Release `acdc-v22.4.r-fx4b` (Tag auf `27d3630b`) mit `ACDC-v22.4.r-fx4b.bin` und `BUILD_INFO-v22.4.r-fx4b.txt`.
 
 **Rückweg:** fx4a (`e7ee9b90…`), dann fx3l (`b55b94d8…`), danach wie bisher 3d.
 

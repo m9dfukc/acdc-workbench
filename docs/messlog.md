@@ -1820,3 +1820,5 @@ Das Gerät antwortete danach weiter. Der Fehler tritt also auch mit einem alten,
 
 **Offen:** Push des Fork-Branches und Release `acdc-v22.4.r-fx4b` (je mit Freigabe). Hörurteil zu Tanh3 Fassung 2. Die Punkte aus D54 (MIDI-Wettlauf), D56 (Last von Tanh3) und D58 (Regler-Linien).
 
+**Nachtrag D59 (2026-11-17, Freigabe des Nutzers):** Fork-Branch `acdc/fx1d` (Spitze `27d3630b`) und die Workbench sind gepusht. Release am Fork: `acdc-v22.4.r-fx4b`, Tag auf `27d3630b`, Dateien `ACDC-v22.4.r-fx4b.bin` (108 496 B, `a21f35c9…`) und `BUILD_INFO-v22.4.r-fx4b.txt`.
+

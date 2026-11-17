@@ -1,4 +1,4 @@
-<!-- i18n source=docs/05-firmware-plan.md sha256=bfcf9f09ec7fd311f82db394403173a6847404871ffe89297b84d4bd1a03f248 date=2026-11-17 -->
+<!-- i18n source=docs/05-firmware-plan.md sha256=62ede2448db772e316a6f7dcce8efacac34617084d6ae32d28cfe029af79a086 date=2026-11-17 -->
 > English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-17. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 05 – Firmware: Status, Forks, Build Plan
@@ -647,12 +647,12 @@ Every step gets its own section in `docs/messlog.md` (D4 ff.), recordings are en
 
 **Decision (user, 2026-11-17, D59): fx4b is the daily firmware of acdc1.**
 
-**Fork branch `acdc/fx1d` (2026-11-17, committed, not pushed):**
+**Fork branch `acdc/fx1d` (pushed 2026-11-17):**
 1. `7ef6284a` boot menu (= patch 15b)
 2. `2c963e3a` version `v22.4.r-fx4b`
 3. `27d3630b` README: section "Boot menu", tables and test status
 
-A build of `2c963e3a` without patches is byte-identical with fx4b (`firmware/builds/verify-fx1d-2c963e3a`, `a21f35c9…`). The push and a release `acdc-v22.4.r-fx4b` each need their own approval.
+A build of `2c963e3a` without patches is byte-identical with fx4b (`firmware/builds/verify-fx1d-2c963e3a`, `a21f35c9…`). In addition the release `acdc-v22.4.r-fx4b` (tag on `27d3630b`) with `ACDC-v22.4.r-fx4b.bin` and `BUILD_INFO-v22.4.r-fx4b.txt`.
 
 **Fallback:** fx4a (`e7ee9b90…`), then fx3l (`b55b94d8…`), after that 3d as before.
 

@@ -30,7 +30,7 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [x] Loop-Test fx4b bestanden, auch mit Tanh3 bei 53 % CPU (D57)
 - [x] Rausch-A/B fx4b gegen fx3l bestanden: alle Familien innerhalb ±0,4 dB, im Mittel ±0,2 dB (D58). Abnahme von Build 6/6b vollständig
 - [x] fx4b ist die Alltags-Firmware (Nutzer, 2026-11-17, D59). Fork-Branch `acdc/fx1d` lokal nachgezogen (`7ef6284a`, `2c963e3a`, `27d3630b`), ein Build daraus ist bytegleich mit fx4b. `docs/en/05` aufgefrischt
-- [ ] Fork-Branch `acdc/fx1d` pushen und Release `acdc-v22.4.r-fx4b` anlegen (je mit Freigabe)
+- [x] Fork-Branch `acdc/fx1d` und Workbench gepusht, Release `acdc-v22.4.r-fx4b` am Fork angelegt (2026-11-17, Freigabe des Nutzers)
 - [ ] **Linien bei 2200,95 / 4401,90 / 6602,85 Hz hängen an der Reglerstellung** (D58): mit Reglern 2 / 127 / 2 / 2 ≈ 20 dB über dem Grundrauschen, auf 12 Uhr weg. Klären: welcher Regler, welcher Anschlag, Pegel über den Regelweg. Danach Abhilfe prüfen (ADC nicht frei laufen lassen, Abtastzeit, Takt), je mit A/B
 - [x] MIDI-Ausfall (D53) eingegrenzt: Wettlauf im MIDI-Sendeweg der Original-Firmware bei Slot-Downloads neben einem laufenden Patch (D54). Die Werkzeuge umgehen den Download
 - [ ] **Firmware-Fix für den MIDI-Sendeweg** (Kandidat Patch 16): nur ein Aufrufer für `transmit()` bzw. Prüfen, Senden und Vorrücken unteilbar machen, dazu Flusskontrolle im `SendResourceTask`. `MidiWriter::transmit` liegt im ITCM, also mit `check_itcm` und Rausch-A/B

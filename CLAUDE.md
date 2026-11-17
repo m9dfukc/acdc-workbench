@@ -46,7 +46,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 - **Rauschen gegen 3d [gemessen, D48, gilt auch für fx4b, D58]:** fs/8 −5,1 dB, Mischprodukte −35 dB, Rest −1,25 dB, RMS −1,1 dB, Kamm +0,2…+0,4 dB. Der SOF-Kamm ist damit die stärkste verbleibende Störfamilie.
 - **Auf acdc1 liegen fünf Patches** (D54, D56): Slot 1 ACDC, 2 TapeDelay, 3 Grainz, 4 RingsReverb (je mit Limiter auf Out 1/2), 5 Tanh3 (Fassung 2 mit 4× Oversampling, 48 % CPU). Gemerkter Slot zuletzt 5. Die Builds aus D50 und Tanh3 Fassung 1 liegen in `owl-patches/builds-owl2/`. Wechsel vom Rechner aus per `owl_read.py --program N` (wird nicht gemerkt).
 - **Slot-Downloads sind bei laufendem Patch unzuverlässig (D53/D54):** Wettlauf im MIDI-Sendeweg der Original-Firmware [Code]. Daten gehen verloren, einmal sendete acdc1 danach bis zum Neustart kein MIDI mehr. `owl_write.py` deshalb mit `--backup-file` benutzen, `owl_read.py --dump` nur mit Blick auf `ok` im Report. Ein Firmware-Fix steht in `TODO.md`.
-- **Offen:** Push des Fork-Branches und Release für fx4b (je mit Freigabe), Hörurteil zu Tanh3, Regler-Linien (D58), Last von Tanh3 (D56). Alles Weitere: `TODO.md`, Abschnitt „Offen“.
+- **Offen:** Hörurteil zu Tanh3, Regler-Linien (D58), Last von Tanh3 (D56), Firmware-Fix für den MIDI-Sendeweg (D54). Alles Weitere: `TODO.md`, Abschnitt „Offen“.
 
 ## Dateien
 
@@ -176,8 +176,8 @@ Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`)
 - **Fork:** https://github.com/m9dfukc/OpenWare
   - `acdc/thru-usb-feedback` = Build 1d + README, Spitze `edb32852`.
   - `acdc/fx1d` = Build 2 → 3d → fx3l → fx4b + README, Spitze `27d3630b`. Ein Build von `5cb2c17c` ist bytegleich mit fx3l (`firmware/builds/verify-fx1d-5cb2c17c`), einer von `2c963e3a` bytegleich mit fx4b (`verify-fx1d-2c963e3a`).
-  - Gepusht (2026-11-16) sind `edb32852` und `3e3a74fd` (fx3l). **Die drei fx4b-Commits vom 2026-11-17 (`7ef6284a`, `2c963e3a`, `27d3630b`) sind nur lokal**, der Push braucht eine Freigabe.
-  - **Releases am Fork** (2026-11-16): `acdc-v22.4.r-fx2d` (Build 3d, Tag auf `abc3a72a`) und `acdc-v22.4.r-fx3l` (Vorabversion, Tag auf `3e3a74fd`), je mit `ACDC-<version>.bin` und `BUILD_INFO`. Für fx4b gibt es noch kein Release. Ein neuer Alltags-Build bekommt ein eigenes Release, nur nach Freigabe. `gh` immer mit `--repo m9dfukc/OpenWare` aufrufen, sonst zielt es auf das Upstream-Repo.
+  - Beide Spitzen sind gepusht: `edb32852` (2026-11-16) und `27d3630b` (2026-11-17, mit den fx4b-Commits `7ef6284a` und `2c963e3a`).
+  - **Releases am Fork** (2026-11-16): `acdc-v22.4.r-fx2d` (Build 3d, Tag auf `abc3a72a`) und `acdc-v22.4.r-fx3l` (Vorabversion, Tag auf `3e3a74fd`), je mit `ACDC-<version>.bin` und `BUILD_INFO`. Dazu seit 2026-11-17 **`acdc-v22.4.r-fx4b`** (Tag auf `27d3630b`, reguläres Release, „Latest“). Ein neuer Alltags-Build bekommt ein eigenes Release, nur nach Freigabe. `gh` immer mit `--repo m9dfukc/OpenWare` aufrufen, sonst zielt es auf das Upstream-Repo.
 - **Später geplant:** Merge mit v22.5.0 bzw. dem aktuellen Upstream-`master` samt Fixes. Das ist eine Portierung (`docs/research/notes/upstream_master_2026-11-16.md`).
 
 ### Flash-Ablauf (ohne Pads, DFU über die vordere USB-B-Buchse)
