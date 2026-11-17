@@ -38,7 +38,10 @@ import time
 import zlib
 from pathlib import Path
 
-import mido
+try:
+    import mido
+except ImportError:  # die Offline-Modi von owl_write.py brauchen kein MIDI
+    mido = None
 
 MANUFACTURER = 0x7D
 OMNI_DEVICE = 0x52
