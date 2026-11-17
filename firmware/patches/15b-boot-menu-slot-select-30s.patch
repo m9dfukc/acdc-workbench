@@ -1,0 +1,289 @@
+Patch 15b: Boot-Menü zur Wahl des Patch-Slots, der gewählte Slot bleibt über das Ausschalten erhalten.
+
+Vollständiger Ersatz für 15-boot-menu-slot-select.patch, NICHT zusätzlich anwenden. Einziger Unterschied:
+Abbruch nach 30 s statt 60 s (Nutzer, 2026-11-17, nach der Abnahme von fx4a, messlog D52).
+
+Bedienung (nur beim Einschalten): Regler 1, 2, 3 am Linksanschlag und Regler 4 am Rechtsanschlag
+öffnen das Menü.
+  Regler 1  wählt unter den belegten Slots 1..15. Er zählt erst, wenn er einmal bewegt wurde,
+            bis dahin bleibt der gemerkte Slot gewählt.
+  Regler 4  weg vom Rechtsanschlag: bestätigen. Der Slot startet und wird gemerkt.
+  Regler 3  weg vom Linksanschlag oder 30 s ohne Bestätigung: Abbruch, der gemerkte Slot startet,
+            nichts wird geschrieben.
+Die Eingangs-LEDs zeigen die Slot-Nummer binär (LED 1 = 1, 2 = 2, 3 = 4, 4 = 8). Die Ausgangs-LEDs
+leuchten im Menü und blinken, solange ein Bestätigen den Slot ändern würde. Ohne das Reglermuster
+startet der gemerkte Slot, seine Nummer steht 1 s lang auf den Eingangs-LEDs.
+
+Speichern: 4 Byte als System-Ressource „ACDC.slot“ im Patch-Flash (QSPI), nicht in den Settings
+(die bleiben unberührt, E4). Jeder Wechsel hängt 256 B an und markiert den alten Eintrag als
+gelöscht. Unter 64 KB freiem Speicher wird nicht mehr geschrieben (ein Defrag würde das ganze
+Flash löschen), der Slot startet dann ohne Merken und die Eingangs-LEDs blinken 1 s rot.
+
+Aufbau [Code]:
+- ACDC/Core/Src/ACDC.cpp: acdcBootSelect() und Helfer als normaler Flash-Code (bewusst nicht in
+  .late_text, das ins ITCM kopiert wird). Läuft im Manager-Task aus bootstrap(), vor dem ersten
+  Patch-Start. Der Scheduler ist kooperativ (configUSE_PREEMPTION 0): onSetup() ist dann fertig,
+  die Hauptschleife (MIDI, Watchdog) läuft nur, während das Menü in vTaskDelay() schläft.
+- Im periodischen Pfad kommt nur eine Abfrage dazu: acdcOnLoopLate() lässt die LEDs in Ruhe,
+  solange acdc_boot.led_hold gesetzt ist (Menü bzw. 1 s Slot-Anzeige). Der Zustand liegt in
+  .late_bss (2 Byte), kein anderes RAM-Objekt verschiebt sich.
+- Source/ProgramManager.cpp, bootstrap(): unter OWL_ACDC bestimmt acdcBootSelect() den Start-Slot
+  (settings.program_index nur im RAM). Rückgabe 0 = ein Host hat während des Menüs selbst etwas
+  gestartet (Program Change, Upload), dann startet bootstrap() nichts.
+- Ein Program Change vom Rechner im Betrieb wird nicht gemerkt.
+
+Schwellen für „am Anschlag“ vorläufig: unter 5 % bzw. über 95 % des ADC-Bereichs. Vor dem Flash
+an acdc1 nachmessen (CC 20–23 nach Settings-Request, tools/owl_read.py).
+
+Auf fx3l (db9d3dd + 01 02 04 05 06 03 07d 08 11g 12b 14). Prüfung: tools/check_itcm.py <build>.
+
+--- a/ACDC/Core/Src/ACDC.cpp
++++ b/ACDC/Core/Src/ACDC.cpp
+@@ -9,6 +9,9 @@
+ #include "flash.h"
+ #include "Storage.h"
+ #include "ServiceCall.h"
++#include "PatchRegistry.h"
++#include "ProgramManager.h"
++#include "cmsis_os.h"
+ #ifdef USE_USBD_AUDIO_TX_PRE_FX
+ #include <string.h>
+ #include "usbd_audio.h"
+@@ -176,6 +179,17 @@
+ }
+ #endif
+ 
++/* Boot menu (see acdcBootSelect() below): while led_hold is set, the boot code
++ * owns the LEDs and onLoop() leaves them alone. ACDC_LED_HOLD_BOOT holds until
++ * the boot code releases it, any other value counts down once per onLoop()
++ * (2 ms). Lives in .late_bss like the other state added by this fork: no other
++ * object in RAM moves. .late_bss is not zeroed at boot, onSetup() sets it. */
++static constexpr uint16_t ACDC_LED_HOLD_BOOT = 0xffff;
++struct AcdcBootState {
++  volatile uint16_t led_hold;
++};
++static AcdcBootState acdc_boot __attribute__((section(".late_bss")));
++
+ void onSetup(){
+   // codec.setHighPass(true);
+   initLed();
+@@ -194,6 +208,7 @@
+   // codec.setHighPass(false);
+   led_in1.outputMode();
+   led_in1.afMode();
++  acdc_boot.led_hold = ACDC_LED_HOLD_BOOT; // released by acdcBootSelect()
+ }
+ 
+ #ifdef USE_USBD_AUDIO_TX_PRE_FX
+@@ -259,6 +274,11 @@
+ 
+ __attribute__((noinline, used, section(".late_text")))
+ static void acdcOnLoopLate(void){
++  if(acdc_boot.led_hold){ // boot menu or slot display owns the LEDs
++    if(acdc_boot.led_hold != ACDC_LED_HOLD_BOOT)
++      acdc_boot.led_hold = acdc_boot.led_hold - 1;
++    return;
++  }
+   const bool raw = usbd_tx != NULL;
+   if(acdc_raw.magic != ACDC_RAW_MAGIC || (raw && !acdc_raw.was_raw)){
+     memset(&acdc_raw, 0, sizeof(acdc_raw));
+@@ -308,6 +328,11 @@
+ }
+ #else
+ void onLoop(void){  
++  if(acdc_boot.led_hold){ // boot menu or slot display owns the LEDs
++    if(acdc_boot.led_hold != ACDC_LED_HOLD_BOOT)
++      acdc_boot.led_hold = acdc_boot.led_hold - 1;
++    return;
++  }
+   for(size_t i=0; i<4; ++i){
+     int16_t value = getParameterValue(PARAMETER_AA+i);
+     setLed(i+1, value);
+@@ -319,6 +344,166 @@
+   }
+ }
+ #endif
++
++/* --- Boot menu: choose the patch slot at power-on ---------------------------
++ *
++ * Power on with knobs 1, 2 and 3 fully left and knob 4 fully right:
++ *   knob 1   selects among the occupied slots 1..15. It only counts once it
++ *            has been moved, until then the remembered slot stays selected.
++ *   knob 4   away from the right stop: confirm. The slot starts and is
++ *            remembered for the next power-on.
++ *   knob 3   away from the left stop, or 30 s without confirming: cancel.
++ *            The remembered slot starts, nothing is written.
++ * The input LEDs show the slot number in binary (LED 1 = 1, 2 = 2, 3 = 4,
++ * 4 = 8). The output LEDs are lit while the menu is open and blink while
++ * confirming would change the slot. Without the knob pattern the remembered
++ * slot starts and its number is shown for one second.
++ *
++ * The slot is remembered in a 4 byte system resource in the patch flash
++ * (QSPI). The application settings are not touched. Each change appends 256 B
++ * and marks the old record as erased. This code never lets the storage run
++ * into a defrag (that erases the whole flash): with less than
++ * ACDC_SLOT_RESERVE free bytes the slot starts without being remembered and
++ * the input LEDs flash red for a second.
++ *
++ * Runs in the manager task from bootstrap(), before the first patch starts.
++ * The scheduler is cooperative (configUSE_PREEMPTION 0): onSetup() has
++ * finished by then, and the main loop (MIDI, watchdog) only runs while this
++ * code sleeps in vTaskDelay(). The only code added to the periodic path is the
++ * led_hold test in onLoop(). All of this is ordinary flash code, on purpose
++ * not in .late_text (which is copied to ITCM). */
++#define ACDC_SLOT_RESOURCE "ACDC.slot"
++static constexpr uint8_t ACDC_MENU_SLOTS = 15;         // 4 LEDs
++static constexpr int32_t ACDC_KNOB_LOW = 205;          // below 5 %: at the left stop
++static constexpr int32_t ACDC_KNOB_HIGH = 3890;        // above 95 %: at the right stop
++static constexpr int32_t ACDC_KNOB_LEAVE = 205;        // another 5 %: moved away from a stop
++static constexpr int32_t ACDC_KNOB_MOVE = 250;         // knob 1 counts as moved
++static constexpr uint32_t ACDC_MENU_TIMEOUT_MS = 30000;
++static constexpr uint16_t ACDC_SHOW_LOOPS = 1000 / MAIN_LOOP_SLEEP_MS; // slot display, 1 s
++static constexpr uint32_t ACDC_LED_ON = 2048;          // like the start-up chaser
++static constexpr uint32_t ACDC_LED_DIM = 512;
++static constexpr size_t ACDC_SLOT_RESERVE = 64 * 1024; // never write below this much free storage
++static constexpr uint8_t ACDC_BOOT_HOST = 0;           // acdcBootSelect(): a host took over
++
++extern uint16_t adc_values[NOF_ADC_VALUES];
++
++static void acdcBootLeds(uint8_t slot, uint32_t out){
++  for(size_t i=0; i<4; ++i){
++    setLed(i+1, (slot & (1 << i)) ? ACDC_LED_ON : NO_COLOUR);
++    setLed(i+5, out);
++  }
++}
++
++/* @return remembered slot 1..15, 0 without a valid record */
++static uint8_t acdcReadSlot(){
++  Resource* res = storage.getResourceByName(ACDC_SLOT_RESOURCE);
++  uint8_t data[4] = {};
++  if(res == NULL || res->getDataSize() != sizeof(data))
++    return 0;
++  storage.readResource(res->getHeader(), data, 0, sizeof(data));
++  if(data[2] != 'S' || data[3] != 'L' || data[1] != (uint8_t)~data[0] ||
++     data[0] < 1 || data[0] > ACDC_MENU_SLOTS)
++    return 0;
++  return data[0];
++}
++
++static bool acdcStoreSlot(uint8_t slot){
++  if(storage.getFreeSize(RESOURCE_PORT_MAPPED) < ACDC_SLOT_RESERVE)
++    return false; // writeResource() would defrag, i.e. erase the whole flash
++  uint32_t buffer[(sizeof(ResourceHeader) + 4) / sizeof(uint32_t)] = {};
++  uint8_t* data = (uint8_t*)buffer + sizeof(ResourceHeader);
++  data[0] = slot;
++  data[1] = ~slot;
++  data[2] = 'S';
++  data[3] = 'L';
++  storage.writeResource(ACDC_SLOT_RESOURCE, (uint8_t*)buffer, 4,
++                        RESOURCE_SYSTEM_RESOURCE | RESOURCE_PORT_MAPPED);
++  registry.init(); // writeResource() rebuilt the resource index the registry points into
++  return acdcReadSlot() == slot;
++}
++
++/* @return slot to start, or ACDC_BOOT_HOST */
++static uint8_t acdcBootMenu(const uint8_t* slots, size_t count, uint8_t stored, int32_t* knob){
++  const TickType_t start = xTaskGetTickCount();
++  const int32_t entry = knob[0];
++  const int32_t width = 4096 / (int32_t)count;
++  const int32_t hyst = width / 8 > 16 ? width / 8 : 16;
++  bool moved = false;
++  int32_t sel = 0;
++  for(;;){
++    vTaskDelay(pdMS_TO_TICKS(MAIN_LOOP_SLEEP_MS));
++    for(size_t i=0; i<4; ++i)
++      knob[i] += ((int32_t)adc_values[i] - knob[i]) / 8;
++    const TickType_t elapsed = xTaskGetTickCount() - start;
++    if(owl.getOperationMode() == LOAD_MODE)
++      return ACDC_BOOT_HOST; // Program Change or upload from a host: its request is pending
++    int32_t zone = knob[0] / width;
++    if(zone > (int32_t)count - 1)
++      zone = count - 1;
++    if(!moved){
++      if(knob[0] - entry > ACDC_KNOB_MOVE){
++        moved = true;
++        sel = zone;
++      }
++    }else if(zone != sel && (knob[0] < sel * width - hyst || knob[0] >= (sel + 1) * width + hyst)){
++      sel = zone;
++    }
++    const uint8_t shown = moved ? slots[sel] : stored;
++    const bool dark = shown != stored && (elapsed & 0x100); // blinks: confirming changes the slot
++    acdcBootLeds(shown, dark ? NO_COLOUR : ACDC_LED_DIM);
++    if(knob[3] < ACDC_KNOB_HIGH - ACDC_KNOB_LEAVE)
++      return shown;  // confirm
++    if(knob[2] > ACDC_KNOB_LOW + ACDC_KNOB_LEAVE)
++      return stored; // cancel
++    if(elapsed >= pdMS_TO_TICKS(ACDC_MENU_TIMEOUT_MS))
++      return stored;
++  }
++}
++
++/* Called once from bootstrap(). Blocks while the boot menu is open.
++ * @return slot to start (1..15, DEFAULT_PROGRAM without any patch), or
++ * ACDC_BOOT_HOST when a host started something itself while the menu was open */
++uint8_t acdcBootSelect(){
++  acdc_boot.led_hold = ACDC_LED_HOLD_BOOT;
++  uint8_t slots[ACDC_MENU_SLOTS];
++  size_t count = 0;
++  for(uint8_t slot=1; slot<=ACDC_MENU_SLOTS; ++slot)
++    if(registry.hasPatch(slot))
++      slots[count++] = slot;
++  uint8_t stored = acdcReadSlot();
++  if(stored == 0 || !registry.hasPatch(stored))
++    stored = (count == 0 || registry.hasPatch(DEFAULT_PROGRAM)) ? DEFAULT_PROGRAM : slots[0];
++
++  // knob positions, mean over 16 ms (the ADC has been running since Owl::setup())
++  int32_t knob[4] = {};
++  for(size_t n=0; n<8; ++n){
++    vTaskDelay(pdMS_TO_TICKS(MAIN_LOOP_SLEEP_MS));
++    for(size_t i=0; i<4; ++i)
++      knob[i] += adc_values[i];
++  }
++  for(size_t i=0; i<4; ++i)
++    knob[i] /= 8;
++
++  uint8_t slot = stored;
++  if(count > 0 && knob[0] < ACDC_KNOB_LOW && knob[1] < ACDC_KNOB_LOW &&
++     knob[2] < ACDC_KNOB_LOW && knob[3] > ACDC_KNOB_HIGH){
++    slot = acdcBootMenu(slots, count, stored, knob);
++    if(slot == ACDC_BOOT_HOST){
++      acdc_boot.led_hold = 0;
++      return ACDC_BOOT_HOST;
++    }
++    if(slot != stored && !acdcStoreSlot(slot)){
++      for(size_t i=0; i<4; ++i){
++        setLed(i+1, RED_COLOUR);
++        setLed(i+5, NO_COLOUR);
++      }
++      vTaskDelay(pdMS_TO_TICKS(1000));
++    }
++  }
++  acdcBootLeds(count > 0 ? slot : 0, NO_COLOUR);
++  acdc_boot.led_hold = ACDC_SHOW_LOOPS;
++  return slot;
++}
+ 
+ #ifdef USE_FAST_POW_RESOURCES
+ uint32_t fast_log_table_size = 0;
+--- a/Source/ProgramManager.cpp
++++ b/Source/ProgramManager.cpp
+@@ -580,6 +580,18 @@
+ #else    
+   uint8_t lastprogram = 0;
+ #endif
++#ifdef OWL_ACDC
++  // AC/DC fork: the slot remembered by the boot menu starts instead of slot 1.
++  // Blocks while the menu is open (ACDC/Core/Src/ACDC.cpp). Settings stay RAM only.
++  extern uint8_t acdcBootSelect();
++  uint8_t bootslot = acdcBootSelect();
++  if(bootslot != 0)
++    settings.program_index = bootslot;
++  if(bootslot == 0){
++    // a host sent a Program Change or an upload while the menu was open:
++    // its request is pending in the manager task, start nothing here
++  }else
++#endif
+   if(lastprogram != 0 && lastprogram == settings.program_index){
+     error(CONFIG_ERROR, "Preventing reset program from starting");
+ #ifdef USE_BKPSRAM

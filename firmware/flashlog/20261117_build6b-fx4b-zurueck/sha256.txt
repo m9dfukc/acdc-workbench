@@ -1,0 +1,3 @@
+a21f35c990cc33737620597d883c4bd205fc4495bf2291a1b6013af6f2b06307  firmware/builds/acdc1-build6b-fx4b/ACDC.bin
+8fca3087ee29295213031e1cdb7dc97f61e5fcce77f8aacdc14af2b064df2c06  firmware/flashlog/20261117_build6b-fx4b-zurueck/readback_after.bin
+a21f35c990cc33737620597d883c4bd205fc4495bf2291a1b6013af6f2b06307  readback_after.bin[0:108496]

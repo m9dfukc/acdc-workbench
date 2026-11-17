@@ -1,0 +1,22 @@
+# Build acdc1-build6-fx4a
+datum:      2026-11-17T20:51:15Z
+commit:     db9d3ddcd17dfacce697b58bf2db7c70a0c8a2be
+libraries:  OpenWareLibraries-9e8f64e.tar.gz sha256 c56a465cf59086b2a1f742b7cb9848e17af4b3957108cc1289540b180ad69d88
+toolchain:  arm-none-eabi-gcc (Arm GNU Toolchain 12.2 (Build arm-12.24)) 12.2.1 20221205
+make:       CONFIG=Release GIT_REVISION="db9d3dd Release"
+fw_version: v22.4.r-fx4a
+patch:      01-gcc12-extern-uint8.patch sha256 51a3f66d1c91db10d537a4061e3c273ba13552e38a2357cd64a8ce36ecc77762
+patch:      02-revert-237c63d-thru-mute.patch sha256 b60617ceb26113b040a676771d62c74ad8d43af53250e549daa79ddd79c58bf5
+patch:      04-output-gain-125.patch sha256 84337c719878cfcc43e04ee21f3960404863eedbf264ce0a95504397dbeb9787
+patch:      05-atomic-usbd-rx-count.patch sha256 d242d2414041cb0d269c382adfe9da2fefafae51ad9dd265ae10c5813d6fc8e9
+patch:      06-fb-level-control.patch sha256 0b6701aa097ea454f6a5434c76bf0a08f022431aa40d79f9d73ed90436ba5117
+patch:      03-tx-pre-fx-owl-acdc-fx.patch sha256 7a2f83328a3f717964f2ddb2fc3d59786ea8f035961915dc0ed9defe92284e9f
+patch:      07d-input-leds-raw-late-section.patch sha256 599fbce85994645bd42dcc85443288343bc2f75041de0c61c20fba457056344a
+patch:      08-upstream-gcc13-build-flags.patch sha256 85a830d411ef5f06ebb86ec4ac39615fec345d3bb377ac013aa76615e21e8b98
+patch:      11g-itcm-hotpath-rxcb.patch sha256 2d9604c1f8a5c1b6af2a49c9841848310b317c596507b906567b96975ded202e
+patch:      12b-rx-dma-callback.patch sha256 527415f6ce1057eecea9dc74d01d67bfe63ac2dee90e7656389bfe78e74afe4e
+patch:      14-usbd-sof-once-per-frame.patch sha256 00f4c9287c209d8b97c8c0e4d2945226903e03a22e5116527389e0bd47313903
+patch:      15-boot-menu-slot-select.patch sha256 f2f503cd1072c8c476eead62bdff931e719646f668663c329a21a00a79fafbe5
+bin_size:   108496
+bin_sha256: e7ee9b90ccd2cb2763e695dbab0bb82e5fa63c94c6e823e2e48dc3177ff2f063
+version:    AC/DC v22.4.r-fx4a

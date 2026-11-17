@@ -1,0 +1,3 @@
+e7ee9b90ccd2cb2763e695dbab0bb82e5fa63c94c6e823e2e48dc3177ff2f063  firmware/builds/acdc1-build6-fx4a/ACDC.bin
+f16fac49aaed65c991dc7ef748f987c188333954b7dd10976303aec28e2ed506  firmware/flashlog/20261117_build6-fx4a/readback_after.bin
+e7ee9b90ccd2cb2763e695dbab0bb82e5fa63c94c6e823e2e48dc3177ff2f063  readback_after.bin[0:108496]

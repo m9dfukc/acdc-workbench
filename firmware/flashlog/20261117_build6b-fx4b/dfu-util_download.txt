@@ -1,0 +1,25 @@
+dfu-util 0.11
+
+Copyright 2005-2009 Weston Schmidt, Harald Welte and OpenMoko Inc.
+Copyright 2010-2021 Tormod Volden and Stefan Schmidt
+This program is Free Software and has ABSOLUTELY NO WARRANTY
+Please report bugs to http://sourceforge.net/p/dfu-util/tickets/
+
+dfu-util: Warning: Invalid DFU suffix signature
+dfu-util: A valid DFU suffix will be required in a future dfu-util release
+Opening DFU capable USB device...
+Device ID 0483:df11
+Device DFU version 011a
+Claiming USB DFU Interface...
+Setting Alternate Interface #0 ...
+Determining device status...
+DFU state(2) = dfuIDLE, status(0) = No error condition is present
+DFU mode device DFU version 011a
+Device returned transfer size 1024
+DfuSe interface name: "Internal Flash   "
+Downloading element to address = 0x08000000, size = 108496
+Erase   	[                         ]   0%            0 bytesErase   	[                         ]   0%            0 bytesErase   	[=                        ]   4%         5120 bytesErase   	[==                       ]   8%         9216 bytesErase   	[===                      ]  12%        13312 bytesErase   	[====                     ]  16%        17408 bytesErase   	[=====                    ]  20%        22528 bytesErase   	[======                   ]  24%        26624 bytesErase   	[=======                  ]  28%        30720 bytesErase   	[========                 ]  32%        34816 bytesErase   	[=========                ]  36%        39936 bytesErase   	[==========               ]  40%        44032 bytesErase   	[===========              ]  44%        48128 bytesErase   	[============             ]  48%        52224 bytesErase   	[=============            ]  52%        57344 bytesErase   	[==============           ]  56%        61440 bytesErase   	[===============          ]  60%        65536 bytesErase   	[================         ]  64%        69632 bytesErase   	[=================        ]  68%        74752 bytesErase   	[==================       ]  72%        78848 bytesErase   	[===================      ]  76%        82944 bytesErase   	[====================     ]  80%        87040 bytesErase   	[=====================    ]  84%        92160 bytesErase   	[======================   ]  88%        96256 bytesErase   	[=======================  ]  92%       100352 bytesErase   	[======================== ]  96%       104448 bytesErase   	[=========================] 100%       108496 bytes
+Erase    done.
+Download	[                         ]   0%            0 bytesDownload	[=                        ]   4%         5120 bytesDownload	[=                        ]   7%         8192 bytesDownload	[==                       ]   8%         9216 bytesDownload	[===                      ]  12%        13312 bytesDownload	[===                      ]  15%        16384 bytesDownload	[====                     ]  16%        17408 bytesDownload	[=====                    ]  20%        22528 bytesDownload	[=====                    ]  23%        25600 bytesDownload	[======                   ]  24%        26624 bytesDownload	[=======                  ]  28%        30720 bytesDownload	[=======                  ]  31%        33792 bytesDownload	[========                 ]  32%        34816 bytesDownload	[=========                ]  36%        39936 bytesDownload	[=========                ]  39%        43008 bytesDownload	[==========               ]  40%        44032 bytesDownload	[===========              ]  44%        48128 bytesDownload	[===========              ]  47%        51200 bytesDownload	[============             ]  48%        52224 bytesDownload	[=============            ]  52%        57344 bytesDownload	[=============            ]  55%        60416 bytesDownload	[==============           ]  56%        61440 bytesDownload	[===============          ]  60%        65536 bytesDownload	[===============          ]  63%        68608 bytesDownload	[================         ]  64%        69632 bytesDownload	[=================        ]  68%        74752 bytesDownload	[=================        ]  71%        77824 bytesDownload	[==================       ]  72%        78848 bytesDownload	[===================      ]  76%        82944 bytesDownload	[===================      ]  79%        86016 bytesDownload	[====================     ]  80%        87040 bytesDownload	[=====================    ]  84%        92160 bytesDownload	[=====================    ]  87%        95232 bytesDownload	[======================   ]  88%        96256 bytesDownload	[=======================  ]  92%       100352 bytesDownload	[=======================  ]  95%       103424 bytesDownload	[======================== ]  96%       104448 bytesDownload	[=========================] 100%       108496 bytes
+Download done.
+File downloaded successfully

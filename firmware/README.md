@@ -2,11 +2,11 @@
 
 Alles zur eigenen AC/DC-Firmware. Plan, Begründungen und Ergebnis jedes Builds: `docs/05-firmware-plan.md`, Messungen: `docs/messlog.md`.
 
-**Stand 2026-11-16:** Auf acdc1 läuft `builds/acdc1-build5c-fx3l/` (`v22.4.r-fx3l`, SHA-256 `b55b94d8…`, D49). Rückweg ist `builds/acdc1-build3d-fx2/` (`d212cf8d…`).
+**Stand 2026-11-17:** Auf acdc1 läuft `builds/acdc1-build6b-fx4b/` (`v22.4.r-fx4b`, SHA-256 `a21f35c9…`, D55) als Alltags-Firmware (D59). Loop-Test (D57) und Rausch-A/B gegen fx3l (D58) sind bestanden. Der Vorgänger `builds/acdc1-build6-fx4a/` (`e7ee9b90…`) hat das Boot-Menü am Gerät bestanden (D52/D53). Rückweg ist `builds/acdc1-build5c-fx3l/` (`v22.4.r-fx3l`, `b55b94d8…`, D49), danach `builds/acdc1-build3d-fx2/` (`d212cf8d…`).
 
 | Ordner | Inhalt | Regeln |
 |---|---|---|
-| `OpenWare/` | **Submodul** des Hauptrepos (`https://github.com/m9dfukc/OpenWare.git`, Branch `acdc/fx1d`). Lokale Remotes: `fork` (`m9dfukc/OpenWare`) und `upstream` (RebelTechnology, alle Branches als `upstream/*`, alle Tags). Ausgecheckt: `acdc/fx1d` = Build 2 → 3d → **fx3l** + README, Spitze `3e3a74fd`. Daneben `acdc/thru-usb-feedback` = Build 1d + README, Spitze `edb32852`. Beide Spitzen sind README-Commits vom 2026-11-16 und gepusht. Quelle für `tools/build_acdc.sh` (`git archive <commit>`, unabhängig vom ausgecheckten Branch) | Der ausgecheckte Commit ist der Stand, den das Hauptrepo festhält. Commit/Fetch nur mit Freigabe, Push immer nachfragen |
+| `OpenWare/` | **Submodul** des Hauptrepos (`https://github.com/m9dfukc/OpenWare.git`, Branch `acdc/fx1d`). Lokale Remotes: `fork` (`m9dfukc/OpenWare`) und `upstream` (RebelTechnology, alle Branches als `upstream/*`, alle Tags). Ausgecheckt: `acdc/fx1d` = Build 2 → 3d → fx3l → **fx4b** + README, Spitze `27d3630b` (die drei Commits vom 2026-11-17 sind noch nicht gepusht, gepusht ist `3e3a74fd` = fx3l). Daneben `acdc/thru-usb-feedback` = Build 1d + README, Spitze `edb32852`. Die Spitze von `acdc/thru-usb-feedback` ist ein README-Commit vom 2026-11-16 und gepusht. Quelle für `tools/build_acdc.sh` (`git archive <commit>`, unabhängig vom ausgecheckten Branch) | Der ausgecheckte Commit ist der Stand, den das Hauptrepo festhält. Commit/Fetch nur mit Freigabe, Push immer nachfragen |
 | `patches/` | Quelltext-Patches für `build_acdc.sh`, siehe Liste unten | Nicht umbenennen, `BUILD_INFO.txt` nennt sie mit SHA |
 | `builds/` | Fertige Builds, je Ordner `ACDC.bin`, `ACDC.elf` (beide nur lokal, nicht im Repo), `build.log`, `BUILD_INFO.txt`, bei ITCM-Builds dazu `check_itcm.md`/`.json`. Siehe Liste unten | Geflashte Builds nie überschreiben |
 | `builds/archive/` | Überholte Builds: Reproduktions-Builds `repro-*` (E5), Build 1 (`v22.4.s-thru1`, geflasht, kein Audio, D10), Build 2 alt (`v22.4.s-fx1`, nie geflasht) | Nur zum Nachschlagen |
@@ -14,6 +14,7 @@ Alles zur eigenen AC/DC-Firmware. Plan, Begründungen und Ergebnis jedes Builds:
 | `downloads/` | Externe Abhängigkeiten mit festem Stand: `OpenWareLibraries-9e8f64e.tar.gz` (Quelle und Aufruf in `docs/05-firmware-plan.md`, E5). Nicht im Repo, `tools/setup_repo.sh` lädt die Datei und prüft die SHA-256 | |
 | `releases/` | Offizielle Release-Binaries zum Vergleich (`v22.5.0/ACDC.bin`). Kein sicherer Rückweg für acdc1 (USB-Bruch). Nicht im Repo, `tools/setup_repo.sh` lädt die Datei | |
 | `itcm-prep/` | Hilfsskripte und Rohliste aus der Vorbereitung von Build 4 (`docs/uebergaben/uebergabe-2026-11-16-itcm.md`). Abgelöst durch `tools/check_itcm.py` | Nur zum Nachschlagen |
+| `sim/` | Host-Test der Boot-Menü-Logik (`boot_menu_sim.cpp`), Aufruf `tools/sim_boot_menu.sh` | |
 | `_work/` | Wegwerf-Quellbäume von `build_acdc.sh`. Der Ordner entsteht beim Bauen, ≈ 130 MB je Build | Darf jederzeit gelöscht werden |
 
 Rückweg für acdc1 auf die Original-Firmware: `backup/acdc1/20261114/flash/acdc1_internal_flash.bin` (SHA-256 `433b3fd3…`).
@@ -40,9 +41,11 @@ Rückweg für acdc1 auf die Original-Firmware: `backup/acdc1/20261114/flash/acdc
 | **12b** | RX-Fix: `audioCallback` aus den RX-DMA-Callbacks |
 | 13, 13b | Diagnose-Zähler im USB-Pfad (Build 5, nur für die Fehlersuche) |
 | **14** | `USBD_AUDIO_SOF` wertet jede Frame-Nummer nur einmal aus |
+| **15** | Boot-Menü: Patch-Slot beim Einschalten wählen, der Slot bleibt gemerkt (Build 6, fx4a) |
+| 15b | = 15 mit Abbruch nach 30 s statt 60 s. Vollständiger Ersatz für 15 (fx4b) |
 | 90, 91 | Füllbytes für Lage-Tests: 90 wie 3c (`fx1p`), 91 hinter dem ITCM-Anker (`…p`-Varianten) |
 
-fx3l = `db9d3dd` + Libraries `9e8f64e` + 01 02 04 05 06 03 07d 08 **11g 12b 14**. 01, 02, 04, 05, 06 stecken als Commits in `acdc/thru-usb-feedback`, der ganze fx3l-Stand in `acdc/fx1d`. Upstream-Analyse: `docs/research/notes/upstream_master_2026-11-16.md`.
+fx4b = fx3l + **15b**. fx3l = `db9d3dd` + Libraries `9e8f64e` + 01 02 04 05 06 03 07d 08 **11g 12b 14**. 01, 02, 04, 05, 06 stecken als Commits in `acdc/thru-usb-feedback`, der ganze fx4b-Stand in `acdc/fx1d`. Upstream-Analyse: `docs/research/notes/upstream_master_2026-11-16.md`.
 
 ## Builds
 
@@ -69,7 +72,10 @@ fx3l = `db9d3dd` + Libraries `9e8f64e` + 01 02 04 05 06 03 07d 08 **11g 12b 14**
 | `acdc1-build5b-diag-flash` | `v22.4.r-dg5f2` | nein | Kontrolle zu dg5i2 |
 | **`acdc1-build5c-fx3l`** | **`v22.4.r-fx3l`** | ja | **läuft auf acdc1** (D47–D49) |
 | `acdc1-build5cp-fx3lp` | `v22.4.r-fx3lp` | ja | Füllvariante: lagenunabhängig (D48) |
+| `acdc1-build6-fx4a` | `v22.4.r-fx4a` | ja | fx3l + 15 (Boot-Menü). `check_itcm` und Host-Test bestanden (D50), geflasht (D51), Menü läuft (D52). Loop-Test und Rausch-A/B offen |
+| **`acdc1-build6b-fx4b`** | **`v22.4.r-fx4b`** | ja | fx3l + 15b (Abbruch nach 30 s). ITCM-Inhalt bytegleich mit fx4a (D53). **Läuft auf acdc1** (D55). Loop-Test bestanden (D57), Rauschen = fx3l (D58) |
 | `cand-r-fx2d-gcc13flags` | `v22.4.r-fx2d` | nein | 3d + 08, bytegleich mit 3d |
 | `cand-r-merge2250-fx2d` | `v22.4.r-fx2d-m` | nein | 3d-Stand mit Patch 09 |
 | `cand-master-oldhal-fx` | `v22.5.0-oldhal-fx` | nein | `master` `36eaf1c4` + altes HAL + 10. Zeigt nur, dass es baut |
 | `verify-fx1d-5cb2c17c` | `v22.4.r-fx3l` | nein | Build aus dem Fork-Branch, bytegleich mit fx3l |
+| `verify-fx1d-2c963e3a` | `v22.4.r-fx4b` | nein | Build aus dem Fork-Branch, bytegleich mit fx4b (D59) |
