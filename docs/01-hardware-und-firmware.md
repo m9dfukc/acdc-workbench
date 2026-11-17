@@ -19,7 +19,7 @@ Basis: OpenWare-Quelltext `RebelTechnology/OpenWare` @ `62a0187` (v22.5.0, 2023-
 | LEDs | PWM über TIM2/3/4/8, Prescaler 100, Periode 1023 → **≈ 2,32 kHz** (im Audioband). Das Tastverhältnis folgt dem Pegel | [Code] |
 | Versorgung | Eurorack-Bus (+12 V, ca. 200 mA). Nicht über USB versorgt | [belegt] |
 | Default-Gains | Input 104, Output 114 (v22.5.0). Im Hack-Branch (v22.4.q, v22.4.r): Input 88. Eigene Builds ab 1c: Output 125 (Patch 04). Alles Defaults: Gespeicherte Settings im Flash haben Vorrang | [Code] |
-| Firmware acdc1 | Heute **`v22.4.r-fx3l`** (eigener Build, seit 2026-11-16). Ab Werk meldete das Gerät „v22.5.0“, es war aber ein Build aus `hack/acdc-output-levels` mit diesem Etikett, kein veröffentlichter Commit. Daher Blockgröße 8, die 6-kHz-Linie und der Takt von v22.4.r | [gemessen] messlog D3, D3a, D10, D49 |
+| Firmware acdc1 | Heute **`v22.4.r-fx4b`** (eigener Build, seit 2026-11-17, davor `v22.4.r-fx3l` seit 2026-11-16). Ab Werk meldete das Gerät „v22.5.0“, es war aber ein Build aus `hack/acdc-output-levels` mit diesem Etikett, kein veröffentlichter Commit. Daher Blockgröße 8, die 6-kHz-Linie und der Takt von v22.4.r | [gemessen] messlog D3, D3a, D10, D49, D59 |
 | Firmware acdc2 | **v22.4.q** = Commit `e81cfc3` (2022-06-27) aus `hack/acdc-output-levels`, nie gemergt. `AUDIO_BLOCK_SIZE 8` (v22.5.0: 16), `AUDIO_INPUT_GAIN 88`, HPF aus, PLL/LED-Timer wie v22.5.0. Unsere Code-Analyse bezieht sich sonst auf v22.5.0 | [Code], Device-Status 2026-11-13 |
 
 ## USB
@@ -74,7 +74,7 @@ TX- und RX-Routing sind **unabhängig** voneinander schaltbar (im Quelltext gepr
 
 Konsequenz für das Rauschen: Mit Stock-Routing (acdc2, Build 1d) landet ein **Filter-Patch in Slot 1 direkt in der USB-Aufnahme**. Mit `TX_PRE_FX` (acdc1 ab Build 2) nimmt der Rechner die rohen Eingänge auf, ein Patch im Gerät erreicht die Aufnahme nicht mehr [gemessen, messlog D25, B2]. Gefiltert wird dann im Rechner. Siehe `04-software-filter.md`.
 
-## Eigene Firmware auf acdc1 (Stand `v22.4.r-fx3l`, 2026-11-16)
+## Eigene Firmware auf acdc1 (Stand `v22.4.r-fx4b`, 2026-11-17)
 
 Kurzfassung, Begründungen und Messungen in `05-firmware-plan.md` und `messlog.md`.
 
@@ -87,6 +87,7 @@ Kurzfassung, Begründungen und Messungen in `05-firmware-plan.md` und `messlog.m
 | SOF-Auswertung | `USBD_AUDIO_SOF` wertet jede Frame-Nummer nur einmal aus (Patch 14). Mit USB-Code im ITCM lief die SOF-Kette sonst in ≈ 97 % der Frames doppelt | [gemessen] D46, D47 |
 | Blockstart | `audioCallback` hängt an den RX-DMA-Callbacks statt am TX-DMA-Interrupt (Patch 12b). Vorher konnte der letzte Eingangs-Sample eines Blocks 16 Frames alt sein | [gemessen] D40, D43 |
 | Eingangs-LEDs | Mit TX-Stream roher Pegel (Quadratmittel × 4096, τ 40 ms), Rot 300 ms ab −0,1 dBFS. Gemessen alle 2 ms in `onLoop` auf dem Codec-DMA-Puffer (Patch 07d) | [gemessen] D34, D36 |
-| Speicher | Heißer Pfad (104 Funktionen, 12 352 B) und Vektortabelle im ITCM ab 0x3000 (Patch 11g). Patch-Heap im CCM 39,3 KB statt 52 KB | [Code: `check_itcm.py`], [gemessen] D47–D49 |
+| Speicher | Heißer Pfad (104 Funktionen, 12 392 B) und Vektortabelle im ITCM ab 0x3000 (Patch 11g). Patch-Heap im CCM 39,2 KB statt 52 KB | [Code: `check_itcm.py`], [gemessen] D47–D49, D50 |
+| Patch-Wahl | Boot-Menü (Patch 15b): Einschalten mit Regler 1, 2, 3 links und Regler 4 rechts. Regler 1 wählt unter den belegten Slots 1–15, Regler 4 bestätigt, Regler 3 oder 30 s brechen ab. Die Eingangs-LEDs zeigen den Slot binär. Der Slot wird als Ressource `ACDC.slot` im Patch-Flash gemerkt und startet beim nächsten Einschalten. Die Settings bleiben unberührt | [gemessen] D52, D53, D55, D57, D58 |
 | ADC-Format | SAI1 liefert 24 Bit rechtsbündig **ohne Vorzeichen** (`SAI_DATASIZE_24`). Vor jeder Pegelrechnung das Vorzeichen erweitern | [Code], aufgefallen in D28 |
 | Eingangsbereich | Vollausschlag ≈ ±9,5 V, Offset ≈ −0,2…−0,4 V je Kanal | [gemessen] D29 (indirekt), D36 |

@@ -12,7 +12,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 
 | Modul | Device-UUID (als Seriennummer) | Firmware | Slot 1 | Stand |
 |---|---|---|---|---|
-| acdc1 | `0039001c:31315101:39333437` | **v22.4.r-fx3l** (eigener Build 5c, `b55b94d8…`, seit 2026-11-16 nachts im Alltagstest, D49). Rückweg Build 3d `v22.4.r-fx2d` (`d212cf8d…`) | ACDC, 9,93 KB | owl_read 2026-11-16 |
+| acdc1 | `0039001c:31315101:39333437` | **v22.4.r-fx4b** (eigener Build 6b, `a21f35c9…`, Alltags-Firmware seit 2026-11-17, D55–D59). Rückweg fx3l `v22.4.r-fx3l` (Build 5c, `b55b94d8…`), danach Build 3d `v22.4.r-fx2d` (`d212cf8d…`) | ACDC, 9,93 KB. Slots 2–5: TapeDelay, Grainz, RingsReverb, Tanh3 (D54) | owl_read 2026-11-17 |
 | acdc2 (DIY) | `00250049:31315102:39333437` | v22.4.q (`e81cfc3`, Hack-Branch, nie veröffentlicht) | ACDC, 9,32 KB | Device-Status 2026-11-13 |
 
 - **acdc2** = die **DIY-Variante** (M1–M3 wurden damit aufgenommen). „Gerät 1“ in älteren Docs = acdc1, „Gerät 2“ = acdc2.
@@ -29,17 +29,24 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 - **Nur ein Rechner** vorhanden. Tests mit Host-Wechsel fallen weg.
 - Forum-Handle: `m9dfukc` (community.rebeltech.org), eigener Thread: #2244.
 
-## Aktueller Stand (2026-11-16)
+## Aktueller Stand (2026-11-17)
 
-- **acdc1 läuft mit fx3l** (`firmware/builds/acdc1-build5c-fx3l/`). Offen: Alltagstest (Nutzer), Hörprobe mit Kompressor, zweite Rauschsitzung 3d → fx3l → 3d, dann die Entscheidung, ob fx3l bleibt.
-- **Verhalten von fx3l:**
+- **acdc1 läuft mit fx4b als Alltags-Firmware** (Entscheidung des Nutzers, D59): `firmware/builds/acdc1-build6b-fx4b/`, `a21f35c9…` = fx3l + Patch 15b. Abnahme bestanden: Boot-Menü am Gerät (D52/D53), Loop-Test auch unter 53 % Patch-Last (D57), Rauschen gleich fx3l innerhalb ±0,4 dB (D58).
+- **Boot-Menü zur Patch-Wahl:**
+  - Einschalten mit Regler 1, 2, 3 links und Regler 4 rechts öffnet das Menü. Regler 1 wählt unter den belegten Slots (zählt erst nach Bewegung), Regler 4 weg vom Anschlag bestätigt, Regler 3 weg vom Anschlag oder 30 s brechen ab.
+  - Eingangs-LEDs zeigen den Slot binär (1–15, LED 1 = 1 … LED 4 = 8). Der gewählte Slot wird als Ressource `ACDC.slot` im Patch-Flash gemerkt, die Settings bleiben unberührt.
+  - Ohne das Muster startet der gemerkte Slot, seine Nummer steht 1 s auf den LEDs.
+  - Regler-Endwerte: links 2, rechts 127 von 127 (D51). Einzelheiten: `docs/05`, „Build 6“.
+- **Verhalten sonst wie fx3l:**
   - Der Rechner nimmt die **rohen Eingänge** auf (`TX_PRE_FX`, vor dem Patch, der Gain-Knob wirkt nicht). Audiogerät „OWL-ACDC-FX“, der MIDI-Port heißt in CoreMIDI weiter „OWL-ACDC“.
   - Ausgang ohne Stream = Patch (Durchleitung ohne Rechner geht). Ausgang mit Stream = USB-Playback.
   - Nimmt eine App vom AC/DC auf, startet macOS auch den Playback-Stream. Dann ist die Durchleitung aus (D20).
   - Mit TX-Stream zeigen die Eingangs-LEDs den rohen Pegel, Rot ab −0,1 dBFS für 300 ms (D36).
-  - Patch-Heap im CCM 39,3 KB statt 52 KB, weil der heiße Pfad im ITCM liegt.
-- **Rauschen gegen 3d [gemessen, D48]:** fs/8 −5,1 dB, Mischprodukte −35 dB, Rest −1,25 dB, RMS −1,1 dB, Kamm +0,2…+0,4 dB. Der SOF-Kamm ist damit die stärkste verbleibende Störfamilie.
-- **Nächste Schritte:** `TODO.md`, Abschnitt „Offen“.
+  - Patch-Heap im CCM 39,2 KB statt 52 KB, weil der heiße Pfad im ITCM liegt.
+- **Rauschen gegen 3d [gemessen, D48, gilt auch für fx4b, D58]:** fs/8 −5,1 dB, Mischprodukte −35 dB, Rest −1,25 dB, RMS −1,1 dB, Kamm +0,2…+0,4 dB. Der SOF-Kamm ist damit die stärkste verbleibende Störfamilie.
+- **Auf acdc1 liegen fünf Patches** (D54, D56): Slot 1 ACDC, 2 TapeDelay, 3 Grainz, 4 RingsReverb (je mit Limiter auf Out 1/2), 5 Tanh3 (Fassung 2 mit 4× Oversampling, 48 % CPU). Gemerkter Slot zuletzt 5. Die Builds aus D50 und Tanh3 Fassung 1 liegen in `owl-patches/builds-owl2/`. Wechsel vom Rechner aus per `owl_read.py --program N` (wird nicht gemerkt).
+- **Slot-Downloads sind bei laufendem Patch unzuverlässig (D53/D54):** Wettlauf im MIDI-Sendeweg der Original-Firmware [Code]. Daten gehen verloren, einmal sendete acdc1 danach bis zum Neustart kein MIDI mehr. `owl_write.py` deshalb mit `--backup-file` benutzen, `owl_read.py --dump` nur mit Blick auf `ok` im Report. Ein Firmware-Fix steht in `TODO.md`.
+- **Offen:** Push des Fork-Branches und Release für fx4b (je mit Freigabe), Hörurteil zu Tanh3, Regler-Linien (D58), Last von Tanh3 (D56). Alles Weitere: `TODO.md`, Abschnitt „Offen“.
 
 ## Dateien
 
@@ -64,7 +71,8 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 | `out/<ID>/` | Report, JSON, Plots je Messung. Dazu `out/*-session-table.md` (Sitzungstabellen), `out/owl_read/` (Geräte-Reports je Aufnahme), `out/v0/` (alte Plots des ersten Skripts, überholte Gain-Deutung im Text) |
 | `firmware/` | Firmware-Arbeit: Quell-Klon, Quelltext-Patches, Builds, Flash-Logs. Übersicht in `firmware/README.md` |
 | `backup/<gerät>/<datum>/` | Geräte-Backups: `flash/` (DFU-Readback), `owl/` (Slots, Settings, Report). Nie überschreiben. Nur lokal, nicht im Repo |
-| `owl-patches/library/`, `vcv-patches/` | Nur lokal, nicht im Repo: Quellen von OWL-Patches aus der Library (ohne Lizenz) und Host-Patches der frühen Messungen |
+| `owl/` | Eigene OWL-Patch-Quellen: `Tanh3Patch.hpp` (dreifacher tanh-Waveshaper mit Mix-Kanal), `AcdcOutput.h` (Limiter-Hülle für FX-Patches), `test/` (Host-Test) |
+| `owl-patches/`, `vcv-patches/` | Nur lokal, nicht im Repo. `owl-patches/library/`: Quellen von OWL-Patches aus der Library (ohne Lizenz). `owl-patches/acdc-patches/` (`burstMembrane` `78ffa22`), `owl-patches/OwlProgram/` (SDK `60f44ab` + DaisySP `4263388`), `owl-patches/downloads/` (Tarballs), `owl-patches/builds/<name>/` (`patch.bin`, `<name>.syx`, `BUILD_INFO.txt`). `vcv-patches/`: Host-Patches der frühen Messungen |
 | `tools/` | Geräte- und Build-Werkzeuge, siehe unten |
 | `docs/research/report-2026-10-23.md` | Vollständiger Recherchebericht (Deep Research) |
 | `docs/research/notes/*.md` | Rohnotizen der Recherche, englisch, mit allen URLs und Commit-Hashes: Forum-Berichte, Ground-Loop/Filter, OpenWare & Forks, Standalone-FX, Fork-Update 2026-11-14, Code-Lage ↔ Rauschen (`layout_noise_2026-11-16.md`), ITCM-Technik (`daisy_itcm_2026-11-16.md`), Upstream nach 2023 (`upstream_master_2026-11-16.md`) |
@@ -77,6 +85,10 @@ Bei Detailfragen zuerst `docs/research/notes/` durchsuchen, bevor neu recherchie
 |---|---|
 | `acdc_rec.py` | Aufnahmen und Testsignale, Standard seit 2026-11-16 |
 | `owl_read.py` | Gerät per MIDI/SysEx auslesen (nur lesend), Neustart in den DFU-Modus |
+| `owl_write.py` | Patch hochladen: `--run` (nur RAM) oder `--store N --yes` (Slot im Patch-Flash). Nur acdc1, sichert einen belegten Slot vorher, liest danach zurück. `--info` und `--syx-out` laufen offline |
+| `build_owl_patch.sh` | C++-Patch mit OwlProgram bauen, SysEx nach `owl-patches/builds/` |
+| `sim_boot_menu.sh` | Host-Test der Boot-Menü-Logik (Patch 15/15b) mit simulierten Reglern |
+| `test_owl_dsp.sh` | Host-Test der eigenen Patch-Quellen in `owl/` (Tanh3, Limiter) |
 | `dfu_readback.sh`, `compare_firmware.py` | Internes Flash lesen und mit einer Referenz vergleichen |
 | `build_acdc.sh` | Reproduzierbarer Firmware-Build aus Commit + Libraries-Tarball + Patches |
 | `setup_repo.sh` | Frischen Klon einrichten: Submodul, `upstream`-Remote, Libraries-Tarball und offizielle `ACDC.bin` mit SHA-Prüfung |
@@ -133,6 +145,7 @@ Bei Detailfragen zuerst `docs/research/notes/` durchsuchen, bevor neu recherchie
 - **Die Lage des Codes im Speicher verschiebt die Störlinien [gemessen, D33].** Ein reiner Füll-Build ohne Funktionsänderung ändert fs/8, Kamm und Mischprodukte um 1,5–4,5 dB. Liegt der heiße Pfad im ITCM, zählt die Flash-Lage nicht mehr (fx3lp ≤ 0,25 dB bei fx3l, D48).
 - **Was die CPU im Blocktakt tut, erscheint bei fs/8 [gemessen, D42]:** Ein paar µs Abfrage eines DMA-Registers pro Block heben fs/8 um ≈ 10,6 dB. Mechanismus [Hypothese]: Busverkehr bzw. Strompuls.
 - **Den Kamm senkt nur USB-Code im ITCM [gemessen, D42/D44]:** USB im Flash +2,5…+3,5 dB gegen 3d, im ITCM ±0.
+- **Regler am Anschlag erzeugen eigene Linien [gemessen, D58]:** 2200,95 / 4401,90 / 6602,85 Hz, ≈ 20 dB über dem Grundrauschen (−92…−97 dB), an den Gerätetakt gekoppelt, unabhängig von der Firmware (fx3l = fx4b). Mit allen Reglern auf 12 Uhr sind sie weg. Welcher Anschlag sie auslöst, ist offen. Rauschmessungen deshalb immer mit Reglern auf 12 Uhr.
 - Gewinn einer idealen Notch-Bank: 4–10 dB mit dem Default-Patch (M1/M2, Serie 2, beide Module), bei fx3l ≈ 5,8 dB (RMS gegen Rest, D48). Ein Filter im Rechner ist optional und hängt davon ab, wie viel Störgeräusch am Ende bleibt (`TODO.md`).
 
 ## Firmware (Kurzform, Details in `docs/05-firmware-plan.md`)
@@ -143,9 +156,11 @@ Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`)
 |---|---|---|---|
 | 1d | `v22.4.r-thru1d`, `f522560e…` | 01 GCC 12, 02 Revert `237c63d`, 04 Ausgang 125, 05 atomarer RX-Zähler, 06 Feedback-Regelung | Durchleitung ohne Rechner, 30 min ohne Block-Slips (D17–D20) |
 | 2 | `v22.4.r-fx1d`, `7f9f9a34…` | 1d + 03 `TX_PRE_FX`, „OWL-ACDC-FX“ | A1–A6, B1–B3 bestanden. B3 = Basislinie der rohen Eingänge (D24–D27) |
-| 3d | `v22.4.r-fx2d`, `d212cf8d…` | 2 + 07d Eingangs-LEDs roh, Code in `.late_text`/`.late_bss` | Rauschen = Build 2 (D34), Clip-Rot bestanden (D36). **Rückweg** |
+| 3d | `v22.4.r-fx2d`, `d212cf8d…` | 2 + 07d Eingangs-LEDs roh, Code in `.late_text`/`.late_bss` | Rauschen = Build 2 (D34), Clip-Rot bestanden (D36). Zweiter Rückweg |
 | 4, 4x, 4y, 4z | `fx3i`, `fx3i-noD/noC/onlyD`, `fx3j`, `fx3k` | 3d + 08 + ITCM-Varianten (11, 11a–f), RX-Fix 12 bzw. 12b | fs/8 −5 dB, aber je ein Mangel (D37–D44) |
-| 5c | **`v22.4.r-fx3l`, `b55b94d8…`** | 3d + 08 + 11g (heißer Pfad inkl. USB im ITCM) + 12b + 14 | **läuft auf acdc1** (D47–D49) |
+| 5c | `v22.4.r-fx3l`, `b55b94d8…` | 3d + 08 + 11g (heißer Pfad inkl. USB im ITCM) + 12b + 14 | Alltagstest D47–D49, Kontrolle in D58. **Rückweg** |
+| 6 | `v22.4.r-fx4a`, `e7ee9b90…` | fx3l + 15 (Boot-Menü, Slot wird gemerkt, Abbruch nach 60 s) | Menü am Gerät geprüft (D50–D53), abgelöst durch 6b |
+| 6b | **`v22.4.r-fx4b`, `a21f35c9…`** | fx3l + 15b (wie 15, Abbruch nach 30 s). ITCM-Inhalt bytegleich mit fx4a | **Alltags-Firmware auf acdc1** (D55, D59). Loop-Test bestanden (D57), Rauschen = fx3l (D58) |
 
 - **Drei Fehler im Original-Code, gefunden und behoben:**
   - **Feedback in offener Schleife:** macOS liefert ≈ 1 LSB zu wenig, der RX-Puffer läuft alle 2–3 min um einen Block leer. Patch 06 regelt nach dem Füllstand (D12–D18).
@@ -157,12 +172,12 @@ Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`)
   - Ohne ITCM gilt die alte Regel: neuen Code ans Ende legen (`.late_text`/`.late_bss`) oder die Adressen per `nm` gegen den Referenz-Build prüfen.
   - Keine Abfrage-Schleifen im Blocktakt (D42).
   - Loop-Prüfung immer mit `phase_slips.py` **und** `stale_samples.py` auf derselben WAV.
-- **Rückwege für acdc1:** 3d (`d212cf8d…`), dann Build 2, dann 1d, dann das Readback (`433b3fd3…`).
+- **Rückwege für acdc1:** fx3l (`b55b94d8…`), dann 3d (`d212cf8d…`), dann Build 2, dann 1d, dann das Readback (`433b3fd3…`).
 - **Fork:** https://github.com/m9dfukc/OpenWare
   - `acdc/thru-usb-feedback` = Build 1d + README, Spitze `edb32852`.
-  - `acdc/fx1d` = Build 2 → 3d → fx3l + README, Spitze `3e3a74fd`. Ein Build von `5cb2c17c` ist bytegleich mit fx3l (`firmware/builds/verify-fx1d-5cb2c17c`), danach kamen nur README-Commits.
-  - Beide Spitzen sind README-Commits ohne Programmnamen, gepusht 2026-11-16.
-  - **Releases am Fork** (2026-11-16): `acdc-v22.4.r-fx2d` (Build 3d, Tag auf `abc3a72a`) und `acdc-v22.4.r-fx3l` (Vorabversion, Tag auf `3e3a74fd`), je mit `ACDC-<version>.bin` und `BUILD_INFO`. Ein neuer Alltags-Build bekommt ein eigenes Release, nur nach Freigabe. `gh` immer mit `--repo m9dfukc/OpenWare` aufrufen, sonst zielt es auf das Upstream-Repo.
+  - `acdc/fx1d` = Build 2 → 3d → fx3l → fx4b + README, Spitze `27d3630b`. Ein Build von `5cb2c17c` ist bytegleich mit fx3l (`firmware/builds/verify-fx1d-5cb2c17c`), einer von `2c963e3a` bytegleich mit fx4b (`verify-fx1d-2c963e3a`).
+  - Gepusht (2026-11-16) sind `edb32852` und `3e3a74fd` (fx3l). **Die drei fx4b-Commits vom 2026-11-17 (`7ef6284a`, `2c963e3a`, `27d3630b`) sind nur lokal**, der Push braucht eine Freigabe.
+  - **Releases am Fork** (2026-11-16): `acdc-v22.4.r-fx2d` (Build 3d, Tag auf `abc3a72a`) und `acdc-v22.4.r-fx3l` (Vorabversion, Tag auf `3e3a74fd`), je mit `ACDC-<version>.bin` und `BUILD_INFO`. Für fx4b gibt es noch kein Release. Ein neuer Alltags-Build bekommt ein eigenes Release, nur nach Freigabe. `gh` immer mit `--repo m9dfukc/OpenWare` aufrufen, sonst zielt es auf das Upstream-Repo.
 - **Später geplant:** Merge mit v22.5.0 bzw. dem aktuellen Upstream-`master` samt Fixes. Das ist eine Portierung (`docs/research/notes/upstream_master_2026-11-16.md`).
 
 ### Flash-Ablauf (ohne Pads, DFU über die vordere USB-B-Buchse)
@@ -190,7 +205,11 @@ Je Flash ein Ordner in `firmware/flashlog/`. Ein fertiges Skript gibt es noch ni
 
 ### MIDI/SysEx
 
-`tools/owl_read.py` läuft nur außerhalb des Sandbox (CoreMIDI) und mit Python 3.12: `uv run --no-project --python 3.12 --with mido --with python-rtmidi python tools/owl_read.py`. OWL-Webseiten vorher schließen, sie pollen das Gerät.
+`tools/owl_read.py` und `tools/owl_write.py` laufen nur außerhalb des Sandbox (CoreMIDI) und mit Python 3.12: `uv run --no-project --python 3.12 --with mido --with python-rtmidi python tools/owl_read.py`. OWL-Webseiten vorher schließen, sie pollen das Gerät.
+
+- **Patch aufspielen:** erst `owl_write.py <datei> --run` (nur RAM), dann `--store N --yes`. Ist der Slot belegt, die Sicherung mit `--backup-file <lokale Kopie>` angeben (Größe und CRC müssen zum Slot passen), sonst lädt das Werkzeug den Slot herunter, und das ist bei laufendem Patch unzuverlässig (D54). Slot 1 braucht zusätzlich `--allow-slot1`. Nach einem Store läuft der gespeicherte Slot, `--program-after 1` schaltet zurück.
+- **Regler lesen:** Der Settings-Request von `owl_read.py` liefert CC 20–23 (Regler 1–4, 7 Bit) im Report unter `settings_cc`.
+- **Git und Tarballs im Sandbox:** `git clone` scheitert an `.git/config`. Fremde Quellen deshalb als Tarball von `codeload.github.com` holen (wie die Libraries).
 
 ## Git-Repo `acdc-workbench`
 

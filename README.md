@@ -16,6 +16,9 @@ Deutsche Fassung: [README.de.md](README.de.md)
 | `python -m analysis` | Noise analysis of a recording: long-term spectrum, measured line frequencies, line families (USB frame comb, fs/8, mixing products, LED PWM, mains), level over time, report as Markdown, JSON and plots |
 | `tools/family_table.py` | Table of family levels across several measurements, with the difference to a control |
 | `tools/owl_read.py` | Reads the module over MIDI/SysEx without writing: firmware version, settings, patch slots, status message. Can restart it into the DFU bootloader |
+| `tools/owl_write.py` | Uploads an OWL patch over MIDI/SysEx: run it from RAM only or store it in a slot. Backs up an occupied slot first and reads the new one back afterwards |
+| `tools/build_owl_patch.sh` | Builds a C++ patch with OwlProgram for the AC/DC and writes the SysEx file for `owl_write.py` |
+| `tools/sim_boot_menu.sh` | Tests the boot menu logic (patch 15) on the host with simulated knobs |
 | `tools/dfu_readback.sh`, `tools/compare_firmware.py` | Read the internal flash over DFU and compare it with a reference binary |
 | `tools/build_acdc.sh` | Reproducible firmware build from a commit, a pinned library tarball and a list of patches. Writes `BUILD_INFO.txt` with all checksums |
 | `tools/check_itcm.py` | Checks an ITCM build on the ELF before it is flashed: what sits where, which calls leave ITCM, comparison with a reference build |
@@ -45,7 +48,7 @@ Firmware `v22.4.r-fx3l` against the previous build `v22.4.r-fx2d`, open inputs, 
 
 ![Long-term spectrum of fx3l (black) against fx2d (grey), four channels](docs/img/psd_fx3l_vs_3d.png)
 
-The comb is now the strongest remaining family. `fx3l` has been in daily use on the test module since 2026-11-16; a second noise session is still open. Details and all numbers: [docs/messlog.md](docs/messlog.md) (German), entries D45 to D49.
+The comb is now the strongest remaining family. The current daily firmware on the test module is `v22.4.r-fx4b` (since 2026-11-17): `fx3l` plus a boot menu that chooses the patch slot with the knobs. Its noise is the same as that of `fx3l` within ±0.4 dB (control in the same session). Details and all numbers: [docs/messlog.md](docs/messlog.md) (German), entries D45 to D49 and D50 to D59.
 
 ## Firmware
 
@@ -54,7 +57,7 @@ The fork has two branches:
 | Branch | Version | Content |
 |---|---|---|
 | `acdc/thru-usb-feedback` | `v22.4.r-thru1d` | The patch output reaches the jacks without a computer, plus the USB feedback fix |
-| `acdc/fx1d` | `v22.4.r-fx3l` | As above. The computer records the raw inputs, the input LEDs show the raw level while recording, the hot path runs from ITCM |
+| `acdc/fx1d` | `v22.4.r-fx4b` | As above. The computer records the raw inputs, the input LEDs show the raw level while recording, the hot path runs from ITCM, a boot menu chooses the patch slot and remembers it |
 
 Both are based on upstream commit `db9d3dd` (v22.4.r) with the libraries at `9e8f64e`. The fork README explains why, and what each change does.
 
@@ -97,18 +100,18 @@ uv run --no-project --python 3.12 --with mido --with python-rtmidi \
   python tools/owl_read.py --dump --out backup
 ```
 
-Rebuild `v22.4.r-fx3l`. The result must have the SHA-256 `b55b94d8734baf1cf763dfefb380a561029bd00d4a645cdcef3b75d99e6f010e`:
+Rebuild `v22.4.r-fx4b`. The result must have the SHA-256 `a21f35c990cc33737620597d883c4bd205fc4495bf2291a1b6013af6f2b06307`:
 
 ```sh
 P=firmware/patches
-FW_VERSION=v22.4.r-fx3l tools/build_acdc.sh my-fx3l db9d3dd \
+FW_VERSION=v22.4.r-fx4b tools/build_acdc.sh my-fx4b db9d3dd \
   firmware/downloads/OpenWareLibraries-9e8f64e.tar.gz \
   $P/01-gcc12-extern-uint8.patch $P/02-revert-237c63d-thru-mute.patch \
   $P/04-output-gain-125.patch $P/05-atomic-usbd-rx-count.patch \
   $P/06-fb-level-control.patch $P/03-tx-pre-fx-owl-acdc-fx.patch \
   $P/07d-input-leds-raw-late-section.patch $P/08-upstream-gcc13-build-flags.patch \
   $P/11g-itcm-hotpath-rxcb.patch $P/12b-rx-dma-callback.patch \
-  $P/14-usbd-sof-once-per-frame.patch
+  $P/14-usbd-sof-once-per-frame.patch $P/15b-boot-menu-slot-select-30s.patch
 ```
 
 The flash procedure (read out, restart into DFU, write, read back, compare, restart) is described in [CLAUDE.md](CLAUDE.md), section "Flash-Ablauf". There is no finished flash script yet.
@@ -122,11 +125,12 @@ The flash procedure (read out, restart into DFU, write, read back, compare, rest
 | `docs/en/` | English versions of the reference documents, see [docs/en/README.md](docs/en/README.md) |
 | `firmware/OpenWare/` | Submodule, the firmware fork |
 | `firmware/patches/`, `firmware/builds/`, `firmware/flashlog/` | Patches, build records, flash records |
+| `owl/` | Own OWL patches for the module: `Tanh3` (triple tanh waveshaper with a mix channel) and an output limiter for FX patches, with a host test |
 | `recordings/manifest.toml` | Metadata of every recording |
 | `out/<ID>/` | Analysis report of each measurement |
 | `TODO.md`, `CLAUDE.md` | Open points and the project context used when working with Claude Code |
 
-Not in the repository: the recordings themselves (8 GB of WAV files), plots and JSON results in `out/`, firmware binaries, and the device backups. Plots and results can be regenerated from recordings with `python -m analysis`.
+Not in the repository: the recordings themselves (8 GB of WAV files), plots and JSON results in `out/`, firmware binaries, the device backups, and third-party OWL patch sources without a license together with their builds (`owl-patches/`). Plots and results can be regenerated from recordings with `python -m analysis`.
 
 ## Language
 

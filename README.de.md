@@ -16,6 +16,9 @@ English version: [README.md](README.md)
 | `python -m analysis` | Rauschanalyse einer Aufnahme: Langzeit-Spektrum, gemessene Linienfrequenzen, Linienfamilien (USB-Frame-Kamm, fs/8, Mischprodukte, LED-PWM, Netz), Zeitverlauf, Report als Markdown, JSON und Plots |
 | `tools/family_table.py` | Tabelle der Familienpegel über mehrere Messungen, mit Differenz zur Kontrolle |
 | `tools/owl_read.py` | Liest das Modul per MIDI/SysEx aus, ohne zu schreiben: Firmware-Version, Settings, Patch-Slots, Statusmeldung. Kann es in den DFU-Bootloader neu starten |
+| `tools/owl_write.py` | Lädt einen OWL-Patch per MIDI/SysEx hoch: nur im RAM starten oder in einen Slot speichern. Sichert einen belegten Slot vorher und liest den neuen danach zurück |
+| `tools/build_owl_patch.sh` | Baut einen C++-Patch mit OwlProgram für das AC/DC und schreibt die SysEx-Datei für `owl_write.py` |
+| `tools/sim_boot_menu.sh` | Testet die Logik des Boot-Menüs (Patch 15) am Rechner mit simulierten Reglern |
 | `tools/dfu_readback.sh`, `tools/compare_firmware.py` | Internes Flash über DFU lesen und mit einer Referenz vergleichen |
 | `tools/build_acdc.sh` | Reproduzierbarer Firmware-Build aus Commit, festem Libraries-Tarball und Patch-Liste. Schreibt `BUILD_INFO.txt` mit allen Prüfsummen |
 | `tools/check_itcm.py` | Prüft einen ITCM-Build am ELF vor dem Flash: was liegt wo, welche Aufrufe verlassen das ITCM, Vergleich mit einem Referenz-Build |
@@ -45,7 +48,7 @@ Firmware `v22.4.r-fx3l` gegen den Vorgänger `v22.4.r-fx2d`, offene Eingänge, G
 
 ![Langzeit-Spektrum von fx3l (schwarz) gegen fx2d (grau), vier Kanäle](docs/img/psd_fx3l_vs_3d.png)
 
-Der Kamm ist damit die stärkste verbleibende Familie. `fx3l` läuft seit 2026-11-16 im Alltag auf dem Testmodul, eine zweite Rauschsitzung steht noch aus. Einzelheiten und alle Zahlen: [docs/messlog.md](docs/messlog.md), Einträge D45 bis D49.
+Der Kamm ist damit die stärkste verbleibende Familie. Die Alltags-Firmware auf dem Testmodul ist seit 2026-11-17 `v22.4.r-fx4b`: `fx3l` plus ein Boot-Menü, das den Patch-Slot mit den Reglern wählt. Ihr Rauschen ist innerhalb von ±0,4 dB gleich dem von `fx3l` (Kontrolle in derselben Sitzung). Einzelheiten und alle Zahlen: [docs/messlog.md](docs/messlog.md), Einträge D45 bis D49 und D50 bis D59.
 
 ## Firmware
 
@@ -54,7 +57,7 @@ Der Fork hat zwei Branches:
 | Branch | Version | Inhalt |
 |---|---|---|
 | `acdc/thru-usb-feedback` | `v22.4.r-thru1d` | Der Patch-Ausgang erreicht die Buchsen ohne Rechner, dazu der Fix des USB-Feedbacks |
-| `acdc/fx1d` | `v22.4.r-fx3l` | Wie oben. Der Rechner nimmt die rohen Eingänge auf, die Eingangs-LEDs zeigen beim Aufnehmen den rohen Pegel, der heiße Pfad läuft im ITCM |
+| `acdc/fx1d` | `v22.4.r-fx4b` | Wie oben. Der Rechner nimmt die rohen Eingänge auf, die Eingangs-LEDs zeigen beim Aufnehmen den rohen Pegel, der heiße Pfad läuft im ITCM, ein Boot-Menü wählt den Patch-Slot und merkt ihn sich |
 
 Beide beruhen auf dem Upstream-Commit `db9d3dd` (v22.4.r) mit den Libraries bei `9e8f64e`. Das README im Fork erklärt, warum, und was jede Änderung tut.
 
@@ -86,11 +89,12 @@ Die Aufrufe für Aufnahme, Loop-Prüfung, Auslesen und Nachbau stehen im englisc
 | `docs/en/` | Englische Fassungen der Referenz-Docs, siehe [docs/en/README.md](docs/en/README.md) |
 | `firmware/OpenWare/` | Submodul, der Firmware-Fork |
 | `firmware/patches/`, `firmware/builds/`, `firmware/flashlog/` | Patches, Build-Protokolle, Flash-Protokolle |
+| `owl/` | Eigene OWL-Patches für das Modul: `Tanh3` (dreifacher tanh-Waveshaper mit Mix-Kanal) und ein Ausgangs-Limiter für FX-Patches, mit Test am Rechner |
 | `recordings/manifest.toml` | Metadaten jeder Aufnahme |
 | `out/<ID>/` | Analyse-Report je Messung |
 | `TODO.md`, `CLAUDE.md` | Offene Punkte und der Projektkontext für die Arbeit mit Claude Code |
 
-Nicht im Repo: die Aufnahmen selbst (8 GB WAV), Plots und JSON-Ergebnisse in `out/`, Firmware-Binaries und die Geräte-Backups. Plots und Ergebnisse erzeugt `python -m analysis` aus den Aufnahmen neu.
+Nicht im Repo: die Aufnahmen selbst (8 GB WAV), Plots und JSON-Ergebnisse in `out/`, Firmware-Binaries, die Geräte-Backups sowie fremde OWL-Patch-Quellen ohne Lizenz samt ihren Builds (`owl-patches/`). Plots und Ergebnisse erzeugt `python -m analysis` aus den Aufnahmen neu.
 
 ## Sprache
 

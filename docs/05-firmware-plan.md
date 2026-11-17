@@ -1,6 +1,6 @@
 # 05 – Firmware: Stand, Forks, Build-Plan
 
-> **Stand 2026-11-16:** Auf acdc1 läuft **Build 5c `v22.4.r-fx3l`** (`b55b94d8…`, Abschnitt „Build 5“, messlog D47–D49) im Alltagstest. Rückweg ist Build 3d (`d212cf8d…`).
+> **Stand 2026-11-17:** Auf acdc1 läuft **Build 6b `v22.4.r-fx4b`** (`a21f35c9…`, Abschnitt „Build 6“, messlog D50–D59) als Alltags-Firmware (Entscheidung des Nutzers). Rückweg ist Build 5c `v22.4.r-fx3l` (`b55b94d8…`), danach Build 3d (`d212cf8d…`).
 >
 > Dieses Dokument ist chronologisch gewachsen. „Läuft auf acdc1“, „nicht abgestimmt“ und „nächste Schritte“ in den Abschnitten zu Build 1 bis 4z beschreiben den Stand des jeweiligen Abschnitts. Was heute offen ist, steht in `TODO.md`.
 
@@ -596,6 +596,62 @@ Jeder Schritt kommt als eigener Abschnitt in `docs/messlog.md` (D4 ff.), Aufnahm
 2. Zweite Rauschsitzung mit 3d-Startkontrolle (3d → fx3l → 3d), weil der Kamm (+0,2…+0,4) nahe an der Schwelle liegt.
 3. Fork-Branch: **erledigt 2026-11-16.** `acdc/fx1d` hat jetzt `151bd8bc` (upstream `d5b6409a`, = 08), `2ae8b836` (12b), `0b7122de` (11g), `fb2c6ed9` (14), `5cb2c17c` (Version) und `b7062ef2` (README). Gepusht, Build der Spitze bytegleich mit fx3l.
 4. Optional: HAL löscht `GINTSTS.SOF` vor dem Callback, A/B gegen fx3l.
+
+### Build 6 – Boot-Menü zur Patch-Wahl, `v22.4.r-fx4a` (Absprache und Build 2026-11-17, **Abnahme bestanden mit fx4a/fx4b**, messlog D50–D58)
+
+**Anlass:** Beim Einschalten startet immer Slot 1. Ohne Rechner ließ sich der Patch nicht wechseln.
+
+**Entscheidungen (Nutzer, 2026-11-17):**
+- Auswahl nur beim Einschalten, nicht im Betrieb.
+- Einstieg: Regler 1, 2, 3 am Linksanschlag, Regler 4 am Rechtsanschlag.
+- Regler 1 wählt, Regler 4 weg vom Rechtsanschlag bestätigt, Regler 3 weg vom Linksanschlag bricht ab. Nach 60 s ohne Bestätigung Abbruch.
+- Regler 1 zählt erst, wenn er einmal bewegt wurde. Bis dahin bleibt der gemerkte Slot gewählt, ein versehentliches Bestätigen ändert also nichts.
+- Höchstens 15 Slots (4 LEDs binär). Der Speicher begrenzt das nicht: 8 MB Patch-Flash, die Firmware kann 40 Slots.
+- Der gewählte Slot wird im Flash gemerkt und startet beim nächsten Einschalten.
+- Beim Start zeigen die Eingangs-LEDs 1 s lang die Slot-Nummer.
+
+**Umsetzung (Patch `15-boot-menu-slot-select.patch`) [Code]:**
+- **Ort:** `acdcBootSelect()` in `ACDC/Core/Src/ACDC.cpp`, aufgerufen aus `bootstrap()` (`Source/ProgramManager.cpp`, unter `OWL_ACDC`). Das Menü läuft im Manager-Task, bevor der erste Patch startet. Im Menü ist der Ausgang deshalb still.
+- **Scheduler:** `configUSE_PREEMPTION` ist 0. `onSetup()` (LED-Lauflicht, ≈ 0,9 s) ist fertig, bevor `bootstrap()` läuft. Die Hauptschleife (MIDI, Watchdog) läuft nur, während das Menü in `vTaskDelay()` schläft. `owl_read.py` erreicht das Gerät also auch im Menü.
+- **Regler:** direkt aus `adc_values` (12 Bit), im Menü mit 1/8 geglättet. „Am Anschlag“ heißt unter 5 % bzw. über 95 %, „weg vom Anschlag“ weitere 5 %. An acdc1 gemessen: Linksanschlag ≈ 1,6 %, Rechtsanschlag 100 % (D51).
+- **Auswahl:** Nur belegte Slots sind wählbar, sie teilen sich den Regelweg gleichmäßig, mit Hysterese an den Grenzen.
+- **Anzeige:** Eingangs-LEDs = Slot-Nummer binär (LED 1 = 1, 2 = 2, 3 = 4, 4 = 8). Ausgangs-LEDs leuchten im Menü und blinken, solange ein Bestätigen den Slot ändern würde.
+- **Speichern:** 4 Byte als System-Ressource `ACDC.slot` im Patch-Flash (QSPI). Die Settings bleiben unberührt (E4 gilt weiter). Nach meinem Lesen des Codes funktioniert der normale Settings-Store auf dem AC/DC ohnehin nicht, weil er memory-mapped Flash verlangt und das AC/DC kein internes Storage hat [Code, nicht geprüft].
+  - Jeder Wechsel hängt 256 B an und markiert den alten Eintrag als gelöscht.
+  - Unter 64 KB freiem Speicher wird nicht geschrieben, sonst würde `writeResource()` ein Defrag auslösen, das das ganze Flash löscht. Der Slot startet dann ohne Merken, die Eingangs-LEDs blinken 1 s rot.
+  - Fehlt der Eintrag oder zeigt er auf einen leeren Slot, startet Slot 1, ersatzweise der erste belegte.
+- **Host:** Schickt ein Rechner während des Menüs einen Program Change oder einen Upload, endet das Menü und `bootstrap()` startet nichts selbst.
+- **Periodischer Pfad:** Dazu kommt nur die Abfrage `acdc_boot.led_hold` am Anfang von `acdcOnLoopLate` (5 Befehle). Solange sie gesetzt ist (Menü bzw. 1 s Slot-Anzeige), lässt `onLoop()` die LEDs in Ruhe. Der Zustand (2 Byte) liegt in `.late_bss`.
+- Ein Program Change vom Rechner im Betrieb wird nicht gemerkt.
+
+**Build:** `firmware/builds/acdc1-build6-fx4a/`, `v22.4.r-fx4a`, 108 496 B, SHA-256 `e7ee9b90ccd2cb2763e695dbab0bb82e5fa63c94c6e823e2e48dc3177ff2f063`. Patches wie fx3l + 15.
+
+**Prüfung ohne Gerät [gemessen, D50]:**
+- `tools/check_itcm.py`: BESTANDEN, 0 FAIL, 0 WARN. ITCM-Code +40 B, alle RAM-Objekte an derselben Adresse wie fx3l.
+- `tools/sim_boot_menu.sh`: Der Menü-Code läuft unverändert auf dem Rechner gegen simulierte Regler. 18 Fälle: normaler Start, Auswahl, Abbruch, Timeout, Host, voller Speicher, Zittern an Zonengrenzen, 15 Slots, Lücken in den Slots.
+
+**Abnahme nach dem Flash:**
+1. Erledigt (D51): Endwerte der Regler gemessen, links 2 und rechts 127 von 127. Die Schwellen passen, kein Neubau. Flash mit bytegleichem Readback.
+2. Erledigt (D52): A1 per `owl_read.py`, Version fx4a, Blockgröße 8, Slots 1–5 unverändert. Das Menü läuft (Nutzer), die Wahl von Slot 3 wurde einmal gemerkt (+256 B).
+3. Erledigt (D53, D55): Normaler Start aus dem gemerkten Slot.
+4. Erledigt (Nutzer, D52/D53, fx4a): Einstieg, Anzeige, Auswahl, Bestätigen, Abbruch mit Regler 3, Abbruch nach 60 s. Der 30-s-Timeout von fx4b ist am Gerät nicht gestoppt.
+5. Erledigt (D52, D55, D58): Nach Aus/Ein startet der gewählte Slot (Slot 3, später 4 und 5).
+6. Erledigt (D55): Start mit Reglern in Alltagsstellung (104 / 125 / 85 / 50) öffnet das Menü nicht.
+7. Erledigt (D57, fx4b): Loop-Test mit `phase_slips.py` und `stale_samples.py`, 0 Slips, 0 veraltete Samples, auch mit Tanh3 bei 53 % CPU.
+8. Erledigt (D58, fx4b): Rausch-A/B gegen fx3l in derselben Sitzung (fx4b → fx3l → fx4b, je 2 × 60 s). Alle Familien innerhalb ±0,4 dB, im Mittel ±0,2 dB. fx4b ist beim Rauschen gleich fx3l.
+
+**Build 6b `v22.4.r-fx4b` (2026-11-17, D53/D55):** Nach der Abnahme des Menüs wünschte der Nutzer 30 s statt 60 s bis zum Abbruch. Patch `15b-boot-menu-slot-select-30s.patch` ersetzt 15 vollständig, einziger Unterschied ist `ACDC_MENU_TIMEOUT_MS`. `firmware/builds/acdc1-build6b-fx4b/`, 108 496 B, SHA-256 `a21f35c990cc33737620597d883c4bd205fc4495bf2291a1b6013af6f2b06307`. `check_itcm --same-itcm` gegen fx4a: ITCM-Code und Vektortabelle bytegleich. Geflasht 2026-11-17 (D55). Die offenen Punkte 7 und 8 der Abnahme (Loop-Test, Rausch-A/B) gelten für fx4b.
+
+**Entscheidung (Nutzer, 2026-11-17, D59): fx4b ist die Alltags-Firmware von acdc1.**
+
+**Fork-Branch `acdc/fx1d` (2026-11-17, committet, nicht gepusht):**
+1. `7ef6284a` Boot-Menü (= Patch 15b)
+2. `2c963e3a` Version `v22.4.r-fx4b`
+3. `27d3630b` README: Abschnitt „Boot menu“, Tabellen und Teststand
+
+Ein Build von `2c963e3a` ohne Patches ist bytegleich mit fx4b (`firmware/builds/verify-fx1d-2c963e3a`, `a21f35c9…`). Push und ein Release `acdc-v22.4.r-fx4b` brauchen je eine eigene Freigabe.
+
+**Rückweg:** fx4a (`e7ee9b90…`), dann fx3l (`b55b94d8…`), danach wie bisher 3d.
 
 ### Fork `m9dfukc/OpenWare` (gepusht 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
 

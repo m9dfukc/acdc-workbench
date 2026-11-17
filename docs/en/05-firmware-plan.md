@@ -1,9 +1,9 @@
-<!-- i18n source=docs/05-firmware-plan.md sha256=97c993dadd9e04838977d20e03e3cbf152c0b89e81747401cb82a271a637bbfb date=2026-11-16 -->
-> English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-16. The German original is authoritative. This file is generated from it, do not edit it by hand.
+<!-- i18n source=docs/05-firmware-plan.md sha256=bfcf9f09ec7fd311f82db394403173a6847404871ffe89297b84d4bd1a03f248 date=2026-11-17 -->
+> English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-17. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 05 – Firmware: Status, Forks, Build Plan
 
-> **Status 2026-11-16:** acdc1 runs **Build 5c `v22.4.r-fx3l`** (`b55b94d8…`, section "Build 5", lab notebook D47–D49) in the daily-use test. The fallback is Build 3d (`d212cf8d…`).
+> **Status 2026-11-17:** acdc1 runs **Build 6b `v22.4.r-fx4b`** (`a21f35c9…`, section "Build 6", lab notebook D50–D59) as its daily firmware (the user's decision). The fallback is Build 5c `v22.4.r-fx3l` (`b55b94d8…`), then Build 3d (`d212cf8d…`).
 >
 > This document grew chronologically. "Runs on acdc1", "not agreed" and "next steps" in the sections on Build 1 to 4z describe the status of the respective section. What is open today is in `TODO.md`.
 
@@ -599,6 +599,62 @@ Every step gets its own section in `docs/messlog.md` (D4 ff.), recordings are en
 2. Second noise session with a 3d start control (3d → fx3l → 3d), because the comb (+0.2…+0.4) is close to the threshold.
 3. Fork branch: **done 2026-11-16.** `acdc/fx1d` now has `151bd8bc` (upstream `d5b6409a`, = 08), `2ae8b836` (12b), `0b7122de` (11g), `fb2c6ed9` (14), `5cb2c17c` (version) and `b7062ef2` (README). Pushed, a build of the tip is byte identical with fx3l.
 4. Optional: HAL clears `GINTSTS.SOF` before the callback, A/B against fx3l.
+
+### Build 6 – Boot menu to choose the patch, `v22.4.r-fx4a` (agreed and built 2026-11-17, **acceptance passed with fx4a/fx4b**, lab notebook D50–D58)
+
+**Reason:** Slot 1 always starts at power-on. Without a computer the patch could not be changed.
+
+**Decisions (user, 2026-11-17):**
+- Selection only at power-on, not during operation.
+- Entry: knobs 1, 2, 3 at the left stop, knob 4 at the right stop.
+- Knob 1 selects, knob 4 away from the right stop confirms, knob 3 away from the left stop cancels. After 60 s without confirming the menu cancels.
+- Knob 1 only counts once it has been moved. Until then the remembered slot stays selected, so confirming by accident changes nothing.
+- At most 15 slots (4 LEDs in binary). Storage does not limit this: 8 MB of patch flash, the firmware handles 40 slots.
+- The chosen slot is remembered in flash and starts at the next power-on.
+- At start the input LEDs show the slot number for 1 s.
+
+**Implementation (patch `15-boot-menu-slot-select.patch`) [code]:**
+- **Place:** `acdcBootSelect()` in `ACDC/Core/Src/ACDC.cpp`, called from `bootstrap()` (`Source/ProgramManager.cpp`, under `OWL_ACDC`). The menu runs in the manager task before the first patch starts. So the output is silent while the menu is open.
+- **Scheduler:** `configUSE_PREEMPTION` is 0. `onSetup()` (LED chaser, ≈ 0.9 s) has finished before `bootstrap()` runs. The main loop (MIDI, watchdog) only runs while the menu sleeps in `vTaskDelay()`. So `owl_read.py` reaches the module in the menu too.
+- **Knobs:** read directly from `adc_values` (12 bit), smoothed with 1/8 in the menu. "At the stop" means below 5 % or above 95 %, "away from the stop" another 5 %. Measured on acdc1: left stop ≈ 1.6 %, right stop 100 % (D51).
+- **Selection:** Only occupied slots can be selected. They share the knob travel evenly, with hysteresis at the borders.
+- **Display:** input LEDs = slot number in binary (LED 1 = 1, 2 = 2, 3 = 4, 4 = 8). The output LEDs are lit in the menu and blink while confirming would change the slot.
+- **Storing:** 4 bytes as a system resource `ACDC.slot` in the patch flash (QSPI). The settings stay untouched (E4 still holds). From my reading of the code the normal settings store does not work on the AC/DC anyway, because it requires memory-mapped flash and the AC/DC has no internal storage [code, not checked].
+  - Each change appends 256 B and marks the old record as erased.
+  - Below 64 KB of free storage nothing is written, otherwise `writeResource()` would trigger a defrag, which erases the whole flash. The slot then starts without being remembered, and the input LEDs flash red for 1 s.
+  - If the record is missing or points to an empty slot, slot 1 starts, or else the first occupied slot.
+- **Host:** If a computer sends a Program Change or an upload while the menu is open, the menu ends and `bootstrap()` starts nothing itself.
+- **Periodic path:** The only addition is the test of `acdc_boot.led_hold` at the start of `acdcOnLoopLate` (5 instructions). While it is set (menu or 1 s slot display), `onLoop()` leaves the LEDs alone. The state (2 bytes) lives in `.late_bss`.
+- A Program Change from the computer during operation is not remembered.
+
+**Build:** `firmware/builds/acdc1-build6-fx4a/`, `v22.4.r-fx4a`, 108 496 B, SHA-256 `e7ee9b90ccd2cb2763e695dbab0bb82e5fa63c94c6e823e2e48dc3177ff2f063`. Patches as for fx3l + 15.
+
+**Check without the module [measured, D50]:**
+- `tools/check_itcm.py`: PASSED, 0 FAIL, 0 WARN. ITCM code +40 B, all RAM objects at the same address as in fx3l.
+- `tools/sim_boot_menu.sh`: the menu code runs unchanged on the host against simulated knobs. 18 cases: normal start, selection, cancel, timeout, host, full storage, jitter at zone borders, 15 slots, gaps in the slots.
+
+**Acceptance after the flash:**
+1. Done (D51): end values of the knobs measured, left 2 and right 127 of 127. The thresholds fit, no rebuild. Flash with a byte-identical readback.
+2. Done (D52): A1 with `owl_read.py`, version fx4a, block size 8, slots 1–5 unchanged. The menu works (user), the choice of slot 3 was remembered once (+256 B).
+3. Done (D53, D55): normal start from the remembered slot.
+4. Done (user, D52/D53, fx4a): entry, display, selection, confirming, cancel with knob 3, cancel after 60 s. The 30 s timeout of fx4b has not been timed on the module.
+5. Done (D52, D55, D58): after a power cycle the chosen slot starts (slot 3, later 4 and 5).
+6. Done (D55): a start with the knobs in an everyday position (104 / 125 / 85 / 50) does not open the menu.
+7. Done (D57, fx4b): loop test with `phase_slips.py` and `stale_samples.py`, 0 slips, 0 stale samples, also with Tanh3 at 53 % CPU.
+8. Done (D58, fx4b): noise A/B against fx3l in the same session (fx4b → fx3l → fx4b, 2 × 60 s each). All families within ±0.4 dB, on average ±0.2 dB. The noise of fx4b equals that of fx3l.
+
+**Build 6b `v22.4.r-fx4b` (2026-11-17, D53/D55):** After the acceptance of the menu the user asked for 30 s instead of 60 s until it cancels. Patch `15b-boot-menu-slot-select-30s.patch` replaces 15 completely, the only difference is `ACDC_MENU_TIMEOUT_MS`. `firmware/builds/acdc1-build6b-fx4b/`, 108 496 B, SHA-256 `a21f35c990cc33737620597d883c4bd205fc4495bf2291a1b6013af6f2b06307`. `check_itcm --same-itcm` against fx4a: ITCM code and vector table byte-identical. Flashed 2026-11-17 (D55). The open acceptance items 7 and 8 (loop test, noise A/B) apply to fx4b.
+
+**Decision (user, 2026-11-17, D59): fx4b is the daily firmware of acdc1.**
+
+**Fork branch `acdc/fx1d` (2026-11-17, committed, not pushed):**
+1. `7ef6284a` boot menu (= patch 15b)
+2. `2c963e3a` version `v22.4.r-fx4b`
+3. `27d3630b` README: section "Boot menu", tables and test status
+
+A build of `2c963e3a` without patches is byte-identical with fx4b (`firmware/builds/verify-fx1d-2c963e3a`, `a21f35c9…`). The push and a release `acdc-v22.4.r-fx4b` each need their own approval.
+
+**Fallback:** fx4a (`e7ee9b90…`), then fx3l (`b55b94d8…`), after that 3d as before.
 
 ### Fork `m9dfukc/OpenWare` (pushed 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
 

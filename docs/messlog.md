@@ -1571,3 +1571,252 @@ Datei-dBFS, Mittel über 4 Kanäle und beide Läufe:
 - Patch-Wechsel: Der Patch-Heap im CCM ist auf 39,3 KB verkleinert, große Patches könnten nicht mehr passen.
 
 **Rückweg:** Build 3d (`firmware/builds/acdc1-build3d-fx2/ACDC.bin`, `d212cf8d…`), Flash-Ablauf wie in CLAUDE.md.
+
+### D50 – Patch-Upload per `owl_write.py`, vier FX-Patches auf acdc1, Build 6 fx4a gebaut (2026-11-17)
+
+**Anlass (Nutzer):** Patches ohne Weboberfläche aufspielen, die Patches aus `burstMembrane/acdc-patches` auf acdc1 ablegen, Patch-Wahl beim Einschalten (Boot-Menü, `docs/05` „Build 6“).
+
+**Werkzeug `tools/owl_write.py` [gemessen]:**
+- Offline-Gegenprobe: Aus den Daten der Library-Datei `owl-patches/library/ACDC_library.syx` erzeugt das Werkzeug dieselben 46 Upload-Pakete, die Datei ist **bytegleich**.
+- RAM-Test: `Dummy.syx --run` → 29 Pakete in 0,7 s, das Gerät meldet „Dummy“ als laufend. Nichts gespeichert.
+- Store: Jeder Slot wurde danach heruntergeladen und ist bytegleich mit der Datei (Name, Größe, CRC stimmen).
+
+**Patches** (gebaut mit `tools/build_owl_patch.sh`, OwlProgram `60f44ab`, DaisySP `4263388`, Quellen `78ffa22`, `PLATFORM=OWL2`, Link-Adresse 0x2000c000 wie die Library-Patches):
+
+| Slot | Patch | Größe B | CRC32 | CPU | Speicher B | Quelle |
+|---|---|---|---|---|---|---|
+| 1 | ACDC (unverändert) | 10 164 | `0xbeb3bb2e` | 5 % | 368 | wie D1 |
+| 2 | TapeDelay | 35 524 | `0xbd9ce988` | 31 % | 769 272 | `TapeDelayPatch.hpp` |
+| 3 | Grainz | 32 572 | `0x8c11a850` | 11 % | 4 197 904 | `GrainzPatch.hpp` |
+| 4 | RingsReverb | 21 292 | `0x91cd2742` | 14 % | 337 440 | `RingsStereoReverbPatch.hpp` |
+| 5 | Dummy | 5 636 | `0x01a7a0cd` | nicht gelesen | | `Dummypatch.hpp` (leere Durchleitung) |
+
+- CPU und Speicher laut `PROGRAM_STATS`, je direkt nach dem Store gelesen (der gespeicherte Slot läuft dann), Blockgröße 8, Regler um 12 Uhr, Firmware fx3l. Ob dabei ein USB-Stream lief, wurde nicht festgehalten.
+- `GrainzPatch.hpp` baut im Original nicht: `SmoothFloat` ist nicht deklariert. Das Build-Skript bindet `SmoothValue.h` davor ein, die Quelle bleibt unverändert.
+- Nicht gebaut: `TapeDelay.dsp` und `FaustTapeDelay.dsp`. Dafür fehlt der FAUST-Compiler.
+- Gehört wurde noch keiner der Patches.
+
+**Gerät:** Sicherung vorher `backup/acdc1/20261117/owl/` (nur Slot 1 belegt, Storage 10 240 B). Danach Slots 1–5 belegt, Storage 105 984 / 8 388 608 B, per Program Change zurück auf Slot 1 („ACDC“ läuft). Logs: `out/owl_write/acdc1/20261117/`.
+
+**Nebenbefund:** Nach jedem Store bzw. Patch-Wechsel steht als letzte Meldung `fb 0.0859 48.0156` bzw. `fb 0.0625 48.0078` (verworfene Feedback-Messung, vgl. D18). [Hypothese] Der Flash-Schreibvorgang und der Patch-Start halten die SOF-Auswertung kurz auf. Kein `fb clamp`.
+
+**Build 6 `acdc1-build6-fx4a` (`v22.4.r-fx4a`, `e7ee9b90…`, 108 496 B) = fx3l + Patch 15, gebaut, nicht geflasht:**
+- `tools/check_itcm.py … --ref acdc1-build5c-fx3l`: BESTANDEN (0 FAIL, 0 WARN). ITCM-Code 12 392 B (fx3l 12 352), Patch-Heap im CCM 40 184 B. Alle 179 RAM-Objekte an derselben Adresse wie fx3l.
+- Im periodischen Pfad kommen 5 Befehle am Anfang von `acdcOnLoopLate` dazu (Abfrage `led_hold`).
+- Host-Test `tools/sim_boot_menu.sh`: 18 Fälle mit simulierten Reglern, alle wie erwartet.
+
+**Offen vor dem Flash:** Endwerte der vier Regler messen (Schwellen 5 % / 95 % sind vorläufig). Die Regler lassen sich per `owl_read.py` lesen (CC 20–23 nach dem Settings-Request, 7 Bit): heute um 12 Uhr 61 / 48 / 58 / 66.
+
+### D51 – Build 6 fx4a geflasht (2026-11-17)
+
+**Regler-Endwerte [gemessen]:** Muster eingestellt (Regler 1, 2, 3 links, Regler 4 rechts), drei Lesungen per `owl_read.py`, CC 20–23: **2 / 2 / 2 / 127** (7 Bit), alle drei gleich. Der Linksanschlag liegt also bei ≈ 64–95 von 4095, nicht bei 0. Die Schwellen aus Patch 15 (unter 205, über 3890 ≙ 6 bzw. 121 in 7 Bit) passen, kein Neubau. Belegt ist damit auch CC 23 = Regler 4. Die Zuordnung der Regler 1–3 zu CC 20–22 zeigt erst die Menü-Abnahme.
+
+**Flash (Freigabe Nutzer):** `firmware/flashlog/20261117_build6-fx4a/`. Vorher `owl_read_before` (fx3l, Slots 1–5). `ACDC.bin` `e7ee9b90…`, Readback bytegleich, Rest 0xFF.
+
+**Offen:** Neustart durch den Nutzer, A1 und die Abnahme 3–8 aus `docs/05`, „Build 6“. Rückweg: fx3l (`b55b94d8…`).
+
+### D52 – fx4a: Boot-Menü am Gerät, A1 (2026-11-17)
+
+**Ablauf (Nutzer):** Neustart mit den Reglern auf dem Muster (Case aus, USB ab, Case an). Rückmeldung: Das Menü läuft. Welche Einzelschritte geprüft wurden (Abbruch mit Regler 3, Timeout, zweiter Start ohne Muster), ist nicht festgehalten.
+
+**A1 per `owl_read.py` [gemessen]:** `firmware/flashlog/20261117_build6-fx4a/owl_read_after/`
+- Version `AC/DC v22.4.r-fx4a`, Blockgröße 8, 48 kHz.
+- Slots 1–5 unverändert (Namen, Größen, CRC wie vor dem Flash).
+- Es läuft **Slot 3 „Grainz“** (Program 3). Storage 106 240 B, vorher 105 984 B: genau **ein Eintrag von 256 B** dazu, also wurde die Wahl einmal gemerkt. Der Eintrag `ACDC.slot` erscheint nicht in der Ressourcen-Liste (System-Ressource).
+- Regler beim Auslesen: 127 / 13 / 41 / 4 (CC 20–23).
+
+**Nebenbefund [gemessen]:** Grainz meldet in dieser Reglerstellung **CPU 78 %** (Speicher 4 197 904 B). Direkt nach dem Store waren es mit Reglern um 12 Uhr 11 % (D50). Die Last hängt also stark von den Reglern ab. Regler 4 ist „Density“, am Linksanschlag überlappen die meisten Grains [Code]. Ab 100 % sind Aussetzer zu erwarten, gemessen ist das nicht.
+
+**Offen aus der Abnahme (`docs/05`, „Build 6“):** Abbruch und Timeout gezielt prüfen, Start in Alltagsstellung (Fehlauslösung), Loop-Test, Rausch-A/B gegen fx3l.
+
+### D53 – Menü-Abnahme (Nutzer), neue Patch-Builds, acdc1 antwortet nach einem Slot-Download nicht mehr auf MIDI (2026-11-17, abends)
+
+**Abnahme Boot-Menü (Nutzer) [gemessen]:** Abbruch mit Regler 3 geht, Start aus dem gemerkten Slot geht, Abbruch nach 60 s geht. Wunsch: 30 s statt 60 s.
+
+**Wünsche (Nutzer):** Ausgänge mancher Patches übersteuern (z. B. Grainz) → Pegel senken oder Limiter. Alle Patches mit Cortex-M7-Flags bauen. Slot 5: statt Dummy ein Patch nach dem Vorbild des Instruō tanh[3], Kanal 4 = Mix der Kanäle 1–3, Regler 4 = Pegel, In 4 = CV auf den Pegel.
+
+**Gebaut (nichts davon ist auf dem Gerät gespeichert):**
+- `owl/AcdcOutput.h`: gekoppelter Spitzenwert-Limiter auf Out 1/2 (Schwelle 0,5 ≙ 5 V, Anstieg 1 ms, Abfall 150 ms, tanh-Knie bis höchstens 0,75), als Hülle `AcdcLimited<…>` um den Patch. Die fremde Quelle bleibt unverändert.
+- `owl/Tanh3Patch.hpp`: Out n = 5 V · tanh(Level n · In n / 5 V), Level 0,5…16-fach, Antialiasing erster Ordnung. Out 4 = tanh-begrenzter Mix × Pegel (Regler 4 + CV an In 4, 5 V ≙ voller Weg). Das Handbuch des Vorbilds nennt je Kanal einen Level-Regler vor dem tanh und keine Pegel, die 5 V sind meine Wahl.
+- `tools/test_owl_dsp.sh`: 17 Fälle am Rechner (Pegel, Sättigung, Antialiasing, Mix, CV, Limiter), alle wie erwartet.
+- Builds mit `PLATFORM=OWL3`, gelinkt nach 0x2000c000: TapeDelay 30 036 B (`0xe104abf8`), Grainz 26 700 B (`0xcc5b8e81`), RingsReverb 21 556 B (`0x14db59ec`), je mit Limiter, Tanh3 11 564 B (`0xbac2e7dc`). Die Builds aus D50 liegen in `owl-patches/builds-owl2/`.
+- Firmware `acdc1-build6b-fx4b` (`v22.4.r-fx4b`, `a21f35c9…`, 108 496 B) = fx3l + Patch 15b (Abbruch nach 30 s). `check_itcm` bestanden, ITCM-Inhalt bytegleich mit fx4a. Nicht geflasht.
+
+**Last der alten Builds (D50, `PLATFORM=OWL2`) [gemessen]:** TapeDelay 31 %, Grainz 12 %, RingsReverb 14 %, bei Reglern 104 / 110–125 / 86–127 / 38–50 (der Nutzer drehte währenddessen).
+
+**Vorfall [gemessen]:**
+1. `owl_write.py TapeDelay.syx --run` (neuer M7-Build mit Limiter, nur RAM): läuft, 3 s später CPU 31 %, Speicher 769 288 B.
+2. `owl_write.py TapeDelay.syx --store 2 --yes`: Geräte-ID, Version und Slot-Liste kommen noch. Die Sicherung des belegten Slots 2 (Download per SysEx `0x18`) kommt unvollständig an („CRC mismatch“). Das Werkzeug bricht ab, **geschrieben wird nichts**.
+3. Danach antwortet acdc1 auf keine MIDI-Anfrage mehr (6 s gelauscht, 0 Nachrichten). Am USB ist es weiter angemeldet (`OWL-ACDC-FX`, Audiogerät vorhanden). Die folgenden Aufrufe für Slot 3–5 brachen deshalb vor jedem Schreiben ab.
+
+**Deutung [Code]:** Läuft ein Patch, bedient nur der Audio-Task MIDI (`Owl::loop` tut es nur ohne laufenden Patch). Ein Gerät, das am USB hängt, aber kein MIDI mehr spricht, passt also zu einem stehenden Audio-Task bei weiterlaufender Hauptschleife (sonst hätte der Watchdog nach 8 s neu gestartet). **Ursache offen.** Kandidaten [Hypothese]: der neue Patch-Build selbst (M7-Flags, Limiter-Hülle) oder der Slot-Download, während ein aus dem RAM gestarteter Patch läuft. In D50 liefen Downloads neben laufenden, gespeicherten Patches viermal fehlerfrei, damals mit fx3l und den M4-Builds.
+
+**Stand:** Slots 1–5 unverändert wie D52 (laut letzter Slot-Liste vor dem Abbruch), gemerkter Slot vermutlich 4. acdc1 braucht einen Neustart.
+
+**Nächste Schritte:** Neustart, Zustand lesen. Dann getrennt prüfen: (a) alter Build per `--run` und Download, (b) neuer Build per `--run` ohne Download über mehrere Minuten, (c) neuer Build ohne Limiter.
+
+### D54 – Ursache des MIDI-Ausfalls eingegrenzt, neue Patch-Builds gespeichert (2026-11-17, abends)
+
+**Nutzer:** Vor dem Ausschalten lief noch Ton, er klang aber eigenartig. Danach Neustart.
+
+**Nach dem Neustart [gemessen]:** fx4a, Slot 4 „RingsReverb“ (alter Build) läuft, 15 % CPU, Slots unverändert. `owl_read.py --out backup --dump` (`backup/acdc1/20261117/owl_223558/`, siehe `HINWEIS.txt` dort):
+
+| Slot | Ergebnis |
+|---|---|
+| 1 ACDC | vollständig, CRC stimmt |
+| 2 TapeDelay | **unvollständig**: 177 Pakete, 35 509 von 35 524 B (15 B fehlen), keine Prüfsumme |
+| 3 Grainz | vollständig, CRC stimmt |
+| 4 RingsReverb (lief gerade) | **Paket 34 trägt Index 31**, Reihenfolge gestört |
+| 5 Dummy | vollständig, CRC stimmt |
+
+Das Gerät antwortete danach weiter. Der Fehler tritt also auch mit einem alten, gespeicherten Patch auf. Der neue M7-Build und die Limiter-Hülle scheiden damit als Auslöser des Download-Fehlers aus.
+
+**Ursache [Code], Auslösung [Hypothese]:** Wettlauf im MIDI-Sendeweg der Original-Firmware.
+- Läuft ein Patch, ruft der Audio-Task in jedem Block `midi_tx.transmit()` auf (`onProgramReady`).
+- Der Slot-Download (`SendResourceTask`) läuft in der Hauptschleife und schreibt je Durchlauf ≈ 320 B in den 1024-B-Sendepuffer. Ist der fast voll, ruft `UsbdMidiTransmitter::write()` selbst `transmit()` auf.
+- `transmit()` prüft `usbd_midi_ready()`, startet die Übertragung und rückt danach den Lesezeiger vor. Der Audio-Task kann die Hauptschleife dazwischen unterbrechen (der Wechsel kommt aus dem Codec-Interrupt). Dann sendet einer, und der andere rückt den Lesezeiger trotzdem vor: Daten gehen verloren oder kommen doppelt.
+- Das erklärt die fehlenden 15 B und die gestörte Reihenfolge. [Hypothese] Derselbe Wettlauf kann `midi_tx_lock` gesetzt lassen, dann sendet das Gerät bis zum Neustart kein MIDI mehr (D53). Ton läuft dabei weiter.
+- Kurze Antworten (Geräte-ID, Slot-Liste, Statistik) füllen den Puffer nicht und sind nicht betroffen, Uploads ebenfalls nicht.
+- In D50 liefen fünf Downloads fehlerfrei, heute scheiterten drei von sechs. Was den Unterschied macht (Last, USB-Verkehr), ist offen. Der Code ist in fx3l und fx4a derselbe.
+
+**Folge für die Werkzeuge:** `owl_write.py` nimmt mit `--backup-file` eine lokale Kopie als Sicherung, wenn Größe und CRC zum Slot passen, und lädt nach dem Store nur noch auf Wunsch zurück (`--download-check`). `owl_read.py --dump` kann bei laufendem Patch beschädigte Dateien liefern, das Feld `ok` im Report beachten.
+
+**Store [gemessen]:** Sicherung je Slot aus `owl-patches/builds-owl2/` (Größe und CRC wie auf dem Gerät), danach Name, Größe und CRC vom Gerät zurückgelesen. Kein Download. Logs `out/owl_write/acdc1/20261117/`, Sicherungen `backup/acdc1/20261117/owl_write_2238*/` und `…_223904/`.
+
+| Slot | Patch | Größe B | CRC32 | CPU neu | CPU alt (D53) |
+|---|---|---|---|---|---|
+| 2 | TapeDelay, M7, Limiter | 30 036 | `0xe104abf8` | 33 % | 31 % |
+| 3 | Grainz, M7, Limiter | 26 700 | `0xcc5b8e81` | 14 % | 12 % |
+| 4 | RingsReverb, M7, Limiter | 21 556 | `0x14db59ec` | 16 % | 14 % |
+| 5 | Tanh3, M7 | 11 564 | `0xbac2e7dc` | 20 % | (Dummy) |
+
+- Regler bei allen Lesungen 104 / 125 / 86 / 50, je 3 s nach dem Store.
+- **Die M7-Flags sparen keine Last.** Die Builds sind 1–2 Prozentpunkte teurer als die alten, das ist der Limiter. Die Binaries sind kleiner (TapeDelay −15 %, Grainz −18 %).
+- Nach dem letzten Store läuft Tanh3 (Slot 5). Gemerkter Slot bleibt 4.
+- Gehört und beurteilt hat die neuen Builds noch niemand. „Klang eigenartig“ (Nutzer, neuer TapeDelay aus dem RAM) ist nicht geklärt, in Frage kommt der Limiter bei 5 V.
+
+### D55 – Build 6b fx4b geflasht (2026-11-17, abends)
+
+**Flash (Freigabe Nutzer):** `firmware/flashlog/20261117_build6b-fx4b/`. Vorher `owl_read_before` (fx4a). `ACDC.bin` `a21f35c9…` (`v22.4.r-fx4b` = fx3l + Patch 15b, Abbruch des Boot-Menüs nach 30 s statt 60 s), Readback bytegleich, Rest 0xFF.
+
+**Offen:** Neustart durch den Nutzer, A1, Timeout nachmessen. Dazu weiter Loop-Test und Rausch-A/B gegen fx3l (`docs/05`, „Build 6“). Rückweg: fx4a (`e7ee9b90…`), dann fx3l (`b55b94d8…`).
+
+**A1 nach dem Neustart [gemessen]:** `firmware/flashlog/20261117_build6b-fx4b/owl_read_after/`. Version `AC/DC v22.4.r-fx4b`, Blockgröße 8. Es läuft der gemerkte Slot 4 „RingsReverb“ (neuer Build, 16 % CPU). Slots 1–5 wie nach D54 (Namen, Größen, CRC). Storage 101 120 B. Der Timeout von 30 s ist am Gerät noch nicht nachgemessen.
+
+### D56 – Tanh3: Störgeräusche = Aliasing, neue Fassung mit vierfachem Oversampling (2026-11-17, abends)
+
+**Nutzer:** Der Limiter scheint zu funktionieren. Im Tanh3-Patch treten manchmal Störgeräusche auf, „sehr digital, fast wie eine modulierte Pulswelle“. Boot-Menü unter fx4a: Abbruch mit Regler 3, Start aus dem Speicher und Abbruch nach 60 s gehen.
+
+**Untersuchung am Rechner [gemessen, Simulation]:** Der Patch-Code (Kanal 1) mit Sinus 5 V Spitze, 1 s kohärent, Summe aller Linien unter 15 kHz, die keine Harmonischen sind, relativ zum Grundton:
+
+| f | Level | tanh ohne Antialiasing | Fassung 1 (ADAA 1. Ordnung) | Fassung 2 (4× Oversampling, 48 Taps) |
+|---|---|---|---|---|
+| 1 kHz | 6,7 | −70,9 dB | −80,1 dB | −108,4 dB |
+| 2 kHz | 6,7 | −38,7 dB | −49,4 dB | −104,2 dB |
+| 3 kHz | 2,8 (12 Uhr) | −49,8 dB | −59,4 dB | −122,4 dB |
+| 3 kHz | 6,7 | −26,7 dB | −36,9 dB | −98,2 dB |
+| 3 kHz | 16 | −18,4 dB | −29,9 dB | −60,3 dB |
+| 5 kHz | 2,8 (12 Uhr) | −31,4 dB | −43,4 dB | −115,0 dB |
+| 5 kHz | 6,7 | −18,6 dB | −30,7 dB | −79,4 dB |
+| 5 kHz | 16 | −14,4 dB | −27,2 dB | −42,4 dB |
+| 8 kHz | 16 | −11,7 dB | −28,0 dB | −31,4 dB |
+
+- Fassung 1 brachte nur ≈ 10 dB gegen den nackten tanh. Bei hellem Material und Level über 12 Uhr lagen unharmonische Linien bei −30…−50 dB. **Das passt zur Beschreibung des Nutzers** [Hypothese: Es ist das, was er hörte. Beim Auslesen stand Regler 2 auf Rechtsanschlag, Level 16].
+- Die stärksten Aliaslinien liegen oft über 20 kHz, deshalb zählt die Tabelle nur bis 15 kHz.
+- 64 statt 48 Taps bringt höchstens 5 dB, 8× Oversampling wäre bei 5 kHz / Level 16 weitere 30 dB besser, kostet aber etwa die doppelte Rechenzeit.
+
+**Fassung 2 (`owl/Tanh3Patch.hpp`):** je Kanal FIR-Polyphase hoch auf 192 kHz (48 Taps, Kaiser β = 9, Grenze 22 kHz, jede Phase auf Summe 1 normiert), tanh als Kettenbruch (Fehler unter 1e-4, stetig), FIR herunter. Laufzeit 11,75 Samples (0,25 ms). Bandbegrenzte Ausgänge schwingen bei harter Aussteuerung bis ≈ 10–28 % über 5 V hinaus (gemessen bis 0,64 bei 12 kHz, Level 16). `tools/test_owl_dsp.sh`: 18 Fälle, darunter die Aliasprüfung (3 kHz, Level 6,7: −99,6 dB).
+
+**Gerät [gemessen]:** Build `Tanh3` 18 580 B, CRC `0xaed73395`, `PLATFORM=OWL3`. Erst `--run`, dann Store in Slot 5 (Sicherung der Fassung 1 aus `owl-patches/builds-owl2/Tanh3-v1/`). **CPU 48–49 %** (Fassung 1: 16–20 %), Speicher 2 608 B, dreimal gelesen über 30 s, Regler 2 / 127 / 2 / 2. Firmware fx4b.
+
+**Offen:** Hörurteil des Nutzers. Die Last ist hoch, Auswege: größere Blockgröße (siehe unten), Oversampling nur für Kanäle mit Signal, kürzerer Abwärtsfilter.
+
+**Blockgröße (Frage des Nutzers) [Code]:** `settings.audio_blocksize` ist zur Laufzeit per SysEx-Konfiguration `BS` setzbar (4…256, nur im RAM), `Codec` übernimmt sie. Auf den eigenen Builds nie ausprobiert. Alle Messungen und die USB-Abstimmung (Feedback, RX-Fix) liefen mit 8. Die Störlinie fs/8 = 6 kHz ist die Blockrate, sie würde mit 16 auf 3 kHz wandern [Hypothese].
+
+### D57 – fx4b: Loop-Test, auch mit Tanh3 unter Last (2026-11-17, abends)
+
+**Setup:** acdc1 mit fx4b, Alltags-Kette, Patchkabel Out n → In n (Nutzer), `tools/acdc_rec.py --sine 440 530 670 790` (−6 dBFS, 1 s Einblenden, `--owl-read`), je 60 s. Regler nicht auf 12 Uhr gestellt (zuletzt gelesen 2 / 127 / 2 / 2), sie wirken mit `TX_PRE_FX` weder auf die Aufnahme noch auf den Ausgang mit Stream.
+
+| ID | Laufender Patch | Slips (`phase_slips.py`) | MAD | Spanne | veraltete Samples (`stale_samples.py`) | Geräte-Meldung | CPU |
+|---|---|---|---|---|---|---|---|
+| `B6b-fx4b-loop` | Slot 1 ACDC | 0 auf allen 4 Kanälen | ≤ 0,01 mrad | 0,00 dB | 0 von 96 000 je Kanal | `tx ovf 1.0000 1.0000 32` (Stream-Start) | 6 % |
+| `B6b-fx4b-loop-tanh3` | Slot 5 Tanh3 (Fassung 2) | 0 auf allen 4 Kanälen | ≤ 0,01 mrad | 0,00 dB | 0 von 96 000 je Kanal | `tx ovf 1.0000 1.0000 32` (Stream-Start) | 53 % |
+
+- Stream-Meldungen von PortAudio: 0 in beiden Läufen. Kein `fb clamp`, kein `rx unf`.
+- Pegel −6,05…−6,10 dBFS wie bei fx3l (D47).
+- **Loop-Test für fx4b bestanden**, auch mit 53 % Patch-Last neben dem Stream.
+
+**Offen:** Rausch-A/B gegen fx3l in derselben Sitzung.
+
+### D58 – Build-6-Sitzung: Rauschen fx4b gegen fx3l, offene Eingänge (2026-11-17, 23:07–23:19)
+
+**Setup:** acdc1, Alltags-Kette, Loop-Kabel entfernt (Nutzer), Eingänge offen, `tools/acdc_rec.py` duplex mit Nullen am Ausgang, je 2 × 60 s. In allen Läufen lief Slot 1 „ACDC“ (bei fx4b per Program Change, weil dort der gemerkte Slot 5 startet). Regler unverändert 2 / 127 / 2 / 2 (nicht 12 Uhr, wirken mit `TX_PRE_FX` nicht auf die Aufnahme), Dateiname deshalb mit `gvar`. Rack und Verkabelung während der Sitzung nicht verändert (Nutzer gebeten).
+
+**Reihenfolge:** `B6b-fx4b-r1/r2` (23:07) → Flash fx3l (`firmware/flashlog/20261117_build5c-fx3l-kontrolle/`, Readback bytegleich, A1: `v22.4.r-fx3l`, `SR/BS/CH 48000 8 4`, Slots 1–5) → `B6b-fx3l-r1/r2` (23:12) → Flash fx4b (`…_build6b-fx4b-zurueck/`, Readback bytegleich, A1: `v22.4.r-fx4b`) → `B6b-fx4b-end-r1/r2` (23:16). Die Kontrolle liegt also in der Mitte, der Prüfling am Anfang und am Ende. Tabelle `out/B6b-session-table.md`.
+
+**Ergebnis** (Datei-dBFS, Mittel über 4 Kanäle; Δ gegen das Mittel der fx3l-Kontrolle):
+
+| Messung | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
+|---|---|---|---|---|---|
+| fx4b Start (r1/r2) | −73,08 / −73,01 (−0,17) | −78,42 / −78,52 (−0,35) | −75,17 / −75,07 (−0,05) | −83,93 / −83,59 (−0,38) | −116,5 / −117,0 |
+| **fx3l Kontrolle** (r1/r2) | −72,79 / −72,96 | −78,15 / −78,09 | −74,91 / −75,23 | −83,42 / −83,34 | −111,8 / −111,4 |
+| fx4b Ende (r1/r2) | −72,71 / −72,85 (+0,10) | −78,17 / −78,07 (0,00) | −74,78 / −75,06 (+0,15) | −83,40 / −83,35 (+0,01) | −113,1 / −113,1 |
+| **fx4b alle vier** | (−0,03) | (−0,17) | (+0,05) | (−0,18) | am Grundrauschen |
+
+- Kamm-f0 999,8676–999,8677 Hz in allen Läufen. Meldungen: nur `tx ovf …` (Stream-Start), CPU 6–7 %.
+- Gegen fx3l vom Vortag (D48): fx3l heute RMS −0,2, Rest +0,4, Kamm −0,5, fs/8 0,0 dB.
+
+**Deutung:**
+- [gemessen] **fx4b ist beim Rauschen gleich fx3l.** Alle vier Familien liegen im Mittel innerhalb ±0,2 dB, die Einzelpaare innerhalb ±0,4 dB. Das ist die Streuung zwischen Läufen (D35) bzw. die Drift in der Sitzung (Rest: Start −0,35, Ende 0,00).
+- Das Kriterium aus Build 3 (keine Familie mehr als 0,5 dB schlechter) ist erfüllt. Der Boot-Menü-Code und die zusätzliche Abfrage in `onLoop` kosten nichts Messbares.
+- Die Mischprodukte liegen bei −111…−117 dB am Grundrauschen, die Unterschiede dort sagen nichts.
+- **Damit ist die Abnahme von Build 6/6b vollständig** (Menü D52/D53, Loop D57, Rauschen D58). Den 30-s-Timeout hat am Gerät noch niemand gestoppt.
+
+**Nebenbefund: Linien bei 2200,95 / 4401,90 / 6602,85 Hz** in allen sechs Aufnahmen, beide Builds, stärkste auf Kanal 1 (4401,90 Hz: −91,8 dB, 2200,95 Hz: −96,6 dB), Kanal 3 am schwächsten (−97,3 dB).
+- Frequenz über 11 min und zwei Flashes auf ≤ 0,001 Hz gleich. [Hypothese] Das spricht gegen einen analogen Oszillator und für eine quarzgenaue Quelle. Der Nutzer prüft es durch Verstimmen seines Oszillators (folgt).
+- In D25 standen „4400, 6604 Hz“ als Harmonische des Oszillators. Ob das dieselben Linien waren, ist offen.
+- Daneben wieder k·fs/48 (2000,0002 und 3000,0003 Hz, ≈ −98…−100 dB), bei fx3l und fx4b gleich (offener Punkt aus D42/D44).
+
+**Nachtrag D58 – Oszillator verstimmt (`B6b-osc-detuned`, 30 s, 23:2x) [gemessen]:** Der Nutzer hat seinen Oszillator deutlich verstimmt, sonst nichts geändert. Pegel auf Kanal 1, direkt bei der Linienfrequenz gemessen (Hann, ganze Aufnahme, Dateiwerte ohne die Linien-Skalierung der Analyse):
+
+| Aufnahme | 2200,95 Hz | 4401,90 Hz | 6602,85 Hz |
+|---|---|---|---|
+| `B6b-fx4b-end-r1` (vorher) | −102,7 dB | −97,9 dB | −104,1 dB |
+| `B6b-osc-detuned` (nachher) | −102,6 dB | −97,9 dB | −104,1 dB |
+| `B5c-fx3l-r1` (Vortag, Regler 12 Uhr) | −118,6 dB | −118,9 dB | −120,9 dB |
+
+- **Die Linien wandern nicht mit: Der Oszillator ist es nicht.**
+- **Am Vortag fehlten sie** (Werte am Grundrauschen). Sie sind also heute dazugekommen und in fx3l und fx4b gleich.
+- Was heute anders ist: die Reglerstellung (2 / 127 / 2 / 2 statt 12 Uhr), dazu möglicherweise das Rack. [Hypothese] Die Reglerstellung: In D25 tauchten „4400, 6604 Hz“ ebenfalls bei Gain auf Vollanschlag auf und wurden damals dem Oszillator zugeschrieben. Die Quelle ist an den Gerätetakt gekoppelt (Frequenz in Geräte-Zeit auf 0,001 Hz stabil). Die Abtastrate des Regler-ADC passt nach einer groben Rechnung aus dem Code nicht dazu (≈ 100 kHz), der Mechanismus ist offen.
+- Nächster Test: alle Regler auf 12 Uhr, 30 s aufnehmen. Verschwinden die Linien, hängen sie an der Reglerstellung.
+
+**Nachtrag 2 zu D58 – Regler auf 12 Uhr (`B6b-knobs-12`, 30 s) [gemessen]:** Der Nutzer hat alle vier Regler auf 12 Uhr gestellt (gelesen 70 / 62 / 67 / 59), sonst nichts geändert. fx4b, Slot 1, Eingänge offen. Pegel direkt bei der Linienfrequenz (wie oben):
+
+| Aufnahme | Kanal | 2200,95 Hz | 4401,90 Hz | 6602,85 Hz | fs/8 |
+|---|---|---|---|---|---|
+| `B6b-osc-detuned` (Regler 2 / 127 / 2 / 2) | 1 | −102,6 | −97,9 | −104,1 | −89,9 |
+| | 2 | −104,1 | −99,7 | −106,6 | −90,0 |
+| | 3 | −109,1 | −103,4 | −108,9 | −90,5 |
+| | 4 | −105,1 | −99,9 | −104,4 | −90,1 |
+| `B6b-knobs-12` (Regler 12 Uhr) | 1 | −123,6 | −118,6 | −123,0 | −88,9 |
+| | 2 | −124,5 | −120,9 | −125,3 | −89,0 |
+| | 3 | −128,9 | −123,6 | −127,4 | −89,5 |
+| | 4 | −128,1 | −119,4 | −124,3 | −89,2 |
+
+- **Die Linien hängen an der Reglerstellung.** Mit den Reglern auf 12 Uhr liegen sie auf allen vier Kanälen am Grundrauschen, ≈ 20 dB tiefer.
+- Welcher Regler und welcher Anschlag (links oder rechts) sie auslöst, ist offen. D25 spricht für den Rechtsanschlag.
+- fs/8 liegt mit 12 Uhr auf allen Kanälen ≈ 1 dB höher. Das ist eine einzelne 30-s-Aufnahme, also noch kein Befund.
+- Mechanismus [Hypothese]: Der Regler-ADC läuft frei im Scan. Steht ein Schleifer am Anschlag, liegt der ADC-Eingang direkt an Masse bzw. an der Referenz, und der Ladestrom des Abtastkondensators fließt ungedämpft über die Versorgung. Die Linie wäre dann ein Mischprodukt der Scanrate mit dem Audiotakt. Dazu passt, dass sie an den Gerätetakt gekoppelt ist. Die Scanrate selbst ist nicht nachgerechnet.
+- Größenordnung: −92…−97 dB in der Skala der Analyse, der Kamm liegt bei −75 dB. Die Linien sind also klein, aber im Standalone-Betrieb stehen Regler oft am Anschlag.
+- **Folge für alle Rauschmessungen:** Regler auf 12 Uhr, wie im Protokoll vorgesehen. Die Sitzung D58 lief durchgehend mit 2 / 127 / 2 / 2, der Vergleich fx4b gegen fx3l bleibt deshalb gültig.
+
+### D59 – fx4b wird Alltags-Firmware, Fork-Branch nachgezogen (2026-11-17, nachts)
+
+**Entscheidung (Nutzer):** fx4b (`acdc1-build6b-fx4b`, `a21f35c9…`) ist die Alltags-Firmware von acdc1. Grundlage: Boot-Menü am Gerät geprüft (D52/D53), Loop-Test (D57), Rauschen gleich fx3l (D58).
+
+**Fork `m9dfukc/OpenWare`, Branch `acdc/fx1d` (lokal committet, nicht gepusht):** `7ef6284a` Boot-Menü (Patch 15b), `2c963e3a` Version `v22.4.r-fx4b`, `27d3630b` README.
+
+**Prüfung [gemessen]:** `tools/build_acdc.sh verify-fx1d-2c963e3a 2c963e3a …` ohne Patches und ohne `FW_VERSION` ergibt 108 496 B, SHA-256 `a21f35c990cc33737620597d883c4bd205fc4495bf2291a1b6013af6f2b06307`, **bytegleich mit dem geflashten fx4b**.
+
+**Offen:** Push des Fork-Branches und Release `acdc-v22.4.r-fx4b` (je mit Freigabe). Hörurteil zu Tanh3 Fassung 2. Die Punkte aus D54 (MIDI-Wettlauf), D56 (Last von Tanh3) und D58 (Regler-Linien).
+

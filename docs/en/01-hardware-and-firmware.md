@@ -1,5 +1,5 @@
-<!-- i18n source=docs/01-hardware-und-firmware.md sha256=5541c7cd047c2d9254732fbb99c723b785586e6d541080dfa4b658a3a6cfa46c date=2026-11-16 -->
-> English translation of [`docs/01-hardware-und-firmware.md`](../../docs/01-hardware-und-firmware.md), as of 2026-11-16. The German original is authoritative. This file is generated from it, do not edit it by hand.
+<!-- i18n source=docs/01-hardware-und-firmware.md sha256=09f71c55f21cbc9fd6a1d74bfaa310044a32f012051e370924116729452be630 date=2026-11-17 -->
+> English translation of [`docs/01-hardware-und-firmware.md`](../../docs/01-hardware-und-firmware.md), as of 2026-11-17. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 01 – Hardware & firmware of the AC/DC
 
@@ -22,7 +22,7 @@ Basis: OpenWare source `RebelTechnology/OpenWare` @ `62a0187` (v22.5.0, 2023-03-
 | LEDs | PWM via TIM2/3/4/8, prescaler 100, period 1023 → **≈ 2.32 kHz** (in the audio band). The duty cycle follows the level | [code] |
 | Power | Eurorack bus (+12 V, approx. 200 mA). Not powered via USB | [sourced] |
 | Default gains | Input 104, output 114 (v22.5.0). In the hack branch (v22.4.q, v22.4.r): input 88. My own builds from 1c on: output 125 (patch 04). These are all defaults: settings stored in flash take precedence | [code] |
-| Firmware acdc1 | Today **`v22.4.r-fx3l`** (my own build, since 2026-11-16). From the factory the module reported "v22.5.0", but it was a build from `hack/acdc-output-levels` with this label, not a published commit. Hence block size 8, the 6 kHz line and the clocking of v22.4.r | [measured] lab notebook D3, D3a, D10, D49 |
+| Firmware acdc1 | Today **`v22.4.r-fx4b`** (my own build, since 2026-11-17, before that `v22.4.r-fx3l` since 2026-11-16). From the factory the module reported "v22.5.0", but it was a build from `hack/acdc-output-levels` with this label, not a published commit. Hence block size 8, the 6 kHz line and the clocking of v22.4.r | [measured] lab notebook D3, D3a, D10, D49, D59 |
 | Firmware acdc2 | **v22.4.q** = commit `e81cfc3` (2022-06-27) from `hack/acdc-output-levels`, never merged. `AUDIO_BLOCK_SIZE 8` (v22.5.0: 16), `AUDIO_INPUT_GAIN 88`, HPF off, PLL/LED timers as in v22.5.0. Our code analysis otherwise refers to v22.5.0 | [code], device status 2026-11-13 |
 
 ## USB
@@ -77,7 +77,7 @@ TX and RX routing can be switched **independently** of each other (checked in th
 
 Consequence for the noise: with stock routing (acdc2, build 1d) a **filter patch in slot 1 ends up directly in the USB recording**. With `TX_PRE_FX` (acdc1 from build 2 on) the computer records the raw inputs, a patch in the module no longer reaches the recording [measured, lab notebook D25, B2]. Filtering then happens in the computer. See `04-software-filter.md`.
 
-## My own firmware on acdc1 (as of `v22.4.r-fx3l`, 2026-11-16)
+## My own firmware on acdc1 (as of `v22.4.r-fx4b`, 2026-11-17)
 
 Short version. Reasons and measurements are in `05-firmware-plan.md` and `messlog.md`.
 
@@ -90,6 +90,7 @@ Short version. Reasons and measurements are in `05-firmware-plan.md` and `messlo
 | SOF evaluation | `USBD_AUDIO_SOF` evaluates each frame number only once (patch 14). With USB code in ITCM the SOF chain otherwise ran twice in ≈ 97 % of the frames | [measured] D46, D47 |
 | Block start | `audioCallback` is attached to the RX DMA callbacks instead of the TX DMA interrupt (patch 12b). Before, the last input sample of a block could be 16 frames old | [measured] D40, D43 |
 | Input LEDs | With a TX stream raw level (mean square × 4096, τ 40 ms), red for 300 ms from −0.1 dBFS. Measured every 2 ms in `onLoop` on the codec DMA buffer (patch 07d) | [measured] D34, D36 |
-| Memory | Hot path (104 functions, 12 352 B) and vector table in ITCM from 0x3000 (patch 11g). Patch heap in CCM 39.3 KB instead of 52 KB | [code: `check_itcm.py`], [measured] D47–D49 |
+| Memory | Hot path (104 functions, 12 392 B) and vector table in ITCM from 0x3000 (patch 11g). Patch heap in CCM 39.2 KB instead of 52 KB | [code: `check_itcm.py`], [measured] D47–D49, D50 |
+| Patch selection | Boot menu (patch 15b): power on with knobs 1, 2, 3 at the left stop and knob 4 at the right stop. Knob 1 selects among the occupied slots 1–15, knob 4 confirms, knob 3 or 30 s cancel. The input LEDs show the slot in binary. The slot is remembered as the resource `ACDC.slot` in the patch flash and starts at the next power-on. The settings stay untouched | [measured] D52, D53, D55, D57, D58 |
 | ADC format | SAI1 delivers 24 bits right-aligned **without sign extension** (`SAI_DATASIZE_24`). Sign-extend before any level calculation | [code], noticed in D28 |
 | Input range | Full scale ≈ ±9.5 V, offset ≈ −0.2…−0.4 V per channel | [measured] D29 (indirect), D36 |

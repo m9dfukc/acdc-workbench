@@ -2,14 +2,14 @@
 
 Oben steht, was offen ist, nach Themen geordnet. Darunter folgen offene Fragen, dann Entfallenes mit Grund, dann die Chronik des Erledigten. Details jeweils in `docs/`, Belege im Messlog (`docs/messlog.md`, IDs wie D49).
 
-Stand der Neuordnung: 2026-11-16.
+Stand der Neuordnung: 2026-11-16, zuletzt ergänzt 2026-11-17.
 
 ## Offen
 
 Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nur lesen (E4).
 
-### 1. fx3l: Alltagstest und Entscheidung
-- [ ] **Entscheiden, ob fx3l 3d auf acdc1 ablöst.** fx3l läuft seit 2026-11-16 nachts auf acdc1 (D49). Im Alltag beobachten:
+### 1. fx3l/fx4b: Alltagstest
+- [x] Entschieden 2026-11-17: fx4b (= fx3l + Boot-Menü) ist die Alltags-Firmware und löst 3d ab (D59). fx3l lief seit 2026-11-16 nachts auf acdc1 (D49). Weiter im Alltag beobachten:
   - Aufnahme und Wiedergabe am Rechner: Aussetzer, Knackser
   - Meldung `fb clamp` per `tools/owl_read.py`
   - Durchleitung ohne Rechner, Eingangs-LEDs
@@ -20,6 +20,28 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [ ] Klären, ob der RX-Fix (12b) auch in 3d bzw. einen Standalone-Stand gehört. In 3d wurde der Wettlauf nie gemessen. `acdc1-build3e-fx2e` liegt gebaut bereit
 - [ ] Ursache der Kamm-Änderung +2,9 dB zwischen D35 und D37 klären. Aufbau laut Nutzer unverändert, aber mehr CPU-Last am Mac → A/B Mac im Leerlauf gegen Mac unter Last (z. B. `yes > /dev/null` je Kern), 2 × 60 s offene Eingänge [Hypothese: Host-Last → Masse/SOF]
 - [ ] Optional: HAL löscht `GINTSTS.SOF` vor dem Callback (überzählige Interrupt-Einsprünge weg), A/B gegen fx3l
+
+### 1a. fx4a/fx4b: Boot-Menü zur Patch-Wahl (fx4b läuft auf acdc1, Abnahme bestanden, D52–D58)
+- Stand: `firmware/builds/acdc1-build6-fx4a/` = fx3l + Patch 15. `check_itcm` und Host-Test bestanden (D50). Plan und Abnahme: `docs/05`, „Build 6“
+- [x] Endwerte der vier Regler gemessen: links 2, rechts 127 von 127, Schwellen passen (D51)
+- [x] fx4a geflasht, Readback bytegleich (D51)
+- [x] A1 und Menü am Gerät: fx4a läuft, Slots unverändert, die Wahl (Slot 3) wurde einmal gemerkt (D52)
+- [x] Abbruch mit Regler 3, Start aus dem Speicher und Timeout am Gerät geprüft (Nutzer, fx4a, D53)
+- [x] Loop-Test fx4b bestanden, auch mit Tanh3 bei 53 % CPU (D57)
+- [x] Rausch-A/B fx4b gegen fx3l bestanden: alle Familien innerhalb ±0,4 dB, im Mittel ±0,2 dB (D58). Abnahme von Build 6/6b vollständig
+- [x] fx4b ist die Alltags-Firmware (Nutzer, 2026-11-17, D59). Fork-Branch `acdc/fx1d` lokal nachgezogen (`7ef6284a`, `2c963e3a`, `27d3630b`), ein Build daraus ist bytegleich mit fx4b. `docs/en/05` aufgefrischt
+- [ ] Fork-Branch `acdc/fx1d` pushen und Release `acdc-v22.4.r-fx4b` anlegen (je mit Freigabe)
+- [ ] **Linien bei 2200,95 / 4401,90 / 6602,85 Hz hängen an der Reglerstellung** (D58): mit Reglern 2 / 127 / 2 / 2 ≈ 20 dB über dem Grundrauschen, auf 12 Uhr weg. Klären: welcher Regler, welcher Anschlag, Pegel über den Regelweg. Danach Abhilfe prüfen (ADC nicht frei laufen lassen, Abtastzeit, Takt), je mit A/B
+- [x] MIDI-Ausfall (D53) eingegrenzt: Wettlauf im MIDI-Sendeweg der Original-Firmware bei Slot-Downloads neben einem laufenden Patch (D54). Die Werkzeuge umgehen den Download
+- [ ] **Firmware-Fix für den MIDI-Sendeweg** (Kandidat Patch 16): nur ein Aufrufer für `transmit()` bzw. Prüfen, Senden und Vorrücken unteilbar machen, dazu Flusskontrolle im `SendResourceTask`. `MidiWriter::transmit` liegt im ITCM, also mit `check_itcm` und Rausch-A/B
+- [x] Neue Patch-Builds gespeichert (D54): TapeDelay, Grainz, RingsReverb mit Limiter, Tanh3 in Slot 5
+- [ ] Neue Builds anhören: Limiter scheint zu funktionieren (Nutzer, D56). Tanh3 Fassung 2 (4× Oversampling gegen Aliasing, D56) beurteilen
+- [ ] Tanh3 braucht 48 % CPU (D56). Auswege: Blockgröße 16 oder 32 (zur Laufzeit per SysEx `BS` setzbar, nie getestet, verschiebt die Blockraten-Linie), Oversampling nur bei Signal, kürzerer Abwärtsfilter
+- [x] fx4b (Abbruch nach 30 s, `acdc1-build6b-fx4b`) geflasht, Readback bytegleich (D55)
+- [x] fx4b: A1 nach dem Neustart bestanden, Slot 4 startet aus dem Speicher (D55)
+- [ ] fx4b: Timeout 30 s am Gerät nachmessen
+- [ ] Grainz: 78 % CPU bei Density am Linksanschlag (D52). Prüfen, ob es Aussetzer gibt. Möglicher Ausweg: Build mit `PLATFORM=OWL3` (Cortex-M7-Flags)
+- [ ] Die vier FX-Patches anhören (Slots 2–5, D50). TapeDelay braucht 31 % CPU bei Blockgröße 8
 
 ### 2. Werkzeuge
 - [ ] **Flash-Skript nach `tools/`**: Gerät prüfen (UUID), DFU-Neustart, schreiben, Readback, Vergleich, Flash-Log. Heute ist das ein Ablauf in `CLAUDE.md` und ein Schnipsel in `docs/uebergaben/uebergabe-2026-11-16-patch12b.md`
@@ -49,7 +71,8 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - Vorlage: `burstMembrane/acdc-patches` (Reverb, Delay, Grain für AC/DC, PRE_FX-Firmware). Siehe `docs/research/notes/forks_update_2026-11-14.md`
 - Rahmen: Der FX liegt nur ohne Rechner-Stream an den Buchsen (D20, `docs/01`). Mit fx3l bleiben 39,3 KB Patch-Heap im CCM
 - [ ] Erste FX-Patches: Mixer/Attenuator, danach Write/Read-Buffer (Reaktor-artig). Steuerung über 4 Knobs + Audio-Rate-Trigger an den Eingängen
-- [ ] OwlProgram + antisvins FAUST-Branch aufsetzen (Werkzeug für eigene Patches)
+- [x] OwlProgram für C++-Patches aufgesetzt (2026-11-17): `tools/build_owl_patch.sh`, Upload mit `tools/owl_write.py`. Vier Patches aus `burstMembrane/acdc-patches` liegen auf acdc1 (D50)
+- [ ] FAUST-Patches bauen (`TapeDelay.dsp`, `FaustTapeDelay.dsp`): braucht den FAUST-Compiler und laut antisvin seinen OwlProgram-Branch
 - [ ] Optional: Auto-Switching zur Laufzeit statt per Compile-Flag
 - [ ] Idee (Nutzer, Q7): Regler bei aktivem Stream als MIDI-CC an den Host senden, nur wenn es weder Last noch Störlinien bringt. Die Firmware sendet sie heute nur auf Anfrage [Code]
 - [ ] Idee (Nutzer): CV-taugliche Eingangsanzeige, z. B. Grün linear zum Betrag des Gleichanteils. Rot ist reines GPIO ohne PWM, taugt also nicht als Polaritätsanzeige mit Stärke
