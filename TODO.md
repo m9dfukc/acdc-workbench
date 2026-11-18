@@ -2,7 +2,7 @@
 
 Oben steht, was offen ist, nach Themen geordnet. Darunter folgen offene Fragen, dann Entfallenes mit Grund, dann die Chronik des Erledigten. Details jeweils in `docs/`, Belege im Messlog (`docs/messlog.md`, IDs wie D49).
 
-Stand der Neuordnung: 2026-11-16, zuletzt ergänzt 2026-11-17.
+Stand der Neuordnung: 2026-11-16, zuletzt ergänzt 2026-11-18.
 
 ## Offen
 
@@ -95,6 +95,16 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [x] Releases am Fork angelegt 2026-11-16: `acdc-v22.4.r-fx2d` (3d, Tag auf `abc3a72a`) und `acdc-v22.4.r-fx3l` (Vorabversion, Tag auf `3e3a74fd`), je `ACDC-<version>.bin` und `BUILD_INFO`. Anhänge heruntergeladen und gegen die SHA-256 geprüft
 - [ ] fx3l-Release von „Vorabversion“ auf Release stellen, wenn Alltagstest und zweite Rauschsitzung bestanden sind
 - [ ] Eventuell: Ergebnisse als GitHub-Issue anlegen. Wo (Upstream `RebelTechnology/OpenWare` oder eigenes Repo) ist offen
+
+### 7. Serielles MIDI über den Header hinten (irgendwann, keine Eile)
+- Nutzer 2026-11-18: im Moment nicht wichtig, könnte später interessant werden. Ziel: MIDI-Controller steuern im Standalone-Betrieb Patch-Parameter (E–H und erweiterte, A–D gehören den Reglern)
+- Stand: nur recherchiert. Header = roher 3,3-V-UART (Pin 1 RX, 2 GND, 3 TX) ohne Versorgung, das vorhandene 2-HP-Breakout ist passiv. Schaltung der Zwischenplatine und Belege: `docs/01`, „MIDI-Header auf der Rückseite“, und `docs/research/notes/midi_header_2026-11-18.md`
+- USB-Host an der vorderen Buchse ist verworfen (Port nur Gerät, keine 5 V, Flash knapp)
+- [ ] Am Gerät messen, mit fx4b: Header-Pin 3 gegen Pin 2 ≈ 3,3 V? Bestätigt TX und die Orientierung
+- [ ] Firmware-Patch für UART-MIDI: 31250 Baud, `USE_UART_MIDI_RX` (TX optional), `UART_MIDI_HANDLE`, DMA-Kanal und Interrupts. Vorlage `XibecaDevKit`. Mit `check_itcm`, Loop-Test und Rausch-A/B gegen fx4b
+- [ ] Klären, welcher MCU-Pin an Header-Pin 1 liegt (PB5 = UART5 oder PB7 = USART1): Test-Build und Drahtbrücke Pin 3 → Pin 1
+- [ ] Zwischenplatine in Lochraster bauen: erst MIDI In (H11L1, 78L33), MIDI Out (74HC14) nur bei Bedarf
+- [ ] Typ A oder B an den MIDI-Buchsen der Controller prüfen. Controller nur mit USB bleiben außen vor
 
 ## Offene Fragen
 - Woher kommt die 119,944-Hz-Familie direkt am Mac?

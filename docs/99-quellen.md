@@ -32,6 +32,10 @@ Tipp: Discourse liefert Rohdaten unter `https://community.rebeltech.org/t/<id>.j
 
 ## Hersteller / Datenblätter
 - Befaco AC/DC: https://www.befaco.org/ac-dc/
+- Befaco AC/DC Schaltplan (Trägerplatine, EAGLE-PDF, Text nur gerendert lesbar): https://www.befaco.org/docs/AC_DC/ACDC_V1_THT_Schematic.pdf
+- Expert Sleepers ES-9, Handbuch (MIDI-Header, 3,3-V-Signalisierung): https://analoguehaven.com/expert-sleepers/es-9/manual.pdf
+- Expert Sleepers Tiny MIDI breakout (passiv, TRS): https://expert-sleepers.co.uk/tinymidibreakout.html
+- MIDI DIN Electrical Specification: https://www.midi.org/specifications/item/midi-din-electrical-specification
 - ADuM3160 (LS/FS): https://www.analog.com/ADuM3160
 - FAUST filters.lib (`fi.notchw`): https://faustlibraries.grame.fr/libs/filters/
 

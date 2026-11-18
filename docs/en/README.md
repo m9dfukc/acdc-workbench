@@ -4,7 +4,7 @@ The working language of this project is German, and the German files are the sou
 
 | English | German source | Content |
 |---|---|---|
-| [01-hardware-and-firmware.md](01-hardware-and-firmware.md) | `docs/01-hardware-und-firmware.md` | Facts about the module: MCU, codec, USB, audio routing in the code |
+| [01-hardware-and-firmware.md](01-hardware-and-firmware.md) | `docs/01-hardware-und-firmware.md` | Facts about the module: MCU, codec, USB, audio routing in the code, the MIDI header on the back |
 | [02-noise-findings.md](02-noise-findings.md) | `docs/02-noise-befunde.md` | What the forum knows, hypotheses on the cause with their measurement status |
 | [03-measurement-plan-python.md](03-measurement-plan-python.md) | `docs/03-messplan-python.md` | Measurement protocol and specification of the Python analysis |
 | [04-software-filter.md](04-software-filter.md) | `docs/04-software-filter.md` | Notch bank: filter shape, Python prototype, plugin, FAUST patch |

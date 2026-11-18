@@ -1,5 +1,5 @@
-<!-- i18n source=docs/99-quellen.md sha256=4b36b50118de75113bc8b1700c9f0a41dcd7d793631a01bed3e8b51953f12f1b date=2026-11-16 -->
-> English translation of [`docs/99-quellen.md`](../../docs/99-quellen.md), as of 2026-11-16. The German original is authoritative. This file is generated from it, do not edit it by hand.
+<!-- i18n source=docs/99-quellen.md sha256=957196de274de67e114fe5aa8cec2eb7382b393051d78ca694109f39e78968dc date=2026-11-18 -->
+> English translation of [`docs/99-quellen.md`](../../docs/99-quellen.md), as of 2026-11-18. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 99 – Sources
 
@@ -35,6 +35,10 @@ Tip: Discourse serves raw data at `https://community.rebeltech.org/t/<id>.json` 
 
 ## Manufacturers / datasheets
 - Befaco AC/DC: https://www.befaco.org/ac-dc/
+- Befaco AC/DC schematic (carrier board, EAGLE PDF, text readable only when rendered): https://www.befaco.org/docs/AC_DC/ACDC_V1_THT_Schematic.pdf
+- Expert Sleepers ES-9, manual (MIDI header, 3.3 V signaling): https://analoguehaven.com/expert-sleepers/es-9/manual.pdf
+- Expert Sleepers Tiny MIDI breakout (passive, TRS): https://expert-sleepers.co.uk/tinymidibreakout.html
+- MIDI DIN Electrical Specification: https://www.midi.org/specifications/item/midi-din-electrical-specification
 - ADuM3160 (LS/FS): https://www.analog.com/ADuM3160
 - FAUST filters.lib (`fi.notchw`): https://faustlibraries.grame.fr/libs/filters/
 

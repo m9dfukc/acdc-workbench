@@ -1,5 +1,5 @@
-<!-- i18n source=docs/01-hardware-und-firmware.md sha256=09f71c55f21cbc9fd6a1d74bfaa310044a32f012051e370924116729452be630 date=2026-11-17 -->
-> English translation of [`docs/01-hardware-und-firmware.md`](../../docs/01-hardware-und-firmware.md), as of 2026-11-17. The German original is authoritative. This file is generated from it, do not edit it by hand.
+<!-- i18n source=docs/01-hardware-und-firmware.md sha256=c34efc0a36447292c852490c41f0d2479b530446434de1552c1e37de0d5138f8 date=2026-11-18 -->
+> English translation of [`docs/01-hardware-und-firmware.md`](../../docs/01-hardware-und-firmware.md), as of 2026-11-18. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 01 – Hardware & firmware of the AC/DC
 
@@ -18,7 +18,7 @@ Basis: OpenWare source `RebelTechnology/OpenWare` @ `62a0187` (v22.5.0, 2023-03-
 | Codec HPF | off (`/* #define CODEC_HP_FILTER */`), deliberately for DC coupling. Can be enabled at runtime via SysEx `HP`, but is **not saved** | [code] |
 | Sample rate | nominally 48 kHz. PLL3 98.2857 MHz, MCKDIV rounded to 8 → **≈ 47 991 Hz (−186 ppm)**. This applies to v22.5.0 and v22.4.q (acdc2). From v22.4.r in the hack branch (PLL3 P/Q 8, FRACN 262) it is exactly 48 kHz, this is how acdc1 runs | [code], [measured] lab notebook D10 |
 | I/O | 4 inputs, 4 outputs, ±10 V, DC-coupled | [sourced] |
-| Controls | 4 knobs (input gain **and** patch parameters A–D), 8 LEDs (parameters AA–AD, BA–BD). No buttons, no gate/CV input, no serial MIDI. The MIDI expander never appeared (thread #2077) | [sourced] |
+| Controls | 4 knobs (input gain **and** patch parameters A–D), 8 LEDs (parameters AA–AD, BA–BD). No buttons, no gate/CV input, no serial MIDI in the firmware. On the back there is a 3-pin header "MIDI" (raw UART), the MIDI expander planned for it never appeared (thread #2077). See "MIDI header on the back" | [sourced] |
 | LEDs | PWM via TIM2/3/4/8, prescaler 100, period 1023 → **≈ 2.32 kHz** (in the audio band). The duty cycle follows the level | [code] |
 | Power | Eurorack bus (+12 V, approx. 200 mA). Not powered via USB | [sourced] |
 | Default gains | Input 104, output 114 (v22.5.0). In the hack branch (v22.4.q, v22.4.r): input 88. My own builds from 1c on: output 125 (patch 04). These are all defaults: settings stored in flash take precedence | [code] |
@@ -76,6 +76,64 @@ TX and RX routing can be switched **independently** of each other (checked in th
 - **Limitation of "only `TX_PRE_FX`" (build 2 `v22.4.r-fx1d`, likewise 3d and fx3l):** When an app records from the AC/DC, macOS also starts the playback stream [measured, D20]. Then the right column applies, and the host silence overwrites the patch output. So the FX is at the jacks only without a computer stream [code]. Accepted as is for build 2 (`docs/05`, "Build 2 neu").
 
 Consequence for the noise: with stock routing (acdc2, build 1d) a **filter patch in slot 1 ends up directly in the USB recording**. With `TX_PRE_FX` (acdc1 from build 2 on) the computer records the raw inputs, a patch in the module no longer reaches the recording [measured, lab notebook D25, B2]. Filtering then happens in the computer. See `04-software-filter.md`.
+
+## MIDI header on the back
+
+As of 2026-11-18: researched only, nothing built and nothing measured. The occasion was the question whether a MIDI controller can control patch parameters in standalone operation. Sources, quotes and details: `research/notes/midi_header_2026-11-18.md`.
+
+| Aspect | Value | Status |
+|---|---|---|
+| Header | 3 pins, labelled "MIDI". **Pin 1 = RX** (net `SDA_RX`), **pin 2 = GND**, **pin 3 = TX** (net `SCL_TX`). Level 3.3 V | [sourced] Befaco schematic |
+| Wiring | Both lines go straight to the Xibeca module (pin 74 `I2C_SDA`, pin 73 `I2C_SCL`). No series resistor, no protection, no optocoupler, **no supply** on the header | [sourced] Befaco schematic |
+| MCU pins | TX = PB6 (`UART5_TX`). RX according to the code is PB5 (`UART5_RX`), but the module pin is named `I2C_SDA`, which matches PB7. Which pin is really on the header is open | [code], [hypothesis] |
+| Firmware | UART5 is set up at 115200 baud, but not connected to the MIDI code (`USE_UART_MIDI_RX` is missing, no DMA channel). Serial MIDI needs a build of its own. Template: `XibecaDevKit` (UART7, 31250 baud) | [code], [sourced] thread #2077 |
+| MIDI CC | CC from the USB host sets patch parameters: CC 20–23 = A–D, 24 = E, 1 = F, 12 = G, 13 = H, 75–106 = AA–DH. The knobs overwrite A–D in every block, AA–AD drive the input LEDs, BA–BD are written by the firmware. So E–H and the extended parameters from AE on are usable via MIDI | [code] |
+| USB host at the front | Does not work: the port is `Device_Only`, the socket supplies no 5 V, the second USB port of the Xibeca module is not wired on the board. A host stack would need an estimated 15–25 KB of 22.5 KB free flash | [code], [sourced] Befaco schematic, size [hypothesis] |
+
+### Adapter board for a passive MIDI breakout (sketch)
+
+A passive jack breakout (here: Expert Sleepers "Tiny MIDI breakout", 2 HP, 3.5 mm TRS) expects finished MIDI lines. On the ES-9 the electronics for this sit on the interface, on the AC/DC they are missing. The board in between can be built on stripboard, all parts are through-hole, current draw below 15 mA from +12 V [hypothesis, not built].
+
+MIDI in, galvanically isolated (type A: tip = DIN pin 5, ring = DIN pin 4):
+
+```
+IN jack                             H11L1 (DIP-6)
+ring (DIN 4) ──[R1 220Ω]──┬──────── 1 anode     6 Vcc ───┬── +3V3
+                          │                              │
+                     D1 1N4148                        [R2 1k]
+                  (cathode at pin 1)                     │
+                          │                     4 out ───┴──[R3 100Ω]── AC/DC pin 1 (RX)
+tip  (DIN 5) ─────────────┴──────── 2 cathode   5 GND ───── GND
+shield: leave open                  3 n.c.
+                                    C1 100 nF directly between pin 6 and pin 5
+```
+
+Supply from the Eurorack bus (a power header of its own on the board):
+
+```
++12V ──[D2 1N4148]──[R4 47Ω]──┬── IN  78L33  OUT ──┬──────┬── +3V3
+                          C2 10µF      GND     C3 100nF  C4 10µF
+GND ──────────────────────────┴─────────┴──────────┴──────┴── GND ── AC/DC pin 2
+```
+
+MIDI out, optional (3.3 V variant of the MIDI specification):
+
+```
++3V3 ──[R5 33Ω]───────────────────────────── ring   (DIN 4)  OUT jack
+AC/DC pin 3 (TX) ──[inv]──[inv]──[R6 10Ω]─── tip    (DIN 5)
+GND ──────────────────────────────────────── shield
+```
+
+- The two inverters are a 74HC14: pin 14 to +3V3, pin 7 to GND, 1→2, 3→4, unused inputs 5, 9, 11, 13 to GND, 100 nF at the supply. The buffer protects the MCU pin, because a TRS plug briefly connects tip and ring when it is inserted.
+- H11L1: optocoupler with Schmitt trigger, runs from 3 V, open-collector output. Current through the LED = output low = start bit, so no inverter is needed. Substitute: 6N138 (different pinout, one more resistor).
+- 78L33 in TO-92. Substitute: LP2950-3.3 (different pinout, capacitors per datasheet).
+- On the breakout each jack has a 3-pin header: tip right, ring centre, shield left. Upper jack = in, the one below = out. For type B swap tip and ring.
+
+To clarify before building:
+
+- Which MCU pin is on header pin 1 (PB5 or PB7). Test: a firmware build with UART MIDI and a wire from pin 3 to pin 1.
+- Measurable without risk, with fx4b: between pin 3 and pin 2 there should be ≈ 3.3 V (TX idle) [code]. That confirms TX and the orientation of the header.
+- UART and DMA are new work for the MCU. A build with serial MIDI needs the noise comparison against fx4b (D33, D42).
 
 ## My own firmware on acdc1 (as of `v22.4.r-fx4b`, 2026-11-17)
 

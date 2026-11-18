@@ -15,7 +15,7 @@ Basis: OpenWare-Quelltext `RebelTechnology/OpenWare` @ `62a0187` (v22.5.0, 2023-
 | Codec-HPF | aus (`/* #define CODEC_HP_FILTER */`), absichtlich für DC-Kopplung. Zur Laufzeit per SysEx `HP` aktivierbar, wird aber **nicht gespeichert** | [Code] |
 | Samplerate | nominal 48 kHz. PLL3 98,2857 MHz, MCKDIV gerundet auf 8 → **≈ 47 991 Hz (−186 ppm)**. Das gilt für v22.5.0 und v22.4.q (acdc2). Ab v22.4.r im Hack-Branch (PLL3 P/Q 8, FRACN 262) sind es exakt 48 kHz, so läuft acdc1 | [Code], [gemessen] messlog D10 |
 | I/O | 4 Eingänge, 4 Ausgänge, ±10 V, DC-gekoppelt | [belegt] |
-| Bedienung | 4 Knobs (Input-Gain **und** Patch-Parameter A–D), 8 LEDs (Parameter AA–AD, BA–BD). Keine Taster, kein Gate/CV-Eingang, kein serielles MIDI. Der MIDI-Expander erschien nie (Thread #2077) | [belegt] |
+| Bedienung | 4 Knobs (Input-Gain **und** Patch-Parameter A–D), 8 LEDs (Parameter AA–AD, BA–BD). Keine Taster, kein Gate/CV-Eingang, kein serielles MIDI in der Firmware. Auf der Rückseite sitzt ein 3-poliger Header „MIDI“ (roher UART), der dazu geplante MIDI-Expander erschien nie (Thread #2077). Siehe „MIDI-Header auf der Rückseite“ | [belegt] |
 | LEDs | PWM über TIM2/3/4/8, Prescaler 100, Periode 1023 → **≈ 2,32 kHz** (im Audioband). Das Tastverhältnis folgt dem Pegel | [Code] |
 | Versorgung | Eurorack-Bus (+12 V, ca. 200 mA). Nicht über USB versorgt | [belegt] |
 | Default-Gains | Input 104, Output 114 (v22.5.0). Im Hack-Branch (v22.4.q, v22.4.r): Input 88. Eigene Builds ab 1c: Output 125 (Patch 04). Alles Defaults: Gespeicherte Settings im Flash haben Vorrang | [Code] |
@@ -73,6 +73,64 @@ TX- und RX-Routing sind **unabhängig** voneinander schaltbar (im Quelltext gepr
 - **Einschränkung bei „nur `TX_PRE_FX`“ (Build 2 `v22.4.r-fx1d`, ebenso 3d und fx3l):** Nimmt eine App vom AC/DC auf, startet macOS auch den Playback-Stream [gemessen, D20]. Dann gilt die rechte Spalte, und die Host-Stille überschreibt den Patch-Ausgang. Der FX ist also nur ohne Rechner-Stream an den Buchsen [Code]. Für Build 2 so hingenommen (`docs/05`, „Build 2 neu“).
 
 Konsequenz für das Rauschen: Mit Stock-Routing (acdc2, Build 1d) landet ein **Filter-Patch in Slot 1 direkt in der USB-Aufnahme**. Mit `TX_PRE_FX` (acdc1 ab Build 2) nimmt der Rechner die rohen Eingänge auf, ein Patch im Gerät erreicht die Aufnahme nicht mehr [gemessen, messlog D25, B2]. Gefiltert wird dann im Rechner. Siehe `04-software-filter.md`.
+
+## MIDI-Header auf der Rückseite
+
+Stand 2026-11-18: nur recherchiert, nichts gebaut und nichts gemessen. Anlass war die Frage, ob ein MIDI-Controller im Standalone-Betrieb Patch-Parameter steuern kann. Quellen, Zitate und Einzelheiten: `research/notes/midi_header_2026-11-18.md`.
+
+| Aspekt | Wert | Status |
+|---|---|---|
+| Header | 3-polig, beschriftet „MIDI“. **Pin 1 = RX** (Netz `SDA_RX`), **Pin 2 = GND**, **Pin 3 = TX** (Netz `SCL_TX`). Pegel 3,3 V | [belegt] Befaco-Schaltplan |
+| Beschaltung | Beide Leitungen gehen direkt auf das Xibeca-Modul (Pin 74 `I2C_SDA`, Pin 73 `I2C_SCL`). Kein Serienwiderstand, kein Schutz, kein Optokoppler, **keine Versorgung** am Header | [belegt] Befaco-Schaltplan |
+| MCU-Pins | TX = PB6 (`UART5_TX`). RX laut Code PB5 (`UART5_RX`), der Modul-Pin heißt aber `I2C_SDA`, das passt zu PB7. Welcher Pin wirklich am Header liegt, ist offen | [Code], [Hypothese] |
+| Firmware | UART5 ist mit 115200 Baud eingerichtet, aber nicht mit dem MIDI-Code verbunden (`USE_UART_MIDI_RX` fehlt, kein DMA-Kanal). Serielles MIDI braucht einen eigenen Build. Vorlage: `XibecaDevKit` (UART7, 31250 Baud) | [Code], [belegt] Thread #2077 |
+| MIDI-CC | CC vom USB-Host setzt Patch-Parameter: CC 20–23 = A–D, 24 = E, 1 = F, 12 = G, 13 = H, 75–106 = AA–DH. A–D überschreiben die Regler in jedem Block, AA–AD steuern die Eingangs-LEDs, BA–BD schreibt die Firmware. Per MIDI nutzbar sind also E–H und die erweiterten Parameter ab AE | [Code] |
+| USB-Host vorn | Geht nicht: Der Port ist `Device_Only`, die Buchse liefert keine 5 V, der zweite USB-Anschluss des Xibeca-Moduls ist auf der Platine nicht verdrahtet. Ein Host-Stack bräuchte geschätzt 15–25 KB von 22,5 KB freiem Flash | [Code], [belegt] Befaco-Schaltplan, Größe [Hypothese] |
+
+### Zwischenplatine für ein passives MIDI-Breakout (Skizze)
+
+Ein passives Buchsen-Breakout (hier: Expert Sleepers „Tiny MIDI breakout“, 2 HP, 3,5-mm-TRS) erwartet fertige MIDI-Leitungen. Beim ES-9 sitzt die Elektronik dafür auf dem Interface, beim AC/DC fehlt sie. Die Platine dazwischen ist in Lochraster baubar, alle Teile sind bedrahtet, Stromaufnahme unter 15 mA aus +12 V [Hypothese, nicht gebaut].
+
+MIDI In, galvanisch getrennt (Typ A: Spitze = DIN-Pin 5, Ring = DIN-Pin 4):
+
+```
+IN-Buchse                           H11L1 (DIP-6)
+Ring  (DIN 4) ──[R1 220Ω]──┬─────── 1 Anode     6 Vcc ───┬── +3V3
+                           │                             │
+                      D1 1N4148                       [R2 1k]
+                   (Kathode an Pin 1)                    │
+                           │                    4 Out ───┴──[R3 100Ω]── AC/DC Pin 1 (RX)
+Spitze (DIN 5) ────────────┴─────── 2 Kathode   5 GND ───── GND
+Schirm: offen lassen                3 frei
+                                    C1 100 nF direkt zwischen Pin 6 und Pin 5
+```
+
+Versorgung aus dem Eurorack-Bus (eigener Stromanschluss auf der Platine):
+
+```
++12V ──[D2 1N4148]──[R4 47Ω]──┬── IN  78L33  OUT ──┬──────┬── +3V3
+                          C2 10µF      GND     C3 100nF  C4 10µF
+GND ──────────────────────────┴─────────┴──────────┴──────┴── GND ── AC/DC Pin 2
+```
+
+MIDI Out, optional (3,3-V-Variante der MIDI-Spezifikation):
+
+```
++3V3 ──[R5 33Ω]───────────────────────────── Ring   (DIN 4)  OUT-Buchse
+AC/DC Pin 3 (TX) ──[Inv]──[Inv]──[R6 10Ω]─── Spitze (DIN 5)
+GND ──────────────────────────────────────── Schirm
+```
+
+- Die zwei Inverter sind ein 74HC14: Pin 14 an +3V3, Pin 7 an GND, 1→2, 3→4, unbenutzte Eingänge 5, 9, 11, 13 an GND, 100 nF an der Versorgung. Der Puffer schützt den MCU-Pin, weil ein TRS-Stecker beim Einstecken kurz Spitze und Ring verbindet.
+- H11L1: Optokoppler mit Schmitt-Trigger, läuft ab 3 V, Ausgang mit offenem Kollektor. Strom durch die LED = Ausgang low = Startbit, es braucht also keinen Inverter. Ersatz: 6N138 (andere Pinbelegung, ein Widerstand mehr).
+- 78L33 im TO-92. Ersatz: LP2950-3.3 (andere Pinbelegung, Kondensatoren nach Datenblatt).
+- Am Breakout hat jede Buchse einen 3-poligen Header: Spitze rechts, Ring Mitte, Schirm links. Obere Buchse = In, darunter = Out. Für Typ B Spitze und Ring tauschen.
+
+Vor dem Bauen zu klären:
+
+- Welcher MCU-Pin an Header-Pin 1 liegt (PB5 oder PB7). Test: Firmware-Build mit UART-MIDI und eine Drahtbrücke von Pin 3 nach Pin 1.
+- Ohne Risiko messbar, mit fx4b: Zwischen Pin 3 und Pin 2 sollten ≈ 3,3 V liegen (TX in Ruhe) [Code]. Das bestätigt TX und die Orientierung des Headers.
+- UART und DMA sind neue Arbeit für die MCU. Ein Build mit seriellem MIDI braucht den Rausch-Vergleich gegen fx4b (D33, D42).
 
 ## Eigene Firmware auf acdc1 (Stand `v22.4.r-fx4b`, 2026-11-17)
 
