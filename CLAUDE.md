@@ -12,7 +12,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 
 | Modul | Device-UUID (als Seriennummer) | Firmware | Slot 1 | Stand |
 |---|---|---|---|---|
-| acdc1 | `0039001c:31315101:39333437` | **v22.4.r-fx4b** (eigener Build 6b, `a21f35c9…`, Alltags-Firmware seit 2026-11-17, D55–D59). Rückweg fx3l `v22.4.r-fx3l` (Build 5c, `b55b94d8…`), danach Build 3d `v22.4.r-fx2d` (`d212cf8d…`) | ACDC, 9,93 KB. Slots 2–5: TapeDelay, Grainz, RingsReverb, Tanh3 (D54) | owl_read 2026-11-17 |
+| acdc1 | `0039001c:31315101:39333437` | **v22.4.r-fx5a** (eigener Build 7, `b69c25b3…` = fx4b + Patch 16, Alltags-Firmware seit 2026-11-18, D63–D65). Erster Rückweg fx4b `v22.4.r-fx4b` (Build 6b, `a21f35c9…`, Alltags-Firmware 2026-11-17 bis 18, D55–D59). Danach fx3l `v22.4.r-fx3l` (Build 5c, `b55b94d8…`), danach Build 3d `v22.4.r-fx2d` (`d212cf8d…`) | ACDC, 9,93 KB. Slots 2–5: TapeDelay, Grainz, RingsReverb, Tanh3 (D54) | owl_read 2026-11-18 |
 | acdc2 (DIY) | `00250049:31315102:39333437` | v22.4.q (`e81cfc3`, Hack-Branch, nie veröffentlicht) | ACDC, 9,32 KB | Device-Status 2026-11-13 |
 
 - **acdc2** = die **DIY-Variante** (M1–M3 wurden damit aufgenommen). „Gerät 1“ in älteren Docs = acdc1, „Gerät 2“ = acdc2.
@@ -29,8 +29,9 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 - **Nur ein Rechner** vorhanden. Tests mit Host-Wechsel fallen weg.
 - Forum-Handle: `m9dfukc` (community.rebeltech.org), eigener Thread: #2244.
 
-## Aktueller Stand (2026-11-17)
+## Aktueller Stand (2026-11-18)
 
+- **Auf acdc1 läuft seit 2026-11-18 fx5a** (`firmware/builds/acdc1-build7-fx5a/`, `b69c25b3…` = fx4b + Patch 16, MIDI-Sendeweg). Abnahme D62–D64: Download-Stresstest 240 von 240 in Ordnung, Loop-Test bestanden, Rauschen ohne Hinweis auf eine Änderung (Mischprodukte nicht entscheidbar). **fx5a ist die Alltags-Firmware (Entscheidung des Nutzers, D65)**, fx4b ist der erste Rückweg. Alles Folgende zu fx4b gilt auch für fx5a.
 - **acdc1 läuft mit fx4b als Alltags-Firmware** (Entscheidung des Nutzers, D59): `firmware/builds/acdc1-build6b-fx4b/`, `a21f35c9…` = fx3l + Patch 15b. Abnahme bestanden: Boot-Menü am Gerät (D52/D53), Loop-Test auch unter 53 % Patch-Last (D57), Rauschen gleich fx3l innerhalb ±0,4 dB (D58).
 - **Boot-Menü zur Patch-Wahl:**
   - Einschalten mit Regler 1, 2, 3 links und Regler 4 rechts öffnet das Menü. Regler 1 wählt unter den belegten Slots (zählt erst nach Bewegung), Regler 4 weg vom Anschlag bestätigt, Regler 3 weg vom Anschlag oder 30 s brechen ab.
@@ -45,8 +46,8 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
   - Patch-Heap im CCM 39,2 KB statt 52 KB, weil der heiße Pfad im ITCM liegt.
 - **Rauschen gegen 3d [gemessen, D48, gilt auch für fx4b, D58]:** fs/8 −5,1 dB, Mischprodukte −35 dB, Rest −1,25 dB, RMS −1,1 dB, Kamm +0,2…+0,4 dB. Der SOF-Kamm ist damit die stärkste verbleibende Störfamilie.
 - **Auf acdc1 liegen fünf Patches** (D54, D56): Slot 1 ACDC, 2 TapeDelay, 3 Grainz, 4 RingsReverb (je mit Limiter auf Out 1/2), 5 Tanh3 (Fassung 2 mit 4× Oversampling, 48 % CPU). Gemerkter Slot zuletzt 5. Die Builds aus D50 und Tanh3 Fassung 1 liegen in `owl-patches/builds-owl2/`. Wechsel vom Rechner aus per `owl_read.py --program N` (wird nicht gemerkt).
-- **Slot-Downloads sind bei laufendem Patch unzuverlässig (D53/D54):** Wettlauf im MIDI-Sendeweg der Original-Firmware [Code]. Daten gehen verloren, einmal sendete acdc1 danach bis zum Neustart kein MIDI mehr. `owl_write.py` deshalb mit `--backup-file` benutzen, `owl_read.py --dump` nur mit Blick auf `ok` im Report. Ein Firmware-Fix steht in `TODO.md`.
-- **Offen:** Hörurteil zu Tanh3, Quelle der Regler-Linien (D61), Last von Tanh3 (D56), Firmware-Fix für den MIDI-Sendeweg (D54). Alles Weitere: `TODO.md`, Abschnitt „Offen“.
+- **Slot-Downloads bei laufendem Patch sind bis fx4b unzuverlässig (D53/D54, D62):** Wettlauf im MIDI-Sendeweg der Original-Firmware [Code]. Auf fx4b waren 19 von 79 Downloads beschädigt, danach sendete acdc1 bis zum Neustart kein MIDI mehr [gemessen, D62]. **fx5a behebt das (Patch 16): 240 von 240 Downloads in Ordnung, kein Hänger (D63).** Unter fx4b und älter weiter `owl_write.py` mit `--backup-file` benutzen und bei `owl_read.py --dump` auf `ok` im Report achten. Test: `tools/dump_stress.py`.
+- **Offen:** fx5a: Fork-Commit, Push und Release (je mit Freigabe). Hörurteil zu Tanh3, Quelle der Regler-Linien (D61), Last von Tanh3 (D56). Alles Weitere: `TODO.md`, Abschnitt „Offen“.
 
 ## Dateien
 
@@ -61,7 +62,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 | `docs/03-messplan-python.md` | Messprotokoll + Spezifikation der Python-Analyse (uv) |
 | `docs/04-software-filter.md` | Notch-Bank: Filterform, Python-Prototyp, Plugin, FAUST-Patch |
 | `docs/05-firmware-plan.md` | OpenWare-Stand, Forks, Build-Plan und Ergebnis jedes Builds (chronologisch), Fork, Flashen |
-| `docs/messlog.md` | **Alle eigenen Messungen** (M1 … D61): Setup, Dateien, Linien-Tabelle, Deutung, Einschränkungen |
+| `docs/messlog.md` | **Alle eigenen Messungen** (M1 … D65): Setup, Dateien, Linien-Tabelle, Deutung, Einschränkungen |
 | `docs/uebergaben/` | Falls es Übergaben zwischen Sitzungen gibt, liegen sie hier. **Nur lokal, nicht im Repo** (Nutzer-Entscheidung 2026-11-18): Arbeitszettel, die schnell überholt sind. Die Datei mit dem jüngsten Datum ist die aktuelle. Nie löschen, nicht committen. `CLAUDE.md` und die anderen Docs verweisen nicht auf einzelne Übergaben, Dauerhaftes gehört nach `TODO.md`, `CLAUDE.md` oder in den Messlog |
 | `docs/99-quellen.md` | Alle Links |
 | `docs/en/` | Englische Fassungen von `01`–`05` und `99`, aus dem Deutschen erzeugt. Nie von Hand ändern. Übersicht, Marker-Legende und Glossar in `docs/en/README.md` |
@@ -90,6 +91,7 @@ Bei Detailfragen zuerst `docs/research/notes/` durchsuchen, bevor neu recherchie
 | `sim_boot_menu.sh` | Host-Test der Boot-Menü-Logik (Patch 15/15b) mit simulierten Reglern |
 | `test_owl_dsp.sh` | Host-Test der eigenen Patch-Quellen in `owl/` (Tanh3, Limiter) |
 | `dfu_readback.sh`, `compare_firmware.py` | Internes Flash lesen und mit einer Referenz vergleichen |
+| `dump_stress.py` | Download-Stresstest für den MIDI-Sendeweg: lädt bei laufendem Patch alle Slots in Runden herunter und zählt beschädigte Downloads. Nur acdc1, nur lesend bis auf einen Program Change. Läuft wie `owl_read.py` mit Python 3.12 und mido. Bricht ab, wenn das Gerät nicht mehr antwortet (D62) |
 | `flash_acdc.py` | Build auf acdc1 flashen: Offline-Prüfung, Auslesen, DFU-Neustart, Schreiben, Readback-Vergleich, Flash-Log. `--a1` prüft nach dem Neustart. Ohne `--yes` nur die Offline-Prüfung |
 | `build_acdc.sh` | Reproduzierbarer Firmware-Build aus Commit + Libraries-Tarball + Patches |
 | `setup_repo.sh` | Frischen Klon einrichten: Submodul, `upstream`-Remote, Libraries-Tarball und offizielle `ACDC.bin` mit SHA-Prüfung |
@@ -172,11 +174,13 @@ Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`)
 | 4, 4x, 4y, 4z | `fx3i`, `fx3i-noD/noC/onlyD`, `fx3j`, `fx3k` | 3d + 08 + ITCM-Varianten (11, 11a–f), RX-Fix 12 bzw. 12b | fs/8 −5 dB, aber je ein Mangel (D37–D44) |
 | 5c | `v22.4.r-fx3l`, `b55b94d8…` | 3d + 08 + 11g (heißer Pfad inkl. USB im ITCM) + 12b + 14 | Alltagstest D47–D49, Kontrolle in D58. **Rückweg** |
 | 6 | `v22.4.r-fx4a`, `e7ee9b90…` | fx3l + 15 (Boot-Menü, Slot wird gemerkt, Abbruch nach 60 s) | Menü am Gerät geprüft (D50–D53), abgelöst durch 6b |
-| 6b | **`v22.4.r-fx4b`, `a21f35c9…`** | fx3l + 15b (wie 15, Abbruch nach 30 s). ITCM-Inhalt bytegleich mit fx4a | **Alltags-Firmware auf acdc1** (D55, D59). Loop-Test bestanden (D57), Rauschen = fx3l (D58) |
+| 6b | **`v22.4.r-fx4b`, `a21f35c9…`** | fx3l + 15b (wie 15, Abbruch nach 30 s). ITCM-Inhalt bytegleich mit fx4a | Alltags-Firmware bis 2026-11-18 (D55, D59). Loop-Test bestanden (D57), Rauschen = fx3l (D58). **Rückweg** |
+| 7 | **`v22.4.r-fx5a`, `b69c25b3…`** | fx4b + 16 (MIDI-Sendeweg unteilbar, Lesezeiger erst nach Abschluss der Übertragung, Flusskontrolle beim Slot-Download). ITCM-Code +48 B | **Alltags-Firmware auf acdc1** (D63, D65). Downloads 240/240 statt 60/79, Loop-Test bestanden (D63), Rauschen ohne Hinweis auf eine Änderung (D64) |
 
-- **Drei Fehler im Original-Code, gefunden und behoben:**
+- **Vier Fehler im Original-Code, gefunden und behoben:**
   - **Feedback in offener Schleife:** macOS liefert ≈ 1 LSB zu wenig, der RX-Puffer läuft alle 2–3 min um einen Block leer. Patch 06 regelt nach dem Füllstand (D12–D18).
   - **RX-DMA-Wettlauf:** `audioCallback` hing am TX-DMA-Interrupt und gab die RX-Hälfte zu früh frei. Mit schnellem Audio-Task ist der letzte Eingangs-Sample jedes Blocks 16 Frames alt. Patch 12b startet den Block aus den RX-Callbacks (D40, D43).
+  - **MIDI-Sendeweg ohne Schutz:** Audio-Task, Hauptschleife und USB-Interrupt teilen sich Sendepuffer und Endpoint, der Lesezeiger rückt auch ohne Senden und schon vor dem Ende der Übertragung vor. Slot-Downloads neben einem laufenden Patch kommen beschädigt an, MIDI kann bis zum Neustart hängen. Patch 16 sperrt kurz die Interrupts und gibt die Daten erst nach der Übertragung frei (D53, D54, D62, D63).
   - **SOF-Kette doppelt:** Mit USB im ITCM läuft `USBD_AUDIO_SOF` in ≈ 97 % der Frames zweimal, das Feedback wird falsch. Patch 14 wertet jede Frame-Nummer nur einmal aus (D46, D47).
 - **Regeln für neue Firmware:**
   - Jeder Flash nur nach Freigabe, nur acdc1. Settings nie schreiben (E4).
@@ -184,7 +188,7 @@ Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`)
   - Ohne ITCM gilt die alte Regel: neuen Code ans Ende legen (`.late_text`/`.late_bss`) oder die Adressen per `nm` gegen den Referenz-Build prüfen.
   - Keine Abfrage-Schleifen im Blocktakt (D42).
   - Loop-Prüfung immer mit `phase_slips.py` **und** `stale_samples.py` auf derselben WAV.
-- **Rückwege für acdc1:** fx3l (`b55b94d8…`), dann 3d (`d212cf8d…`), dann Build 2, dann 1d, dann das Readback (`433b3fd3…`).
+- **Rückwege für acdc1:** von fx5a aus fx4b (`a21f35c9…`), dann fx3l (`b55b94d8…`), dann 3d (`d212cf8d…`), dann Build 2, dann 1d, dann das Readback (`433b3fd3…`).
 - **Fork:** https://github.com/m9dfukc/OpenWare
   - `acdc/thru-usb-feedback` = Build 1d + README, Spitze `edb32852`.
   - `acdc/fx1d` = Build 2 → 3d → fx3l → fx4b + README, Spitze `27d3630b`. Ein Build von `5cb2c17c` ist bytegleich mit fx3l (`firmware/builds/verify-fx1d-5cb2c17c`), einer von `2c963e3a` bytegleich mit fx4b (`verify-fx1d-2c963e3a`).
@@ -210,7 +214,7 @@ Je Flash ein Ordner in `firmware/flashlog/`.
 - `… --a1 <log-ordner>`: nach dem Neustart. Prüft Gerät, Version, 48000 Hz, Blockgröße 8 und die Slots gegen den Stand vor dem Flash. Die Kanalzahl prüft es nicht.
 - `--from-dfu`: acdc1 steht schon im DFU-Modus (z. B. nach einem fehlgeschlagenen Flash). Dann nicht neu starten, sondern damit den Rückweg flashen.
 - Bricht es ab, bevor etwas geschrieben wurde, benennt es den Log-Ordner in `…-abgebrochen-<zeit>` um.
-- **Stand:** offline und gegen Attrappen für `uv` und `dfu-util` geprüft, dazu gegen die 33 vorhandenen Readbacks. Am Gerät lief es noch nicht. Der erste echte Flash damit ist die Probe.
+- **Stand:** Am Gerät erprobt (2026-11-18, D63/D64): drei Flashes mit Readback und `--a1`, ohne Fehler. `--from-dfu` und der Abbruchweg liefen bisher nur gegen Attrappen.
 
 ### USB-Stabilität prüfen
 
@@ -223,6 +227,8 @@ Je Flash ein Ordner in `firmware/flashlog/`.
   - `tx ovf 1.0000 1.0000 32` = typisch Stream-Start
   - `fb <alt> <neu>` = Feedback-Messung verworfen, z. B. ≈ 32 ms ohne SOF (D18)
   - `fb clamp` = Regler an der Grenze, bei laufendem Stream ein Fehlerzeichen (D38)
+  - `midi tx ovf` (ab fx5a) = MIDI-Sendepuffer voll, eine Nachricht wurde verworfen
+  - `Sending 100` = Fortschrittsanzeige nach einem Slot-Download, kein Fehler
 
 ### MIDI/SysEx
 

@@ -20,6 +20,7 @@ Deutsche Fassung: [README.de.md](README.de.md)
 | `tools/build_owl_patch.sh` | Builds a C++ patch with OwlProgram for the AC/DC and writes the SysEx file for `owl_write.py` |
 | `tools/sim_boot_menu.sh` | Tests the boot menu logic (patch 15) on the host with simulated knobs |
 | `tools/dfu_readback.sh`, `tools/compare_firmware.py` | Read the internal flash over DFU and compare it with a reference binary |
+| `tools/dump_stress.py` | Stress test for the MIDI send path: downloads all slots again and again while a patch is running and counts damaged downloads |
 | `tools/flash_acdc.py` | Flashes a build over DFU with a flash log: checks the binary offline, reads the module, restarts it into DFU, writes, reads back and compares. `--a1` checks the module after the restart. Tied to the author's test module by its device ID |
 | `tools/build_acdc.sh` | Reproducible firmware build from a commit, a pinned library tarball and a list of patches. Writes `BUILD_INFO.txt` with all checksums |
 | `tools/check_itcm.py` | Checks an ITCM build on the ELF before it is flashed: what sits where, which calls leave ITCM, comparison with a reference build |
@@ -52,7 +53,7 @@ Firmware `v22.4.r-fx3l` against the previous build `v22.4.r-fx2d`, open inputs, 
 
 ![Long-term spectrum of fx3l (black) against fx2d (grey), four channels](docs/img/psd_fx3l_vs_3d.png)
 
-The comb is now the strongest remaining family. The current daily firmware on the test module is `v22.4.r-fx4b` (since 2026-11-17): `fx3l` plus a boot menu that chooses the patch slot with the knobs. Its noise is the same as that of `fx3l` within ±0.4 dB (control in the same session). Details and all numbers: [docs/messlog.md](docs/messlog.md) (German), entries D45 to D49 and D50 to D59.
+The comb is now the strongest remaining family. The current daily firmware on the test module is `v22.4.r-fx5a` (since 2026-11-18): `fx3l` plus a boot menu that chooses the patch slot with the knobs (`fx4b`), plus a fix for the MIDI send path. With `fx4b`, 19 of 79 slot downloads next to a running patch arrived damaged and MIDI then hung until a power cycle; with `fx5a` 240 of 240 were intact (D62, D63). The noise of `fx4b` is the same as that of `fx3l` within ±0.4 dB (control in the same session), and `fx5a` shows no change beyond the session scatter (D64). The fork branch and the releases still end at `fx4b`. Details and all numbers: [docs/messlog.md](docs/messlog.md) (German), entries D45 to D49, D50 to D59 and D62 to D65.
 
 ## Firmware
 

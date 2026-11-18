@@ -1709,3 +1709,157 @@ files = ["20261118_acdc1_fx4b-open-inputs-K2-09-MMMM_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
 note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:01:28. Stream-Meldungen: 0. owl_read: out/owl_read/K2-09-MMMM (rc 0)."
+
+[[measurement]]
+id = "B7-fx4b-a-r1"
+date = "2026-11-18"
+device = "acdc1, Firmware Build 6b v22.4.r-fx4b"
+test = "Build-7-Sitzung: fx4b-Kontrolle am Anfang, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub)"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B7-fx4b-a-r1 – acdc1 fx4b-open-inputs-7a, 60 s (Wiederholung 1)"
+files = ["20261118_acdc1_fx4b-open-inputs-7a-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:45:48. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx4b-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+
+[[measurement]]
+id = "B7-fx4b-a-r2"
+date = "2026-11-18"
+device = "acdc1, Firmware Build 6b v22.4.r-fx4b"
+test = "Build-7-Sitzung: fx4b-Kontrolle am Anfang, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub)"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B7-fx4b-a-r2 – acdc1 fx4b-open-inputs-7a, 60 s (Wiederholung 2)"
+files = ["20261118_acdc1_fx4b-open-inputs-7a-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:47:02. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx4b-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+
+[[measurement]]
+id = "B7-fx5a-r1"
+date = "2026-11-18"
+device = "acdc1, Firmware Build 7 v22.4.r-fx5a"
+test = "Build-7-Sitzung: fx5a (fx4b + Patch 16), Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub)"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B7-fx5a-r1 – acdc1 fx5a-open-inputs-7, 60 s (Wiederholung 1)"
+files = ["20261118_acdc1_fx5a-open-inputs-7-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:53:32. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx5a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+
+[[measurement]]
+id = "B7-fx5a-r2"
+date = "2026-11-18"
+device = "acdc1, Firmware Build 7 v22.4.r-fx5a"
+test = "Build-7-Sitzung: fx5a (fx4b + Patch 16), Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub)"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B7-fx5a-r2 – acdc1 fx5a-open-inputs-7, 60 s (Wiederholung 2)"
+files = ["20261118_acdc1_fx5a-open-inputs-7-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:54:45. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx5a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+
+[[measurement]]
+id = "B7-fx5a-loop"
+date = "2026-11-18"
+device = "acdc1, Firmware Build 7 v22.4.r-fx5a"
+test = "Loop Out n → In n, Sinus 440/530/670/790 Hz, Build 7 (Patch 16)"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub)"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B7-fx5a-loop – acdc1 fx5a-loop-sine, 60 s"
+files = ["20261118_acdc1_fx5a-loop-sine_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:58:41. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx5a-loop (rc 0)."
+
+[[measurement]]
+id = "B7-fx5a-loop-tanh3"
+date = "2026-11-18"
+device = "acdc1, Firmware Build 7 v22.4.r-fx5a"
+test = "Loop Out n → In n, Sinus 440/530/670/790 Hz, Build 7 (Patch 16), Tanh3 läuft"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub)"
+patch = "Slot 5: Tanh3 (Fassung 2), wirkt nicht auf die USB-Aufnahme"
+title = "B7-fx5a-loop-tanh3 – acdc1 fx5a-loop-sine-tanh3, 60 s"
+files = ["20261118_acdc1_fx5a-loop-sine-tanh3_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:59:53. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx5a-loop-tanh3 (rc 0)."
+
+[[measurement]]
+id = "B7-fx5a-loop-tanh3-dl"
+date = "2026-11-18"
+device = "acdc1, Firmware Build 7 v22.4.r-fx5a"
+test = "Loop Out n → In n, Sinus 440/530/670/790 Hz, Build 7 (Patch 16), Tanh3 läuft, währenddessen Slot-Downloads (dump_stress.py)"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub)"
+patch = "Slot 5: Tanh3 (Fassung 2), wirkt nicht auf die USB-Aufnahme"
+title = "B7-fx5a-loop-tanh3-dl – acdc1 fx5a-loop-sine-tanh3-dl, 60 s"
+files = ["20261118_acdc1_fx5a-loop-sine-tanh3-dl_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:01:02. Stream-Meldungen: 0."
+
+[[measurement]]
+id = "B7-fx4b-b-r1"
+date = "2026-11-18"
+device = "acdc1, Firmware Build 6b v22.4.r-fx4b"
+test = "Build-7-Sitzung: fx4b-Kontrolle am Ende, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub)"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B7-fx4b-b-r1 – acdc1 fx4b-open-inputs-7b, 60 s (Wiederholung 1)"
+files = ["20261118_acdc1_fx4b-open-inputs-7b-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:07:19. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx4b-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+
+[[measurement]]
+id = "B7-fx4b-b-r2"
+date = "2026-11-18"
+device = "acdc1, Firmware Build 6b v22.4.r-fx4b"
+test = "Build-7-Sitzung: fx4b-Kontrolle am Ende, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub)"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B7-fx4b-b-r2 – acdc1 fx4b-open-inputs-7b, 60 s (Wiederholung 2)"
+files = ["20261118_acdc1_fx4b-open-inputs-7b-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:08:33. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx4b-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+
+[[measurement]]
+id = "B7-fx5a-b-r1"
+date = "2026-11-18"
+device = "acdc1, Firmware Build 7 v22.4.r-fx5a"
+test = "Build-7-Sitzung: fx5a (fx4b + Patch 16) am Ende, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub)"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B7-fx5a-b-r1 – acdc1 fx5a-open-inputs-7b, 60 s (Wiederholung 1)"
+files = ["20261118_acdc1_fx5a-open-inputs-7b-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:22:50. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx5a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+
+[[measurement]]
+id = "B7-fx5a-b-r2"
+date = "2026-11-18"
+device = "acdc1, Firmware Build 7 v22.4.r-fx5a"
+test = "Build-7-Sitzung: fx5a (fx4b + Patch 16) am Ende, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub)"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B7-fx5a-b-r2 – acdc1 fx5a-open-inputs-7b, 60 s (Wiederholung 2)"
+files = ["20261118_acdc1_fx5a-open-inputs-7b-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:24:03. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx5a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."

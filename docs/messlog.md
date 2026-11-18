@@ -1907,3 +1907,104 @@ Das Gerät antwortete danach weiter. Der Fehler tritt also auch mit einem alten,
 **Einschränkungen:** Je Stellung eine Aufnahme von 30 s. Die Zuordnung der ADC-Kanäle (Rang 1–4 = Kanal 10, 11, 14, 3) zu den Reglern 1–4 ist nicht am Schaltplan geprüft. Wandernde Töne aus dem Rack bei 1500…1650 Hz wie in D60.
 
 **Fazit:** Wer die Linien klein halten will, stellt die vier Regler ähnlich, wohin auch immer. Für Rauschmessungen reicht „alle auf 12 Uhr“ weiter aus. Eine Abhilfe in der Firmware (ADC nicht frei laufen lassen, z. B. ein Scan je Audioblock, oder längere Abtastzeit) ist erst sinnvoll, wenn klar ist, woher 2200,95 Hz kommt. Größenordnung im schlimmsten Fall (LRLR): −94 dB, 19 dB unter dem Kamm.
+
+### D62 – MIDI-Sendeweg: Fehler auf fx4b reproduziert, Patch 16 und Build 7 `fx5a` (2026-11-18, nachmittags)
+
+**Anlass:** D53/D54. Ziel war ein Test, der den Fehler verlässlich auslöst, und ein Fix.
+
+**Werkzeug:** `tools/dump_stress.py` lädt bei laufendem Patch alle belegten Slots in Runden herunter und prüft jeden Download gegen Größe und CRC aus der Slot-Liste. Es schreibt `out/<name>-session-table.md` und `out/dump_stress/<name>.json`. Nur lesend, bis auf einen Program Change (RAM). Antwortet das Gerät nach einem beschädigten Download nicht mehr, bricht es ab.
+
+**Basislinie fx4b [gemessen]:** `D62-fx4b-slot2`, 15:42, Slot 2 TapeDelay läuft (32 % CPU), Alltags-Kette.
+
+| Slot | Patch | Größe B | in Ordnung | beschädigt |
+|---|---|---|---|---|
+| 1 | ACDC | 10 164 | 13 | 3 |
+| 2 | TapeDelay | 30 036 | 13 | 3 |
+| 3 | Grainz | 26 700 | 9 | 7 |
+| 4 | RingsReverb | 21 556 | 12 | 4 |
+| 5 | Tanh3 | 18 580 | 13 | 2 |
+| Summe | | | 60 | 19 |
+
+- **19 von 79 Downloads beschädigt (24 %).** Bei 18 davon kamen alle Pakete mit richtigem Index an, in den Nachrichten fehlten aber 49…183 B.
+- **Der Hänger aus D53 trat auf:** Runde 16, Slot 4, nach 18 Paketen kam nichts mehr, auch keine Geräte-ID. Der Ton lief weiter. Der Nutzer hat acdc1 neu gestartet.
+- Damit ist der Hänger eine Folge des Downloads bei laufendem Patch [gemessen]. Die Stelle im Code ist weiter [Hypothese].
+
+**Ursachen im Original-Code [Code]** (ergänzt D54, `Source/MidiWriter.cpp`, `usbd_audio.cpp`, `MidiController.cpp`, Stand `27d3630b`, in `upstream/master` gleich):
+1. Drei Kontexte schreiben in den Sendepuffer: Audio-Task, Hauptschleife und der USB-Interrupt. SysEx-Anfragen werden im Interrupt verarbeitet (`usbd_midi_rx` → `readMidiFrame`), die Antworten entstehen dort. `SerialBuffer::push` und `incrementReadHead` sind nicht unteilbar.
+2. `write()` ruft `transmit()` an jedem Pufferumlauf (`getContiguousWriteCapacity() <= 4`), beim Download etwa alle drei Nachrichten. Dort trifft die Hauptschleife auf den Audio-Task, der `transmit()` in jedem Block ruft. `usbd_midi_tx()` sendet bei gesetzter Sperre nichts, der Lesezeiger rückt trotzdem vor.
+3. Bestehen beide die Prüfung der Sperre, starten sie zweimal auf demselben Endpoint. `HAL_PCD_EP_Transmit` überschreibt dabei `xfer_buff`, `xfer_len`, `xfer_count` und `DIEPTSIZ` der laufenden Übertragung. [Hypothese] Das ist der Hänger.
+4. Der Lesezeiger rückt beim Start der Übertragung vor. USB kopiert die Daten erst danach paketweise (64 B, im Interrupt) aus dem Ringpuffer. Ein Schreiber kann sie überschreiben.
+5. `write()` prüft nie, ob der Puffer voll ist. Holt der Schreibzeiger den Lesezeiger ein, gilt der Puffer als leer.
+6. `SendResourceTask` schreibt alle 2 ms 324 B, ohne auf Platz zu warten.
+
+**Absprache (Grill-Runde mit dem Nutzer, 2026-11-18):** Prüfen, Starten und Merken unteilbar. Lesezeiger erst nach Abschluss der Übertragung. Voller Puffer verwirft die neue Nachricht. Flusskontrolle im `SendResourceTask`. Keine Rettung der Sperre per Zeitablauf. Verschachtelte Nachrichten bleiben draußen. `transmit()` bleibt in Gruppe C des ITCM, das Rausch-A/B entscheidet (Grenze ±0,5 dB je Familie). Name `v22.4.r-fx5a`.
+
+**Patch `16-midi-tx-atomic.patch` [Code]:**
+- `UsbdMidiTransmitter`: Jeder Zugriff auf den Pufferzustand läuft mit gesperrten Interrupts (PRIMASK wie in Patch 05, statt BASEPRI aus der Absprache: auf dem AC/DC liegt kein Interrupt über Priorität 5, und die Datei baut so auch ohne FreeRTOS). Die laufende Länge steht in `inflight`, der Lesezeiger rückt beim nächsten Aufruf nach gelöster Sperre vor. Der DataIn-Interrupt bleibt unverändert.
+- `transmit()` verlässt den Leerlauf ohne Sperre (leerer Puffer, laufende Übertragung, kein Rechner).
+- `write()` verwirft bei vollem Puffer und meldet einmal `midi tx ovf`, nur mit Rechner am USB.
+- `usbd_midi_tx()` gibt zurück, ob gesendet wurde.
+- `SendResourceTask` schreibt nur, wenn 324 B frei sind, und gibt nach 5 s ohne Platz auf (Zusatz zur Absprache).
+
+**Build 7 [gemessen]:** `firmware/builds/acdc1-build7-fx5a/`, `v22.4.r-fx5a`, 109 524 B, SHA-256 `b69c25b3f469fc6fb793b16569c53a63a7333c32d83c96de4d97b6fb71bdb8ef`. Patches wie fx4b + 16.
+- `check_itcm.py --ref fx4b`: BESTANDEN, 0 FAIL, 0 WARN. `MidiWriter::transmit` 76 → 124 B, alles dahinter im ITCM liegt 48 B höher, ITCM-Ende 0x6308 → 0x6338, Patch-Heap 48 B kleiner. 164 von 180 RAM-Objekten an derselben Adresse (der Sendepuffer ist 8 B größer).
+- Flash +1028 B, weil `write()` in `sendSysEx`, `sendCc` und `sendPc` eingesetzt wird. Frei 21 548 B.
+- Leerlauf-Pfad von `transmit()` im Maschinencode: zwei Ladebefehle und ein Vergleich, ohne Sperre.
+
+### D63 – fx5a geflasht, Download-Stresstest und Loop-Test (2026-11-18, 15:48–16:02)
+
+**Flash (Freigabe Nutzer):** `firmware/flashlog/20261118_build7-fx5a/`, mit `tools/flash_acdc.py`. **Das Skript lief dabei zum ersten Mal am Gerät**, alle Schritte ohne Fehler: Auslesen, DFU-Neustart, Schreiben, Readback bytegleich, Rest 0xFF. Nach dem Neustart `--a1`: `v22.4.r-fx5a`, 48 000 Hz, Blockgröße 8, Slots 1–5 unverändert.
+
+**Download-Stresstest fx5a [gemessen]:**
+
+| Serie | Laufender Patch | CPU | Downloads | beschädigt | Hänger |
+|---|---|---|---|---|---|
+| `D62-fx4b-slot2` (Basislinie, D62) | TapeDelay | 32 % | 79 | 19 | ja |
+| `D62-fx5a-slot2` | TapeDelay | 32…33 % | 100 | 0 | nein |
+| `D62-fx5a-slot5` | Tanh3 | 51 % | 100 | 0 | nein |
+| `D62-fx5a-slot5-stream` | Tanh3, dazu Audio-Stream mit Loop-Sinus | 50 % | 40 | 0 | nein |
+
+- Geräte-Meldung nach den Serien: `Sending 100` (Fortschrittsanzeige des Downloads), kein `midi tx ovf`.
+- **Reproduktionstest bestanden:** 240 von 240 Downloads in Ordnung.
+
+**Loop-Test fx5a [gemessen]:** Patchkabel Out n → In n (Nutzer), `acdc_rec.py --sine 440 530 670 790` (−6 dBFS, 1 s Einblenden), je 60 s, Regler 60 / 63 / 63 / 62.
+
+| ID | Laufender Patch | Slips (`phase_slips.py`) | veraltete Samples (`stale_samples.py`) | Geräte-Meldung | CPU |
+|---|---|---|---|---|---|
+| `B7-fx5a-loop` | Slot 1 ACDC | 0 auf allen 4 Kanälen | 0 von 96 000 je Kanal | `tx ovf 1.0000 1.0000 32` (Stream-Start) | 8 % |
+| `B7-fx5a-loop-tanh3` | Slot 5 Tanh3 | 0 | 0 | `tx ovf 1.0000 1.0000 32` | 52 % |
+| `B7-fx5a-loop-tanh3-dl` | Tanh3, währenddessen 40 Slot-Downloads | 0 ganze Samples | 0 | nicht gelesen (MIDI war belegt) | 50 % |
+
+- Stream-Meldungen von PortAudio: 0 in allen drei Läufen. Pegel −6,05…−6,10 dBFS wie bei fx4b (D57).
+- **Loop-Test bestanden**, auch während das Gerät MIDI sendet und dabei kurz die Interrupts sperrt.
+- **Nebenbefund [gemessen, eine Aufnahme]:** Im Lauf mit Downloads meldet `phase_slips.py` auf Kanal 2 (530 Hz), und nur dort, 48 Ereignisse von ±0,0017…0,0020 Samples (≈ 0,13 mrad) zwischen 8 und 45 s, also solange die Downloads liefen. Ein Slip ist das nicht (er träfe alle Kanäle mit ganzen Samples). Es ist eine kleine Störung auf Kanal 2 während der Downloads. Ob fx4b sie auch zeigt, ist nicht gemessen. Kandidaten [Hypothese]: Lesen aus dem QSPI-Flash, Fortschrittsanzeige.
+
+### D64 – Build-7-Sitzung: Rauschen fx5a gegen fx4b, offene Eingänge (2026-11-18, 15:45–16:25)
+
+**Setup:** acdc1, Alltags-Kette, Eingänge offen, Slot 1, Regler 60 / 62…63 / 63 / 62…63, `acdc_rec.py`, je Block 2 × 60 s. Reihenfolge fx4b → fx5a → fx4b → fx5a, dazwischen je ein Flash mit Neustart (`firmware/flashlog/20261118_build7-fx5a/`, `…_build6b-fx4b-zurueck/`, `…_build7-fx5a-2/`, alle Readbacks bytegleich, A1 je bestanden). Zwischen dem ersten fx5a-Block und der zweiten Kontrolle lagen die Loop-Tests (D63), vor dem zweiten fx5a-Block etwa 14 min Pause.
+
+Familienpegel, Mittel je Block, Δ gegen das Mittel der vier fx4b-Aufnahmen, Datei-dBFS (`out/B7-session-table.md`):
+
+| Block | Start | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. | Kamm-f0 Hz |
+|---|---|---|---|---|---|---|---|
+| `B7-fx4b-a` | 15:45 | −73,23 (+0,03) | −78,58 (−0,01) | −75,47 (+0,02) | −83,19 (+0,24) | −113,53 (+1,00) | 999,8676 |
+| `B7-fx5a` | 15:53 | −73,11 (+0,15) | −78,57 (0,00) | −75,31 (+0,17) | −82,96 (+0,47) | −113,45 (+1,08) | 999,8676 |
+| `B7-fx4b-b` | 16:07 | −73,29 (−0,03) | −78,55 (+0,01) | −75,50 (−0,02) | −83,69 (−0,26) | −115,83 (−1,30) | 999,8676 |
+| `B7-fx5a-b` | 16:22 | −72,99 (+0,27) | −78,27 (+0,29) | −75,15 (+0,33) | −83,60 (−0,17) | −114,25 (+0,28) | 999,8665…999,8671 |
+| fx5a, alle vier | | −73,05 (+0,21) | −78,42 (+0,15) | −75,23 (+0,25) | −83,27 (+0,16) | −113,83 (+0,70) | |
+
+**Deutung:**
+- [gemessen] **fs/8 und Mischprodukte folgen der Sitzung, nicht dem Build.** Beide lagen in der ersten Hälfte höher (fx4b-a und fx5a) und in der zweiten tiefer (fx4b-b und fx5a-b). Die beiden fx4b-Kontrollen liegen bei fs/8 0,5 dB und bei den Mischprodukten 2,3 dB auseinander. Im Mittel aller Aufnahmen: fs/8 +0,16 dB, Mischprodukte +0,70 dB.
+- [gemessen] **RMS, Rest und Kamm:** erster fx5a-Block innerhalb +0,17 dB. Im zweiten Block liegen Rest (+0,29 dB) und Kamm (+0,33 dB) höher, zugleich ist die Kammfrequenz um 0,5…1 mHz gewandert. Der Rest enthält keine Störlinien, sein Anstieg spricht für eine Änderung der Umgebung nach der Pause, nicht für den Build [Hypothese].
+- **Gegen die vereinbarte Grenze von ±0,5 dB:** RMS, Rest, Kamm und fs/8 liegen in jedem Block darin. Die Mischprodukte liegen im ersten Block (+1,08 dB) und im Mittel (+0,70 dB) darüber, bei einer Streuung der Kontrolle von 2,3 dB. Die Familie liegt bei −113…−116 dB, 38 dB unter dem Kamm.
+- **Fazit:** Kein Hinweis, dass Patch 16 das Rauschen ändert. Für die Mischprodukte ist die Sitzung zu unruhig für ein Urteil auf 0,5 dB. Die 48 B Verschiebung im ITCM (auch des USB-Codes) zeigen keine Wirkung, die über die Streuung hinausgeht.
+
+**Stand nach der Sitzung:** Auf acdc1 läuft fx5a (`b69c25b3…`), Slot 1 per Program Change, gemerkter Slot weiter 5. Slots unverändert. Ob fx5a Alltags-Firmware wird, entscheidet der Nutzer. Rückweg fx4b (`a21f35c9…`).
+
+**Offen:** Entscheidung über fx5a. Störung auf Kanal 2 während Downloads (D63). Verschachtelte MIDI-Nachrichten. Fork-Commit, Push und Release je mit Freigabe.
+
+### D65 – fx5a ist die Alltags-Firmware (2026-11-18, nachmittags)
+
+**Entscheidung (Nutzer):** fx5a (`acdc1-build7-fx5a`, `b69c25b3…`) ist die Alltags-Firmware von acdc1 und löst fx4b ab. Grundlage: Download-Stresstest und Loop-Test (D63), Rauschen ohne Hinweis auf eine Änderung (D64). fx4b (`a21f35c9…`) ist der erste Rückweg.
+
+**Offen:** Fork-Commit auf `acdc/fx1d`, Push und Release `acdc-v22.4.r-fx5a` (je mit Freigabe), `docs/en/05` auffrischen. Die Punkte aus D63 (Störung auf Kanal 2 während Downloads) und D64 (Mischprodukte nicht entscheidbar).

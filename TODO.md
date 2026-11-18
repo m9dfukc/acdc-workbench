@@ -2,7 +2,7 @@
 
 Oben steht, was offen ist, nach Themen geordnet. Darunter folgen offene Fragen, dann Entfallenes mit Grund, dann die Chronik des Erledigten. Details jeweils in `docs/`, Belege im Messlog (`docs/messlog.md`, IDs wie D49).
 
-Stand der Neuordnung: 2026-11-16, zuletzt ergänzt 2026-11-18.
+Stand der Neuordnung: 2026-11-16, zuletzt ergänzt 2026-11-18 (Build 7).
 
 ## Offen
 
@@ -21,7 +21,7 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [ ] Ursache der Kamm-Änderung +2,9 dB zwischen D35 und D37 klären. Aufbau laut Nutzer unverändert, aber mehr CPU-Last am Mac → A/B Mac im Leerlauf gegen Mac unter Last (z. B. `yes > /dev/null` je Kern), 2 × 60 s offene Eingänge [Hypothese: Host-Last → Masse/SOF]
 - [ ] Optional: HAL löscht `GINTSTS.SOF` vor dem Callback (überzählige Interrupt-Einsprünge weg), A/B gegen fx3l
 
-### 1a. fx4a/fx4b: Boot-Menü zur Patch-Wahl (fx4b läuft auf acdc1, Abnahme bestanden, D52–D58)
+### 1a. fx4a/fx4b/fx5a: Boot-Menü und MIDI-Fix (fx5a läuft auf acdc1, Abnahme D52–D58 und D62–D65)
 - Stand: `firmware/builds/acdc1-build6-fx4a/` = fx3l + Patch 15. `check_itcm` und Host-Test bestanden (D50). Plan und Abnahme: `docs/05`, „Build 6“
 - [x] Endwerte der vier Regler gemessen: links 2, rechts 127 von 127, Schwellen passen (D51)
 - [x] fx4a geflasht, Readback bytegleich (D51)
@@ -41,7 +41,13 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [ ] `K2-03-RRRR` zeigt die Mischprodukte aus fs/8 und Kamm 12…17 dB über den Kontrollen (D61, einzelne Aufnahme). Wiederholen: RRRR gegen MMMM, je 2 × 60 s
 - [ ] Linie der ADC-Scanrate bei 9633,80 und 19 267,6 Hz (−116…−129 dB, D60): Abhilfe wäre ein ADC-Start im Blocktakt oder eine Scanrate, die auf ein Vielfaches von 48 kHz fällt. Nur mit A/B, die Linie ist schwach
 - [x] MIDI-Ausfall (D53) eingegrenzt: Wettlauf im MIDI-Sendeweg der Original-Firmware bei Slot-Downloads neben einem laufenden Patch (D54). Die Werkzeuge umgehen den Download
-- [ ] **Firmware-Fix für den MIDI-Sendeweg** (Kandidat Patch 16): nur ein Aufrufer für `transmit()` bzw. Prüfen, Senden und Vorrücken unteilbar machen, dazu Flusskontrolle im `SendResourceTask`. `MidiWriter::transmit` liegt im ITCM, also mit `check_itcm` und Rausch-A/B
+- [x] **Firmware-Fix für den MIDI-Sendeweg** (Patch 16, Build 7 `v22.4.r-fx5a`, 2026-11-18): Fehler auf fx4b reproduziert (19 von 79 Downloads beschädigt, dann Hänger, D62). fx5a: 240 von 240 Downloads in Ordnung, kein Hänger, Loop-Test bestanden (D63), Rauschen ohne Hinweis auf eine Änderung (D64). fx5a läuft auf acdc1. Plan und Abnahme: `docs/05`, „Build 7“
+- [x] fx5a ist die Alltags-Firmware (Nutzer, 2026-11-18, D65)
+- [ ] fx5a: Fork-Commit auf `acdc/fx1d`, Push und Release, je mit Freigabe, `docs/en/05` auffrischen
+- [ ] fx5a: Rausch-A/B bei den Mischprodukten nicht entscheidbar (im Mittel +0,70 dB, die beiden fx4b-Kontrollen lagen 2,3 dB auseinander, D64). Bei Gelegenheit wiederholen, ohne Loop-Tests dazwischen
+- [ ] Kleine Störung auf Kanal 2 während Slot-Downloads (±0,002 Samples Phase, nur im Loop-Lauf mit Downloads gesehen, D63). Auf fx4b gegenprüfen geht wegen des Hängers schlecht, eher mit fx5a eingrenzen: Kanal, Slot, mit und ohne laufenden Patch
+- [ ] MIDI: Antworten aus dem USB-Interrupt können mitten in ein SysEx der Hauptschleife fallen (verschachtelte Nachrichten, bewusst nicht in Patch 16). Tritt nur auf, wenn der Rechner während eines Downloads anfragt
+- [ ] MIDI: Patch 16 ändert `usbd_midi.c` (andere Geräte, Bootloader) gleichlautend mit, gebaut und geprüft ist nur das AC/DC
 - [x] Neue Patch-Builds gespeichert (D54): TapeDelay, Grainz, RingsReverb mit Limiter, Tanh3 in Slot 5
 - [ ] Neue Builds anhören: Limiter scheint zu funktionieren (Nutzer, D56). Tanh3 Fassung 2 (4× Oversampling gegen Aliasing, D56) beurteilen
 - [ ] Tanh3 braucht 48 % CPU (D56). Auswege: Blockgröße 16 oder 32 (zur Laufzeit per SysEx `BS` setzbar, nie getestet, verschiebt die Blockraten-Linie), Oversampling nur bei Signal, kürzerer Abwärtsfilter
@@ -53,7 +59,8 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 
 ### 2. Werkzeuge
 - [x] **Flash-Skript `tools/flash_acdc.py`** (2026-11-18): Offline-Prüfung des Builds, Gerät prüfen (UUID und DFU-Seriennummer), DFU-Neustart, schreiben, Readback, Vergleich, Flash-Log, A1 nach dem Neustart (`--a1`). Geprüft offline und gegen Attrappen für `uv` und `dfu-util`
-- [ ] `tools/flash_acdc.py` beim nächsten echten Flash am Gerät erproben (bisher nur ohne Gerät geprüft)
+- [x] `tools/flash_acdc.py` am Gerät erprobt (2026-11-18, D63/D64): drei Flashes mit Readback und A1, ohne Fehler. `--from-dfu` und der Abbruchweg liefen am Gerät noch nicht
+- [x] `tools/dump_stress.py` (2026-11-18): Download-Stresstest für den MIDI-Sendeweg, am Gerät benutzt in D62/D63
 - [x] `tools/line_levels.py` (Linienpegel direkt bei der Frequenz) und `tools/knob_series.py` (geführte Reglerserie), 2026-11-18, am Gerät benutzt in D60
 - [ ] Flash-Ablauf: Prüfen, ob `dfu-util … :leave` den Neustart (Case aus, USB ab) ersetzen kann, A1 + Loop gegen Kaltstart (Nutzer-Frage 2026-11-16)
 - [ ] Abhängigkeiten von `tools/owl_read.py` festhalten: Python 3.12, `mido`, `python-rtmidi`. `pyproject.toml` verlangt Python ≥ 3.14 und nennt beide Pakete nicht

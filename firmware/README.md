@@ -2,7 +2,7 @@
 
 Alles zur eigenen AC/DC-Firmware. Plan, Begründungen und Ergebnis jedes Builds: `docs/05-firmware-plan.md`, Messungen: `docs/messlog.md`.
 
-**Stand 2026-11-17:** Auf acdc1 läuft `builds/acdc1-build6b-fx4b/` (`v22.4.r-fx4b`, SHA-256 `a21f35c9…`, D55) als Alltags-Firmware (D59). Loop-Test (D57) und Rausch-A/B gegen fx3l (D58) sind bestanden. Der Vorgänger `builds/acdc1-build6-fx4a/` (`e7ee9b90…`) hat das Boot-Menü am Gerät bestanden (D52/D53). Rückweg ist `builds/acdc1-build5c-fx3l/` (`v22.4.r-fx3l`, `b55b94d8…`, D49), danach `builds/acdc1-build3d-fx2/` (`d212cf8d…`).
+**Stand 2026-11-18:** Auf acdc1 läuft `builds/acdc1-build7-fx5a/` (`v22.4.r-fx5a`, SHA-256 `b69c25b3…`, D63) = fx4b + Patch 16 (MIDI-Sendeweg). Abnahme D62–D64, Alltags-Firmware seit 2026-11-18 (D65), Rückweg ist fx4b. **Stand 2026-11-17:** Auf acdc1 läuft `builds/acdc1-build6b-fx4b/` (`v22.4.r-fx4b`, SHA-256 `a21f35c9…`, D55) als Alltags-Firmware (D59). Loop-Test (D57) und Rausch-A/B gegen fx3l (D58) sind bestanden. Der Vorgänger `builds/acdc1-build6-fx4a/` (`e7ee9b90…`) hat das Boot-Menü am Gerät bestanden (D52/D53). Rückweg ist `builds/acdc1-build5c-fx3l/` (`v22.4.r-fx3l`, `b55b94d8…`, D49), danach `builds/acdc1-build3d-fx2/` (`d212cf8d…`).
 
 | Ordner | Inhalt | Regeln |
 |---|---|---|
@@ -43,9 +43,10 @@ Rückweg für acdc1 auf die Original-Firmware: `backup/acdc1/20261114/flash/acdc
 | **14** | `USBD_AUDIO_SOF` wertet jede Frame-Nummer nur einmal aus |
 | **15** | Boot-Menü: Patch-Slot beim Einschalten wählen, der Slot bleibt gemerkt (Build 6, fx4a) |
 | 15b | = 15 mit Abbruch nach 30 s statt 60 s. Vollständiger Ersatz für 15 (fx4b) |
+| **16** | MIDI-Sendeweg über USB unteilbar, Lesezeiger erst nach Abschluss der Übertragung, Flusskontrolle beim Slot-Download (Build 7, fx5a) |
 | 90, 91 | Füllbytes für Lage-Tests: 90 wie 3c (`fx1p`), 91 hinter dem ITCM-Anker (`…p`-Varianten) |
 
-fx4b = fx3l + **15b**. fx3l = `db9d3dd` + Libraries `9e8f64e` + 01 02 04 05 06 03 07d 08 **11g 12b 14**. 01, 02, 04, 05, 06 stecken als Commits in `acdc/thru-usb-feedback`, der ganze fx4b-Stand in `acdc/fx1d`. Upstream-Analyse: `docs/research/notes/upstream_master_2026-11-16.md`.
+fx5a = fx4b + **16**. fx4b = fx3l + **15b**. fx3l = `db9d3dd` + Libraries `9e8f64e` + 01 02 04 05 06 03 07d 08 **11g 12b 14**. 01, 02, 04, 05, 06 stecken als Commits in `acdc/thru-usb-feedback`, der ganze fx4b-Stand in `acdc/fx1d`. Upstream-Analyse: `docs/research/notes/upstream_master_2026-11-16.md`.
 
 ## Builds
 
@@ -74,6 +75,7 @@ fx4b = fx3l + **15b**. fx3l = `db9d3dd` + Libraries `9e8f64e` + 01 02 04 05 06 0
 | `acdc1-build5cp-fx3lp` | `v22.4.r-fx3lp` | ja | Füllvariante: lagenunabhängig (D48) |
 | `acdc1-build6-fx4a` | `v22.4.r-fx4a` | ja | fx3l + 15 (Boot-Menü). `check_itcm` und Host-Test bestanden (D50), geflasht (D51), Menü läuft (D52). Loop-Test und Rausch-A/B offen |
 | **`acdc1-build6b-fx4b`** | **`v22.4.r-fx4b`** | ja | fx3l + 15b (Abbruch nach 30 s). ITCM-Inhalt bytegleich mit fx4a (D53). **Läuft auf acdc1** (D55). Loop-Test bestanden (D57), Rauschen = fx3l (D58) |
+| **`acdc1-build7-fx5a`** | **`v22.4.r-fx5a`** | ja | fx4b + 16 (MIDI-Sendeweg). `check_itcm` bestanden (D62). **Läuft auf acdc1** (D63). Download-Stresstest 240/240, Loop-Test bestanden (D63), Rauschen ohne Hinweis auf eine Änderung (D64) |
 | `cand-r-fx2d-gcc13flags` | `v22.4.r-fx2d` | nein | 3d + 08, bytegleich mit 3d |
 | `cand-r-merge2250-fx2d` | `v22.4.r-fx2d-m` | nein | 3d-Stand mit Patch 09 |
 | `cand-master-oldhal-fx` | `v22.5.0-oldhal-fx` | nein | `master` `36eaf1c4` + altes HAL + 10. Zeigt nur, dass es baut |

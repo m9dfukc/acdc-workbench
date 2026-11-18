@@ -1,0 +1,69 @@
+{
+  "time": "2026-11-18T16:11:15",
+  "name": "build7-fx5a-2",
+  "binary": {
+    "bin": "firmware/builds/acdc1-build7-fx5a/ACDC.bin",
+    "size": 109524,
+    "sha256": "b69c25b3f469fc6fb793b16569c53a63a7333c32d83c96de4d97b6fb71bdb8ef",
+    "version": "AC/DC v22.4.r-fx5a",
+    "initial_sp": "0x00001000",
+    "reset_handler": "0x08003331",
+    "build_info": "sha256 matches",
+    "check_itcm": true,
+    "fails": [],
+    "notes": []
+  },
+  "device_uuid": "0039001c:31315101:39333437",
+  "dfu_serial": "200364500000",
+  "from_dfu": false,
+  "before": {
+    "version": "AC/DC v22.4.r-fx4b",
+    "report": "firmware/flashlog/20261118_build7-fx5a-2/owl_read_before/acdc1/20261118/device_report.json"
+  },
+  "dfu_alt": 0,
+  "download_ok": true,
+  "readback": {
+    "readback_size": 131072,
+    "identical": true,
+    "rest_ff": true,
+    "first_difference": null,
+    "sha256_readback": "a3df1fb00d61c71978247c4a5e7b0290a4478f961b5ef2b72c64c2587d28829c",
+    "sha256_readback_head": "b69c25b3f469fc6fb793b16569c53a63a7333c32d83c96de4d97b6fb71bdb8ef"
+  },
+  "flash_ok": true,
+  "a1": {
+    "passed": true,
+    "complete": true,
+    "rows": [
+      {
+        "check": "device is acdc1",
+        "ok": true,
+        "detail": "0039001c:31315101:39333437"
+      },
+      {
+        "check": "firmware version",
+        "ok": true,
+        "detail": "AC/DC v22.4.r-fx5a (expected AC/DC v22.4.r-fx5a)"
+      },
+      {
+        "check": "sample rate",
+        "ok": true,
+        "detail": "48000"
+      },
+      {
+        "check": "block size",
+        "ok": true,
+        "detail": "8"
+      },
+      {
+        "check": "slots unchanged",
+        "ok": true,
+        "detail": "1 ACDC, 2 TapeDelay, 3 Grainz, 4 RingsReverb, 5 Tanh3"
+      }
+    ],
+    "storage": "Storage 108032/8388608",
+    "program": "CPU: 51% Memory: 2608",
+    "report": "firmware/flashlog/20261118_build7-fx5a-2/owl_read_after/acdc1/20261118/device_report.json",
+    "time": "2026-11-18T16:22:43"
+  }
+}

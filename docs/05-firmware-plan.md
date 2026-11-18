@@ -653,6 +653,50 @@ Ein Build von `2c963e3a` ohne Patches ist bytegleich mit fx4b (`firmware/builds/
 
 **Rückweg:** fx4a (`e7ee9b90…`), dann fx3l (`b55b94d8…`), danach wie bisher 3d.
 
+### Build 7 – MIDI-Sendeweg unteilbar, `v22.4.r-fx5a` (Grill-Runde, Build und Abnahme 2026-11-18, messlog D62–D64, **Alltags-Firmware auf acdc1 seit 2026-11-18**)
+
+**Anlass:** Läuft ein Patch und der Rechner lädt einen Slot herunter, kommen Daten beschädigt an, und das Gerät kann danach bis zum Neustart kein MIDI mehr senden (D53, D54). Auf fx4b reproduziert: 19 von 79 Downloads beschädigt, dann der Hänger (D62).
+
+**Fehler im Original-Code [Code]** (in `upstream/master` gleich):
+1. Audio-Task, Hauptschleife und USB-Interrupt schreiben in den Sendepuffer, ohne Schutz. Die Antworten auf SysEx-Anfragen entstehen im Interrupt.
+2. `write()` ruft `transmit()` an jedem Pufferumlauf, der Audio-Task in jedem Block. `usbd_midi_tx()` sendet bei gesetzter Sperre nichts, der Lesezeiger rückt trotzdem vor.
+3. Zwei Kontexte können zweimal auf demselben Endpoint starten [Hypothese: der Hänger].
+4. Der Lesezeiger rückt beim Start der Übertragung vor, USB kopiert erst danach aus dem Ringpuffer.
+5. `write()` prüft nie, ob der Puffer voll ist.
+6. `SendResourceTask` schreibt alle 2 ms 324 B, ohne auf Platz zu warten.
+
+**Entscheidungen (Nutzer, Grill-Runde 2026-11-18):**
+- Prüfen, Starten und Merken der Übertragung unteilbar, per Interruptsperre, aus allen drei Kontexten nutzbar. „Nur ein Aufrufer“ reicht nicht, weil auch der Interrupt schreibt.
+- Der Lesezeiger rückt erst nach Abschluss der Übertragung vor.
+- Ein voller Puffer verwirft die neue Nachricht, statt Altes zu überschreiben.
+- Flusskontrolle nur im `SendResourceTask`.
+- Keine Rettung der Sperre per Zeitablauf. Tritt der Hänger wieder auf, bekommt er einen eigenen Patch.
+- Verschachtelte Nachrichten (Antwort aus dem Interrupt mitten in einem SysEx der Hauptschleife) bleiben draußen.
+- `transmit()` bleibt in Gruppe C des ITCM, das Rausch-A/B entscheidet. Rückfall: neuer Code ans Ende des ITCM-Blocks, Füllstück an die alte Stelle.
+
+**Umsetzung (Patch `16-midi-tx-atomic.patch`) [Code]:**
+- `Source/MidiWriter.cpp`, `UsbdMidiTransmitter`: Zugriffe auf den Pufferzustand mit gesperrten Interrupts (PRIMASK, wie Patch 05). `inflight` hält die Länge der laufenden Übertragung, der Lesezeiger rückt beim nächsten Aufruf nach gelöster Sperre vor. Der DataIn-Interrupt bleibt unverändert.
+- `transmit()` verlässt den Leerlauf ohne Sperre: leerer Puffer, laufende Übertragung oder kein Rechner. Der Audio-Task sperrt nur in den Blöcken, in denen er etwas startet.
+- `write()` ruft `transmit()` nur noch bei vollem Puffer, verwirft sonst und meldet einmal `midi tx ovf` (nur mit Rechner am USB).
+- `usbd_midi_tx()` gibt zurück, ob gesendet wurde (`usbd_audio.cpp`, gleichlautend in `usbd_midi.c` für andere Geräte, dort ungeprüft).
+- `Source/MidiController.cpp`, `SendResourceTask`: schreibt nur, wenn 324 B frei sind, sonst im nächsten Durchlauf. Nach 5 s ohne Platz gibt der Task auf.
+
+**Build:** `firmware/builds/acdc1-build7-fx5a/`, `v22.4.r-fx5a`, 109 524 B, SHA-256 `b69c25b3f469fc6fb793b16569c53a63a7333c32d83c96de4d97b6fb71bdb8ef`. Patches wie fx4b + 16.
+
+**Prüfung ohne Gerät [gemessen, D62]:** `tools/check_itcm.py --ref fx4b` BESTANDEN, 0 FAIL, 0 WARN. ITCM-Code +48 B (`transmit()` 76 → 124 B), alles dahinter im ITCM 48 B höher, Patch-Heap 48 B kleiner. 164 von 180 RAM-Objekten an derselben Adresse. Flash +1028 B.
+
+**Abnahme:**
+1. Erledigt (D63): Flash mit `tools/flash_acdc.py` (erster Einsatz am Gerät), Readback bytegleich, A1 bestanden.
+2. Erledigt (D63): Download-Stresstest mit `tools/dump_stress.py`, 240 von 240 Downloads in Ordnung (TapeDelay 32 %, Tanh3 51 %, Tanh3 mit Audio-Stream), kein Hänger. fx4b in derselben Sitzung: 19 von 79 beschädigt, Hänger.
+3. Erledigt (D63): Loop-Test mit `phase_slips.py` und `stale_samples.py`, 0 Slips, 0 veraltete Samples, auch mit Tanh3 und während 40 Downloads.
+4. Erledigt, mit Einschränkung (D64): Rausch-A/B fx4b → fx5a → fx4b → fx5a, je 2 × 60 s. RMS, Rest, Kamm und fs/8 in jedem Block innerhalb ±0,5 dB. Mischprodukte im Mittel +0,70 dB bei 2,3 dB Streuung zwischen den beiden Kontrollen, also nicht entscheidbar. Kein Hinweis auf eine Wirkung des Patches.
+
+**Entscheidung (Nutzer, 2026-11-18, D65): fx5a ist die Alltags-Firmware von acdc1.**
+
+**Offen:** Fork-Commit, Push und Release. Kleine Störung auf Kanal 2 während Downloads (D63).
+
+**Rückweg:** fx4b (`a21f35c9…`), dann fx3l (`b55b94d8…`), danach wie bisher.
+
 ### Fork `m9dfukc/OpenWare` (gepusht 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
 
 - **Lokaler Klon:** `firmware/OpenWare`. Vorbereitet wurde der Branch in einem separaten Klon `firmware/fork/OpenWare`. Beim Aufräumen (2026-11-14) wurden beide zusammengelegt: `upstream` geholt, geprüft, dass alle 55 Refs, 27 Branches, 27 Tags und alle Commits des alten Spiegels enthalten sind, dann den Spiegel gelöscht und den Fork-Klon nach `firmware/OpenWare` verschoben. Remotes:
