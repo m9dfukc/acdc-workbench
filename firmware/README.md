@@ -46,7 +46,7 @@ Rückweg für acdc1 auf die Original-Firmware: `backup/acdc1/20261114/flash/acdc
 | **16** | MIDI-Sendeweg über USB unteilbar, Lesezeiger erst nach Abschluss der Übertragung, Flusskontrolle beim Slot-Download (Build 7, fx5a) |
 | 90, 91 | Füllbytes für Lage-Tests: 90 wie 3c (`fx1p`), 91 hinter dem ITCM-Anker (`…p`-Varianten) |
 
-fx5a = fx4b + **16**. fx4b = fx3l + **15b**. fx3l = `db9d3dd` + Libraries `9e8f64e` + 01 02 04 05 06 03 07d 08 **11g 12b 14**. 01, 02, 04, 05, 06 stecken als Commits in `acdc/thru-usb-feedback`, der ganze fx4b-Stand in `acdc/fx1d`. Upstream-Analyse: `docs/research/notes/upstream_master_2026-11-16.md`.
+fx5a = fx4b + **16**. fx4b = fx3l + **15b**. fx3l = `db9d3dd` + Libraries `9e8f64e` + 01 02 04 05 06 03 07d 08 **11g 12b 14**. 01, 02, 04, 05, 06 stecken als Commits in `acdc/thru-usb-feedback`, der ganze fx5a-Stand in `acdc/fx1d` (fx5a lokal, noch nicht gepusht). Upstream-Analyse: `docs/research/notes/upstream_master_2026-11-16.md`.
 
 ## Builds
 
@@ -81,3 +81,4 @@ fx5a = fx4b + **16**. fx4b = fx3l + **15b**. fx3l = `db9d3dd` + Libraries `9e8f6
 | `cand-master-oldhal-fx` | `v22.5.0-oldhal-fx` | nein | `master` `36eaf1c4` + altes HAL + 10. Zeigt nur, dass es baut |
 | `verify-fx1d-5cb2c17c` | `v22.4.r-fx3l` | nein | Build aus dem Fork-Branch, bytegleich mit fx3l |
 | `verify-fx1d-2c963e3a` | `v22.4.r-fx4b` | nein | Build aus dem Fork-Branch, bytegleich mit fx4b (D59) |
+| `verify-fx1d-c222fa49` | `v22.4.r-fx5a` | nein | Build aus dem Fork-Branch, bytegleich mit fx5a (D65) |

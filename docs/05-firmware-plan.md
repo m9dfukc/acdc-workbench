@@ -693,7 +693,14 @@ Ein Build von `2c963e3a` ohne Patches ist bytegleich mit fx4b (`firmware/builds/
 
 **Entscheidung (Nutzer, 2026-11-18, D65): fx5a ist die Alltags-Firmware von acdc1.**
 
-**Offen:** Fork-Commit, Push und Release. Kleine Störung auf Kanal 2 während Downloads (D63).
+**Fork-Branch `acdc/fx1d` (lokal, 2026-11-18, noch nicht gepusht):**
+1. `bd04588e` MIDI-Sendeweg (= Patch 16)
+2. `c222fa49` Version `v22.4.r-fx5a`
+3. `b4b95e43` README: Abschnitt „MIDI send path“, Tabellen und Teststand
+
+Ein Build von `c222fa49` ohne Patches ist bytegleich mit fx5a (`firmware/builds/verify-fx1d-c222fa49`, `b69c25b3…`).
+
+**Offen:** Push und Release `acdc-v22.4.r-fx5a`. Kleine Störung auf Kanal 2 während Downloads (D63).
 
 **Rückweg:** fx4b (`a21f35c9…`), dann fx3l (`b55b94d8…`), danach wie bisher.
 

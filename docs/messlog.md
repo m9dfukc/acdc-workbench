@@ -2008,3 +2008,5 @@ Familienpegel, Mittel je Block, Δ gegen das Mittel der vier fx4b-Aufnahmen, Dat
 **Entscheidung (Nutzer):** fx5a (`acdc1-build7-fx5a`, `b69c25b3…`) ist die Alltags-Firmware von acdc1 und löst fx4b ab. Grundlage: Download-Stresstest und Loop-Test (D63), Rauschen ohne Hinweis auf eine Änderung (D64). fx4b (`a21f35c9…`) ist der erste Rückweg.
 
 **Offen:** Fork-Commit auf `acdc/fx1d`, Push und Release `acdc-v22.4.r-fx5a` (je mit Freigabe), `docs/en/05` auffrischen. Die Punkte aus D63 (Störung auf Kanal 2 während Downloads) und D64 (Mischprodukte nicht entscheidbar).
+
+**Nachtrag D65 – Fork:** Der Branch `acdc/fx1d` ist lokal nachgezogen: `bd04588e` (Patch 16), `c222fa49` (Version), `b4b95e43` (README). Ein Build von `c222fa49` ohne Patches ist bytegleich mit fx5a (`firmware/builds/verify-fx1d-c222fa49`, `b69c25b3…`). Gepusht ist nichts.
