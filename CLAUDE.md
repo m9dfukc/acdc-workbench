@@ -47,7 +47,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 - **Rauschen gegen 3d [gemessen, D48, gilt auch für fx4b, D58]:** fs/8 −5,1 dB, Mischprodukte −35 dB, Rest −1,25 dB, RMS −1,1 dB, Kamm +0,2…+0,4 dB. Der SOF-Kamm ist damit die stärkste verbleibende Störfamilie.
 - **Auf acdc1 liegen fünf Patches** (D54, D56): Slot 1 ACDC, 2 TapeDelay, 3 Grainz, 4 RingsReverb (je mit Limiter auf Out 1/2), 5 Tanh3 (Fassung 2 mit 4× Oversampling, 48 % CPU). Gemerkter Slot zuletzt 5. Die Builds aus D50 und Tanh3 Fassung 1 liegen in `owl-patches/builds-owl2/`. Wechsel vom Rechner aus per `owl_read.py --program N` (wird nicht gemerkt).
 - **Slot-Downloads bei laufendem Patch sind bis fx4b unzuverlässig (D53/D54, D62):** Wettlauf im MIDI-Sendeweg der Original-Firmware [Code]. Auf fx4b waren 19 von 79 Downloads beschädigt, danach sendete acdc1 bis zum Neustart kein MIDI mehr [gemessen, D62]. **fx5a behebt das (Patch 16): 240 von 240 Downloads in Ordnung, kein Hänger (D63).** Unter fx4b und älter weiter `owl_write.py` mit `--backup-file` benutzen und bei `owl_read.py --dump` auf `ok` im Report achten. Test: `tools/dump_stress.py`.
-- **Offen:** fx5a: Push von Fork und Workbench, Release `acdc-v22.4.r-fx5a` (je mit Freigabe), `docs/en/05` auffrischen. Hörurteil zu Tanh3, Quelle der Regler-Linien (D61), Last von Tanh3 (D56). Alles Weitere: `TODO.md`, Abschnitt „Offen“.
+- **Offen:** Störung auf Kanal 2 während Downloads (D63), Mischprodukte im Rausch-A/B nicht entscheidbar (D64). Hörurteil zu Tanh3, Quelle der Regler-Linien (D61), Last von Tanh3 (D56). Alles Weitere: `TODO.md`, Abschnitt „Offen“.
 
 ## Dateien
 
@@ -191,10 +191,9 @@ Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`)
 - **Rückwege für acdc1:** von fx5a aus fx4b (`a21f35c9…`), dann fx3l (`b55b94d8…`), dann 3d (`d212cf8d…`), dann Build 2, dann 1d, dann das Readback (`433b3fd3…`).
 - **Fork:** https://github.com/m9dfukc/OpenWare
   - `acdc/thru-usb-feedback` = Build 1d + README, Spitze `edb32852`.
-  - `acdc/fx1d` = Build 2 → 3d → fx3l → fx4b → fx5a + README, Spitze lokal `b4b95e43` (gepusht ist `27d3630b`). Ein Build von `5cb2c17c` ist bytegleich mit fx3l (`firmware/builds/verify-fx1d-5cb2c17c`), einer von `2c963e3a` bytegleich mit fx4b (`verify-fx1d-2c963e3a`), einer von `c222fa49` bytegleich mit fx5a (`verify-fx1d-c222fa49`).
-  - **Lokal, noch nicht gepusht (2026-11-18):** die fx5a-Commits `bd04588e` (Patch 16), `c222fa49` (Version) und `b4b95e43` (README).
-  - Beide Spitzen sind gepusht: `edb32852` (2026-11-16) und `27d3630b` (2026-11-17, mit den fx4b-Commits `7ef6284a` und `2c963e3a`).
-  - **Releases am Fork** (2026-11-16): `acdc-v22.4.r-fx2d` (Build 3d, Tag auf `abc3a72a`) und `acdc-v22.4.r-fx3l` (Vorabversion, Tag auf `3e3a74fd`), je mit `ACDC-<version>.bin` und `BUILD_INFO`. Dazu seit 2026-11-17 **`acdc-v22.4.r-fx4b`** (Tag auf `27d3630b`, reguläres Release, „Latest“). Ein neuer Alltags-Build bekommt ein eigenes Release, nur nach Freigabe. `gh` immer mit `--repo m9dfukc/OpenWare` aufrufen, sonst zielt es auf das Upstream-Repo.
+  - `acdc/fx1d` = Build 2 → 3d → fx3l → fx4b → fx5a + README, Spitze `b4b95e43`. Ein Build von `5cb2c17c` ist bytegleich mit fx3l (`firmware/builds/verify-fx1d-5cb2c17c`), einer von `2c963e3a` bytegleich mit fx4b (`verify-fx1d-2c963e3a`), einer von `c222fa49` bytegleich mit fx5a (`verify-fx1d-c222fa49`).
+  - Beide Spitzen sind gepusht: `edb32852` (2026-11-16) und `b4b95e43` (2026-11-18, mit den fx5a-Commits `bd04588e` und `c222fa49`, davor `27d3630b` mit den fx4b-Commits `7ef6284a` und `2c963e3a`).
+  - **Releases am Fork** (2026-11-16): `acdc-v22.4.r-fx2d` (Build 3d, Tag auf `abc3a72a`) und `acdc-v22.4.r-fx3l` (Vorabversion, Tag auf `3e3a74fd`), je mit `ACDC-<version>.bin` und `BUILD_INFO`. Dazu seit 2026-11-17 `acdc-v22.4.r-fx4b` (Tag auf `27d3630b`, reguläres Release) und seit 2026-11-18 **`acdc-v22.4.r-fx5a`** (Tag auf `b4b95e43`, reguläres Release, „Latest“). Ein neuer Alltags-Build bekommt ein eigenes Release, nur nach Freigabe. `gh` immer mit `--repo m9dfukc/OpenWare` aufrufen, sonst zielt es auf das Upstream-Repo.
 - **Später geplant:** Merge mit v22.5.0 bzw. dem aktuellen Upstream-`master` samt Fixes. Das ist eine Portierung (`docs/research/notes/upstream_master_2026-11-16.md`).
 
 ### Flash-Ablauf (ohne Pads, DFU über die vordere USB-B-Buchse)

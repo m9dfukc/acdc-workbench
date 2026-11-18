@@ -2010,3 +2010,5 @@ Familienpegel, Mittel je Block, Δ gegen das Mittel der vier fx4b-Aufnahmen, Dat
 **Offen:** Fork-Commit auf `acdc/fx1d`, Push und Release `acdc-v22.4.r-fx5a` (je mit Freigabe), `docs/en/05` auffrischen. Die Punkte aus D63 (Störung auf Kanal 2 während Downloads) und D64 (Mischprodukte nicht entscheidbar).
 
 **Nachtrag D65 – Fork:** Der Branch `acdc/fx1d` ist lokal nachgezogen: `bd04588e` (Patch 16), `c222fa49` (Version), `b4b95e43` (README). Ein Build von `c222fa49` ohne Patches ist bytegleich mit fx5a (`firmware/builds/verify-fx1d-c222fa49`, `b69c25b3…`). Gepusht ist nichts.
+
+**Nachtrag 2 zu D65:** Fork-Branch `acdc/fx1d` (`b4b95e43`) und Workbench gepusht, Release `acdc-v22.4.r-fx5a` am Fork angelegt (Tag auf `b4b95e43`, reguläres Release, „Latest“), je mit Freigabe des Nutzers.

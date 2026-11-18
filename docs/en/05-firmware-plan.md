@@ -1,4 +1,4 @@
-<!-- i18n source=docs/05-firmware-plan.md sha256=9b7044a79a7ea1b549b6e0a8c60741e2553e8d0b6e7603a1ab0f49737eca70e9 date=2026-11-18 -->
+<!-- i18n source=docs/05-firmware-plan.md sha256=9d265afefb474b378571d7f2b1fe311dd87f1ca139cc42b42156e64f3dd19abf date=2026-11-18 -->
 > English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-18. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 05 – Firmware: Status, Forks, Build Plan
@@ -696,14 +696,14 @@ A build of `2c963e3a` without patches is byte-identical with fx4b (`firmware/bui
 
 **Decision (user, 2026-11-18, D65): fx5a is the daily firmware of acdc1.**
 
-**Fork branch `acdc/fx1d` (local, 2026-11-18, not pushed yet):**
+**Fork branch `acdc/fx1d` (pushed 2026-11-18):**
 1. `bd04588e` MIDI send path (= patch 16)
 2. `c222fa49` version `v22.4.r-fx5a`
 3. `b4b95e43` README: section "MIDI send path", tables and test status
 
-A build of `c222fa49` without patches is byte-identical with fx5a (`firmware/builds/verify-fx1d-c222fa49`, `b69c25b3…`).
+A build of `c222fa49` without patches is byte-identical with fx5a (`firmware/builds/verify-fx1d-c222fa49`, `b69c25b3…`). In addition the release `acdc-v22.4.r-fx5a` (tag on `b4b95e43`, "Latest") with `ACDC-v22.4.r-fx5a.bin` and `BUILD_INFO-v22.4.r-fx5a.txt`.
 
-**Open:** push and release `acdc-v22.4.r-fx5a`. A small disturbance on channel 2 during downloads (D63).
+**Open:** a small disturbance on channel 2 during downloads (D63).
 
 **Fallback:** fx4b (`a21f35c9…`), then fx3l (`b55b94d8…`), after that as before.
 

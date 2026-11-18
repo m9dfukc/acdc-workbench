@@ -44,7 +44,7 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [x] **Firmware-Fix für den MIDI-Sendeweg** (Patch 16, Build 7 `v22.4.r-fx5a`, 2026-11-18): Fehler auf fx4b reproduziert (19 von 79 Downloads beschädigt, dann Hänger, D62). fx5a: 240 von 240 Downloads in Ordnung, kein Hänger, Loop-Test bestanden (D63), Rauschen ohne Hinweis auf eine Änderung (D64). fx5a läuft auf acdc1. Plan und Abnahme: `docs/05`, „Build 7“
 - [x] fx5a ist die Alltags-Firmware (Nutzer, 2026-11-18, D65)
 - [x] Fork-Branch `acdc/fx1d` lokal nachgezogen (`bd04588e`, `c222fa49`, `b4b95e43`), ein Build daraus ist bytegleich mit fx5a (2026-11-18)
-- [ ] fx5a: Push von Fork (`acdc/fx1d`) und Workbench, Release `acdc-v22.4.r-fx5a`, je mit Freigabe. Vorher `docs/en/05` auffrischen
+- [x] Fork-Branch `acdc/fx1d` und Workbench gepusht, Release `acdc-v22.4.r-fx5a` am Fork angelegt, `docs/en/05` aufgefrischt (2026-11-18, Freigabe des Nutzers)
 - [ ] fx5a: Rausch-A/B bei den Mischprodukten nicht entscheidbar (im Mittel +0,70 dB, die beiden fx4b-Kontrollen lagen 2,3 dB auseinander, D64). Bei Gelegenheit wiederholen, ohne Loop-Tests dazwischen
 - [ ] Kleine Störung auf Kanal 2 während Slot-Downloads (±0,002 Samples Phase, nur im Loop-Lauf mit Downloads gesehen, D63). Auf fx4b gegenprüfen geht wegen des Hängers schlecht, eher mit fx5a eingrenzen: Kanal, Slot, mit und ohne laufenden Patch
 - [ ] MIDI: Antworten aus dem USB-Interrupt können mitten in ein SysEx der Hauptschleife fallen (verschachtelte Nachrichten, bewusst nicht in Patch 16). Tritt nur auf, wenn der Rechner während eines Downloads anfragt

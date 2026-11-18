@@ -53,7 +53,7 @@ Firmware `v22.4.r-fx3l` against the previous build `v22.4.r-fx2d`, open inputs, 
 
 ![Long-term spectrum of fx3l (black) against fx2d (grey), four channels](docs/img/psd_fx3l_vs_3d.png)
 
-The comb is now the strongest remaining family. The current daily firmware on the test module is `v22.4.r-fx5a` (since 2026-11-18): `fx3l` plus a boot menu that chooses the patch slot with the knobs (`fx4b`), plus a fix for the MIDI send path. With `fx4b`, 19 of 79 slot downloads next to a running patch arrived damaged and MIDI then hung until a power cycle; with `fx5a` 240 of 240 were intact (D62, D63). The noise of `fx4b` is the same as that of `fx3l` within ±0.4 dB (control in the same session), and `fx5a` shows no change beyond the session scatter (D64). The fork branch and the releases still end at `fx4b`. Details and all numbers: [docs/messlog.md](docs/messlog.md) (German), entries D45 to D49, D50 to D59 and D62 to D65.
+The comb is now the strongest remaining family. The current daily firmware on the test module is `v22.4.r-fx5a` (since 2026-11-18): `fx3l` plus a boot menu that chooses the patch slot with the knobs (`fx4b`), plus a fix for the MIDI send path. With `fx4b`, 19 of 79 slot downloads next to a running patch arrived damaged and MIDI then hung until a power cycle; with `fx5a` 240 of 240 were intact (D62, D63). The noise of `fx4b` is the same as that of `fx3l` within ±0.4 dB (control in the same session), and `fx5a` shows no change beyond the session scatter (D64). Details and all numbers: [docs/messlog.md](docs/messlog.md) (German), entries D45 to D49, D50 to D59 and D62 to D65.
 
 ## Firmware
 
@@ -62,12 +62,12 @@ The fork has two branches:
 | Branch | Version | Content |
 |---|---|---|
 | `acdc/thru-usb-feedback` | `v22.4.r-thru1d` | The patch output reaches the jacks without a computer, plus the USB feedback fix |
-| `acdc/fx1d` | `v22.4.r-fx4b` | As above. The computer records the raw inputs, the input LEDs show the raw level while recording, the hot path runs from ITCM, a boot menu chooses the patch slot and remembers it |
+| `acdc/fx1d` | `v22.4.r-fx5a` | As above. The computer records the raw inputs, the input LEDs show the raw level while recording, the hot path runs from ITCM, a boot menu chooses the patch slot and remembers it, and the MIDI send path is fixed |
 
 Both are based on upstream commit `db9d3dd` (v22.4.r) with the libraries at `9e8f64e`. The fork README explains why, and what each change does.
 
 - `firmware/patches/` holds the same changes as numbered patch files. `tools/build_acdc.sh` applies them to a clean tree.
-- `firmware/builds/<name>/BUILD_INFO.txt` records commit, toolchain, patch list and checksums of every build. The binaries are not in this repository, each one can be rebuilt byte for byte. Ready-made binaries of `v22.4.r-fx2d`, `v22.4.r-fx3l` and `v22.4.r-fx4b` are attached to the [releases of the fork](https://github.com/m9dfukc/OpenWare/releases).
+- `firmware/builds/<name>/BUILD_INFO.txt` records commit, toolchain, patch list and checksums of every build. The binaries are not in this repository, each one can be rebuilt byte for byte. Ready-made binaries of `v22.4.r-fx2d`, `v22.4.r-fx3l`, `v22.4.r-fx4b` and `v22.4.r-fx5a` are attached to the [releases of the fork](https://github.com/m9dfukc/OpenWare/releases).
 - `firmware/flashlog/` has one folder per flash: device report before and after, DFU logs, checksum of the readback.
 
 **Do not flash the official `ACDC.bin` v22.5.0 from the upstream release page onto an AC/DC.** It is reported to break USB ([forum thread](https://community.rebeltech.org/t/ac-dc-firmware-update/2083)).
@@ -105,26 +105,27 @@ uv run --no-project --python 3.12 --with mido --with python-rtmidi \
   python tools/owl_read.py --dump --out backup
 ```
 
-Rebuild `v22.4.r-fx4b`. The result must have the SHA-256 `a21f35c990cc33737620597d883c4bd205fc4495bf2291a1b6013af6f2b06307`:
+Rebuild `v22.4.r-fx5a`. The result must have the SHA-256 `b69c25b3f469fc6fb793b16569c53a63a7333c32d83c96de4d97b6fb71bdb8ef`:
 
 ```sh
 P=firmware/patches
-FW_VERSION=v22.4.r-fx4b tools/build_acdc.sh my-fx4b db9d3dd \
+FW_VERSION=v22.4.r-fx5a tools/build_acdc.sh my-fx5a db9d3dd \
   firmware/downloads/OpenWareLibraries-9e8f64e.tar.gz \
   $P/01-gcc12-extern-uint8.patch $P/02-revert-237c63d-thru-mute.patch \
   $P/04-output-gain-125.patch $P/05-atomic-usbd-rx-count.patch \
   $P/06-fb-level-control.patch $P/03-tx-pre-fx-owl-acdc-fx.patch \
   $P/07d-input-leds-raw-late-section.patch $P/08-upstream-gcc13-build-flags.patch \
   $P/11g-itcm-hotpath-rxcb.patch $P/12b-rx-dma-callback.patch \
-  $P/14-usbd-sof-once-per-frame.patch $P/15b-boot-menu-slot-select-30s.patch
+  $P/14-usbd-sof-once-per-frame.patch $P/15b-boot-menu-slot-select-30s.patch \
+  $P/16-midi-tx-atomic.patch
 ```
 
-The flash procedure (read out, restart into DFU, write, read back, compare, restart) is described in [CLAUDE.md](CLAUDE.md), section "Flash-Ablauf". `tools/flash_acdc.py` runs these steps and keeps a flash log. It only accepts the author's test module: the MIDI device ID and the DFU serial number are constants at the top of the script. So far it has been tested without a module only.
+The flash procedure (read out, restart into DFU, write, read back, compare, restart) is described in [CLAUDE.md](CLAUDE.md), section "Flash-Ablauf". `tools/flash_acdc.py` runs these steps and keeps a flash log. It only accepts the author's test module: the MIDI device ID and the DFU serial number are constants at the top of the script.
 
 ```sh
-python3 tools/flash_acdc.py acdc1-build6b-fx4b          # offline checks only
-python3 tools/flash_acdc.py acdc1-build6b-fx4b --yes    # flash
-python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build6b-fx4b   # after the restart
+python3 tools/flash_acdc.py acdc1-build7-fx5a          # offline checks only
+python3 tools/flash_acdc.py acdc1-build7-fx5a --yes    # flash
+python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build7-fx5a   # after the restart
 ```
 
 ## Repository layout
