@@ -1,0 +1,295 @@
+Patch 16: MIDI-Sendeweg über USB unteilbar, mit Flusskontrolle beim Slot-Download.
+
+Anlass (messlog D53, D54): Läuft ein Patch und der Rechner lädt einen Slot herunter, kommen
+Daten unvollständig oder in falscher Reihenfolge an, einmal sendete acdc1 danach bis zum
+Neustart kein MIDI mehr. Der Code ist in upstream/master derselbe.
+
+Fehler im Original [Code]:
+1. Drei Kontexte schreiben in den Sendepuffer: Audio-Task, Hauptschleife und der USB-Interrupt
+   (SysEx-Anfragen werden in usbd_midi_rx() verarbeitet, die Antworten entstehen dort).
+   SerialBuffer::push() und incrementReadHead() sind nicht unteilbar.
+2. write() ruft transmit() an jedem Pufferumlauf (getContiguousWriteCapacity() <= 4), beim
+   Download also etwa alle drei Nachrichten aus der Hauptschleife, während der Audio-Task
+   transmit() in jedem Block ruft. Einer sendet, der andere rückt den Lesezeiger trotzdem vor
+   (usbd_midi_tx() sendet bei gesetzter Sperre stillschweigend nichts).
+3. Bestehen beide die Prüfung der Sperre, starten sie zweimal auf demselben Endpoint.
+   HAL_PCD_EP_Transmit() überschreibt dabei den Zustand der laufenden Übertragung
+   [Hypothese: Ursache des Hängers aus D53].
+4. Der Lesezeiger rückt beim Start der Übertragung vor. USB kopiert die Daten aber erst danach
+   paketweise (64 B, im Interrupt) aus dem Ringpuffer, ein Schreiber kann sie überschreiben.
+5. write() prüft nie, ob der Puffer voll ist. Holt der Schreibzeiger den Lesezeiger ein, gilt
+   der Puffer als leer.
+6. SendResourceTask schreibt alle 2 ms 324 B, ohne auf Platz zu warten.
+
+Änderung (Absprache mit dem Nutzer, Grill-Runde 2026-11-18):
+- Source/MidiWriter.cpp, UsbdMidiTransmitter: Jeder Zugriff auf den Pufferzustand läuft mit
+  gesperrten Interrupts (PRIMASK, wie in Patch 05, etwa 1 µs). Prüfen, Starten und Merken der
+  Übertragung sind ein Stück. Der Lesezeiger rückt erst vor, wenn die Übertragung abgeschlossen
+  ist (inflight). Ein voller Puffer verwirft die neue Nachricht und meldet einmal
+  "midi tx ovf" (nur mit Rechner am USB). write() ruft transmit() nur noch bei vollem Puffer.
+- transmit() verlässt den Leerlauf ohne Sperre: leerer Puffer, laufende Übertragung oder kein
+  Rechner. Der Audio-Task sperrt also nur in den Blöcken, in denen er wirklich etwas startet.
+- usbd_midi_tx() gibt zurück, ob gesendet wurde (Source/usbd_audio.cpp, für andere Geräte
+  gleichlautend in Source/usbd_midi.c, dort prüft es jetzt auch die Sperre).
+- MidiWriter::getWriteCapacity(), MidiWriter::getSysExSize().
+- Source/MidiController.cpp, SendResourceTask: schreibt nur, wenn eine ganze Nachricht (324 B)
+  Platz hat, sonst im nächsten Durchlauf wieder. Nach 5 s ohne Platz gibt der Task auf.
+
+Nicht enthalten: Rettung einer hängenden Sperre per Zeitablauf. Verschachtelung ganzer
+Nachrichten (eine Antwort aus dem Interrupt mitten in einem SysEx der Hauptschleife).
+
+Speicherlage: MidiWriter::transmit(), usbd_midi_ready() und usbd_midi_tx() liegen im ITCM
+(Patch 11g, Gruppe C) und wachsen. write() (MidiWriter::send) und SendResourceTask bleiben im
+Flash. Prüfung mit tools/check_itcm.py, Rausch-A/B gegen fx4b.
+
+Anwenden nach 15b. Nur für das AC/DC gebaut und geprüft.
+
+a
+b
+--- a/Source/MidiController.cpp	2026-11-18 15:38:49
++++ b/Source/MidiController.cpp	2026-11-18 15:39:24
+@@ -146,20 +146,33 @@
+ class SendResourceTask : public BackgroundTask {
+ private:
+   size_t index;
++  size_t waiting;
+   Resource* resource;
+   static constexpr size_t msgsize = 203; // number of resource bytes we send with each SysEx
++  static constexpr size_t maxwait = 2500; // loops (5 s) without room in the MIDI buffer before giving up
+ public:
+   void setResource(Resource* resource){
+     this->resource = resource;
+   }
+   void begin(){
+     index = 0;
++    waiting = 0;
+   }
+   void loop(){
+     if(!resource){      
+       owl.setBackgroundTask(NULL); // end this task
+       return;
+     }
++    // flow control: only queue a message that fits as a whole, else try again in the next loop
++    if(midi_tx.getWriteCapacity() < MidiWriter::getSysExSize(msgsize*8/7+6)){
++      if(++waiting > maxwait){
++	// host does not read: give up instead of blocking the background task for ever
++	resource = NULL;
++	owl.setBackgroundTask(NULL);
++      }
++      return;
++    }
++    waiting = 0;
+     size_t len = resource->getDataSize();
+     size_t offset = msgsize*(index-1);
+     uint8_t data[msgsize];
+--- a/Source/MidiWriter.cpp	2026-11-18 15:38:49
++++ b/Source/MidiWriter.cpp	2026-11-18 15:40:13
+@@ -13,6 +13,7 @@
+ #include "uart_midi.h"
+ #endif
+ #include "SerialBuffer.hpp"
++#include "message.h"
+ 
+ void MidiWriter::sendErrorMessage(const char* msg){
+   char buf[64];
+@@ -87,23 +88,68 @@
+ };
+ 
+ #ifdef USE_USBD_MIDI
++/* The buffer is written from the audio task, the main loop and the USB
++ * interrupt (replies to SysEx requests), and transmit() is called from the
++ * audio task and the main loop. Every access to the buffer state therefore
++ * runs with interrupts masked (about a microsecond).
++ * - A transfer is started and remembered in one piece, so two contexts can
++ *   never start one on the same endpoint or advance the read head twice.
++ * - USB copies the data out of this buffer after usbd_midi_tx() has returned
++ *   (64 byte packets, in the USB interrupt). The read head only moves once
++ *   the transfer has completed; until then the bytes still count as used.
++ * - A full buffer drops the new message instead of overwriting unsent data.
++ */
+ class UsbdMidiTransmitter : public MidiTransmitter {
+ private:
+   SerialBuffer<MIDI_OUTPUT_BUFFER_SIZE> buffer;
++  volatile size_t inflight = 0; // bytes handed to USB, transfer not yet completed
++  volatile bool overflow = false;
++  // call with interrupts masked
++  inline __attribute__((always_inline)) void transmitMasked(){
++    if(usbd_midi_ready()){
++      if(inflight){
++	// previous transfer has completed: release its bytes
++	buffer.incrementReadHead(inflight);
++	inflight = 0;
++      }
++      size_t len = buffer.getContiguousReadCapacity();
++      if(len >= 4 && usbd_midi_tx(buffer.getReadHead(), len))
++	inflight = len;
++    }
++  }
+ public:
+-  void write(MidiMessage msg){
+-    if(buffer.getContiguousWriteCapacity() <= 4)
+-      transmit();
+-    buffer.push(msg.data, 4);
++  size_t getWriteCapacity(){
++    // keep one packet free: a full buffer must not look like an empty one
++    size_t used = buffer.getReadCapacity();
++    return used + 4 < MIDI_OUTPUT_BUFFER_SIZE ? MIDI_OUTPUT_BUFFER_SIZE - 4 - used : 0;
+   }
+-  void transmit(){
+-    size_t len = buffer.getContiguousReadCapacity();
+-    if(len >= 4 && usbd_midi_ready()){
+-      usbd_midi_tx(buffer.getReadHead(), len);
+-      buffer.incrementReadHead(len);
+-      // len = buffer.getContiguousReadCapacity();
++  void write(MidiMessage msg){
++    uint32_t primask = __get_PRIMASK();
++    __disable_irq();
++    if(getWriteCapacity() < 4)
++      transmitMasked(); // releases the bytes of a completed transfer
++    bool ok = getWriteCapacity() >= 4;
++    if(ok)
++      buffer.push(msg.data, 4);
++    __set_PRIMASK(primask);
++    if(ok){
++      overflow = false;
++    }else if(!overflow && usbd_midi_connected()){
++      overflow = true; // report once per episode, and only if a host is there to read
++      debugMessage("midi tx ovf");
+     }
+   }
++  inline __attribute__((always_inline)) void transmit(){
++    // Unmasked early exits, so the audio task masks nothing while idle, while
++    // a transfer is running or without a host. Both tests are repeated or
++    // harmless under the mask: a missed chance is taken in the next block.
++    if((inflight == 0 && !buffer.notEmpty()) || !usbd_midi_ready())
++      return;
++    uint32_t primask = __get_PRIMASK();
++    __disable_irq();
++    transmitMasked();
++    __set_PRIMASK(primask);
++  }
+ };
+ UsbdMidiTransmitter usbd_midi;
+ #endif
+@@ -182,6 +228,14 @@
+ // #ifdef USE_DIGITALBUS
+ //   bus_tx_frame(msg.data);
+ // #endif /* USE_DIGITALBUS */
++}
++
++size_t MidiWriter::getWriteCapacity(){
++#ifdef USE_USBD_MIDI
++  return usbd_midi.getWriteCapacity();
++#else
++  return MIDI_OUTPUT_BUFFER_SIZE;
++#endif
+ }
+ 
+ void MidiWriter::transmit(){
+--- a/Source/MidiWriter.h	2026-11-18 15:38:49
++++ b/Source/MidiWriter.h	2026-11-18 15:39:24
+@@ -2,6 +2,7 @@
+ #define _MidiWriter_h_
+ 
+ #include <inttypes.h>
++#include <stddef.h>
+ #include "device.h"
+ #include "MidiMessage.h"
+ #include "MidiStatus.h"
+@@ -24,6 +25,12 @@
+   void send(MidiMessage msg);
+   
+   void transmit();
++  /* bytes that can be queued for USB right now without losing anything */
++  size_t getWriteCapacity();
++  /* bytes that sendSysEx() queues for a SysEx with this many payload bytes */
++  static constexpr size_t getSysExSize(size_t size){
++    return (size/3 + 2)*4;
++  }
+ };
+ 
+ #endif /* _MidiWriter_h_ */
+--- a/Source/midi.h
++++ b/Source/midi.h
+@@ -13,7 +13,7 @@
+    uint8_t usbd_midi_connected(void);
+    uint8_t usbd_midi_ready(void);
+    void usbd_midi_rx(uint8_t *buffer, uint32_t length);
+-   void usbd_midi_tx(uint8_t* buffer, uint32_t length);
++   uint8_t usbd_midi_tx(uint8_t* buffer, uint32_t length); /* returns 1 if the transfer was started */
+ #endif
+ 
+ #ifdef USE_USB_HOST
+--- a/Source/usbd_audio.cpp
++++ b/Source/usbd_audio.cpp
+@@ -1716,7 +1716,11 @@
+ #endif
+ }
+ 
+-void usbd_midi_tx(uint8_t* buf, uint32_t len) {
++/* Returns 1 if the transfer was started, 0 if nothing was sent (not configured
++ * or a transfer is still in progress). The caller must keep interrupts masked
++ * from its usbd_midi_ready() check until this call returns and must not release
++ * the data before the transfer has completed (usbd_midi_ready() is true again). */
++uint8_t usbd_midi_tx(uint8_t* buf, uint32_t len) {
+ #ifdef USE_USBD_MIDI
+   extern USBD_HandleTypeDef USBD_HANDLE;
+   USBD_AUDIO_HandleTypeDef *haudio = (USBD_AUDIO_HandleTypeDef*)USBD_HANDLE.pClassData;
+@@ -1724,8 +1728,10 @@
+     /* the call is non-blocking, and the DataIn callback of your USBD class is called with the endpoint number (excluding 0x80 bit) when the entire buffer has been transmitted over the endpoint */
+     haudio->midi_tx_lock = 1;
+     USBD_LL_Transmit(&USBD_HANDLE, MIDI_TX_EP, buf, len);
++    return 1;
+   }
+ #endif /* USE_USBD_MIDI */
++  return 0;
+ }
+ 
+ uint8_t usbd_midi_connected(void){
+--- a/Source/usbd_audio.h
++++ b/Source/usbd_audio.h
+@@ -178,7 +178,7 @@
+ uint32_t usbd_audio_get_rx_count();
+ 
+ void usbd_midi_rx(uint8_t *buffer, uint32_t length);
+-void usbd_midi_tx(uint8_t* buffer, uint32_t length);
++uint8_t usbd_midi_tx(uint8_t* buffer, uint32_t length);
+ uint8_t usbd_midi_connected(void);
+ uint8_t usbd_midi_ready(void);
+ void usbd_audio_error(const char* msg, int diff);
+--- a/Source/usbd_midi.c
++++ b/Source/usbd_midi.c
+@@ -388,12 +388,14 @@
+ static volatile int midi_tx_lock = 0;
+ 
+ #ifdef USE_USBD_HS
+-void usbd_midi_tx(uint8_t* buf, uint32_t len) {
++uint8_t usbd_midi_tx(uint8_t* buf, uint32_t len) {
+   extern USBD_HandleTypeDef hUsbDeviceHS;
+-  if(hUsbDeviceHS.dev_state == USBD_STATE_CONFIGURED){
++  if(hUsbDeviceHS.dev_state == USBD_STATE_CONFIGURED && !midi_tx_lock){
+     midi_tx_lock = 1;
+     USBD_LL_Transmit(&hUsbDeviceHS, MIDI_IN_EP, buf, len);
++    return 1;
+   }
++  return 0;
+ }
+ uint8_t usbd_midi_connected(void){
+   extern USBD_HandleTypeDef hUsbDeviceHS;
+@@ -402,12 +404,14 @@
+ #endif /* USE_USBD_HS */
+ 
+ #ifdef USE_USBD_FS
+-void usbd_midi_tx(uint8_t* buf, uint32_t len) {
++uint8_t usbd_midi_tx(uint8_t* buf, uint32_t len) {
+   extern USBD_HandleTypeDef hUsbDeviceFS;
+-  if(hUsbDeviceFS.dev_state == USBD_STATE_CONFIGURED){
++  if(hUsbDeviceFS.dev_state == USBD_STATE_CONFIGURED && !midi_tx_lock){
+     midi_tx_lock = 1;
+     USBD_LL_Transmit(&hUsbDeviceFS, MIDI_IN_EP, buf, len);
++    return 1;
+   }
++  return 0;
+ }
+ uint8_t usbd_midi_connected(void){
+   extern USBD_HandleTypeDef hUsbDeviceFS;
