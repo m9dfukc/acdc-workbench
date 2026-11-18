@@ -53,7 +53,7 @@ FLASH_MAX = 131072
 CCMRAM = (0x00001000, 0x00010000)
 VTOR_ALIGN = 1024
 
-# Heißer Pfad (docs/uebergaben/uebergabe-2026-11-16-itcm.md, Gruppen A–H + L, Q7). Symbolnamen wie in nm (gemangelt).
+# Heißer Pfad (Übergabe vom 2026-11-16 zum ITCM, nicht im Repo; Gruppen A–H + L, Q7). Symbolnamen wie in nm (gemangelt).
 # Gruppen wie im Linkerskript (Patch 11); der erste Buchstabe des Schlüssels ist die Gruppe für --groups.
 HOT: dict[str, list[str]] = {
     "A SAI-DMA-ISR": [

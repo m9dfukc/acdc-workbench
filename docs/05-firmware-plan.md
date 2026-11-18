@@ -404,7 +404,7 @@ Jeder Schritt kommt als eigener Abschnitt in `docs/messlog.md` (D4 ff.), Aufnahm
   - Helfer `memset`/`memcpy`/`abs` und die Listenfunktionen
   - die 07d-Funktionen aus `.late_text`
 
-  Die Funktionsliste mit Größen steht in der Übergabe `docs/uebergaben/uebergabe-2026-11-16-itcm.md`.
+  Die Funktionsliste mit Größen stand in der Übergabe vom 2026-11-16 (nicht im Repo). Heute liefert sie `tools/check_itcm.py --ref <Build>` als Tabelle im Report, z. B. in `firmware/builds/acdc1-build6-fx4a/check_itcm.md`.
 - **Q8:** Die Vektortabelle kommt mit ins ITCM, auf 1 KB ausgerichtet. VTOR wird nach dem Kopieren umgesetzt, das Original bleibt im Flash für den Boot.
 - **Q9 Ort:** CCMRAM ab 0x3000, hinter `PROGRAMSTACK`. Der Code muss im Linkerskript **vor** `PROVIDE(_CCMRAM)` stehen, sonst nullt der Patch-Start ihn (`ProgramManager.cpp`, `USE_CCM_RAM`). Heap-Segment 0 schrumpft von 52 auf ≈ 41 KB.
 - **Q10:** Das Rest-Layout wird nicht festgehalten, (b) prüft die Lagenabhängigkeit direkt.

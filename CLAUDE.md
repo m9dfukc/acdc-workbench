@@ -62,7 +62,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 | `docs/04-software-filter.md` | Notch-Bank: Filterform, Python-Prototyp, Plugin, FAUST-Patch |
 | `docs/05-firmware-plan.md` | OpenWare-Stand, Forks, Build-Plan und Ergebnis jedes Builds (chronologisch), Fork, Flashen |
 | `docs/messlog.md` | **Alle eigenen Messungen** (M1 … D49): Setup, Dateien, Linien-Tabelle, Deutung, Einschränkungen |
-| `docs/uebergaben/` | Übergaben zwischen Sitzungen (2026-11-14 bis 2026-11-16), alle erledigt. Weiter nützlich: Prüfablauf Loop-Test, Flash-Schnipsel und Fallstricke in `uebergabe-2026-11-16-patch12b.md`, Hotpath-Fakten in `uebergabe-2026-11-16-itcm.md` |
+| `docs/uebergaben/` | Übergaben zwischen Sitzungen. **Nur lokal, nicht im Repo** (Nutzer-Entscheidung 2026-11-18): Arbeitszettel, die schnell überholt sind. Nie löschen. Dauerhaftes gehört nach `TODO.md`, `CLAUDE.md` oder in den Messlog. **Aktuell: `uebergabe-2026-11-17.md`** (offene Punkte nach fx4b). Weiter nützlich: Prüfablauf Loop-Test, Flash-Schnipsel und Fallstricke in `uebergabe-2026-11-16-patch12b.md`, Hotpath-Fakten in `uebergabe-2026-11-16-itcm.md` |
 | `docs/99-quellen.md` | Alle Links |
 | `docs/en/` | Englische Fassungen von `01`–`05` und `99`, aus dem Deutschen erzeugt. Nie von Hand ändern. Übersicht, Marker-Legende und Glossar in `docs/en/README.md` |
 | `analysis/` | Analyse-Tool: `uv run python -m analysis <ID\|wav…> [--ref …]`, Selbsttest `python -m analysis.selftest`. Module und Grenzen: `docs/03-messplan-python.md` |
@@ -189,7 +189,7 @@ Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`)
 5. Nutzer startet neu: Case aus, USB ab, Case an, USB an
 6. A1 per `owl_read.py`: Version, `SR/BS/CH 48000 8 4`, Slots unverändert
 
-Je Flash ein Ordner in `firmware/flashlog/`. Ein fertiges Skript gibt es noch nicht, ein Schnipsel steht in `docs/uebergaben/uebergabe-2026-11-16-patch12b.md`.
+Je Flash ein Ordner in `firmware/flashlog/`. Ein fertiges Skript gibt es noch nicht, ein Schnipsel steht in `docs/uebergaben/uebergabe-2026-11-16-patch12b.md` (nur lokal).
 
 ### USB-Stabilität prüfen
 
@@ -215,12 +215,12 @@ Je Flash ein Ordner in `firmware/flashlog/`. Ein fertiges Skript gibt es noch ni
 
 Das Projekt ist seit 2026-11-16 ein Git-Repo und liegt öffentlich auf https://github.com/m9dfukc/acdc-workbench (Remote `origin`, Branch `main`).
 
-- **Im Repo:** `docs/`, `tools/`, `analysis/`, `firmware/patches/`, `firmware/itcm-prep/`, `TODO.md`, `CLAUDE.md`, READMEs, `.claude/skills/`, `recordings/manifest.toml`. Aus `out/` nur `*_report.md` und `*-session-table.md`. Aus `firmware/builds/` und `firmware/flashlog/` nur Textdateien.
-- **Nur lokal (`.gitignore`):** WAVs, Plots und JSON in `out/`, `.bin`/`.elf`/Readbacks, `backup/`, `owl-patches/`, `vcv-patches/`, `firmware/_work/`, `firmware/downloads/`, `firmware/releases/`, der Screenshot `docs/img/20261114_d8_vcv-patch.webp`, das Forum-Foto in `docs/research/img/`.
+- **Im Repo:** `docs/` (ohne `docs/uebergaben/`), `tools/`, `analysis/`, `firmware/patches/`, `firmware/itcm-prep/`, `TODO.md`, `CLAUDE.md`, READMEs, `.claude/skills/`, `recordings/manifest.toml`. Aus `out/` nur `*_report.md` und `*-session-table.md`. Aus `firmware/builds/` und `firmware/flashlog/` nur Textdateien.
+- **Nur lokal (`.gitignore`):** WAVs, Plots und JSON in `out/`, `.bin`/`.elf`/Readbacks, `backup/`, `docs/uebergaben/`, `owl-patches/`, `vcv-patches/`, `firmware/_work/`, `firmware/downloads/`, `firmware/releases/`, der Screenshot `docs/img/20261114_d8_vcv-patch.webp`, das Forum-Foto in `docs/research/img/`.
 - **Plots für Docs und README** liegen als Kopie in `docs/img/` (z. B. `psd_fx3l_vs_3d.png`). Auf `out/**/*.png` nicht verlinken, die Dateien fehlen im Repo.
 - **Commit und Push nur mit Freigabe.** Git-Schreibzugriffe (auch `git add`) sperrt die Sandbox (`.git/`), sie brauchen die Ausnahme. Push immer einzeln nachfragen, auch im Submodul.
 - **Vor jedem Commit prüfen:** `git status --short` darf keine Binaries, WAVs oder Dateien aus `backup/` zeigen. Nichts Privates über Geräte-UUIDs, Heimpfad und Vorname hinaus (Nutzer-Entscheidung 2026-11-16).
-- **Sprache:** Deutsch ist die Quelle (Docs, Messlog, Übergaben, `TODO.md`, `CLAUDE.md`, Kommentare im Code, Reports der Analyse). Englisch sind `README.md`, `LICENSE.md` sowie Hilfe- und Konsolentexte der Werkzeuge. Ein Sprachschalter für die Reports ist ein offener Punkt in `TODO.md`.
+- **Sprache:** Deutsch ist die Quelle (Docs, Messlog, `TODO.md`, `CLAUDE.md`, Kommentare im Code, Reports der Analyse). Englisch sind `README.md`, `LICENSE.md` sowie Hilfe- und Konsolentexte der Werkzeuge. Ein Sprachschalter für die Reports ist ein offener Punkt in `TODO.md`.
 - **Konsolentexte der Werkzeuge sind seit 2026-11-16 englisch.** Ältere Einträge im Messlog zitieren noch die deutschen Zeilen (z. B. „Kanal 1 … Ereignisse: 0“ = heute „Channel 1 … Events: 0“). Was in Dateien landet (Reports, Tabellen von `family_table.py`, `check_itcm.md`, Manifest, JSON), bleibt deutsch.
 - **Englische Fassungen (`docs/en/`):** Claude erzeugt sie vollständig aus der deutschen Quelle und stempelt sie mit `tools/i18n_check.py --stamp <datei>`. Aufgefrischt wird zu Meilensteinen (z. B. wenn ein Build zur Alltags-Firmware wird) und vor einem Push, wenn `tools/i18n_check.py` „stale“ meldet und der Nutzer zustimmt. Marker: [belegt] = [sourced], [Code] = [code], [Hypothese] = [hypothesis], [gemessen] = [measured]. Glossar in `docs/en/README.md`. Neue Paare in `PAIRS` im Skript eintragen.
 

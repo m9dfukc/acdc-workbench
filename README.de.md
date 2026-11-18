@@ -101,7 +101,7 @@ Nicht im Repo: die Aufnahmen selbst (8 GB WAV), Plots und JSON-Ergebnisse in `ou
 Die Arbeitsdokumente sind deutsch und bleiben es, Deutsch ist die Quelle.
 
 - Englische Fassungen der Referenz-Docs `01` bis `05` und `99` liegen in [docs/en/](docs/en/README.md). Sie werden aus dem Deutschen erzeugt und zu Meilensteinen aufgefrischt. `python tools/i18n_check.py` listet veraltete Fassungen auf.
-- Das Laborbuch `docs/messlog.md`, die Übergaben, `TODO.md` und `CLAUDE.md` gibt es nur auf Deutsch.
+- Das Laborbuch `docs/messlog.md`, `TODO.md` und `CLAUDE.md` gibt es nur auf Deutsch.
 - Die Werkzeuge geben Hilfe und Meldungen auf Englisch aus. Die Reports der Analyse sind deutsch.
 - Die Recherche-Notizen in `docs/research/notes/` sind englisch.
 

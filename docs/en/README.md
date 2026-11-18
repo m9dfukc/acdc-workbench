@@ -20,7 +20,6 @@ python tools/i18n_check.py
 ## Not translated
 
 - `docs/messlog.md`, the lab notebook with every measurement (entries M1 to D49). The translated documents refer to its entries by ID.
-- `docs/uebergaben/`, handoff notes between working sessions.
 - `docs/00-ausgangsfragen-und-verlauf.md`, the original questions and the course of the research.
 - `TODO.md` and `CLAUDE.md` in the project root.
 

@@ -1,5 +1,5 @@
-<!-- i18n source=docs/05-firmware-plan.md sha256=62ede2448db772e316a6f7dcce8efacac34617084d6ae32d28cfe029af79a086 date=2026-11-17 -->
-> English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-17. The German original is authoritative. This file is generated from it, do not edit it by hand.
+<!-- i18n source=docs/05-firmware-plan.md sha256=b50e999b9f1ff00132978a0e9d4cba56885a510cbad906737fbed317f9bd5ba1 date=2026-11-18 -->
+> English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-18. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 05 – Firmware: Status, Forks, Build Plan
 
@@ -407,7 +407,7 @@ Every step gets its own section in `docs/messlog.md` (D4 ff.), recordings are en
   - helpers `memset`/`memcpy`/`abs` and the list functions
   - the 07d functions from `.late_text`
 
-  The function list with sizes is in the handoff `docs/uebergaben/uebergabe-2026-11-16-itcm.md`.
+  The function list with sizes was in the handoff of 2026-11-16 (not in the repository). Today `tools/check_itcm.py --ref <build>` provides it as a table in the report, e.g. in `firmware/builds/acdc1-build6-fx4a/check_itcm.md`.
 - **Q8:** The vector table also goes into the ITCM, aligned to 1 KB. VTOR is switched after copying, the original stays in the flash for the boot.
 - **Q9 Location:** CCMRAM from 0x3000, behind `PROGRAMSTACK`. In the linker script the code must come **before** `PROVIDE(_CCMRAM)`, otherwise the patch start zeroes it (`ProgramManager.cpp`, `USE_CCM_RAM`). Heap segment 0 shrinks from 52 to ≈ 41 KB.
 - **Q10:** The remaining layout is not pinned down; (b) checks the layout dependence directly.

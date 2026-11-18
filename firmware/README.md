@@ -13,7 +13,7 @@ Alles zur eigenen AC/DC-Firmware. Plan, Begründungen und Ergebnis jedes Builds:
 | `flashlog/` | Je Flash ein Ordner: Geräte-Report vorher/nachher, dfu-util-Logs, Readback (nur lokal, nicht im Repo), SHA-Summen | Unverändert lassen |
 | `downloads/` | Externe Abhängigkeiten mit festem Stand: `OpenWareLibraries-9e8f64e.tar.gz` (Quelle und Aufruf in `docs/05-firmware-plan.md`, E5). Nicht im Repo, `tools/setup_repo.sh` lädt die Datei und prüft die SHA-256 | |
 | `releases/` | Offizielle Release-Binaries zum Vergleich (`v22.5.0/ACDC.bin`). Kein sicherer Rückweg für acdc1 (USB-Bruch). Nicht im Repo, `tools/setup_repo.sh` lädt die Datei | |
-| `itcm-prep/` | Hilfsskripte und Rohliste aus der Vorbereitung von Build 4 (`docs/uebergaben/uebergabe-2026-11-16-itcm.md`). Abgelöst durch `tools/check_itcm.py` | Nur zum Nachschlagen |
+| `itcm-prep/` | Hilfsskripte und Rohliste aus der Vorbereitung von Build 4 (Übergabe vom 2026-11-16, nicht im Repo). Abgelöst durch `tools/check_itcm.py` | Nur zum Nachschlagen |
 | `sim/` | Host-Test der Boot-Menü-Logik (`boot_menu_sim.cpp`), Aufruf `tools/sim_boot_menu.sh` | |
 | `_work/` | Wegwerf-Quellbäume von `build_acdc.sh`. Der Ordner entsteht beim Bauen, ≈ 130 MB je Build | Darf jederzeit gelöscht werden |
 

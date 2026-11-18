@@ -44,7 +44,7 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [ ] Die vier FX-Patches anhören (Slots 2–5, D50). TapeDelay braucht 31 % CPU bei Blockgröße 8
 
 ### 2. Werkzeuge
-- [ ] **Flash-Skript nach `tools/`**: Gerät prüfen (UUID), DFU-Neustart, schreiben, Readback, Vergleich, Flash-Log. Heute ist das ein Ablauf in `CLAUDE.md` und ein Schnipsel in `docs/uebergaben/uebergabe-2026-11-16-patch12b.md`
+- [ ] **Flash-Skript nach `tools/`**: Gerät prüfen (UUID), DFU-Neustart, schreiben, Readback, Vergleich, Flash-Log. Heute ist das ein Ablauf in `CLAUDE.md` und ein Schnipsel in der Übergabe `uebergabe-2026-11-16-patch12b.md` (nur lokal, nicht im Repo)
 - [ ] Flash-Ablauf: Prüfen, ob `dfu-util … :leave` den Neustart (Case aus, USB ab) ersetzen kann, A1 + Loop gegen Kaltstart (Nutzer-Frage 2026-11-16)
 - [ ] Abhängigkeiten von `tools/owl_read.py` festhalten: Python 3.12, `mido`, `python-rtmidi`. `pyproject.toml` verlangt Python ≥ 3.14 und nennt beide Pakete nicht
 - [ ] Werkzeuge in einem Doc beschreiben. Heute stehen sie nur in `CLAUDE.md` und in `--help`, `docs/03` beschreibt nur `analysis/`
