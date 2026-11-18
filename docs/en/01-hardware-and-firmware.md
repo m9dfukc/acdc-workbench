@@ -1,4 +1,4 @@
-<!-- i18n source=docs/01-hardware-und-firmware.md sha256=c34efc0a36447292c852490c41f0d2479b530446434de1552c1e37de0d5138f8 date=2026-11-18 -->
+<!-- i18n source=docs/01-hardware-und-firmware.md sha256=aa60528402345c91ab4ff302119b9c9d90edb35c7e987cd150cf1c705cf0298b date=2026-11-18 -->
 > English translation of [`docs/01-hardware-und-firmware.md`](../../docs/01-hardware-und-firmware.md), as of 2026-11-18. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 01 – Hardware & firmware of the AC/DC
@@ -87,6 +87,7 @@ As of 2026-11-18: researched only, nothing built and nothing measured. The occas
 | Wiring | Both lines go straight to the Xibeca module (pin 74 `I2C_SDA`, pin 73 `I2C_SCL`). No series resistor, no protection, no optocoupler, **no supply** on the header | [sourced] Befaco schematic |
 | MCU pins | TX = PB6 (`UART5_TX`). RX according to the code is PB5 (`UART5_RX`), but the module pin is named `I2C_SDA`, which matches PB7. Which pin is really on the header is open | [code], [hypothesis] |
 | Firmware | UART5 is set up at 115200 baud, but not connected to the MIDI code (`USE_UART_MIDI_RX` is missing, no DMA channel). Serial MIDI needs a build of its own. Template: `XibecaDevKit` (UART7, 31250 baud) | [code], [sourced] thread #2077 |
+| I2C | The header is electrically suited for I2C as well: the nets are named `SDA_RX`/`SCL_TX`, PB7 is already `I2C1_SDA` (open drain) in the code, the HAL driver is built in. I2C is not used, and OpenWare knows no bus between modules. MIDI and I2C share the pins. On the monome ii bus, pin order (there GND, SCL, SDA) and bus voltage (pull-ups to 5 V) do not match as is. Audio channels cannot be added this way | [sourced] Befaco schematic, monome docs, [code] |
 | MIDI CC | CC from the USB host sets patch parameters: CC 20–23 = A–D, 24 = E, 1 = F, 12 = G, 13 = H, 75–106 = AA–DH. The knobs overwrite A–D in every block, AA–AD drive the input LEDs, BA–BD are written by the firmware. So E–H and the extended parameters from AE on are usable via MIDI | [code] |
 | USB host at the front | Does not work: the port is `Device_Only`, the socket supplies no 5 V, the second USB port of the Xibeca module is not wired on the board. A host stack would need an estimated 15–25 KB of 22.5 KB free flash | [code], [sourced] Befaco schematic, size [hypothesis] |
 

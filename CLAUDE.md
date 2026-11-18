@@ -75,7 +75,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 | `owl-patches/`, `vcv-patches/` | Nur lokal, nicht im Repo. `owl-patches/library/`: Quellen von OWL-Patches aus der Library (ohne Lizenz). `owl-patches/acdc-patches/` (`burstMembrane` `78ffa22`), `owl-patches/OwlProgram/` (SDK `60f44ab` + DaisySP `4263388`), `owl-patches/downloads/` (Tarballs), `owl-patches/builds/<name>/` (`patch.bin`, `<name>.syx`, `BUILD_INFO.txt`). `vcv-patches/`: Host-Patches der frühen Messungen |
 | `tools/` | Geräte- und Build-Werkzeuge, siehe unten |
 | `docs/research/report-2026-10-23.md` | Vollständiger Recherchebericht (Deep Research) |
-| `docs/research/notes/*.md` | Rohnotizen der Recherche, englisch, mit allen URLs und Commit-Hashes: Forum-Berichte, Ground-Loop/Filter, OpenWare & Forks, Standalone-FX, Fork-Update 2026-11-14, Code-Lage ↔ Rauschen (`layout_noise_2026-11-16.md`), ITCM-Technik (`daisy_itcm_2026-11-16.md`), Upstream nach 2023 (`upstream_master_2026-11-16.md`), MIDI-Header, serielles MIDI und USB-Host (`midi_header_2026-11-18.md`) |
+| `docs/research/notes/*.md` | Rohnotizen der Recherche, englisch, mit allen URLs und Commit-Hashes: Forum-Berichte, Ground-Loop/Filter, OpenWare & Forks, Standalone-FX, Fork-Update 2026-11-14, Code-Lage ↔ Rauschen (`layout_noise_2026-11-16.md`), ITCM-Technik (`daisy_itcm_2026-11-16.md`), Upstream nach 2023 (`upstream_master_2026-11-16.md`), MIDI-Header, serielles MIDI, I2C und USB-Host (`midi_header_2026-11-18.md`) |
 
 Bei Detailfragen zuerst `docs/research/notes/` durchsuchen, bevor neu recherchiert wird.
 

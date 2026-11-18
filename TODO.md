@@ -96,7 +96,7 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [ ] fx3l-Release von „Vorabversion“ auf Release stellen, wenn Alltagstest und zweite Rauschsitzung bestanden sind
 - [ ] Eventuell: Ergebnisse als GitHub-Issue anlegen. Wo (Upstream `RebelTechnology/OpenWare` oder eigenes Repo) ist offen
 
-### 7. Serielles MIDI über den Header hinten (irgendwann, keine Eile)
+### 7. Serielles MIDI oder I2C über den Header hinten (irgendwann, keine Eile)
 - Nutzer 2026-11-18: im Moment nicht wichtig, könnte später interessant werden. Ziel: MIDI-Controller steuern im Standalone-Betrieb Patch-Parameter (E–H und erweiterte, A–D gehören den Reglern)
 - Stand: nur recherchiert. Header = roher 3,3-V-UART (Pin 1 RX, 2 GND, 3 TX) ohne Versorgung, das vorhandene 2-HP-Breakout ist passiv. Schaltung der Zwischenplatine und Belege: `docs/01`, „MIDI-Header auf der Rückseite“, und `docs/research/notes/midi_header_2026-11-18.md`
 - USB-Host an der vorderen Buchse ist verworfen (Port nur Gerät, keine 5 V, Flash knapp)
@@ -105,6 +105,10 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [ ] Klären, welcher MCU-Pin an Header-Pin 1 liegt (PB5 = UART5 oder PB7 = USART1): Test-Build und Drahtbrücke Pin 3 → Pin 1
 - [ ] Zwischenplatine in Lochraster bauen: erst MIDI In (H11L1, 78L33), MIDI Out (74HC14) nur bei Bedarf
 - [ ] Typ A oder B an den MIDI-Buchsen der Controller prüfen. Controller nur mit USB bleiben außen vor
+- **Alternative I2C statt MIDI** (Nutzer-Frage 2026-11-18): Der Header taugt elektrisch auch für I2C (Netze `SDA_RX`/`SCL_TX`), z. B. als Follower am ii-Bus eines monome crow. MIDI und I2C teilen sich die Pins, es geht nur eines von beiden. Für die Steuerung der kürzere Weg: kein Optokoppler, keine Versorgung. Einzelheiten in der Notiz, Abschnitt 6
+  - [ ] Vor dem Anschließen: Pinfolge kreuzen (ii = GND, SCL, SDA, AC/DC = SDA, GND, SCL) und Busspannung klären. Die ii-Pull-ups gehen laut monome nach 5 V, also 5-V-Festigkeit von PB6/PB7 im Datenblatt prüfen oder Pegelwandler bauen
+  - [ ] Firmware-Patch: I2C1 als Follower mit eigener Adresse, Befehle auf Patch-Parameter legen (Format wie TELEXo, `0x11 Port High Low`). Mit `check_itcm`, Loop-Test und Rausch-A/B
+  - Ein- und Ausgänge erweitern: nur Steuerspannungen und Regler (AC/DC führt den Bus, z. B. TELEXi), mit Rausch-A/B wegen der regelmäßigen Abfragen (D42). Audio geht über I2C nicht
 
 ## Offene Fragen
 - Woher kommt die 119,944-Hz-Familie direkt am Mac?
