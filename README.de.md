@@ -20,9 +20,12 @@ English version: [README.md](README.md)
 | `tools/build_owl_patch.sh` | Baut einen C++-Patch mit OwlProgram für das AC/DC und schreibt die SysEx-Datei für `owl_write.py` |
 | `tools/sim_boot_menu.sh` | Testet die Logik des Boot-Menüs (Patch 15) am Rechner mit simulierten Reglern |
 | `tools/dfu_readback.sh`, `tools/compare_firmware.py` | Internes Flash über DFU lesen und mit einer Referenz vergleichen |
+| `tools/flash_acdc.py` | Flasht einen Build über DFU und führt ein Flash-Log: prüft das Binary offline, liest das Modul aus, startet es in den DFU-Modus, schreibt, liest zurück und vergleicht. `--a1` prüft das Modul nach dem Neustart. Über die Geräte-ID an das Testmodul des Autors gebunden |
 | `tools/build_acdc.sh` | Reproduzierbarer Firmware-Build aus Commit, festem Libraries-Tarball und Patch-Liste. Schreibt `BUILD_INFO.txt` mit allen Prüfsummen |
 | `tools/check_itcm.py` | Prüft einen ITCM-Build am ELF vor dem Flash: was liegt wo, welche Aufrufe verlassen das ITCM, Vergleich mit einem Referenz-Build |
 | `tools/phase_slips.py`, `tools/stale_samples.py` | Prüfen eine Loop-Aufnahme (Out → In) auf verlorene oder doppelte Samples und auf einzelne veraltete Samples |
+| `tools/line_levels.py` | Pegel einzelner Linien je Kanal, direkt bei der Linienfrequenz gemessen, über mehrere Aufnahmen, mit Abstand zum Grundrauschen |
+| `tools/knob_series.py` | Geführte Aufnahmeserie mit den Reglern in vorgegebenen Stellungen: liest die Regler per MIDI, wartet auf die Stellung, nimmt auf und schreibt am Ende eine Tabelle der Linienpegel |
 
 ## Befunde bisher
 
@@ -34,6 +37,7 @@ English version: [README.md](README.md)
 - **Der Kamm folgt dem USB-Start-of-Frame des Host-Controllers.** Seine Grundfrequenz hängt vom USB-Anschluss ab (999,87 bis 1000,00 Hz im Takt des Moduls). An den Ausgängen verschwindet er ohne USB.
 - **Die Lage des Codes im Flash verschiebt die Linien.** Ein Build, der nur Füllbytes ergänzt und an der Funktion nichts ändert, hat die Familien um 1,5 bis 4,5 dB verschoben.
 - **Periodisch laufender Code im ITCM hilft.** Mit dem heißen Pfad im ITCM sinkt die fs/8-Linie um rund 5 dB, die Mischprodukte verschwinden, und das Ergebnis hängt nicht mehr von der Flash-Lage ab.
+- **Kleine Linien aus den Takten der MCU.** Der frei laufende Regler-ADC scannt mit 105,634 kHz und erscheint gefaltet bei 9633,8 Hz, etwa −118 dBFS. Eine weitere Gruppe von Linien (2200,95 Hz und Harmonische) steigt, wenn die vier Regler verschieden stehen: Ein Regler am Anschlag bringt sie auf etwa −100 dBFS, abwechselnde Anschläge auf −94 dBFS, immer noch 19 dB unter dem Kamm. Stehen alle vier Regler gleich, egal wo, bleibt sie bei etwa −116 dBFS. Woher ihre Frequenz kommt, ist offen.
 - **Drei Timing-Fehler im ursprünglichen USB-Audio-Code** wurden dabei gefunden und behoben: ein Feedback in offener Schleife, ein Wettlauf zwischen RX- und TX-DMA und ein Start-of-Frame-Handler, der zweimal je Frame lief.
 
 Firmware `v22.4.r-fx3l` gegen den Vorgänger `v22.4.r-fx2d`, offene Eingänge, Gain auf 12 Uhr, je 2 × 60 s, Pegel in dBFS des USB-Stroms:
@@ -78,7 +82,7 @@ tools/setup_repo.sh    # Submodul, Upstream-Remote, feste Downloads mit Prüfsum
 uv sync
 ```
 
-Die Aufrufe für Aufnahme, Loop-Prüfung, Auslesen und Nachbau stehen im englischen [README.md](README.md#getting-started). Der Flash-Ablauf steht in [CLAUDE.md](CLAUDE.md), Abschnitt „Flash-Ablauf“.
+Die Aufrufe für Aufnahme, Loop-Prüfung, Auslesen und Nachbau stehen im englischen [README.md](README.md#getting-started). Der Flash-Ablauf steht in [CLAUDE.md](CLAUDE.md), Abschnitt „Flash-Ablauf“, als Skript in `tools/flash_acdc.py` (bisher nur ohne Modul geprüft).
 
 ## Aufbau des Repos
 

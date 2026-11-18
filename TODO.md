@@ -16,7 +16,7 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
   - Patch-Wechsel (Patch-Heap im CCM nur noch 39,3 KB)
 - [ ] Hörprobe: Aufnahme mit Kompressor auf der Spur, fx3l gegen 3d. Das war der Anlass des Projekts und ist seit fx3l nicht geprüft
 - [ ] Zweite Rauschsitzung 3d → fx3l → 3d. D48 hatte keine 3d-Startkontrolle, und der Kamm liegt mit +0,2…+0,4 dB an der Schwelle
-- [ ] Linien bei 2000,0002 und 3000,0003 Hz (k·fs/48), die fx3j, noD und fx3k zeigen (D42, D44): bei fx3l prüfen. Die Aufnahmen `B5c-fx3l-r1/r2` liegen vor
+- [ ] Linien bei 2000,0002 und 3000,0003 Hz (k·fs/48), die fx3j, noD und fx3k zeigen (D42, D44): bei fx3l prüfen. Die Aufnahmen `B5c-fx3l-r1/r2` liegen vor. Stand D60: fx4b zeigt sie auch (−104…−108 dB). [Hypothese] Vielfache des 1-kHz-Systemtakts, der in Codec-Zeit bei 1000,0001 Hz liegt. Welcher Takt es ist, im Code nachsehen
 - [ ] Klären, ob der RX-Fix (12b) auch in 3d bzw. einen Standalone-Stand gehört. In 3d wurde der Wettlauf nie gemessen. `acdc1-build3e-fx2e` liegt gebaut bereit
 - [ ] Ursache der Kamm-Änderung +2,9 dB zwischen D35 und D37 klären. Aufbau laut Nutzer unverändert, aber mehr CPU-Last am Mac → A/B Mac im Leerlauf gegen Mac unter Last (z. B. `yes > /dev/null` je Kern), 2 × 60 s offene Eingänge [Hypothese: Host-Last → Masse/SOF]
 - [ ] Optional: HAL löscht `GINTSTS.SOF` vor dem Callback (überzählige Interrupt-Einsprünge weg), A/B gegen fx3l
@@ -31,7 +31,15 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [x] Rausch-A/B fx4b gegen fx3l bestanden: alle Familien innerhalb ±0,4 dB, im Mittel ±0,2 dB (D58). Abnahme von Build 6/6b vollständig
 - [x] fx4b ist die Alltags-Firmware (Nutzer, 2026-11-17, D59). Fork-Branch `acdc/fx1d` lokal nachgezogen (`7ef6284a`, `2c963e3a`, `27d3630b`), ein Build daraus ist bytegleich mit fx4b. `docs/en/05` aufgefrischt
 - [x] Fork-Branch `acdc/fx1d` und Workbench gepusht, Release `acdc-v22.4.r-fx4b` am Fork angelegt (2026-11-17, Freigabe des Nutzers)
-- [ ] **Linien bei 2200,95 / 4401,90 / 6602,85 Hz hängen an der Reglerstellung** (D58): mit Reglern 2 / 127 / 2 / 2 ≈ 20 dB über dem Grundrauschen, auf 12 Uhr weg. Klären: welcher Regler, welcher Anschlag, Pegel über den Regelweg. Danach Abhilfe prüfen (ADC nicht frei laufen lassen, Abtastzeit, Takt), je mit A/B
+- [x] **Linien bei 2200,95 / 4401,90 / 6602,85 Hz: welcher Regler, welcher Anschlag?** Serie K1 (D60): jeder Regler, beide Anschläge, links ≈ 2,5 dB stärker als rechts. Ein Regler am Anschlag hebt die Linien um 13…17 dB, auf 12 Uhr bleiben sie 6…16 dB über dem Grundrauschen. Dazu eine Linie bei 8549,33 Hz
+- [x] **Reglerlinien, Serie K2** (D61): Der Anschlag selbst ist es nicht. LLLL und RRRR liegen wie 12 Uhr, LRLR bringt −94 dB (21 dB über der Kontrolle), der Pegel wächst stetig mit dem Abstand eines Reglers von den anderen. Es zählt der Unterschied zwischen den Reglern
+- [ ] Reglerlinien: Quelle der Frequenzen 2200,95 und 8549,33 Hz finden. 2200,95 Hz steht für einen Durchlauf durch die vier Regler (D61), der ADC-Scan läuft aber mit 105 633,8 Hz und faltet auf 9633,80 Hz (D60). Dazwischen liegen 103 432,86 bzw. 107 834,76 Hz, ein passender Takt ist nicht gefunden. Wege:
+  - an acdc2 nur aufnehmen, Regler in Stellung LRLR. Die Verschiebung der Linie gegen acdc1 ergibt die Quellfrequenz (wie beim ADC-Alias, D60). Braucht eine eigene Freigabe, weil acdc2 Referenz ist, geschrieben wird dabei nichts
+  - Test-Build mit anderer ADC-Abtastzeit: Wandert die Linie mit der Scanrate?
+  - Schaltplan: Zuordnung der ADC-Kanäle 10, 11, 14, 3 zu den Reglern, Beschaltung der Schleifer (Kondensator?), Referenz
+- [ ] Reglerlinien: Abhilfe prüfen, wenn die Quelle klar ist (ein ADC-Scan je Audioblock statt freiem Lauf, längere Abtastzeit), je mit A/B. Schlimmster Fall heute: −94 dB bei LRLR, 19 dB unter dem Kamm
+- [ ] `K2-03-RRRR` zeigt die Mischprodukte aus fs/8 und Kamm 12…17 dB über den Kontrollen (D61, einzelne Aufnahme). Wiederholen: RRRR gegen MMMM, je 2 × 60 s
+- [ ] Linie der ADC-Scanrate bei 9633,80 und 19 267,6 Hz (−116…−129 dB, D60): Abhilfe wäre ein ADC-Start im Blocktakt oder eine Scanrate, die auf ein Vielfaches von 48 kHz fällt. Nur mit A/B, die Linie ist schwach
 - [x] MIDI-Ausfall (D53) eingegrenzt: Wettlauf im MIDI-Sendeweg der Original-Firmware bei Slot-Downloads neben einem laufenden Patch (D54). Die Werkzeuge umgehen den Download
 - [ ] **Firmware-Fix für den MIDI-Sendeweg** (Kandidat Patch 16): nur ein Aufrufer für `transmit()` bzw. Prüfen, Senden und Vorrücken unteilbar machen, dazu Flusskontrolle im `SendResourceTask`. `MidiWriter::transmit` liegt im ITCM, also mit `check_itcm` und Rausch-A/B
 - [x] Neue Patch-Builds gespeichert (D54): TapeDelay, Grainz, RingsReverb mit Limiter, Tanh3 in Slot 5
@@ -44,7 +52,9 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [ ] Die vier FX-Patches anhören (Slots 2–5, D50). TapeDelay braucht 31 % CPU bei Blockgröße 8
 
 ### 2. Werkzeuge
-- [ ] **Flash-Skript nach `tools/`**: Gerät prüfen (UUID), DFU-Neustart, schreiben, Readback, Vergleich, Flash-Log. Heute ist das ein Ablauf in `CLAUDE.md` und ein Schnipsel in einer älteren Übergabe (nur lokal, `docs/uebergaben/`)
+- [x] **Flash-Skript `tools/flash_acdc.py`** (2026-11-18): Offline-Prüfung des Builds, Gerät prüfen (UUID und DFU-Seriennummer), DFU-Neustart, schreiben, Readback, Vergleich, Flash-Log, A1 nach dem Neustart (`--a1`). Geprüft offline und gegen Attrappen für `uv` und `dfu-util`
+- [ ] `tools/flash_acdc.py` beim nächsten echten Flash am Gerät erproben (bisher nur ohne Gerät geprüft)
+- [x] `tools/line_levels.py` (Linienpegel direkt bei der Frequenz) und `tools/knob_series.py` (geführte Reglerserie), 2026-11-18, am Gerät benutzt in D60
 - [ ] Flash-Ablauf: Prüfen, ob `dfu-util … :leave` den Neustart (Case aus, USB ab) ersetzen kann, A1 + Loop gegen Kaltstart (Nutzer-Frage 2026-11-16)
 - [ ] Abhängigkeiten von `tools/owl_read.py` festhalten: Python 3.12, `mido`, `python-rtmidi`. `pyproject.toml` verlangt Python ≥ 3.14 und nennt beide Pakete nicht
 - [ ] Werkzeuge in einem Doc beschreiben. Heute stehen sie nur in `CLAUDE.md` und in `--help`, `docs/03` beschreibt nur `analysis/`

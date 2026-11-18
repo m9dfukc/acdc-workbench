@@ -1443,3 +1443,269 @@ files = ["20261117_acdc1_fx4b-open-inputs-knobs-12_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
 note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:24:36. Stream-Meldungen: 0. owl_read: out/owl_read/B6b-knobs-12 (rc 0)."
+
+[[measurement]]
+id = "K1-01-MMMM"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K1: offene Eingänge, Regler 1–4 = MMMM (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K1-01-MMMM – acdc1 fx4b-open-inputs-K1-01-MMMM, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K1-01-MMMM_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:27:25. Stream-Meldungen: 0. owl_read: out/owl_read/K1-01-MMMM (rc 0)."
+
+[[measurement]]
+id = "K1-02-LMMM"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K1: offene Eingänge, Regler 1–4 = LMMM (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "gvar"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K1-02-LMMM – acdc1 fx4b-open-inputs-K1-02-LMMM, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K1-02-LMMM_gvar_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:28:19. Stream-Meldungen: 0. owl_read: out/owl_read/K1-02-LMMM (rc 0)."
+
+[[measurement]]
+id = "K1-03-RMMM"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K1: offene Eingänge, Regler 1–4 = RMMM (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "gvar"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K1-03-RMMM – acdc1 fx4b-open-inputs-K1-03-RMMM, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K1-03-RMMM_gvar_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:34:24. Stream-Meldungen: 0. owl_read: out/owl_read/K1-03-RMMM (rc 0)."
+
+[[measurement]]
+id = "K1-04-MLMM"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K1: offene Eingänge, Regler 1–4 = MLMM (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "gvar"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K1-04-MLMM – acdc1 fx4b-open-inputs-K1-04-MLMM, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K1-04-MLMM_gvar_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:35:21. Stream-Meldungen: 0. owl_read: out/owl_read/K1-04-MLMM (rc 0)."
+
+[[measurement]]
+id = "K1-05-MRMM"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K1: offene Eingänge, Regler 1–4 = MRMM (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "gvar"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K1-05-MRMM – acdc1 fx4b-open-inputs-K1-05-MRMM, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K1-05-MRMM_gvar_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:36:09. Stream-Meldungen: 0. owl_read: out/owl_read/K1-05-MRMM (rc 0)."
+
+[[measurement]]
+id = "K1-06-MMLM"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K1: offene Eingänge, Regler 1–4 = MMLM (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "gvar"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K1-06-MMLM – acdc1 fx4b-open-inputs-K1-06-MMLM, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K1-06-MMLM_gvar_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:37:01. Stream-Meldungen: 0. owl_read: out/owl_read/K1-06-MMLM (rc 0)."
+
+[[measurement]]
+id = "K1-07-MMRM"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K1: offene Eingänge, Regler 1–4 = MMRM (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "gvar"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K1-07-MMRM – acdc1 fx4b-open-inputs-K1-07-MMRM, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K1-07-MMRM_gvar_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:37:48. Stream-Meldungen: 0. owl_read: out/owl_read/K1-07-MMRM (rc 0)."
+
+[[measurement]]
+id = "K1-08-MMML"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K1: offene Eingänge, Regler 1–4 = MMML (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "gvar"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K1-08-MMML – acdc1 fx4b-open-inputs-K1-08-MMML, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K1-08-MMML_gvar_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:38:42. Stream-Meldungen: 0. owl_read: out/owl_read/K1-08-MMML (rc 0)."
+
+[[measurement]]
+id = "K1-09-MMMR"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K1: offene Eingänge, Regler 1–4 = MMMR (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "gvar"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K1-09-MMMR – acdc1 fx4b-open-inputs-K1-09-MMMR, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K1-09-MMMR_gvar_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:39:27. Stream-Meldungen: 0. owl_read: out/owl_read/K1-09-MMMR (rc 0)."
+
+[[measurement]]
+id = "K1-10-MMMM"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K1: offene Eingänge, Regler 1–4 = MMMM (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K1-10-MMMM – acdc1 fx4b-open-inputs-K1-10-MMMM, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K1-10-MMMM_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:41:28. Stream-Meldungen: 0. owl_read: out/owl_read/K1-10-MMMM (rc 0)."
+
+[[measurement]]
+id = "K2-01-MMMM"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K2: offene Eingänge, Regler 1–4 = MMMM (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K2-01-MMMM – acdc1 fx4b-open-inputs-K2-01-MMMM, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K2-01-MMMM_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:53:03. Stream-Meldungen: 0. owl_read: out/owl_read/K2-01-MMMM (rc 0)."
+
+[[measurement]]
+id = "K2-02-LLLL"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K2: offene Eingänge, Regler 1–4 = LLLL (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "gvar"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K2-02-LLLL – acdc1 fx4b-open-inputs-K2-02-LLLL, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K2-02-LLLL_gvar_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:53:56. Stream-Meldungen: 0. owl_read: out/owl_read/K2-02-LLLL (rc 0)."
+
+[[measurement]]
+id = "K2-03-RRRR"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K2: offene Eingänge, Regler 1–4 = RRRR (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "gvar"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K2-03-RRRR – acdc1 fx4b-open-inputs-K2-03-RRRR, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K2-03-RRRR_gvar_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:54:54. Stream-Meldungen: 0. owl_read: out/owl_read/K2-03-RRRR (rc 0)."
+
+[[measurement]]
+id = "K2-04-LRLR"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K2: offene Eingänge, Regler 1–4 = LRLR (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "gvar"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K2-04-LRLR – acdc1 fx4b-open-inputs-K2-04-LRLR, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K2-04-LRLR_gvar_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:57:00. Stream-Meldungen: 0. owl_read: out/owl_read/K2-04-LRLR (rc 0)."
+
+[[measurement]]
+id = "K2-05-LLRR"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K2: offene Eingänge, Regler 1–4 = LLRR (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "gvar"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K2-05-LLRR – acdc1 fx4b-open-inputs-K2-05-LLRR, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K2-05-LLRR_gvar_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:57:52. Stream-Meldungen: 0. owl_read: out/owl_read/K2-05-LLRR (rc 0)."
+
+[[measurement]]
+id = "K2-06-8MMM"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K2: offene Eingänge, Regler 1–4 = 8MMM (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "gvar"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K2-06-8MMM – acdc1 fx4b-open-inputs-K2-06-8MMM, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K2-06-8MMM_gvar_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:59:02. Stream-Meldungen: 0. owl_read: out/owl_read/K2-06-8MMM (rc 0)."
+
+[[measurement]]
+id = "K2-07-24-M-M-M"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K2: offene Eingänge, Regler 1–4 = 24,M,M,M (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "gvar"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K2-07-24-M-M-M – acdc1 fx4b-open-inputs-K2-07-24-M-M-M, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K2-07-24-M-M-M_gvar_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:59:52. Stream-Meldungen: 0. owl_read: out/owl_read/K2-07-24-M-M-M (rc 0)."
+
+[[measurement]]
+id = "K2-08-44-M-M-M"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K2: offene Eingänge, Regler 1–4 = 44,M,M,M (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "gvar"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K2-08-44-M-M-M – acdc1 fx4b-open-inputs-K2-08-44-M-M-M, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K2-08-44-M-M-M_gvar_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:00:42. Stream-Meldungen: 0. owl_read: out/owl_read/K2-08-44-M-M-M (rc 0)."
+
+[[measurement]]
+id = "K2-09-MMMM"
+date = "2026-11-18"
+device = "acdc1, Firmware AC/DC v22.4.r-fx4b"
+test = "Reglerserie K2: offene Eingänge, Regler 1–4 = MMMM (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr), tools/knob_series.py"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1, wirkt nicht auf die USB-Aufnahme"
+title = "K2-09-MMMM – acdc1 fx4b-open-inputs-K2-09-MMMM, 30 s"
+files = ["20261118_acdc1_fx4b-open-inputs-K2-09-MMMM_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:01:28. Stream-Meldungen: 0. owl_read: out/owl_read/K2-09-MMMM (rc 0)."

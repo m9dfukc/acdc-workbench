@@ -46,7 +46,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 - **Rauschen gegen 3d [gemessen, D48, gilt auch für fx4b, D58]:** fs/8 −5,1 dB, Mischprodukte −35 dB, Rest −1,25 dB, RMS −1,1 dB, Kamm +0,2…+0,4 dB. Der SOF-Kamm ist damit die stärkste verbleibende Störfamilie.
 - **Auf acdc1 liegen fünf Patches** (D54, D56): Slot 1 ACDC, 2 TapeDelay, 3 Grainz, 4 RingsReverb (je mit Limiter auf Out 1/2), 5 Tanh3 (Fassung 2 mit 4× Oversampling, 48 % CPU). Gemerkter Slot zuletzt 5. Die Builds aus D50 und Tanh3 Fassung 1 liegen in `owl-patches/builds-owl2/`. Wechsel vom Rechner aus per `owl_read.py --program N` (wird nicht gemerkt).
 - **Slot-Downloads sind bei laufendem Patch unzuverlässig (D53/D54):** Wettlauf im MIDI-Sendeweg der Original-Firmware [Code]. Daten gehen verloren, einmal sendete acdc1 danach bis zum Neustart kein MIDI mehr. `owl_write.py` deshalb mit `--backup-file` benutzen, `owl_read.py --dump` nur mit Blick auf `ok` im Report. Ein Firmware-Fix steht in `TODO.md`.
-- **Offen:** Hörurteil zu Tanh3, Regler-Linien (D58), Last von Tanh3 (D56), Firmware-Fix für den MIDI-Sendeweg (D54). Alles Weitere: `TODO.md`, Abschnitt „Offen“.
+- **Offen:** Hörurteil zu Tanh3, Quelle der Regler-Linien (D61), Last von Tanh3 (D56), Firmware-Fix für den MIDI-Sendeweg (D54). Alles Weitere: `TODO.md`, Abschnitt „Offen“.
 
 ## Dateien
 
@@ -61,7 +61,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 | `docs/03-messplan-python.md` | Messprotokoll + Spezifikation der Python-Analyse (uv) |
 | `docs/04-software-filter.md` | Notch-Bank: Filterform, Python-Prototyp, Plugin, FAUST-Patch |
 | `docs/05-firmware-plan.md` | OpenWare-Stand, Forks, Build-Plan und Ergebnis jedes Builds (chronologisch), Fork, Flashen |
-| `docs/messlog.md` | **Alle eigenen Messungen** (M1 … D49): Setup, Dateien, Linien-Tabelle, Deutung, Einschränkungen |
+| `docs/messlog.md` | **Alle eigenen Messungen** (M1 … D61): Setup, Dateien, Linien-Tabelle, Deutung, Einschränkungen |
 | `docs/uebergaben/` | Falls es Übergaben zwischen Sitzungen gibt, liegen sie hier. **Nur lokal, nicht im Repo** (Nutzer-Entscheidung 2026-11-18): Arbeitszettel, die schnell überholt sind. Die Datei mit dem jüngsten Datum ist die aktuelle. Nie löschen, nicht committen. `CLAUDE.md` und die anderen Docs verweisen nicht auf einzelne Übergaben, Dauerhaftes gehört nach `TODO.md`, `CLAUDE.md` oder in den Messlog |
 | `docs/99-quellen.md` | Alle Links |
 | `docs/en/` | Englische Fassungen von `01`–`05` und `99`, aus dem Deutschen erzeugt. Nie von Hand ändern. Übersicht, Marker-Legende und Glossar in `docs/en/README.md` |
@@ -71,7 +71,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 | `out/<ID>/` | Report, JSON, Plots je Messung. Dazu `out/*-session-table.md` (Sitzungstabellen), `out/owl_read/` (Geräte-Reports je Aufnahme), `out/v0/` (alte Plots des ersten Skripts, überholte Gain-Deutung im Text) |
 | `firmware/` | Firmware-Arbeit: Quell-Klon, Quelltext-Patches, Builds, Flash-Logs. Übersicht in `firmware/README.md` |
 | `backup/<gerät>/<datum>/` | Geräte-Backups: `flash/` (DFU-Readback), `owl/` (Slots, Settings, Report). Nie überschreiben. Nur lokal, nicht im Repo |
-| `owl/` | Eigene OWL-Patch-Quellen: `Tanh3Patch.hpp` (dreifacher tanh-Waveshaper mit Mix-Kanal), `AcdcOutput.h` (Limiter-Hülle für FX-Patches), `test/` (Host-Test) |
+| `owl/` | Eigene OWL-Patch-Quellen: `Tanh3Patch.hpp` (dreifacher tanh-Waveshaper mit Mix-Kanal), `AcdcOutput.h` (Limiter-Hülle für FX-Patches), `test/` (Host-Test). Der Ordnername bleibt, trotz der Nähe zu `owl-patches/` (Nutzer 2026-11-18) |
 | `owl-patches/`, `vcv-patches/` | Nur lokal, nicht im Repo. `owl-patches/library/`: Quellen von OWL-Patches aus der Library (ohne Lizenz). `owl-patches/acdc-patches/` (`burstMembrane` `78ffa22`), `owl-patches/OwlProgram/` (SDK `60f44ab` + DaisySP `4263388`), `owl-patches/downloads/` (Tarballs), `owl-patches/builds/<name>/` (`patch.bin`, `<name>.syx`, `BUILD_INFO.txt`). `vcv-patches/`: Host-Patches der frühen Messungen |
 | `tools/` | Geräte- und Build-Werkzeuge, siehe unten |
 | `docs/research/report-2026-10-23.md` | Vollständiger Recherchebericht (Deep Research) |
@@ -90,6 +90,7 @@ Bei Detailfragen zuerst `docs/research/notes/` durchsuchen, bevor neu recherchie
 | `sim_boot_menu.sh` | Host-Test der Boot-Menü-Logik (Patch 15/15b) mit simulierten Reglern |
 | `test_owl_dsp.sh` | Host-Test der eigenen Patch-Quellen in `owl/` (Tanh3, Limiter) |
 | `dfu_readback.sh`, `compare_firmware.py` | Internes Flash lesen und mit einer Referenz vergleichen |
+| `flash_acdc.py` | Build auf acdc1 flashen: Offline-Prüfung, Auslesen, DFU-Neustart, Schreiben, Readback-Vergleich, Flash-Log. `--a1` prüft nach dem Neustart. Ohne `--yes` nur die Offline-Prüfung |
 | `build_acdc.sh` | Reproduzierbarer Firmware-Build aus Commit + Libraries-Tarball + Patches |
 | `setup_repo.sh` | Frischen Klon einrichten: Submodul, `upstream`-Remote, Libraries-Tarball und offizielle `ACDC.bin` mit SHA-Prüfung |
 | `i18n_check.py` | Listet veraltete englische Fassungen in `docs/en/` auf (Prüfsumme der deutschen Quelle im Kopf). `--stamp` schreibt den Kopf nach einer neuen Übersetzung |
@@ -97,6 +98,8 @@ Bei Detailfragen zuerst `docs/research/notes/` durchsuchen, bevor neu recherchie
 | `phase_slips.py`, `stale_samples.py` | Loop-Aufnahmen auf Sample-Slips und einzelne veraltete Samples prüfen |
 | `family_table.py` | Familienpegel mehrerer Messungen, Δ gegen die Kontrolle |
 | `crosstalk_lines.py`, `click_sensitivity.py` | Übersprechen der Ausgänge, Empfindlichkeit des Klick-Detektors |
+| `line_levels.py` | Pegel einzelner Linien je Kanal direkt bei der Linienfrequenz, für mehrere Aufnahmen, mit Abstand zum Grundrauschen. Trifft die Handwerte aus D58 auf 0,1 dB |
+| `knob_series.py` | Geführte Aufnahmeserie mit Reglern in vorgegebenen Stellungen: liest CC 20–23, wartet auf die Stellung, nimmt mit `acdc_rec.py` auf, am Ende Tabelle `out/<serie>-session-table.md`. Läuft wie `owl_read.py` mit Python 3.12 und mido, `--simulate` ohne Gerät |
 
 ## Konventionen
 
@@ -138,14 +141,23 @@ Bei Detailfragen zuerst `docs/research/notes/` durchsuchen, bevor neu recherchie
   - **SOF-Kamm** bei k·≈1 kHz
   - **fs/8** = 6000,00 Hz (Audio-Blockrate bei Blockgröße 8, sample-synchron)
   - **Mischprodukte** n·f1k + m·6000 Hz
-  - **LED-PWM** 2320,98 Hz (nur mit Signal oder hohem Gain, H3 noch ohne Beweis)
+  - **LED-PWM** 2320,98 Hz auf acdc2, 2320,54 Hz auf acdc1 (nur mit Signal oder hohem Gain, H3 noch ohne Beweis)
 - **Der Kamm hängt am USB-SOF des Host-Controllers [gemessen, S2-6].** f0 hängt vom Anschluss ab: Mac-Port 999,99 Hz, TB-Hub 999,868 oder 999,997 Hz je Port (im acdc1-Takt). Ein Notch-Filter muss f0 je Modul und Anschluss messen.
 - **Am Ausgang ist der Kamm ohne USB weg und schon ohne Stream da [gemessen, D20].** Standalone ist der Ausgang sauber.
 - **Masseschleife [gemessen, D21]:** nur mit AC/DC am Mac-Port und UMC am Hub (+20 dB). Beide am Hub → weg. Kein Isolator nötig. Die Alltags-Kette ist für Aufnahmen in Ordnung (D22/D23).
 - **Die Lage des Codes im Speicher verschiebt die Störlinien [gemessen, D33].** Ein reiner Füll-Build ohne Funktionsänderung ändert fs/8, Kamm und Mischprodukte um 1,5–4,5 dB. Liegt der heiße Pfad im ITCM, zählt die Flash-Lage nicht mehr (fx3lp ≤ 0,25 dB bei fx3l, D48).
 - **Was die CPU im Blocktakt tut, erscheint bei fs/8 [gemessen, D42]:** Ein paar µs Abfrage eines DMA-Registers pro Block heben fs/8 um ≈ 10,6 dB. Mechanismus [Hypothese]: Busverkehr bzw. Strompuls.
 - **Den Kamm senkt nur USB-Code im ITCM [gemessen, D42/D44]:** USB im Flash +2,5…+3,5 dB gegen 3d, im ITCM ±0.
-- **Regler am Anschlag erzeugen eigene Linien [gemessen, D58]:** 2200,95 / 4401,90 / 6602,85 Hz, ≈ 20 dB über dem Grundrauschen (−92…−97 dB), an den Gerätetakt gekoppelt, unabhängig von der Firmware (fx3l = fx4b). Mit allen Reglern auf 12 Uhr sind sie weg. Welcher Anschlag sie auslöst, ist offen. Rauschmessungen deshalb immer mit Reglern auf 12 Uhr.
+- **Ungleich gestellte Regler heben eigene Linien an [gemessen, D58, D60, D61]:** 2200,95 / 4401,90 / 6602,85 Hz und 8549,33 Hz, an den Gerätetakt gekoppelt, unabhängig von der Firmware (fx3l = fx4b).
+  - **Es zählt der Unterschied zwischen den Reglern, nicht der Anschlag [gemessen, D61].** Alle vier am selben Anschlag liegen wie 12 Uhr (−114…−119 dB). Ein Regler allein am Anschlag bringt ≈ −100 dB, abwechselnd links und rechts (LRLR) −94 dB. Der Pegel wächst stetig mit dem Abstand.
+  - Das Muster bestimmt die Linie: LLRR hebt 2200,95 und 6602,85 Hz, LRLR hebt 4401,90 Hz.
+  - Auf 12 Uhr bleiben sie 6…16 dB über dem Grundrauschen, weg sind sie nie.
+  - [Hypothese] Der Abtastkondensator des Regler-ADC wird von Kanal zu Kanal umgeladen. Die Quelle der Frequenz 2200,95 Hz ist offen: Die ADC-Scanrate faltet auf 9633,80 Hz, die LED-PWM liegt bei 2320,54 Hz.
+  - Rauschmessungen deshalb immer mit allen Reglern auf 12 Uhr.
+- **Drei Linien stammen aus Takten der MCU [Code, gemessen, D60]:**
+  - Scanrate des Regler-ADC 105 633,8 Hz, gefaltet auf 9633,80 und 19 267,6 Hz (acdc2: 9653,46 Hz), −116…−129 dB, fast unabhängig von den Reglern.
+  - LED-PWM = 240 MHz / (101 × 1024) = 2320,54 Hz auf acdc1. Die 2320,98 Hz der frühen Messungen gelten für acdc2 (Abtastrate 47 991 Hz).
+  - [Hypothese] 2000,0002 und 3000,0003 Hz sind Vielfache des 1-kHz-Systemtakts.
 - Gewinn einer idealen Notch-Bank: 4–10 dB mit dem Default-Patch (M1/M2, Serie 2, beide Module), bei fx3l ≈ 5,8 dB (RMS gegen Rest, D48). Ein Filter im Rechner ist optional und hängt davon ab, wie viel Störgeräusch am Ende bleibt (`TODO.md`).
 
 ## Firmware (Kurzform, Details in `docs/05-firmware-plan.md`)
@@ -189,7 +201,16 @@ Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`)
 5. Nutzer startet neu: Case aus, USB ab, Case an, USB an
 6. A1 per `owl_read.py`: Version, `SR/BS/CH 48000 8 4`, Slots unverändert
 
-Je Flash ein Ordner in `firmware/flashlog/`. Ein fertiges Skript gibt es noch nicht (`TODO.md`, „Werkzeuge“).
+Je Flash ein Ordner in `firmware/flashlog/`.
+
+**Als Skript (seit 2026-11-18): `tools/flash_acdc.py`**, außerhalb des Sandbox. Es führt die Schritte 1–4 aus und nach dem Neustart Schritt 6:
+
+- `python3 tools/flash_acdc.py <build>`: nur die Offline-Prüfung (Größe, Vektortabelle, Version, SHA gegen `BUILD_INFO.txt`, `check_itcm.json`). `<build>` ist eine `.bin`, ein Build-Ordner oder ein Ordnername in `firmware/builds/`.
+- `… <build> --yes [--name <log>]`: flasht acdc1. Geprüft werden die MIDI-Geräte-ID und die DFU-Seriennummer. Der Log-Ordner heißt `firmware/flashlog/<datum>_<name>` (Standard: Build-Ordner ohne `acdc1-`), ein vorhandener wird nie benutzt (dann z. B. `--name …-zurueck`).
+- `… --a1 <log-ordner>`: nach dem Neustart. Prüft Gerät, Version, 48000 Hz, Blockgröße 8 und die Slots gegen den Stand vor dem Flash. Die Kanalzahl prüft es nicht.
+- `--from-dfu`: acdc1 steht schon im DFU-Modus (z. B. nach einem fehlgeschlagenen Flash). Dann nicht neu starten, sondern damit den Rückweg flashen.
+- Bricht es ab, bevor etwas geschrieben wurde, benennt es den Log-Ordner in `…-abgebrochen-<zeit>` um.
+- **Stand:** offline und gegen Attrappen für `uv` und `dfu-util` geprüft, dazu gegen die 33 vorhandenen Readbacks. Am Gerät lief es noch nicht. Der erste echte Flash damit ist die Probe.
 
 ### USB-Stabilität prüfen
 

@@ -20,9 +20,12 @@ Deutsche Fassung: [README.de.md](README.de.md)
 | `tools/build_owl_patch.sh` | Builds a C++ patch with OwlProgram for the AC/DC and writes the SysEx file for `owl_write.py` |
 | `tools/sim_boot_menu.sh` | Tests the boot menu logic (patch 15) on the host with simulated knobs |
 | `tools/dfu_readback.sh`, `tools/compare_firmware.py` | Read the internal flash over DFU and compare it with a reference binary |
+| `tools/flash_acdc.py` | Flashes a build over DFU with a flash log: checks the binary offline, reads the module, restarts it into DFU, writes, reads back and compares. `--a1` checks the module after the restart. Tied to the author's test module by its device ID |
 | `tools/build_acdc.sh` | Reproducible firmware build from a commit, a pinned library tarball and a list of patches. Writes `BUILD_INFO.txt` with all checksums |
 | `tools/check_itcm.py` | Checks an ITCM build on the ELF before it is flashed: what sits where, which calls leave ITCM, comparison with a reference build |
 | `tools/phase_slips.py`, `tools/stale_samples.py` | Check a loop-back recording (out → in) for lost or repeated samples and for single stale samples |
+| `tools/line_levels.py` | Level of single lines per channel, measured right at the line frequency, across several recordings, with the distance to the noise floor |
+| `tools/knob_series.py` | Guided series of recordings with the knobs in given positions: reads the knobs over MIDI, waits until they are in place, records, and writes a table of the line levels at the end |
 
 ## Findings so far
 
@@ -34,6 +37,7 @@ Deutsche Fassung: [README.de.md](README.de.md)
 - **The comb follows the USB start-of-frame of the host controller.** Its fundamental changes with the USB port (999.87 to 1000.00 Hz in the module's clock). On the outputs it disappears without USB.
 - **Where code sits in flash shifts the lines.** A build that only adds padding, with no change in function, moved the families by 1.5 to 4.5 dB.
 - **Running the periodic code from ITCM helps.** With the hot path in ITCM, the fs/8 line drops by about 5 dB, the mixing products disappear, and the result no longer depends on the flash layout.
+- **Small lines from the MCU's own clocks.** The free-running knob ADC scans at 105.634 kHz and shows up folded at 9633.8 Hz, about −118 dBFS. A further set of lines (2200.95 Hz and its harmonics) rises when the four knobs are set differently: one knob at an end stop brings it to about −100 dBFS, alternating stops to −94 dBFS, still 19 dB below the comb. With all four knobs alike, at whatever position, it stays near −116 dBFS. Where its frequency comes from is open.
 - **Three timing bugs in the original USB audio code** were found and fixed on the way: a feedback loop that ran open, a race between the RX and TX DMA, and a start-of-frame handler that ran twice per frame.
 
 Firmware `v22.4.r-fx3l` against the previous build `v22.4.r-fx2d`, open inputs, gain at 12 o'clock, 2 × 60 s each, levels in dBFS of the USB stream:
@@ -114,7 +118,13 @@ FW_VERSION=v22.4.r-fx4b tools/build_acdc.sh my-fx4b db9d3dd \
   $P/14-usbd-sof-once-per-frame.patch $P/15b-boot-menu-slot-select-30s.patch
 ```
 
-The flash procedure (read out, restart into DFU, write, read back, compare, restart) is described in [CLAUDE.md](CLAUDE.md), section "Flash-Ablauf". There is no finished flash script yet.
+The flash procedure (read out, restart into DFU, write, read back, compare, restart) is described in [CLAUDE.md](CLAUDE.md), section "Flash-Ablauf". `tools/flash_acdc.py` runs these steps and keeps a flash log. It only accepts the author's test module: the MIDI device ID and the DFU serial number are constants at the top of the script. So far it has been tested without a module only.
+
+```sh
+python3 tools/flash_acdc.py acdc1-build6b-fx4b          # offline checks only
+python3 tools/flash_acdc.py acdc1-build6b-fx4b --yes    # flash
+python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build6b-fx4b   # after the restart
+```
 
 ## Repository layout
 

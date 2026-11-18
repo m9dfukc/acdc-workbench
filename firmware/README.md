@@ -10,7 +10,7 @@ Alles zur eigenen AC/DC-Firmware. Plan, Begründungen und Ergebnis jedes Builds:
 | `patches/` | Quelltext-Patches für `build_acdc.sh`, siehe Liste unten | Nicht umbenennen, `BUILD_INFO.txt` nennt sie mit SHA |
 | `builds/` | Fertige Builds, je Ordner `ACDC.bin`, `ACDC.elf` (beide nur lokal, nicht im Repo), `build.log`, `BUILD_INFO.txt`, bei ITCM-Builds dazu `check_itcm.md`/`.json`. Siehe Liste unten | Geflashte Builds nie überschreiben |
 | `builds/archive/` | Überholte Builds: Reproduktions-Builds `repro-*` (E5), Build 1 (`v22.4.s-thru1`, geflasht, kein Audio, D10), Build 2 alt (`v22.4.s-fx1`, nie geflasht) | Nur zum Nachschlagen |
-| `flashlog/` | Je Flash ein Ordner: Geräte-Report vorher/nachher, dfu-util-Logs, Readback (nur lokal, nicht im Repo), SHA-Summen | Unverändert lassen |
+| `flashlog/` | Je Flash ein Ordner: Geräte-Report vorher/nachher, dfu-util-Logs, Readback (nur lokal, nicht im Repo), SHA-Summen. Ab 2026-11-18 von `tools/flash_acdc.py` angelegt, dann mit `flash_report.json` | Unverändert lassen |
 | `downloads/` | Externe Abhängigkeiten mit festem Stand: `OpenWareLibraries-9e8f64e.tar.gz` (Quelle und Aufruf in `docs/05-firmware-plan.md`, E5). Nicht im Repo, `tools/setup_repo.sh` lädt die Datei und prüft die SHA-256 | |
 | `releases/` | Offizielle Release-Binaries zum Vergleich (`v22.5.0/ACDC.bin`). Kein sicherer Rückweg für acdc1 (USB-Bruch). Nicht im Repo, `tools/setup_repo.sh` lädt die Datei | |
 | `itcm-prep/` | Hilfsskripte und Rohliste aus der Vorbereitung von Build 4 (Übergabe vom 2026-11-16, nicht im Repo). Abgelöst durch `tools/check_itcm.py` | Nur zum Nachschlagen |

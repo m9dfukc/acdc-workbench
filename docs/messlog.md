@@ -1822,3 +1822,88 @@ Das Gerät antwortete danach weiter. Der Fehler tritt also auch mit einem alten,
 
 **Nachtrag D59 (2026-11-17, Freigabe des Nutzers):** Fork-Branch `acdc/fx1d` (Spitze `27d3630b`) und die Workbench sind gepusht. Release am Fork: `acdc-v22.4.r-fx4b`, Tag auf `27d3630b`, Dateien `ACDC-v22.4.r-fx4b.bin` (108 496 B, `a21f35c9…`) und `BUILD_INFO-v22.4.r-fx4b.txt`.
 
+
+### D60 – Reglerserie K1: Welche Regler und welcher Anschlag heben die Linien bei 2200,95 Hz? (2026-11-18, 13:27–13:42)
+
+**Setup:** acdc1, fx4b, Alltags-Kette, Eingänge offen, Slot 1 „ACDC“ (per Program Change, vorher lief Tanh3). Geführte Serie mit `tools/knob_series.py --series K1`: Das Werkzeug liest die Regler als CC 20–23, wartet auf die Stellung und nimmt dann mit `tools/acdc_rec.py` 30 s auf (duplex, Nullen am Ausgang, `--owl-read`). Zehn Aufnahmen `K1-01-MMMM` … `K1-10-MMMM`: alle auf 12 Uhr, dann jeder Regler einzeln am Links- und am Rechtsanschlag (die anderen auf 12 Uhr), am Ende wieder alle auf 12 Uhr. Gelesene Werte: Anschläge 2 und 127, „12 Uhr“ 54…73. Zwischen `K1-02` und `K1-03` lagen etwa 6 min Pause. Tabelle mit allen Kanälen: `out/K1-session-table.md`, Werte: `out/K1-lines.json`, Geräte-Reports: `out/owl_read/K1-*`.
+
+**Auswertung:** `tools/line_levels.py` (neu): Pegel direkt bei der Linienfrequenz, Hann über die ganze Aufnahme, Datei-dBFS. Es trifft die Handwerte aus D58 auf 0,1 dB. Der Abstand zum Grundrauschen ist dieselbe Messung an 42 Stellen neben der Linie (Median), Rauschen allein ergibt ≈ 0 dB.
+
+**Ergebnis** (Leistungsmittel über 4 Kanäle, Δ gegen das Mittel der beiden 12-Uhr-Kontrollen):
+
+| Aufnahme | Regler 1–4 | 2200,95 Hz | 4401,90 Hz | 6602,85 Hz | 8549,33 Hz | Summe der ersten drei |
+|---|---|---|---|---|---|---|
+| `K1-01-MMMM` (Kontrolle) | 12 Uhr | −125,5 | −120,3 | −125,0 | −136,3 | −118,1 |
+| `K1-02-LMMM` | 1 links | −112,5 (+11,9) | −102,0 (+16,6) | −109,1 (+14,8) | −115,5 (+16,6) | −100,9 |
+| `K1-03-RMMM` | 1 rechts | −110,4 (+14,0) | −105,3 (+13,3) | −110,1 (+13,8) | −116,0 (+16,1) | −103,2 |
+| `K1-04-MLMM` | 2 links | −110,4 (+14,0) | −102,2 (+16,5) | −111,1 (+12,7) | −116,7 (+15,4) | −101,1 |
+| `K1-05-MRMM` | 2 rechts | −111,2 (+13,2) | −105,9 (+12,8) | −111,1 (+12,7) | −116,0 (+16,1) | −103,8 |
+| `K1-06-MMLM` | 3 links | −108,1 (+16,3) | −102,8 (+15,8) | −110,1 (+13,7) | −118,8 (+13,3) | −101,1 |
+| `K1-07-MMRM` | 3 rechts | −113,0 (+11,5) | −104,3 (+14,4) | −117,8 (+6,0) | −115,3 (+16,8) | −103,6 |
+| `K1-08-MMML` | 4 links | −108,4 (+16,0) | −100,7 (+17,9) | −115,0 (+8,8) | −115,1 (+17,0) | −99,9 |
+| `K1-09-MMMR` | 4 rechts | −107,1 (+17,4) | −105,8 (+12,9) | −121,5 (+2,4) | −117,8 (+14,3) | −103,3 |
+| `K1-10-MMMM` (Kontrolle) | 12 Uhr | −123,6 | −117,5 | −123,0 | −130,0 | −115,6 |
+
+- Die Linienfrequenzen sind in allen zehn Aufnahmen gleich: 2200,950 / 4401,900 / 6602,850 Hz (Raster 0,008 Hz).
+- fs/8 (6000 Hz): −90,6 dB in `K1-01` und `K1-02`, danach −88,4…−88,9 dB in allen acht Aufnahmen. Der Sprung liegt in der Pause, nicht an einem Regler.
+
+**Deutung:**
+- [gemessen] **Jeder der vier Regler hebt die Linien an, und zwar an beiden Anschlägen.** Die Frage „welcher Regler, welcher Anschlag“ aus D58 ist damit beantwortet: alle, beide. Ein einzelner Regler am Anschlag hebt die drei Linien zusammen um 13…17 dB über das Mittel der 12-Uhr-Kontrollen.
+- [gemessen] **Der Linksanschlag wirkt stärker als der Rechtsanschlag, welcher Regler es ist, zählt kaum.** Summe der drei Linien: links −99,9…−101,1 dB, rechts −103,2…−103,8 dB. Der Unterschied steckt vor allem in 4401,90 Hz (links ≈ 3,5 dB mehr).
+- [gemessen] **Auf 12 Uhr sind die Linien nicht weg.** Sie liegen in beiden Kontrollen 6…16 dB über dem Grundrauschen. Das gilt auch für `B6b-knobs-12` (7…17 dB) und für `B5c-fx3l-r1` vom 2026-11-16 (15…18 dB bei 60 s). D58 schrieb „am Grundrauschen“, das war zu grob: Die Regler am Anschlag verstärken eine Linie, die es immer gibt.
+- [gemessen] Die Endkontrolle liegt 2…3 dB über der Startkontrolle (Summe −115,6 gegen −118,1 dB). Die Regler standen am Ende etwas anders (Regler 1/2/4: 70/62/58 → 72/67/54). Ob das die Ursache ist oder Drift, ist offen.
+- [gemessen] Eine vierte Linie bei **8549,33 Hz** kommt mit jedem Anschlag (+13…+17 dB, −115…−119 dB), dazu 10750,3 Hz (= 8549,33 + 2200,95) und die vierte Harmonische 8803,80 Hz. 8549,33 Hz ist kein Vielfaches von 2200,95 Hz.
+- D58 mit 2 / 127 / 2 / 2 (drei Regler links, einer rechts) lag auf Kanal 1 bei −102,6 / −97,9 / −104,1 dB, also 2…8 dB über Regler 1 allein am Linksanschlag (`K1-02`). Mehr Regler am Anschlag heben die Linien weiter an (anderer Tag, deshalb nur als Hinweis).
+
+**Nebenbefund: Die Scanrate des Regler-ADC steht im Spektrum [Code, gemessen].**
+- [Code] ADC1 läuft frei im Scan über 4 Kanäle: 12 Bit, Abtastzeit 64,5 Takte, ADC-Takt = HCLK/4 (`ACDC/Core/Src/main.c`). Mit HCLK = 240 MHz, dem festen Teiler 2 des H7 und 6,5 Takten Wandlung je Kanal (Werte für Teiler und Wandlung aus dem Gedächtnis, nicht nachgeschlagen) sind das 30 MHz / 284 = **105 633,80 Hz**. Gefaltet an 2 × 48 kHz ergibt das 9633,80 Hz, die zweite Harmonische 19 267,61 Hz.
+- [gemessen] Beide Linien stehen in allen K1-Aufnahmen: 9633,80 Hz bei −116…−120 dB (14…20 dB über dem Grundrauschen), 19 267,6 Hz bei −118…−129 dB. Auch `B5c-fx3l-r1` und `B6b-fx3l-r1` zeigen 9633,82 Hz. Eine Gegenrechnung mit 288 Takten (8166,67 Hz) liegt am Grundrauschen.
+- [gemessen] **Gegenprobe an acdc2** (`S2-1`, `S2-2`, v22.4.q, Abtastrate 47 991,07 Hz): Dort liegt die Linie bei 9653,46 Hz und 19 306,91 Hz. Erwartet für eine Quelle bei 105 633,8 Hz, die am Quarz hängt: (105 633,8 − 2 × 47 991,07) × 48 000 / 47 991,07 = 9653,46 Hz. Aus der Verschiebung zwischen den Modulen (19,65 Hz) folgt die Quellfrequenz auch ohne den Code: ≈ 105,61 kHz ± 0,04.
+- Diese Linien hängen kaum an der Reglerstellung (9633,80 Hz: −1,3…+2,2 dB gegen die Kontrollen).
+- **Die Reglerlinien selbst passen nicht zur Scanrate.** Die Harmonischen von 105 633,8 Hz falten auf 9633,8 / 19 267,6 / 19 098,6 / 9464,8 / 169,0 Hz usw., 2200,95 Hz und 8549,33 Hz sind nicht darunter. Geprüft und verworfen sind auch: LED-PWM (siehe unten), ganzzahlige Teiler von 30, 60 und 240 MHz bis auf 13 ppm (zu ungenau, die Linie steht auf ≈ 4 ppm fest). Die Quelle der Reglerlinien ist offen.
+
+**Zwei weitere Linien lassen sich aus dem Takt ableiten:**
+- [Code, gemessen] **LED-PWM auf acdc1 = 2320,54 Hz**, nicht 2320,98 Hz: Timer-Takt 240 MHz / (101 × 1024) = 2320,5446 Hz. In den K1-Aufnahmen stehen 2320,54 / 4641,09 / 6961,63 Hz bei −119…−124 dB (8…15 dB über dem Grundrauschen), unabhängig von den Reglern. Die 2320,98 Hz aus M2/S2 gelten für acdc2: 2320,5446 × 48 000 / 47 991,07 = 2320,98 Hz.
+- [Hypothese] **Die Linien bei 2000,0002 und 3000,0003 Hz (D42, D44, D58) sind Vielfache des 1-kHz-Systemtakts.** Laut PLL3-Einstellung läuft der Codec mit 47 999,9951 Hz in Quarz-Zeit [Code], ein Quarz-genauer 1-kHz-Takt erscheint dann bei 1000,0001 Hz. Das passt auf die Nachkommastellen. Welcher Takt es ist (FreeRTOS-Tick, SysTick), ist nicht geprüft.
+
+**Mechanismus der Reglerlinien [Hypothese]:** Am Anschlag liegt der Schleifer an Masse oder an der Referenz, auf 12 Uhr liegen alle vier Eingänge nahe derselben Spannung. Im Scan muss der Abtastkondensator bei einem Regler am Anschlag zweimal je Durchlauf um ≈ 1,65 V umgeladen werden, bei vier Reglern auf 12 Uhr fast gar nicht. Das erklärt „jeder Regler, beide Anschläge“ und den Hinweis aus D58, dass mehr Regler am Anschlag mehr bringen. Es erklärt nicht die Frequenz. Vorhersage für den nächsten Test: Stehen alle vier Regler am selben Anschlag (LLLL oder RRRR), sind die Linien so schwach wie auf 12 Uhr, bei LRLR am stärksten. Kommen sie bei LLLL trotzdem, liegt es am Anschlag selbst (z. B. ADC-Wert am Bereichsende) und nicht am Spannungsunterschied zwischen den Kanälen.
+
+**Einschränkungen:** Je Stellung eine Aufnahme von 30 s, keine Wiederholung. Die Kontrollen unterscheiden sich um 2…3 dB, kleinere Unterschiede zwischen Reglern sagen deshalb nichts. Im Band 100…1300 Hz liegen schwache, wandernde Töne aus dem Rack (z. B. 740, 962, 1025 Hz), die nichts mit den Reglern zu tun haben. Größenordnung: Ein Regler am Anschlag bringt zusammen ≈ −100 dB, der Kamm liegt bei −75 dB, fs/8 bei −89 dB.
+
+**Fazit:** Für Aufnahmen spielt die Reglerstellung fast keine Rolle (25 dB unter dem Kamm). Die Regel „Rauschmessungen mit Reglern auf 12 Uhr“ bleibt. Nächster Schritt: Serie K2 mit LLLL, RRRR, LRLR und einem Regler in Zwischenstellungen.
+
+### D61 – Reglerserie K2: Nicht der Anschlag zählt, sondern der Unterschied zwischen den Reglern (2026-11-18, 13:52–14:02)
+
+**Setup:** wie D60, gleiche Sitzung, Rack unverändert. `tools/knob_series.py --series K2 --steps MMMM LLLL RRRR LRLR LLRR 8,M,M,M 24,M,M,M 44,M,M,M MMMM`, neun Aufnahmen von 30 s. Buchstaben und Zahlen stehen für Regler 1–4 in dieser Reihenfolge (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr, Zahl = CC-Wert). Gelesene Werte und alle Kanäle: `out/K2-session-table.md`, `out/K2-lines.json`.
+
+**Ergebnis** (Leistungsmittel über 4 Kanäle, Datei-dBFS, `tools/line_levels.py`):
+
+| Aufnahme | Regler gelesen | 2200,95 Hz | 4401,90 Hz | 6602,85 Hz | 8549,33 Hz | Summe der ersten drei |
+|---|---|---|---|---|---|---|
+| `K2-01-MMMM` (Kontrolle) | 72 / 67 / 69 / 54 | −123,2 | −118,0 | −123,7 | −129,6 | −116,0 |
+| `K2-02-LLLL` | 2 / 2 / 2 / 2 | −127,9 | −120,3 | −129,3 | −134,6 | **−119,2** |
+| `K2-03-RRRR` | 127 / 127 / 127 / 127 | −118,8 | −116,0 | −125,6 | −131,0 | **−113,9** |
+| `K2-04-LRLR` | 2 / 127 / 2 / 127 | −109,9 | −94,6 | −108,2 | −103,1 | **−94,3** |
+| `K2-05-LLRR` | 2 / 2 / 127 / 127 | −102,1 | −110,6 | −104,2 | −118,0 | **−99,6** |
+| `K2-06-8MMM` | 8 / 62 / 63 / 62 | −112,4 | −102,1 | −109,9 | −116,2 | −101,1 |
+| `K2-07-24-M-M-M` | 24 / 62 / 63 / 62 | −116,8 | −104,5 | −112,8 | −119,2 | −103,7 |
+| `K2-08-44-M-M-M` | 42 / 62 / 63 / 62 | −121,2 | −107,9 | −117,7 | −123,5 | −107,3 |
+| `K2-09-MMMM` (Kontrolle) | 60 / 63 / 63 / 62 | −125,0 | −114,7 | −133,2 | −134,5 | −114,2 |
+
+- Linienfrequenzen wie in D60: 2200,950 / 4401,900 / 6602,850 Hz, die vierte bei 8549,33…8549,35 Hz.
+- Die Linien der ADC-Scanrate bleiben in allen neun Aufnahmen gleich: 9633,80 Hz −117,1…−118,4 dB, 19 267,6 Hz −121…−129 dB. LED-PWM 2320,54 Hz −117,5…−122,1 dB, fs/8 −88,8…−90,8 dB.
+
+**Deutung:**
+- [gemessen] **Die Vorhersage aus D60 trifft zu: Der Anschlag selbst ist es nicht.** Mit allen vier Reglern am Linksanschlag (−119,2 dB) oder am Rechtsanschlag (−113,9 dB) liegen die Linien im Bereich der 12-Uhr-Kontrollen (−116,0 und −114,2 dB). LLLL ist die leiseste Aufnahme der Serie.
+- [gemessen] **Es zählt der Unterschied zwischen den Reglern.** LRLR bringt −94,3 dB, das sind 21 dB über den Kontrollen und 6…7 dB über einem einzelnen Regler am Linksanschlag (D60: −99,9…−101,1 dB). LLRR liegt bei −99,6 dB.
+- [gemessen] **Der Pegel wächst stetig mit dem Abstand eines Reglers von den anderen.** Regler 1 gegen die anderen drei auf ≈ 62: Abstand 20 → −107,3 dB, Abstand 38 → −103,7 dB, Abstand 54 → −101,1 dB, Anschlag (D60, `K1-02`) → −100,9 dB. Eine Schwelle am Anschlag gibt es nicht.
+- [gemessen] **Das Muster der Regler bestimmt, welche Linie führt.** LLRR (ein Wechsel hin und einer zurück je Durchlauf durch die vier Regler) hebt 2200,95 und 6602,85 Hz, also Grundton und dritte Harmonische. LRLR (zwei solche Wechsel je Durchlauf) hebt 4401,90 Hz, also die zweite, dazu 8549,33 und 8803,80 Hz. [Hypothese] 2200,95 Hz steht für einen Durchlauf durch die vier Regler in der Reihenfolge 1-2-3-4, wie ihn der ADC-Scan macht.
+- Ein Rest bleibt auch bei fast gleichen Reglern: `K2-09` mit 60 / 63 / 63 / 62 liegt bei −114,2 dB, 4401,90 Hz allein bei −114,7 dB.
+- Das stützt den Mechanismus aus D60 [Hypothese]: Der Abtastkondensator des ADC wird von Kanal zu Kanal umgeladen, und die Ladung wächst mit dem Spannungsunterschied zwischen aufeinanderfolgenden Kanälen. Gemessen ist nur die Abhängigkeit, nicht der Strom.
+- **Offen bleibt die Frequenz.** Der Scan läuft mit 105 633,8 Hz (D60), und seine eigenen Linien bei 9633,80 und 19 267,6 Hz reagieren nicht auf das Reglermuster, auch nicht bei LRLR. Das Reglermuster erscheint dagegen bei 2200,95 Hz und Vielfachen. Zwischen beiden liegen 103 432,86 bzw. 107 834,76 Hz. Ein Takt mit dieser Frequenz oder einem Teiler davon ist im Code bisher nicht gefunden (geprüft: 48 kHz und Vielfache, 6 kHz, 1 kHz, LED-PWM, USB-SOF).
+
+**Nebenbefund [gemessen, einzelne Aufnahme]:** In `K2-03-RRRR` liegen die Mischprodukte aus fs/8 und Kamm (z. B. 3000,40 = 6000 − 3 × 999,868 Hz, 4000,27, 7999,73, 10 000,27 Hz) bei −117…−121 dB und damit 12…17 dB über beiden Kontrollen. In den anderen Aufnahmen fällt das nicht auf. Ob es an den vier Reglern am Rechtsanschlag liegt (voller Gain im laufenden Default-Patch), ist ohne Wiederholung offen.
+
+**Einschränkungen:** Je Stellung eine Aufnahme von 30 s. Die Zuordnung der ADC-Kanäle (Rang 1–4 = Kanal 10, 11, 14, 3) zu den Reglern 1–4 ist nicht am Schaltplan geprüft. Wandernde Töne aus dem Rack bei 1500…1650 Hz wie in D60.
+
+**Fazit:** Wer die Linien klein halten will, stellt die vier Regler ähnlich, wohin auch immer. Für Rauschmessungen reicht „alle auf 12 Uhr“ weiter aus. Eine Abhilfe in der Firmware (ADC nicht frei laufen lassen, z. B. ein Scan je Audioblock, oder längere Abtastzeit) ist erst sinnvoll, wenn klar ist, woher 2200,95 Hz kommt. Größenordnung im schlimmsten Fall (LRLR): −94 dB, 19 dB unter dem Kamm.
