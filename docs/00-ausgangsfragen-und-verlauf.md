@@ -4,9 +4,19 @@ Diese Datei hält fest, wie das Projekt entstanden ist: meine Fragen, wie recher
 
 **Diese Datei wird nicht fortgeschrieben.** Sie zeigt den Wissensstand zu Beginn. Einiges ist überholt: acdc1 trug nie das offizielle v22.5.0 (messlog D3), ein Filter-Patch im Gerät erreicht mit der eigenen Firmware die Aufnahme nicht mehr, und Upstream hat seit 2026-11-15 neue Commits an der Build-Kette. Aktueller Stand: `CLAUDE.md` und `TODO.md`.
 
-## 1. Meine ursprüngliche Anfrage (2026-10-23, wörtlich)
+## 1. Meine ursprüngliche Anfrage (2026-10-23, sprachlich überarbeitet)
 
-> ich habe ein AC/DC Eurorack Audiointerface. Leider produziert dieses viel Noise, ähnlich wie von der Person hier bereichtet: https://community.rebeltech.org/t/clock-noise-in-ac-dc/2072 ... ein Kommentator schreibt, dass ein USB Ground Isolator geholfen hat. Recherchiere (weiter in diesem Forum aber auch generell), ob das wirklich etwas bringt und ob andere ebenfalls Noise Issues mit dem AC/DC Interface haben / hatten und welche Lösungsmöglichkeiten es gibt (potentiell auch per software filtering, falls das Band sehr schmal ist?!). Ausserdem checke die FW des Devices (https://github.com/RebelTechnology/OpenWare) und ob es hier neuere Entwicklungen (insbesondere in den Forks) gibt und ob mir diese irgend etwas für mein AC/DC bringen. mache einen deep-research, nutze parallele subagenten um die diversen Foren und Platformen zu durchsuchen. Ausserdem würde mich eine Lösung zu diesem Thema https://community.rebeltech.org/t/ac-dc-as-fx-when-not-connected-to-computer/2244 interessieren (der Poster bin ich). Falls Du Probleme hast das Forum zu scrapen / auszulesen ... finde einen Weg drum herum, zur not auch mit einem Webview.
+Der Wortlaut ist geglättet, der Inhalt ist unverändert.
+
+> Ich besitze ein AC/DC, ein Audiointerface fürs Eurorack. Leider rauscht es stark, ähnlich wie in diesem Forumsbeitrag beschrieben: https://community.rebeltech.org/t/clock-noise-in-ac-dc/2072. Ein Kommentator schreibt dort, ein USB-Ground-Isolator habe geholfen.
+>
+> Bitte recherchiere in diesem Forum und darüber hinaus, ob ein solcher Isolator wirklich etwas bringt, ob andere ebenfalls Rauschprobleme mit dem AC/DC haben oder hatten und welche Lösungen es gibt. Denkbar wäre auch ein Software-Filter, falls das Störband sehr schmal ist.
+>
+> Sieh dir außerdem die Firmware des Geräts an (https://github.com/RebelTechnology/OpenWare): Gibt es neuere Entwicklungen, vor allem in den Forks, und nützen sie mir für mein AC/DC?
+>
+> Darüber hinaus interessiert mich eine Lösung für dieses Thema: https://community.rebeltech.org/t/ac-dc-as-fx-when-not-connected-to-computer/2244. Der Beitrag stammt von mir.
+>
+> Die Recherche darf gründlich sein und die verschiedenen Foren und Plattformen parallel durchsuchen. Lässt sich das Forum nicht direkt auslesen, nimm einen anderen Zugang, notfalls über einen Browser.
 
 Daraus ergeben sich diese Teilfragen:
 

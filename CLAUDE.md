@@ -55,7 +55,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 | `TODO.md` | Offene Punkte nach Themen, Entfallenes, Chronik – **hier anfangen** |
 | `README.md`, `README.de.md` | Einstieg für Außenstehende (englisch und deutsch): Werkzeuge, Befunde, Aufrufe. Bei neuen Befunden oder Werkzeugen beide nachziehen |
 | `LICENSE.md`, `LICENSES/` | Lizenzen: Werkzeuge MIT, Patches GPL-2.0, Docs und Messdaten CC BY 4.0 |
-| `docs/00-ausgangsfragen-und-verlauf.md` | Meine Ausgangsfragen (wörtlich), mein Forum-Thread, Recherche-Verlauf, Kurzantworten, Claudes Anmerkungen. Stand 2026-11-14, wird nicht fortgeschrieben |
+| `docs/00-ausgangsfragen-und-verlauf.md` | Meine Ausgangsfragen (sprachlich überarbeitet), mein Forum-Thread, Recherche-Verlauf, Kurzantworten, Claudes Anmerkungen. Stand 2026-11-14, wird nicht fortgeschrieben |
 | `docs/01-hardware-und-firmware.md` | Fakten zum Gerät: MCU, Codec, USB, Audio-Routing im Code |
 | `docs/02-noise-befunde.md` | Was im Forum bekannt ist, Hypothesen zur Ursache mit Messstand, Isolator-Frage |
 | `docs/03-messplan-python.md` | Messprotokoll + Spezifikation der Python-Analyse (uv) |
