@@ -62,7 +62,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 | `docs/04-software-filter.md` | Notch-Bank: Filterform, Python-Prototyp, Plugin, FAUST-Patch |
 | `docs/05-firmware-plan.md` | OpenWare-Stand, Forks, Build-Plan und Ergebnis jedes Builds (chronologisch), Fork, Flashen |
 | `docs/messlog.md` | **Alle eigenen Messungen** (M1 … D49): Setup, Dateien, Linien-Tabelle, Deutung, Einschränkungen |
-| `docs/uebergaben/` | Übergaben zwischen Sitzungen. **Nur lokal, nicht im Repo** (Nutzer-Entscheidung 2026-11-18): Arbeitszettel, die schnell überholt sind. Nie löschen. Dauerhaftes gehört nach `TODO.md`, `CLAUDE.md` oder in den Messlog. **Aktuell: `uebergabe-2026-11-17.md`** (offene Punkte nach fx4b). Weiter nützlich: Prüfablauf Loop-Test, Flash-Schnipsel und Fallstricke in `uebergabe-2026-11-16-patch12b.md`, Hotpath-Fakten in `uebergabe-2026-11-16-itcm.md` |
+| `docs/uebergaben/` | Falls es Übergaben zwischen Sitzungen gibt, liegen sie hier. **Nur lokal, nicht im Repo** (Nutzer-Entscheidung 2026-11-18): Arbeitszettel, die schnell überholt sind. Die Datei mit dem jüngsten Datum ist die aktuelle. Nie löschen, nicht committen. `CLAUDE.md` und die anderen Docs verweisen nicht auf einzelne Übergaben, Dauerhaftes gehört nach `TODO.md`, `CLAUDE.md` oder in den Messlog |
 | `docs/99-quellen.md` | Alle Links |
 | `docs/en/` | Englische Fassungen von `01`–`05` und `99`, aus dem Deutschen erzeugt. Nie von Hand ändern. Übersicht, Marker-Legende und Glossar in `docs/en/README.md` |
 | `analysis/` | Analyse-Tool: `uv run python -m analysis <ID\|wav…> [--ref …]`, Selbsttest `python -m analysis.selftest`. Module und Grenzen: `docs/03-messplan-python.md` |
@@ -189,7 +189,7 @@ Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`)
 5. Nutzer startet neu: Case aus, USB ab, Case an, USB an
 6. A1 per `owl_read.py`: Version, `SR/BS/CH 48000 8 4`, Slots unverändert
 
-Je Flash ein Ordner in `firmware/flashlog/`. Ein fertiges Skript gibt es noch nicht, ein Schnipsel steht in `docs/uebergaben/uebergabe-2026-11-16-patch12b.md` (nur lokal).
+Je Flash ein Ordner in `firmware/flashlog/`. Ein fertiges Skript gibt es noch nicht (`TODO.md`, „Werkzeuge“).
 
 ### USB-Stabilität prüfen
 
