@@ -1,6 +1,6 @@
 # 05 – Firmware: Stand, Forks, Build-Plan
 
-> **Stand 2026-11-17:** Auf acdc1 läuft **Build 6b `v22.4.r-fx4b`** (`a21f35c9…`, Abschnitt „Build 6“, messlog D50–D59) als Alltags-Firmware (Entscheidung des Nutzers). Rückweg ist Build 5c `v22.4.r-fx3l` (`b55b94d8…`), danach Build 3d (`d212cf8d…`).
+> **Stand 2026-11-18:** Auf acdc1 läuft **Build 7 `v22.4.r-fx5a`** (`b69c25b3…`, Abschnitt „Build 7“, messlog D62–D65) als Alltags-Firmware (Entscheidung des Nutzers). Rückweg ist Build 6b `v22.4.r-fx4b` (`a21f35c9…`), dann Build 5c `v22.4.r-fx3l` (`b55b94d8…`), danach Build 3d (`d212cf8d…`).
 >
 > Dieses Dokument ist chronologisch gewachsen. „Läuft auf acdc1“, „nicht abgestimmt“ und „nächste Schritte“ in den Abschnitten zu Build 1 bis 4z beschreiben den Stand des jeweiligen Abschnitts. Was heute offen ist, steht in `TODO.md`.
 

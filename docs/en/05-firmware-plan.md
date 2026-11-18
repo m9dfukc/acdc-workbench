@@ -1,9 +1,9 @@
-<!-- i18n source=docs/05-firmware-plan.md sha256=b50e999b9f1ff00132978a0e9d4cba56885a510cbad906737fbed317f9bd5ba1 date=2026-11-18 -->
+<!-- i18n source=docs/05-firmware-plan.md sha256=9b7044a79a7ea1b549b6e0a8c60741e2553e8d0b6e7603a1ab0f49737eca70e9 date=2026-11-18 -->
 > English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-18. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 05 – Firmware: Status, Forks, Build Plan
 
-> **Status 2026-11-17:** acdc1 runs **Build 6b `v22.4.r-fx4b`** (`a21f35c9…`, section "Build 6", lab notebook D50–D59) as its daily firmware (the user's decision). The fallback is Build 5c `v22.4.r-fx3l` (`b55b94d8…`), then Build 3d (`d212cf8d…`).
+> **Status 2026-11-18:** acdc1 runs **Build 7 `v22.4.r-fx5a`** (`b69c25b3…`, section "Build 7", lab notebook D62–D65) as its daily firmware (the user's decision). The fallback is Build 6b `v22.4.r-fx4b` (`a21f35c9…`), then Build 5c `v22.4.r-fx3l` (`b55b94d8…`), then Build 3d (`d212cf8d…`).
 >
 > This document grew chronologically. "Runs on acdc1", "not agreed" and "next steps" in the sections on Build 1 to 4z describe the status of the respective section. What is open today is in `TODO.md`.
 
@@ -655,6 +655,57 @@ Every step gets its own section in `docs/messlog.md` (D4 ff.), recordings are en
 A build of `2c963e3a` without patches is byte-identical with fx4b (`firmware/builds/verify-fx1d-2c963e3a`, `a21f35c9…`). In addition the release `acdc-v22.4.r-fx4b` (tag on `27d3630b`) with `ACDC-v22.4.r-fx4b.bin` and `BUILD_INFO-v22.4.r-fx4b.txt`.
 
 **Fallback:** fx4a (`e7ee9b90…`), then fx3l (`b55b94d8…`), after that 3d as before.
+
+### Build 7 – MIDI send path atomic, `v22.4.r-fx5a` (grilling round, build and acceptance 2026-11-18, lab notebook D62–D64, **daily firmware on acdc1 since 2026-11-18**)
+
+**Reason:** While a patch is running and the computer downloads a slot, data arrives damaged, and afterwards the module may send no MIDI until a restart (D53, D54). Reproduced on fx4b: 19 of 79 downloads damaged, then the hang (D62).
+
+**Bugs in the original code [code]** (the same in `upstream/master`):
+1. The audio task, the main loop and the USB interrupt write to the send buffer without protection. The replies to SysEx requests are generated in the interrupt.
+2. `write()` calls `transmit()` at every wrap of the buffer, the audio task in every block. `usbd_midi_tx()` sends nothing while the lock is set, the read head advances all the same.
+3. Two contexts can start a transfer on the same endpoint twice [hypothesis: the hang].
+4. The read head advances when the transfer starts, USB copies from the ring buffer only afterwards.
+5. `write()` never checks whether the buffer is full.
+6. `SendResourceTask` writes 324 bytes every 2 ms without waiting for room.
+
+**Decisions (user, grilling round 2026-11-18):**
+- Check, start and bookkeeping of the transfer are atomic, by masking interrupts, usable from all three contexts. "Only one caller" is not enough, because the interrupt writes too.
+- The read head only advances once the transfer has completed.
+- A full buffer drops the new message instead of overwriting old data.
+- Flow control only in `SendResourceTask`.
+- No rescue of the lock by a timeout. If the hang occurs again, it gets a patch of its own.
+- Nested messages (a reply from the interrupt in the middle of a SysEx from the main loop) stay out.
+- `transmit()` stays in group C of the ITCM, the noise A/B decides. Fallback: new code at the end of the ITCM block, a filler at the old place.
+
+**Implementation (patch `16-midi-tx-atomic.patch`) [code]:**
+- `Source/MidiWriter.cpp`, `UsbdMidiTransmitter`: accesses to the buffer state run with interrupts masked (PRIMASK, as in patch 05). `inflight` holds the length of the running transfer, the read head advances at the next call after the lock has been released. The DataIn interrupt stays unchanged.
+- `transmit()` leaves the idle case without masking: empty buffer, running transfer or no computer. The audio task only masks in the blocks in which it starts something.
+- `write()` calls `transmit()` only when the buffer is full, otherwise it drops the message and reports `midi tx ovf` once (only with a computer on USB).
+- `usbd_midi_tx()` returns whether it sent (`usbd_audio.cpp`, the same in `usbd_midi.c` for other devices, untested there).
+- `Source/MidiController.cpp`, `SendResourceTask`: only writes when 324 bytes are free, otherwise in the next pass. After 5 s without room the task gives up.
+
+**Build:** `firmware/builds/acdc1-build7-fx5a/`, `v22.4.r-fx5a`, 109 524 bytes, SHA-256 `b69c25b3f469fc6fb793b16569c53a63a7333c32d83c96de4d97b6fb71bdb8ef`. Patches as for fx4b + 16.
+
+**Check without the module [measured, D62]:** `tools/check_itcm.py --ref fx4b` PASSED, 0 FAIL, 0 WARN. ITCM code +48 bytes (`transmit()` 76 → 124 bytes), everything behind it in the ITCM 48 bytes higher, patch heap 48 bytes smaller. 164 of 180 RAM objects at the same address. Flash +1028 bytes.
+
+**Acceptance:**
+1. Done (D63): flash with `tools/flash_acdc.py` (first use on the module), readback byte-identical, A1 passed.
+2. Done (D63): download stress test with `tools/dump_stress.py`, 240 of 240 downloads intact (TapeDelay 32 %, Tanh3 51 %, Tanh3 with an audio stream), no hang. fx4b in the same session: 19 of 79 damaged, hang.
+3. Done (D63): loop test with `phase_slips.py` and `stale_samples.py`, 0 slips, 0 stale samples, also with Tanh3 and during 40 downloads.
+4. Done, with a limitation (D64): noise A/B fx4b → fx5a → fx4b → fx5a, 2 × 60 s each. RMS, residual, comb and fs/8 within ±0.5 dB in every block. Mixing products +0.70 dB on average with 2.3 dB of scatter between the two controls, so not decidable. No sign of an effect of the patch.
+
+**Decision (user, 2026-11-18, D65): fx5a is the daily firmware of acdc1.**
+
+**Fork branch `acdc/fx1d` (local, 2026-11-18, not pushed yet):**
+1. `bd04588e` MIDI send path (= patch 16)
+2. `c222fa49` version `v22.4.r-fx5a`
+3. `b4b95e43` README: section "MIDI send path", tables and test status
+
+A build of `c222fa49` without patches is byte-identical with fx5a (`firmware/builds/verify-fx1d-c222fa49`, `b69c25b3…`).
+
+**Open:** push and release `acdc-v22.4.r-fx5a`. A small disturbance on channel 2 during downloads (D63).
+
+**Fallback:** fx4b (`a21f35c9…`), then fx3l (`b55b94d8…`), after that as before.
 
 ### Fork `m9dfukc/OpenWare` (pushed 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
 
