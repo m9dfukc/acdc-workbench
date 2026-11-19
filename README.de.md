@@ -18,7 +18,8 @@ English version: [README.md](README.md)
 | `tools/owl_read.py` | Liest das Modul per MIDI/SysEx aus, ohne zu schreiben: Firmware-Version, Settings, Patch-Slots, Statusmeldung. Kann es in den DFU-Bootloader neu starten |
 | `tools/owl_write.py` | Lädt einen OWL-Patch per MIDI/SysEx hoch: nur im RAM starten oder in einen Slot speichern. Sichert einen belegten Slot vorher und liest den neuen danach zurück |
 | `tools/build_owl_patch.sh` | Baut einen C++-Patch mit OwlProgram für das AC/DC und schreibt die SysEx-Datei für `owl_write.py` |
-| `tools/sim_boot_menu.sh` | Testet die Logik des Boot-Menüs (Patch 15) am Rechner mit simulierten Reglern |
+| `tools/sim_boot_menu.sh` | Testet die Logik des Boot-Menüs (Patch 15 und 17: Slot und LED-Modus) am Rechner mit simulierten Reglern, dazu, was die Hauptschleife je LED-Modus an die LEDs schreibt |
+| `tools/test_owl_dsp.sh` | Tests der eigenen OWL-Patches in `owl/` am Rechner (Waveshaper, Limiter, Allpass-Kette, Sperre für die Blockraten-Linien, LED-Mess-Patches) |
 | `tools/dfu_readback.sh`, `tools/compare_firmware.py` | Internes Flash über DFU lesen und mit einer Referenz vergleichen |
 | `tools/dump_stress.py` | Stresstest für den MIDI-Sendeweg: lädt bei laufendem Patch alle Slots immer wieder herunter und zählt beschädigte Downloads |
 | `tools/flash_acdc.py` | Flasht einen Build über DFU und führt ein Flash-Log: prüft das Binary offline, liest das Modul aus, startet es in den DFU-Modus, schreibt, liest zurück und vergleicht, startet danach die Firmware mit einem nur lesenden `dfu-util … :leave` und prüft das Modul (A1). `--cold` wartet stattdessen auf einen Neustart von Hand, `--a1` prüft danach. Über die Geräte-ID an das Testmodul des Autors gebunden |
@@ -26,6 +27,7 @@ English version: [README.md](README.md)
 | `tools/check_itcm.py` | Prüft einen ITCM-Build am ELF vor dem Flash: was liegt wo, welche Aufrufe verlassen das ITCM, Vergleich mit einem Referenz-Build |
 | `tools/phase_slips.py`, `tools/stale_samples.py` | Prüfen eine Loop-Aufnahme (Out → In) auf verlorene oder doppelte Samples und auf einzelne veraltete Samples |
 | `tools/line_levels.py` | Pegel einzelner Linien je Kanal, direkt bei der Linienfrequenz gemessen, über mehrere Aufnahmen, mit Abstand zum Grundrauschen |
+| `tools/crosstalk_lines.py`, `tools/click_sensitivity.py` | Übersprechen von Testtönen der Ausgänge auf die Eingänge; Empfindlichkeit des Klick-Detektors für eingebaute USB-Fehler |
 | `tools/knob_series.py` | Geführte Aufnahmeserie mit den Reglern in vorgegebenen Stellungen: liest die Regler per MIDI, wartet auf die Stellung, nimmt auf und schreibt am Ende eine Tabelle der Linienpegel |
 
 ## Befunde bisher
@@ -39,8 +41,13 @@ English version: [README.md](README.md)
 - **Die Lage des Codes im Flash verschiebt die Linien.** Ein Build, der nur Füllbytes ergänzt und an der Funktion nichts ändert, hat die Familien um 1,5 bis 4,5 dB verschoben.
 - **Periodisch laufender Code im ITCM hilft.** Mit dem heißen Pfad im ITCM sinkt die fs/8-Linie um rund 5 dB, die Mischprodukte verschwinden, und das Ergebnis hängt nicht mehr von der Flash-Lage ab.
 - **Kleine Linien aus den Takten der MCU.** Der frei laufende Regler-ADC scannt mit 105,634 kHz und erscheint gefaltet bei 9633,8 Hz, etwa −118 dBFS. Eine weitere Gruppe von Linien (2200,95 Hz und Harmonische) steigt, wenn die vier Regler verschieden stehen: Ein Regler am Anschlag bringt sie auf etwa −100 dBFS, abwechselnde Anschläge auf −94 dBFS, immer noch 19 dB unter dem Kamm. Stehen alle vier Regler gleich, egal wo, bleibt sie bei etwa −116 dBFS. Woher ihre Frequenz kommt, ist offen.
-- **Der LED-Strom verschiebt den Nullpunkt aller Eingänge.** Jede leuchtende Eingangs-LED verschiebt die rohen ADC-Daten aller Kanäle um etwa −2,9 mV (−71 dBFS). Eine dauerhaft leuchtende LED ist still, jeder Wechsel ist ein Knack, und eine gedimmte LED wiederholt den Sprung 2321-mal pro Sekunde: Das ist die LED-PWM-Linie. Ein Patch, der seinen Eingang durchreicht, bringt all das an die Ausgänge. Build 9 (`v22.4.r-fx7a`) lässt die LED-PWM mit 48 kHz im Takt der Abtastung laufen: Die Linie bei 2321 Hz ist an Ein- und Ausgängen weg, die langsame Verschiebung bleibt.
-- **Drei Timing-Fehler im ursprünglichen USB-Audio-Code** wurden dabei gefunden und behoben: ein Feedback in offener Schleife, ein Wettlauf zwischen RX- und TX-DMA und ein Start-of-Frame-Handler, der zweimal je Frame lief.
+- **Der LED-Strom verschiebt den Nullpunkt aller Eingänge.** Jede leuchtende Eingangs-LED verschiebt die rohen ADC-Daten aller Kanäle um etwa −2,9 mV (−71 dBFS). Eine dauerhaft leuchtende LED ist still, jeder Wechsel ist ein Knack, und eine gedimmte LED wiederholt den Sprung 2321-mal pro Sekunde: Das ist die LED-PWM-Linie. Ein Patch, der seinen Eingang durchreicht, bringt all das an die Ausgänge. Build 9 (`v22.4.r-fx7a`) lässt die LED-PWM mit 48 kHz im Takt der Abtastung laufen: Die Linie bei 2321 Hz ist an Ein- und Ausgängen weg, die langsame Verschiebung bleibt. Dagegen halten die LED-Modi nur Clip und aus (Build 8, `v22.4.r-fx6a`) die LEDs dunkel, im Modus aus sinkt die Verschiebung um etwa 37 dB.
+- **Was ein Patch tut, kommt an die Ausgänge.** Ein FX-Patch reicht die Linien seines Eingangs weiter, und seine Rechenlast hebt die Blockraten-Linie: Eine Allpass-Kette mit 29 % CPU hob fs/8 um 3,8 dB und die Mischprodukte um 13,4 dB gegen den Default-Patch mit 6 %. Ein Patch, der eine LED dimmt, brachte die Linie bei 2321 Hz mit bis zu −44 dBFS an den Ausgang. Weit auseinander stehende Regler bringen ihre eigenen Linien an den Ausgang (−66 bis −73 dBFS am Eingang eines Interfaces, ein Regler am Anschlag). Eine Sperre, die die Blockraten-Linien in der Stille lernt und am Eingang abzieht (`owl/AcdcInput.h`), senkte sie am Ausgang um 22 bis 25 dB.
+- **Der Einbau ins Case** änderte in den ADC-Daten nichts Messbares.
+- **Das Rauschen driftet innerhalb einer Sitzung.** Der Kamm stieg in einer Sitzung um 2,4 dB in 26 Minuten, in einer anderen um 2 dB, auch über einen Kaltstart hinweg. Vergleiche zwischen Builds brauchen deshalb eine Kontrolle am Anfang und am Ende.
+- **Das Modul fiept hörbar**, leise, bei etwa 800 bis 1000 Hz, auch im DFU-Modus ohne laufende Firmware. Ohne USB wird es leiser und höher. Die Quelle (ein Regler auf dem Modul oder im Netzteil des Cases) ist offen.
+- **Vier Fehler im ursprünglichen Code** wurden dabei gefunden und behoben: drei Timing-Fehler im USB-Audio-Pfad (ein Feedback in offener Schleife, ein Wettlauf zwischen RX- und TX-DMA, ein Start-of-Frame-Handler, der zweimal je Frame lief) und ein ungeschützter MIDI-Sendeweg, der Slot-Downloads neben einem laufenden Patch beschädigte.
+- **Bekannt und nicht behoben:** Ein Program Change bei offenem USB-Audio-Stream bricht die Wiedergabe bis zum nächsten Stream-Start (rund 10 % Stille). Den Patch vor dem Öffnen des Streams wechseln.
 
 Firmware `v22.4.r-fx3l` gegen den Vorgänger `v22.4.r-fx2d`, offene Eingänge, Gain auf 12 Uhr, je 2 × 60 s, Pegel in dBFS des USB-Stroms:
 
@@ -54,7 +61,7 @@ Firmware `v22.4.r-fx3l` gegen den Vorgänger `v22.4.r-fx2d`, offene Eingänge, G
 
 ![Langzeit-Spektrum von fx3l (schwarz) gegen fx2d (grau), vier Kanäle](docs/img/psd_fx3l_vs_3d.png)
 
-Der Kamm ist damit die stärkste verbleibende Familie. Die Alltags-Firmware auf dem Testmodul ist seit 2026-11-19 `v22.4.r-fx7a`: `fx3l` plus ein Boot-Menü, das den Patch-Slot mit den Reglern wählt (`fx4b`), ein Fix für den MIDI-Sendeweg (`fx5a`), ein LED-Modus normal / nur Clip / aus, im Boot-Menü gewählt (`fx6a`), und die LED-PWM mit 48 kHz im Takt der Abtastung (`fx7a`). Mit `fx7a` ist die LED-PWM-Linie bei 2321 Hz an Ein- und Ausgängen weg, das Rauschen ist innerhalb von 0,15 dB gleich dem von `fx6a` (D78, D79). Mit `fx4b` kamen 19 von 79 Slot-Downloads neben einem laufenden Patch beschädigt an, danach hing MIDI bis zum Neustart. Mit `fx5a` waren 240 von 240 in Ordnung (D62, D63). Das Rauschen von `fx4b` ist innerhalb von ±0,4 dB gleich dem von `fx3l` (Kontrolle in derselben Sitzung), `fx5a` zeigt keine Änderung über die Streuung der Sitzung hinaus (D64). Einzelheiten und alle Zahlen: [docs/messlog.md](docs/messlog.md), Einträge D45 bis D49, D50 bis D59, D62 bis D65 und D72 bis D79.
+Der Kamm ist damit die stärkste verbleibende Familie. Die Alltags-Firmware auf dem Testmodul ist seit 2026-11-19 `v22.4.r-fx7a`: `fx3l` plus ein Boot-Menü, das den Patch-Slot mit den Reglern wählt (`fx4b`), ein Fix für den MIDI-Sendeweg (`fx5a`), ein LED-Modus normal / nur Clip / aus, im Boot-Menü gewählt (`fx6a`), und die LED-PWM mit 48 kHz im Takt der Abtastung (`fx7a`). Mit `fx7a` ist die LED-PWM-Linie bei 2321 Hz an Ein- und Ausgängen weg, das Rauschen ist innerhalb von 0,15 dB gleich dem von `fx6a` (D78, D79). Mit `fx4b` kamen 19 von 79 Slot-Downloads neben einem laufenden Patch beschädigt an, danach hing MIDI bis zum Neustart. Mit `fx5a` waren 240 von 240 in Ordnung (D62, D63). Das Rauschen von `fx4b` ist innerhalb von ±0,4 dB gleich dem von `fx3l` (Kontrolle in derselben Sitzung), `fx5a` zeigt keine Änderung über die Streuung der Sitzung hinaus (D64). Einzelheiten und alle Zahlen: [docs/messlog.md](docs/messlog.md), Einträge D45 bis D49 und D50 bis D79.
 
 ## Firmware
 
@@ -84,7 +91,7 @@ tools/setup_repo.sh    # Submodul, Upstream-Remote, feste Downloads mit Prüfsum
 uv sync
 ```
 
-Die Aufrufe für Aufnahme, Loop-Prüfung, Auslesen und Nachbau stehen im englischen [README.md](README.md#getting-started). Der Flash-Ablauf steht in [CLAUDE.md](CLAUDE.md), Abschnitt „Flash-Ablauf“, als Skript in `tools/flash_acdc.py` (bisher nur ohne Modul geprüft).
+Die Aufrufe für Aufnahme, Loop-Prüfung, Auslesen und Nachbau stehen im englischen [README.md](README.md#getting-started). Der Flash-Ablauf steht in [CLAUDE.md](CLAUDE.md), Abschnitt „Flash-Ablauf“, als Skript in `tools/flash_acdc.py` (am Modul erprobt; der Start per `:leave` im Skript bisher nur ohne Modul, von Hand am Modul zweimal erfolgreich).
 
 ## Aufbau des Repos
 
@@ -95,7 +102,7 @@ Die Aufrufe für Aufnahme, Loop-Prüfung, Auslesen und Nachbau stehen im englisc
 | `docs/en/` | Englische Fassungen der Referenz-Docs, siehe [docs/en/README.md](docs/en/README.md) |
 | `firmware/OpenWare/` | Submodul, der Firmware-Fork |
 | `firmware/patches/`, `firmware/builds/`, `firmware/flashlog/` | Patches, Build-Protokolle, Flash-Protokolle |
-| `owl/` | Eigene OWL-Patches für das Modul: `Tanh3` (dreifacher tanh-Waveshaper mit Mix-Kanal), `Schliere` (Kette aus 61 Allpässen 2. Ordnung: Laufzeit je Frequenz, Phaser-Kerben, Resonator, mono hinein und stereo heraus) ein Ausgangs-Limiter für FX-Patches und eine Sperre für die Blockraten-Linien am Eingang, mit Tests am Rechner |
+| `owl/` | Eigene OWL-Patches für das Modul: `Tanh3` (dreifacher tanh-Waveshaper mit Mix-Kanal), `Schliere` (Kette aus 61 Allpässen 2. Ordnung: Laufzeit je Frequenz, Phaser-Kerben, Resonator, mono hinein und stereo heraus), ein Ausgangs-Limiter für FX-Patches und eine Sperre für die Blockraten-Linien am Eingang, mit Tests am Rechner. In `owl/test/` liegen dazu zwei Mess-Patches, die die LEDs nach Zeitplan schalten und die LED-Verschiebung selbst an den rohen Eingängen messen |
 | `recordings/manifest.toml` | Metadaten jeder Aufnahme |
 | `out/<ID>/` | Analyse-Report je Messung |
 | `TODO.md`, `CLAUDE.md` | Offene Punkte und der Projektkontext für die Arbeit mit Claude Code |

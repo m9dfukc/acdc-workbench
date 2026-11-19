@@ -18,7 +18,8 @@ Deutsche Fassung: [README.de.md](README.de.md)
 | `tools/owl_read.py` | Reads the module over MIDI/SysEx without writing: firmware version, settings, patch slots, status message. Can restart it into the DFU bootloader |
 | `tools/owl_write.py` | Uploads an OWL patch over MIDI/SysEx: run it from RAM only or store it in a slot. Backs up an occupied slot first and reads the new one back afterwards |
 | `tools/build_owl_patch.sh` | Builds a C++ patch with OwlProgram for the AC/DC and writes the SysEx file for `owl_write.py` |
-| `tools/sim_boot_menu.sh` | Tests the boot menu logic (patch 15) on the host with simulated knobs |
+| `tools/sim_boot_menu.sh` | Tests the boot menu logic (patches 15 and 17: slot and LED mode) on the host with simulated knobs, plus what the main loop writes to the LEDs in each LED mode |
+| `tools/test_owl_dsp.sh` | Host tests of the own OWL patches in `owl/` (waveshaper, limiter, allpass chain, block-rate canceller, LED measurement patches) |
 | `tools/dfu_readback.sh`, `tools/compare_firmware.py` | Read the internal flash over DFU and compare it with a reference binary |
 | `tools/dump_stress.py` | Stress test for the MIDI send path: downloads all slots again and again while a patch is running and counts damaged downloads |
 | `tools/flash_acdc.py` | Flashes a build over DFU with a flash log: checks the binary offline, reads the module, restarts it into DFU, writes, reads back and compares, then starts the firmware with a read-only `dfu-util … :leave` and checks the module (A1). `--cold` waits for a restart by hand instead, `--a1` checks after it. Tied to the author's test module by its device ID |
@@ -26,6 +27,7 @@ Deutsche Fassung: [README.de.md](README.de.md)
 | `tools/check_itcm.py` | Checks an ITCM build on the ELF before it is flashed: what sits where, which calls leave ITCM, comparison with a reference build |
 | `tools/phase_slips.py`, `tools/stale_samples.py` | Check a loop-back recording (out → in) for lost or repeated samples and for single stale samples |
 | `tools/line_levels.py` | Level of single lines per channel, measured right at the line frequency, across several recordings, with the distance to the noise floor |
+| `tools/crosstalk_lines.py`, `tools/click_sensitivity.py` | Crosstalk of test tones from the outputs to the inputs; sensitivity of the click detector to injected USB faults |
 | `tools/knob_series.py` | Guided series of recordings with the knobs in given positions: reads the knobs over MIDI, waits until they are in place, records, and writes a table of the line levels at the end |
 
 ## Findings so far
@@ -39,8 +41,13 @@ Deutsche Fassung: [README.de.md](README.de.md)
 - **Where code sits in flash shifts the lines.** A build that only adds padding, with no change in function, moved the families by 1.5 to 4.5 dB.
 - **Running the periodic code from ITCM helps.** With the hot path in ITCM, the fs/8 line drops by about 5 dB, the mixing products disappear, and the result no longer depends on the flash layout.
 - **Small lines from the MCU's own clocks.** The free-running knob ADC scans at 105.634 kHz and shows up folded at 9633.8 Hz, about −118 dBFS. A further set of lines (2200.95 Hz and its harmonics) rises when the four knobs are set differently: one knob at an end stop brings it to about −100 dBFS, alternating stops to −94 dBFS, still 19 dB below the comb. With all four knobs alike, at whatever position, it stays near −116 dBFS. Where its frequency comes from is open.
-- **LED current shifts the zero point of all inputs.** Each lit input LED moves the raw ADC data of every channel by about −2.9 mV (−71 dBFS). A steadily lit LED is silent, every change is a click, and a dimmed LED repeats the step 2321 times a second: that is the LED PWM line. A patch that passes its input on carries all of it to the outputs. Build 9 (`v22.4.r-fx7a`) runs the LED PWM at 48 kHz, locked to the sample clock: the 2321 Hz line is gone from inputs and outputs, the slow shift stays.
-- **Three timing bugs in the original USB audio code** were found and fixed on the way: a feedback loop that ran open, a race between the RX and TX DMA, and a start-of-frame handler that ran twice per frame.
+- **LED current shifts the zero point of all inputs.** Each lit input LED moves the raw ADC data of every channel by about −2.9 mV (−71 dBFS). A steadily lit LED is silent, every change is a click, and a dimmed LED repeats the step 2321 times a second: that is the LED PWM line. A patch that passes its input on carries all of it to the outputs. Build 9 (`v22.4.r-fx7a`) runs the LED PWM at 48 kHz, locked to the sample clock: the 2321 Hz line is gone from inputs and outputs, the slow shift stays. Against that, the LED modes clip only and off (Build 8, `v22.4.r-fx6a`) keep the LEDs dark; in mode off the shift drops by about 37 dB.
+- **What a patch does reaches the outputs.** An FX patch passes the lines of its input on, and its own CPU load raises the block-rate line: an allpass chain at 29 % CPU lifted fs/8 by 3.8 dB and the mixing products by 13.4 dB against the default patch at 6 %. A patch that dims an LED put the 2321 Hz line on the output at up to −44 dBFS. Knobs set far apart bring their own lines to the output (−66 to −73 dBFS at an interface input with one knob at its stop). A canceller that learns the block-rate lines in silence and subtracts them at the input (`owl/AcdcInput.h`) lowered them at the output by 22 to 25 dB.
+- **Mounting in the case** changed nothing measurable in the ADC data.
+- **The noise drifts within a session.** The comb rose by 2.4 dB in 26 minutes in one session and by 2 dB in another, also across a cold start. Comparisons between builds therefore need a control at the beginning and at the end.
+- **The module whines audibly**, quietly, at roughly 800 to 1000 Hz, also in DFU mode without any firmware running. Unplugging USB makes it quieter and higher. The source (a regulator on the module or in the case supply) is open.
+- **Four bugs in the original code** were found and fixed on the way: three timing bugs in the USB audio path (a feedback loop that ran open, a race between the RX and TX DMA, a start-of-frame handler that ran twice per frame) and an unprotected MIDI send path that damaged slot downloads next to a running patch.
+- **Known and not fixed:** a Program Change while the USB audio stream is open breaks playback until the next stream start (about 10 % silence). Change the patch before opening the stream.
 
 Firmware `v22.4.r-fx3l` against the previous build `v22.4.r-fx2d`, open inputs, gain at 12 o'clock, 2 × 60 s each, levels in dBFS of the USB stream:
 
@@ -54,7 +61,7 @@ Firmware `v22.4.r-fx3l` against the previous build `v22.4.r-fx2d`, open inputs, 
 
 ![Long-term spectrum of fx3l (black) against fx2d (grey), four channels](docs/img/psd_fx3l_vs_3d.png)
 
-The comb is now the strongest remaining family. The current daily firmware on the test module is `v22.4.r-fx7a` (since 2026-11-19): `fx3l` plus a boot menu that chooses the patch slot with the knobs (`fx4b`), a fix for the MIDI send path (`fx5a`), an LED mode normal / clip only / off chosen in the boot menu (`fx6a`) and the LED PWM at 48 kHz, locked to the sample clock (`fx7a`). With `fx7a` the LED PWM line at 2321 Hz is gone from inputs and outputs, and the noise is the same as with `fx6a` within 0.15 dB (D78, D79). With `fx4b`, 19 of 79 slot downloads next to a running patch arrived damaged and MIDI then hung until a power cycle; with `fx5a` 240 of 240 were intact (D62, D63). The noise of `fx4b` is the same as that of `fx3l` within ±0.4 dB (control in the same session), and `fx5a` shows no change beyond the session scatter (D64). Details and all numbers: [docs/messlog.md](docs/messlog.md) (German), entries D45 to D49, D50 to D59, D62 to D65 and D72 to D79.
+The comb is now the strongest remaining family. The current daily firmware on the test module is `v22.4.r-fx7a` (since 2026-11-19): `fx3l` plus a boot menu that chooses the patch slot with the knobs (`fx4b`), a fix for the MIDI send path (`fx5a`), an LED mode normal / clip only / off chosen in the boot menu (`fx6a`) and the LED PWM at 48 kHz, locked to the sample clock (`fx7a`). With `fx7a` the LED PWM line at 2321 Hz is gone from inputs and outputs, and the noise is the same as with `fx6a` within 0.15 dB (D78, D79). With `fx4b`, 19 of 79 slot downloads next to a running patch arrived damaged and MIDI then hung until a power cycle; with `fx5a` 240 of 240 were intact (D62, D63). The noise of `fx4b` is the same as that of `fx3l` within ±0.4 dB (control in the same session), and `fx5a` shows no change beyond the session scatter (D64). Details and all numbers: [docs/messlog.md](docs/messlog.md) (German), entries D45 to D49, D50 to D79.
 
 ## Firmware
 
@@ -122,7 +129,7 @@ FW_VERSION=v22.4.r-fx7a tools/build_acdc.sh my-fx7a db9d3dd \
   $P/18-led-pwm-48k.patch
 ```
 
-The flash procedure (read out, restart into DFU, write, read back, compare, leave DFU) is described in [CLAUDE.md](CLAUDE.md), section "Flash-Ablauf". `tools/flash_acdc.py` runs these steps and keeps a flash log. It only accepts the author's test module: the MIDI device ID and the DFU serial number are constants at the top of the script.
+The flash procedure (read out, restart into DFU, write, read back, compare, leave DFU) is described in [CLAUDE.md](CLAUDE.md), section "Flash-Ablauf". `tools/flash_acdc.py` runs these steps and keeps a flash log. It has been used on the module; the `:leave` start inside the script has so far only been tested without the module, by hand it worked twice on the module and gave the same noise as a cold start. It only accepts the author's test module: the MIDI device ID and the DFU serial number are constants at the top of the script.
 
 ```sh
 python3 tools/flash_acdc.py acdc1-build9-fx7a          # offline checks only
@@ -140,7 +147,7 @@ python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build9-fx7a   # after 
 | `docs/en/` | English versions of the reference documents, see [docs/en/README.md](docs/en/README.md) |
 | `firmware/OpenWare/` | Submodule, the firmware fork |
 | `firmware/patches/`, `firmware/builds/`, `firmware/flashlog/` | Patches, build records, flash records |
-| `owl/` | Own OWL patches for the module: `Tanh3` (triple tanh waveshaper with a mix channel), `Schliere` (a chain of 61 second-order allpass filters: frequency-dependent delay, phaser notches, resonator, mono in and stereo out) an output limiter for FX patches and an input canceller for the block-rate lines, with host tests |
+| `owl/` | Own OWL patches for the module: `Tanh3` (triple tanh waveshaper with a mix channel), `Schliere` (a chain of 61 second-order allpass filters: frequency-dependent delay, phaser notches, resonator, mono in and stereo out), an output limiter for FX patches and an input canceller for the block-rate lines, with host tests. `owl/test/` also holds two measurement patches that switch the LEDs on a schedule and measure the LED shift at the raw inputs themselves |
 | `recordings/manifest.toml` | Metadata of every recording |
 | `out/<ID>/` | Analysis report of each measurement |
 | `TODO.md`, `CLAUDE.md` | Open points and the project context used when working with Claude Code |
