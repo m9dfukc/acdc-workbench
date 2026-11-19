@@ -1863,3 +1863,563 @@ files = ["20261118_acdc1_fx5a-open-inputs-7b-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
 note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:24:03. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx5a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+
+[[measurement]]
+id = "D67-schliere-out1-umc"
+date = "2026-11-18"
+device = "UMC202HD In 1 ← acdc1 Out 1 (Kette des Nutzers, Pegel nicht kalibriert), acdc1 fx5a, ins Case geschraubt"
+test = "Schliere Out 1 ohne Eingangssignal, alle Regler 12 Uhr. Regler 3 (Tap) langsam zum Rechtsanschlag, zurück zum Linksanschlag, zurück auf 12 Uhr"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "Slot 6: Schliere Fassung 1 (LEDs gedimmt)"
+title = "D67-schliere-out1-umc – acdc1 schliere-out1-via-umc-tap, 30 s"
+files = ["20261118_acdc1_schliere-out1-via-umc-tap_g12_usb-plugged.wav"]
+scale = 1.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 1: Datei-dBFS des UMC, nicht auf Geräte-dBFS des AC/DC bezogen. Start 18:16:46. Stream-Meldungen: 0. Kanal 2 ist UMC In 2 (Belegung nicht notiert). Suche nach dem Fiepsen, messlog D67"
+
+[[measurement]]
+id = "D68-schliere-v2-out1-umc"
+date = "2026-11-18"
+device = "UMC202HD In 1 ← acdc1 Out 1 (Kette des Nutzers, Pegel nicht kalibriert), acdc1 fx5a, ins Case geschraubt"
+test = "Schliere Fassung 2, Out 1 ohne Eingangssignal, alle Regler 12 Uhr. Regler 3 (Tap) zum Rechtsanschlag, zum Linksanschlag, zurück auf 12 Uhr (wie D67)"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: Schliere Fassung 2 (LEDs nur aus oder rot)"
+title = "D68-schliere-v2-out1-umc – acdc1 schliere-v2-out1-via-umc-tap, 30 s"
+files = ["20261118_acdc1_schliere-v2-out1-via-umc-tap_g12_usb-plugged.wav"]
+scale = 1.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 1: Datei-dBFS des UMC, nicht auf Geräte-dBFS des AC/DC bezogen. Start 18:21:48. Stream-Meldungen: 0. Kanal 2 ist UMC In 2 (Belegung nicht notiert). Gegenmessung zu D67, messlog D68"
+
+[[measurement]]
+id = "C1-schliere-r1"
+date = "2026-11-18"
+device = "acdc1, Firmware Build 7 v22.4.r-fx5a, ins Case geschraubt"
+test = "Case-Sitzung: Eingänge offen, rohe ADC-Daten, Schliere Fassung 2 läuft aus dem RAM (28 % CPU). Regler 68 / 57 / 58 / 73 von 127"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "RAM: Schliere Fassung 2, wirkt nicht auf die USB-Aufnahme"
+title = "C1-schliere-r1 – acdc1 case-schliere-open-inputs, 60 s (Wiederholung 1)"
+files = ["20261118_acdc1_case-schliere-open-inputs-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:27:41. Stream-Meldungen: 0. owl_read: out/owl_read/C1-schliere-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Out 1 steckt am zweiten Interface. messlog D69"
+
+[[measurement]]
+id = "C1-schliere-r2"
+date = "2026-11-18"
+device = "acdc1, Firmware Build 7 v22.4.r-fx5a, ins Case geschraubt"
+test = "Case-Sitzung: Eingänge offen, rohe ADC-Daten, Schliere Fassung 2 läuft aus dem RAM (28 % CPU). Regler 68 / 57 / 58 / 73 von 127"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "RAM: Schliere Fassung 2, wirkt nicht auf die USB-Aufnahme"
+title = "C1-schliere-r2 – acdc1 case-schliere-open-inputs, 60 s (Wiederholung 2)"
+files = ["20261118_acdc1_case-schliere-open-inputs-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:28:54. Stream-Meldungen: 0. owl_read: out/owl_read/C1-schliere-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Out 1 steckt am zweiten Interface. messlog D69"
+
+[[measurement]]
+id = "C1-acdc-r1"
+date = "2026-11-18"
+device = "acdc1, Firmware Build 7 v22.4.r-fx5a, ins Case geschraubt"
+test = "Case-Sitzung, Kontrolle: Eingänge offen, rohe ADC-Daten, Default-Patch läuft. Regler wie C1-schliere"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "C1-acdc-r1 – acdc1 case-acdc-open-inputs, 60 s (Wiederholung 1)"
+files = ["20261118_acdc1_case-acdc-open-inputs-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:30:19. Stream-Meldungen: 0. owl_read: out/owl_read/C1-acdc-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Out 1 steckt am zweiten Interface. messlog D69"
+
+[[measurement]]
+id = "C1-acdc-r2"
+date = "2026-11-18"
+device = "acdc1, Firmware Build 7 v22.4.r-fx5a, ins Case geschraubt"
+test = "Case-Sitzung, Kontrolle: Eingänge offen, rohe ADC-Daten, Default-Patch läuft. Regler wie C1-schliere"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "C1-acdc-r2 – acdc1 case-acdc-open-inputs, 60 s (Wiederholung 2)"
+files = ["20261118_acdc1_case-acdc-open-inputs-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:31:32. Stream-Meldungen: 0. owl_read: out/owl_read/C1-acdc-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Out 1 steckt am zweiten Interface. messlog D69"
+
+[[measurement]]
+id = "D71-schliere-f2-a"
+date = "2026-11-18"
+device = "UMC202HD In 1 ← acdc1 Out 1 (Kette des Nutzers, Pegel nicht kalibriert, in der Sitzung unverändert), acdc1 fx5a, ins Case geschraubt"
+test = "Schliere Fassung 2, Out 1 ohne Eingangssignal, Regler fest, Kontrolle am Anfang"
+gain = "g12"
+usb = "acdc1: usb-plugged (kein Stream). UMC: Hub"
+patch = "RAM: Schliere Fassung 2"
+title = "D71-schliere-f2-a – acdc1 schliere-f2-a-out1-via-umc, 30 s"
+files = ["20261118_acdc1_schliere-f2-a-out1-via-umc_g12_usb-plugged.wav"]
+scale = 1.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 1: Datei-dBFS des UMC, nicht auf Geräte-dBFS des AC/DC bezogen. Start 18:52:14. Stream-Meldungen: 0. Datei-dBFS des UMC. Regler nicht bewegt. messlog D71"
+
+[[measurement]]
+id = "D71-schliere-f3-r1"
+date = "2026-11-18"
+device = "UMC202HD In 1 ← acdc1 Out 1 (Kette des Nutzers, Pegel nicht kalibriert, in der Sitzung unverändert), acdc1 fx5a, ins Case geschraubt"
+test = "Schliere Fassung 3 mit Blockraten-Sperre, Out 1 ohne Eingangssignal, Regler fest"
+gain = "g12"
+usb = "acdc1: usb-plugged (kein Stream). UMC: Hub"
+patch = "RAM: Schliere Fassung 3 (Blockraten-Sperre)"
+title = "D71-schliere-f3-r1 – acdc1 schliere-f3-out1-via-umc, 30 s (Wiederholung 1)"
+files = ["20261118_acdc1_schliere-f3-out1-via-umc-r1_g12_usb-plugged.wav"]
+scale = 1.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 1: Datei-dBFS des UMC, nicht auf Geräte-dBFS des AC/DC bezogen. Start 18:53:05. Stream-Meldungen: 0. Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Datei-dBFS des UMC. Regler nicht bewegt. messlog D71"
+
+[[measurement]]
+id = "D71-schliere-f3-r2"
+date = "2026-11-18"
+device = "UMC202HD In 1 ← acdc1 Out 1 (Kette des Nutzers, Pegel nicht kalibriert, in der Sitzung unverändert), acdc1 fx5a, ins Case geschraubt"
+test = "Schliere Fassung 3 mit Blockraten-Sperre, Out 1 ohne Eingangssignal, Regler fest"
+gain = "g12"
+usb = "acdc1: usb-plugged (kein Stream). UMC: Hub"
+patch = "RAM: Schliere Fassung 3 (Blockraten-Sperre)"
+title = "D71-schliere-f3-r2 – acdc1 schliere-f3-out1-via-umc, 30 s (Wiederholung 2)"
+files = ["20261118_acdc1_schliere-f3-out1-via-umc-r2_g12_usb-plugged.wav"]
+scale = 1.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 1: Datei-dBFS des UMC, nicht auf Geräte-dBFS des AC/DC bezogen. Start 18:53:44. Stream-Meldungen: 0. Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Datei-dBFS des UMC. Regler nicht bewegt. messlog D71"
+
+[[measurement]]
+id = "D71-schliere-f2-b"
+date = "2026-11-18"
+device = "UMC202HD In 1 ← acdc1 Out 1 (Kette des Nutzers, Pegel nicht kalibriert, in der Sitzung unverändert), acdc1 fx5a, ins Case geschraubt"
+test = "Schliere Fassung 2, Out 1 ohne Eingangssignal, Regler fest, Kontrolle am Ende"
+gain = "g12"
+usb = "acdc1: usb-plugged (kein Stream). UMC: Hub"
+patch = "RAM: Schliere Fassung 2"
+title = "D71-schliere-f2-b – acdc1 schliere-f2-b-out1-via-umc, 30 s"
+files = ["20261118_acdc1_schliere-f2-b-out1-via-umc_g12_usb-plugged.wav"]
+scale = 1.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 1: Datei-dBFS des UMC, nicht auf Geräte-dBFS des AC/DC bezogen. Start 18:54:35. Stream-Meldungen: 0. Datei-dBFS des UMC. Regler nicht bewegt. messlog D71"
+
+[[measurement]]
+id = "D72-schliere-f3-tap-leds-umc"
+date = "2026-11-18"
+device = "UMC202HD In 1 ← acdc1 Out 1 (Kette des Nutzers, Pegel nicht kalibriert, UMC-Gain vom Nutzer gegen D71 erhöht, nach den Kamm-Linien um etwa 23 dB), acdc1 fx5a, ins Case geschraubt"
+test = "Schliere Fassung 3, Out 1 ohne Eingangssignal, Regler 1, 2, 4 auf 12 Uhr. Regler 3 (Tap) am Linksanschlag, dann zum Rechtsanschlag (nach dem Spektrogramm etwa von 7,5 bis 22,5 s), dort bis zum Ende"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "Slot 6: Schliere Fassung 3"
+title = "D72-schliere-f3-tap-leds-umc – acdc1 schliere-f3-out1-via-umc-tap-sweep, 45 s"
+files = ["20261118_acdc1_schliere-f3-out1-via-umc-tap-sweep_g12_usb-plugged.wav"]
+scale = 1.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 1: Datei-dBFS des UMC, nicht auf Geräte-dBFS des AC/DC bezogen. Start 22:14:32. Stream-Meldungen: 0. Kanal 2 ist UMC In 2 (Belegung nicht notiert). Frage: Störgeräusch bei leuchtenden LEDs, messlog D72"
+
+[[measurement]]
+id = "D73-schliere-ledtest-umc"
+date = "2026-11-18"
+device = "UMC202HD In 1 ← acdc1 Out 1 (Kette des Nutzers, Pegel nicht kalibriert, UMC-Gain wie D72), acdc1 fx5a, ins Case geschraubt"
+test = "LED-Test-Patch: Schliere mit LEDs nach der Uhr (je 5 s: aus, 1 rot, 3 rot, 4 rot, aus, 3 blinken 40 Hz, aus, 3 grün 60 %), Out 1 ohne Eingangssignal, Regler nicht bewegt (78 / 45 / 77 / 1 von 127, nach der Aufnahme gelesen)"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: SchliereLedTest (CRC 0x1ce0c9a6)"
+title = "D73-schliere-ledtest-umc – acdc1 schliere-ledtest-out1-via-umc, 90 s"
+files = ["20261118_acdc1_schliere-ledtest-out1-via-umc_g12_usb-plugged.wav"]
+scale = 1.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 1: Datei-dBFS des UMC, nicht auf Geräte-dBFS des AC/DC bezogen. Start 22:29:18. Stream-Meldungen: 0. Kanal 2 ist UMC In 2 (Belegung nicht notiert). Phase „LED 1 rot“ beginnt bei −0,19 s, danach alle 5 s die nächste. messlog D73"
+
+[[measurement]]
+id = "D74-schliere-ledpath-umc"
+date = "2026-11-18"
+device = "UMC202HD In 1 ← acdc1 Out 1 (Kette des Nutzers, UMC-Gain wie D72/D73. Eichton in der Aufnahme: 1 Vollausschlag UMC ≙ 0,01279 Vollausschlag am Ausgang von acdc1 ≈ 128 mV), acdc1 fx5a, ins Case geschraubt"
+test = "LED-Pfad-Test: je 5 s Schliere aus/blinken, Ausgänge null aus/blinken/aus/4 rot/aus, Eichton 300 Hz, 4 x In 1 aus/blinken. Out 1 ohne Eingangssignal, Regler nicht bewegt (61 / 68 / 62 / 58 von 127)"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: SchliereLedPath (CRC 0xb0fa2194)"
+title = "D74-schliere-ledpath-umc – acdc1 schliere-ledpath-out1-via-umc, 110 s"
+files = ["20261118_acdc1_schliere-ledpath-out1-via-umc_g12_usb-plugged.wav"]
+scale = 1.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 1: Datei-dBFS des UMC, nicht auf Geräte-dBFS des AC/DC bezogen. Start 22:44:45. Stream-Meldungen: 0. Kanal 2 ist UMC In 2 (Belegung nicht notiert). Phase 0 beginnt bei −7,77 s, danach alle 5 s die nächste, Durchlauf 50 s. Der UMC übersteuert kurz bei den Wechseln der Ausgangsart (Eingangsoffset erscheint oder verschwindet). messlog D74"
+
+[[measurement]]
+id = "D75-fx6a-clip-ramp"
+date = "2026-11-18"
+device = "acdc1 fx6a (Build 8), LED-Modus nur Clip, ins Case geschraubt"
+test = "Clip-Anzeige im LED-Modus nur Clip: Gleichspannung an Out 2 fährt in 20 s linear auf Vollausschlag, Kabel Out 2 → In 1, In 2–4 offen, Out 1 am zweiten Interface"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 2 DC +1.000 FS (Rampe 20 s)"
+patch = "Slot 1: ACDC (per Program Change)"
+title = "D75-fx6a-clip-ramp – acdc1 fx6a-ledclip-dc-ramp-out2-in1, 30 s"
+files = ["20261118_acdc1_fx6a-ledclip-dc-ramp-out2-in1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 2 DC +1.000 FS (Rampe 20 s), Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:32:47. Stream-Meldungen: 0. owl_read: out/owl_read/D75-fx6a-clip-ramp (rc 0). Regler 127 / 52 / 2 / 74 von 127 (nicht auf 12 Uhr). In 1 erreicht nur +0,9635 (Eingangsoffset negativ, wie D36), kein Clip, keine LED erwartet. Bezug für die negative Rampe. messlog D75"
+
+[[measurement]]
+id = "D75-fx6a-clip-ramp-neg"
+date = "2026-11-18"
+device = "acdc1 fx6a (Build 8), LED-Modus nur Clip, ins Case geschraubt"
+test = "Clip-Anzeige im LED-Modus nur Clip: Gleichspannung an Out 2 fährt in 20 s linear auf minus Vollausschlag, Kabel Out 2 → In 1, In 2–4 offen, Out 1 am zweiten Interface"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 2 DC -1.000 FS (Rampe 20 s)"
+patch = "Slot 1: ACDC (per Program Change)"
+title = "D75-fx6a-clip-ramp-neg – acdc1 fx6a-ledclip-dc-ramp-neg-out2-in1, 30 s"
+files = ["20261118_acdc1_fx6a-ledclip-dc-ramp-neg-out2-in1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 2 DC -1.000 FS (Rampe 20 s), Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:34:17. Stream-Meldungen: 0. owl_read: out/owl_read/D75-fx6a-clip-ramp-neg (rc 0). Regler 127 / 52 / 2 / 74 von 127 (nicht auf 12 Uhr). In 1 ab 18,44 s an der Clip-Schwelle, danach am Anschlag. messlog D75"
+
+[[measurement]]
+id = "D75-fx6a-clip-ramp-neg-b"
+date = "2026-11-19"
+device = "acdc1 fx6a (Build 8), gemerkter LED-Modus nach Aus und Ein, ins Case geschraubt"
+test = "Clip-Anzeige im gemerkten LED-Modus nach Aus und Ein: Gleichspannung an Out 2 fährt in 20 s linear auf minus Vollausschlag, Kabel Out 2 → In 1, In 2–4 offen"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 2 DC -1.000 FS (Rampe 20 s)"
+patch = "Slot 1: ACDC (per Program Change)"
+title = "D75-fx6a-clip-ramp-neg-b – acdc1 fx6a-ledkept-dc-ramp-neg-out2-in1, 30 s"
+files = ["20261119_acdc1_fx6a-ledkept-dc-ramp-neg-out2-in1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 2 DC -1.000 FS (Rampe 20 s), Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:21:22. Stream-Meldungen: 0. owl_read: out/owl_read/D75-fx6a-clip-ramp-neg-b (rc 0). Regler 66 / 61 / 64 / 62 von 127. 16-Bit-Datei = Gerätewerte. In 1 erreicht die Clip-Schwelle 0,9886 bei 18,415 s und den Anschlag bei 18,639 s. In 2–4 springen 1,7 ms nach der Schwelle um im Mittel −2,0e-4 Vollausschlag: Die Firmware schaltet LED 1 rot, gemerkt ist also nur Clip (messlog D75, zweiter Nachtrag)."
+
+[[measurement]]
+id = "D75-fx6a-clip-ramp-neg-c"
+date = "2026-11-19"
+device = "acdc1 fx6a (Build 8), gemerkter LED-Modus nur Clip, ins Case geschraubt"
+test = "Clip-Anzeige im gemerkten LED-Modus nur Clip, Wiederholung für die Beobachtung der LED: Gleichspannung an Out 2 fährt in 20 s linear auf minus Vollausschlag, Kabel Out 2 → In 1, In 2–4 offen"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 2 DC -1.000 FS (Rampe 20 s)"
+patch = "Slot 1: ACDC (per Program Change)"
+title = "D75-fx6a-clip-ramp-neg-c – acdc1 fx6a-ledkept-dc-ramp-neg-out2-in1-c, 30 s"
+files = ["20261119_acdc1_fx6a-ledkept-dc-ramp-neg-out2-in1-c_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 2 DC -1.000 FS (Rampe 20 s), Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:32:43. Stream-Meldungen: 0. owl_read: out/owl_read/D75-fx6a-clip-ramp-neg-c (rc 0). Regler 66 / 61 / 65 / 61 von 127. 16-Bit-Datei = Gerätewerte. In 1 erreicht die Clip-Schwelle bei 18,379 s und den Anschlag bei 18,601 s. In 2–4 springen 0,2 ms nach der Schwelle um −2,1e-4…−2,2e-4 Vollausschlag (messlog D75, zweiter Nachtrag)."
+
+[[measurement]]
+id = "B8-fx6a-loop"
+date = "2026-11-19"
+device = "acdc1 fx6a (Build 8), LED-Modus nur Clip, ins Case geschraubt"
+test = "Loop Out n → In n, Sinus 440/530/670/790 Hz, Build 8 (Patch 17), LED-Modus nur Clip"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B8-fx6a-loop – acdc1 fx6a-loop, 60 s"
+files = ["20261119_acdc1_fx6a-loop_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:45:00. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-loop (rc 0). 0 Slips, 0 veraltete Samples, Meldung tx ovf 0.3819 0.9513 4, CPU 8 % (messlog D76)."
+
+[[measurement]]
+id = "B8-fx6a-loop-tanh3"
+date = "2026-11-19"
+device = "acdc1 fx6a (Build 8), LED-Modus nur Clip, ins Case geschraubt"
+test = "Loop Out n → In n, Sinus 440/530/670/790 Hz, Build 8 (Patch 17), LED-Modus nur Clip, Program Change auf Tanh3 bei offenem Stream"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS"
+patch = "Slot 5: Tanh3 (Fassung 2), wirkt nicht auf die USB-Aufnahme"
+title = "B8-fx6a-loop-tanh3 – acdc1 fx6a-loop-tanh3, 60 s"
+files = ["20261119_acdc1_fx6a-loop-tanh3_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 8 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:47:09. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-loop-tanh3 (rc 0). Abweichend von test: Der Program Change auf Slot 5 kam erst bei offenem Stream. Die Wiedergabe setzt danach periodisch aus (10,3 % Stille, alle 4223 Frames), Meldung fb 48.0088 46.3203. Kein gültiger Loop-Test, Beleg für den Fehler in messlog D76."
+
+[[measurement]]
+id = "B8-fx6a-loop-tanh3-b"
+date = "2026-11-19"
+device = "acdc1 fx6a (Build 8), LED-Modus nur Clip, ins Case geschraubt"
+test = "Loop Out n → In n, Sinus 440/530/670/790 Hz, Build 8 (Patch 17), LED-Modus nur Clip, Tanh3 läuft schon vor dem Stream"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS"
+patch = "Slot 5: Tanh3 (Fassung 2), wirkt nicht auf die USB-Aufnahme"
+title = "B8-fx6a-loop-tanh3-b – acdc1 fx6a-loop-tanh3-b, 60 s"
+files = ["20261119_acdc1_fx6a-loop-tanh3-b_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:49:56. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-loop-tanh3-b (rc 0). 0 Slips, 0 veraltete Samples, Meldung tx ovf 1.0000 1.0000 32, CPU 52 % (messlog D76)."
+
+[[measurement]]
+id = "B8-fx6a-loop-tanh3-dl"
+date = "2026-11-19"
+device = "acdc1 fx6a (Build 8), LED-Modus nur Clip, ins Case geschraubt"
+test = "Loop Out n → In n, Sinus 440/530/670/790 Hz, Build 8 (Patch 17), LED-Modus nur Clip, Tanh3 läuft schon vor dem Stream, währenddessen Slot-Downloads (dump_stress.py)"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS"
+patch = "Slot 5: Tanh3 (Fassung 2), wirkt nicht auf die USB-Aufnahme"
+title = "B8-fx6a-loop-tanh3-dl – acdc1 fx6a-loop-tanh3-dl, 60 s"
+files = ["20261119_acdc1_fx6a-loop-tanh3-dl_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:51:35. Stream-Meldungen: 0. Währenddessen 48 Slot-Downloads (D75-fx6a-slot5-stream, alle in Ordnung). 0 ganze Slips, 0 veraltete Samples, auf Kanal 2 30 Ereignisse unter 0,005 Samples (messlog D76)."
+
+[[measurement]]
+id = "B8-fx6a-pc2-stream"
+date = "2026-11-19"
+device = "acdc1 fx6a (Build 8), LED-Modus nur Clip, ins Case geschraubt"
+test = "Loop Out n → In n, Sinus 440/530/670/790 Hz, Build 8, Program Change von Slot 1 auf Slot 2 bei offenem Stream (etwa 5 s nach dem Start)"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS"
+patch = "Slot 1, dann Program Change auf Slot 2 bei offenem Stream"
+title = "B8-fx6a-pc2-stream – acdc1 fx6a-loop-pc2-stream, 25 s"
+files = ["20261119_acdc1_fx6a-loop-pc2-stream_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:53:03. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-pc2-stream (rc 0). Nach dem Program Change 10,0–10,7 % Stille an allen Ausgängen (alle 4223 Frames etwa 400 Frames), Meldung fb clamp -72 32 (messlog D76)."
+
+[[measurement]]
+id = "B8-fx6a-pc1-stream"
+date = "2026-11-19"
+device = "acdc1 fx6a (Build 8), LED-Modus nur Clip, ins Case geschraubt"
+test = "Loop Out n → In n, Sinus 440/530/670/790 Hz, Build 8, Program Change von Slot 1 auf Slot 1 bei offenem Stream (etwa 5 s nach dem Start)"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS"
+patch = "Slot 1, dann Program Change auf Slot 1 bei offenem Stream"
+title = "B8-fx6a-pc1-stream – acdc1 fx6a-loop-pc1-stream, 25 s"
+files = ["20261119_acdc1_fx6a-loop-pc1-stream_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:53:41. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-pc1-stream (rc 0). Nach dem Program Change 9,8–11,3 % Stille an allen Ausgängen, Meldung fb clamp -57 32, CPU 6 % (messlog D76)."
+
+[[measurement]]
+id = "B8-fx6a-a-r1"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 8 v22.4.r-fx6a, LED-Modus normal, ins Case geschraubt"
+test = "Build-8-Sitzung: fx6a (fx5a + Patch 17) am Anfang, LED-Modus normal, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B8-fx6a-a-r1 – acdc1 fx6a-open-inputs-8a, 60 s (Wiederholung 1)"
+files = ["20261119_acdc1_fx6a-open-inputs-8a-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:00:05. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Oszillator im Case am Strom (Nutzer). messlog D77."
+
+[[measurement]]
+id = "B8-fx6a-a-r2"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 8 v22.4.r-fx6a, LED-Modus normal, ins Case geschraubt"
+test = "Build-8-Sitzung: fx6a (fx5a + Patch 17) am Anfang, LED-Modus normal, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B8-fx6a-a-r2 – acdc1 fx6a-open-inputs-8a, 60 s (Wiederholung 2)"
+files = ["20261119_acdc1_fx6a-open-inputs-8a-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:01:18. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Oszillator im Case am Strom (Nutzer). messlog D77."
+
+[[measurement]]
+id = "B8-fx5a-r1"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 7 v22.4.r-fx5a, ins Case geschraubt"
+test = "Build-8-Sitzung: fx5a als Vergleich, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten, Oszillator im Case vom Strom getrennt"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B8-fx5a-r1 – acdc1 fx5a-open-inputs-8, 60 s (Wiederholung 1)"
+files = ["20261119_acdc1_fx5a-open-inputs-8-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:09:30. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx5a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. messlog D77."
+
+[[measurement]]
+id = "B8-fx5a-r2"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 7 v22.4.r-fx5a, ins Case geschraubt"
+test = "Build-8-Sitzung: fx5a als Vergleich, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten, Oszillator im Case vom Strom getrennt"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B8-fx5a-r2 – acdc1 fx5a-open-inputs-8, 60 s (Wiederholung 2)"
+files = ["20261119_acdc1_fx5a-open-inputs-8-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:10:43. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx5a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. messlog D77."
+
+[[measurement]]
+id = "B8-fx5a-pc1-stream"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 7 v22.4.r-fx5a, ins Case geschraubt"
+test = "Loop Out 1 → In 1, Sinus 440 Hz, fx5a, Program Change von Slot 1 auf Slot 1 bei offenem Stream (etwa 5 s nach dem Start)"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS"
+patch = "Slot 1, dann Program Change auf Slot 1 bei offenem Stream"
+title = "B8-fx5a-pc1-stream – acdc1 fx5a-loop-pc1-stream, 25 s"
+files = ["20261119_acdc1_fx5a-loop-pc1-stream_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:15:36. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx5a-pc1-stream (rc 0). Nach dem Program Change 9,4–10,8 % Stille am Ausgang, Abstand 4223 Frames, wie unter fx6a (messlog D77)."
+
+[[measurement]]
+id = "B8-fx6a-b-r1"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 8 v22.4.r-fx6a, LED-Modus normal, ins Case geschraubt"
+test = "Build-8-Sitzung: fx6a (fx5a + Patch 17) am Ende, LED-Modus normal, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten, Oszillator im Case vom Strom getrennt"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B8-fx6a-b-r1 – acdc1 fx6a-open-inputs-8b, 60 s (Wiederholung 1)"
+files = ["20261119_acdc1_fx6a-open-inputs-8b-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:19:46. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. messlog D77."
+
+[[measurement]]
+id = "B8-fx6a-b-r2"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 8 v22.4.r-fx6a, LED-Modus normal, ins Case geschraubt"
+test = "Build-8-Sitzung: fx6a (fx5a + Patch 17) am Ende, LED-Modus normal, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten, Oszillator im Case vom Strom getrennt"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B8-fx6a-b-r2 – acdc1 fx6a-open-inputs-8b, 60 s (Wiederholung 2)"
+files = ["20261119_acdc1_fx6a-open-inputs-8b-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:21:00. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. messlog D77."
+
+[[measurement]]
+id = "D78-fx7a-ledtest-umc"
+date = "2026-11-19"
+device = "UMC202HD In 1 ← acdc1 Out 1 (Kette des Nutzers, Pegel nicht kalibriert, UMC-Gain wie D72/D73), acdc1 fx7a, ins Case geschraubt"
+test = "LED-Test-Patch wie D73 (je 5 s: aus, 1 rot, 3 rot, 4 rot, aus, 3 blinken 40 Hz, aus, 3 grün 60 %), unter fx7a (LED-PWM 48 kHz), Out 1 ohne Eingangssignal, Regler 62 / 58 / 66 / 63 von 127 (nach der Aufnahme gelesen), nicht bewegt"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: SchliereLedTest (CRC 0x1ce0c9a6)"
+title = "D78-fx7a-ledtest-umc – acdc1 fx7a-schliere-ledtest-out1-via-umc, 90 s"
+files = ["20261119_acdc1_fx7a-schliere-ledtest-out1-via-umc_g12_usb-plugged.wav"]
+scale = 1.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 1: Datei-dBFS des UMC, nicht auf Geräte-dBFS des AC/DC bezogen. Start 11:53:28. Stream-Meldungen: 0. Blinkphase beginnt bei 28,5 und 68,45 s. Oszillator im Case abgesteckt. messlog D78, acdc1 fx7a (LED-PWM 48 kHz), Out 1 -> UMC In 1, UMC-Gain wie D72/D73, Regler 12 Uhr, nicht bewegt, Oszillator abgesteckt"
+
+[[measurement]]
+id = "B9-fx7a-a-r1"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 9 v22.4.r-fx7a, LED-Modus normal, ins Case geschraubt"
+test = "Build-9-Sitzung: fx7a (fx6a + Patch 18, LED-PWM 48 kHz) am Anfang, LED-Modus normal, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B9-fx7a-a-r1 – acdc1 fx7a-open-inputs-9a, 60 s (Wiederholung 1)"
+files = ["20261119_acdc1_fx7a-open-inputs-9a-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:05:52. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx7a-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Oszillator im Case abgesteckt (Nutzer). messlog D79."
+
+[[measurement]]
+id = "B9-fx7a-a-r2"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 9 v22.4.r-fx7a, LED-Modus normal, ins Case geschraubt"
+test = "Build-9-Sitzung: fx7a (fx6a + Patch 18, LED-PWM 48 kHz) am Anfang, LED-Modus normal, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B9-fx7a-a-r2 – acdc1 fx7a-open-inputs-9a, 60 s (Wiederholung 2)"
+files = ["20261119_acdc1_fx7a-open-inputs-9a-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:07:06. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx7a-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Oszillator im Case abgesteckt (Nutzer). messlog D79."
+
+[[measurement]]
+id = "B9-fx6a-r1"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 8 v22.4.r-fx6a, LED-Modus normal, ins Case geschraubt"
+test = "Build-9-Sitzung: fx6a in der Mitte, LED-Modus normal, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B9-fx6a-r1 – acdc1 fx6a-open-inputs-9, 60 s (Wiederholung 1)"
+files = ["20261119_acdc1_fx6a-open-inputs-9-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:17:54. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx6a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Start über dfu-util :leave nach dem Readback, kein Kaltstart (Case blieb an). Oszillator im Case abgesteckt (Nutzer). messlog D79."
+
+[[measurement]]
+id = "B9-fx6a-r2"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 8 v22.4.r-fx6a, LED-Modus normal, ins Case geschraubt"
+test = "Build-9-Sitzung: fx6a in der Mitte, LED-Modus normal, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B9-fx6a-r2 – acdc1 fx6a-open-inputs-9, 60 s (Wiederholung 2)"
+files = ["20261119_acdc1_fx6a-open-inputs-9-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:19:07. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx6a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Start über dfu-util :leave nach dem Readback, kein Kaltstart (Case blieb an). Oszillator im Case abgesteckt (Nutzer). messlog D79."
+
+[[measurement]]
+id = "B9-fx7a-b-r1"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 9 v22.4.r-fx7a, LED-Modus normal, ins Case geschraubt"
+test = "Build-9-Sitzung: fx7a am Ende, LED-Modus normal, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B9-fx7a-b-r1 – acdc1 fx7a-open-inputs-9b, 60 s (Wiederholung 1)"
+files = ["20261119_acdc1_fx7a-open-inputs-9b-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:21:14. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx7a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Start über dfu-util :leave nach dem Readback, kein Kaltstart (Case blieb an). Oszillator im Case abgesteckt (Nutzer). messlog D79."
+
+[[measurement]]
+id = "B9-fx7a-b-r2"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 9 v22.4.r-fx7a, LED-Modus normal, ins Case geschraubt"
+test = "Build-9-Sitzung: fx7a am Ende, LED-Modus normal, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B9-fx7a-b-r2 – acdc1 fx7a-open-inputs-9b, 60 s (Wiederholung 2)"
+files = ["20261119_acdc1_fx7a-open-inputs-9b-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:22:27. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx7a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Start über dfu-util :leave nach dem Readback, kein Kaltstart (Case blieb an). Oszillator im Case abgesteckt (Nutzer). messlog D79."
+
+[[measurement]]
+id = "B9-fx7a-c-r1"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 9 v22.4.r-fx7a, LED-Modus normal, ins Case geschraubt"
+test = "Build-9-Sitzung: fx7a nach Kaltstart, direkt nach B9-fx7a-b (Trennung Drift gegen Start über :leave), Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B9-fx7a-c-r1 – acdc1 fx7a-open-inputs-9c, 60 s (Wiederholung 1)"
+files = ["20261119_acdc1_fx7a-open-inputs-9c-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:30:54. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx7a-c-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Kaltstart durch den Nutzer (Case aus, USB ab, Case an, USB an). Oszillator im Case abgesteckt. messlog D79."
+
+[[measurement]]
+id = "B9-fx7a-c-r2"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 9 v22.4.r-fx7a, LED-Modus normal, ins Case geschraubt"
+test = "Build-9-Sitzung: fx7a nach Kaltstart, direkt nach B9-fx7a-b (Trennung Drift gegen Start über :leave), Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B9-fx7a-c-r2 – acdc1 fx7a-open-inputs-9c, 60 s (Wiederholung 2)"
+files = ["20261119_acdc1_fx7a-open-inputs-9c-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:32:07. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx7a-c-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Kaltstart durch den Nutzer (Case aus, USB ab, Case an, USB an). Oszillator im Case abgesteckt. messlog D79."
+
+[[measurement]]
+id = "B9-fx7a-loop"
+date = "2026-11-19"
+device = "acdc1, Firmware Build 9 v22.4.r-fx7a, LED-Modus normal, ins Case geschraubt"
+test = "Loop-Test: Out n → In n, Sinus 440/530/670/790 Hz bei −6 dBFS, 60 s"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS"
+patch = "Slot 1: ACDC (Default-Patch), vor dem Stream gewählt"
+title = "B9-fx7a-loop – acdc1 fx7a-loop, 60 s"
+files = ["20261119_acdc1_fx7a-loop_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:36:30. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx7a-loop (rc 0). Kabel Out 1–4 → In 1–4, Gain 12 Uhr. messlog D79."

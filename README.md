@@ -21,7 +21,7 @@ Deutsche Fassung: [README.de.md](README.de.md)
 | `tools/sim_boot_menu.sh` | Tests the boot menu logic (patch 15) on the host with simulated knobs |
 | `tools/dfu_readback.sh`, `tools/compare_firmware.py` | Read the internal flash over DFU and compare it with a reference binary |
 | `tools/dump_stress.py` | Stress test for the MIDI send path: downloads all slots again and again while a patch is running and counts damaged downloads |
-| `tools/flash_acdc.py` | Flashes a build over DFU with a flash log: checks the binary offline, reads the module, restarts it into DFU, writes, reads back and compares. `--a1` checks the module after the restart. Tied to the author's test module by its device ID |
+| `tools/flash_acdc.py` | Flashes a build over DFU with a flash log: checks the binary offline, reads the module, restarts it into DFU, writes, reads back and compares, then starts the firmware with a read-only `dfu-util … :leave` and checks the module (A1). `--cold` waits for a restart by hand instead, `--a1` checks after it. Tied to the author's test module by its device ID |
 | `tools/build_acdc.sh` | Reproducible firmware build from a commit, a pinned library tarball and a list of patches. Writes `BUILD_INFO.txt` with all checksums |
 | `tools/check_itcm.py` | Checks an ITCM build on the ELF before it is flashed: what sits where, which calls leave ITCM, comparison with a reference build |
 | `tools/phase_slips.py`, `tools/stale_samples.py` | Check a loop-back recording (out → in) for lost or repeated samples and for single stale samples |
@@ -39,6 +39,7 @@ Deutsche Fassung: [README.de.md](README.de.md)
 - **Where code sits in flash shifts the lines.** A build that only adds padding, with no change in function, moved the families by 1.5 to 4.5 dB.
 - **Running the periodic code from ITCM helps.** With the hot path in ITCM, the fs/8 line drops by about 5 dB, the mixing products disappear, and the result no longer depends on the flash layout.
 - **Small lines from the MCU's own clocks.** The free-running knob ADC scans at 105.634 kHz and shows up folded at 9633.8 Hz, about −118 dBFS. A further set of lines (2200.95 Hz and its harmonics) rises when the four knobs are set differently: one knob at an end stop brings it to about −100 dBFS, alternating stops to −94 dBFS, still 19 dB below the comb. With all four knobs alike, at whatever position, it stays near −116 dBFS. Where its frequency comes from is open.
+- **LED current shifts the zero point of all inputs.** Each lit input LED moves the raw ADC data of every channel by about −2.9 mV (−71 dBFS). A steadily lit LED is silent, every change is a click, and a dimmed LED repeats the step 2321 times a second: that is the LED PWM line. A patch that passes its input on carries all of it to the outputs. Build 9 (`v22.4.r-fx7a`) runs the LED PWM at 48 kHz, locked to the sample clock: the 2321 Hz line is gone from inputs and outputs, the slow shift stays.
 - **Three timing bugs in the original USB audio code** were found and fixed on the way: a feedback loop that ran open, a race between the RX and TX DMA, and a start-of-frame handler that ran twice per frame.
 
 Firmware `v22.4.r-fx3l` against the previous build `v22.4.r-fx2d`, open inputs, gain at 12 o'clock, 2 × 60 s each, levels in dBFS of the USB stream:
@@ -120,12 +121,13 @@ FW_VERSION=v22.4.r-fx5a tools/build_acdc.sh my-fx5a db9d3dd \
   $P/16-midi-tx-atomic.patch
 ```
 
-The flash procedure (read out, restart into DFU, write, read back, compare, restart) is described in [CLAUDE.md](CLAUDE.md), section "Flash-Ablauf". `tools/flash_acdc.py` runs these steps and keeps a flash log. It only accepts the author's test module: the MIDI device ID and the DFU serial number are constants at the top of the script.
+The flash procedure (read out, restart into DFU, write, read back, compare, leave DFU) is described in [CLAUDE.md](CLAUDE.md), section "Flash-Ablauf". `tools/flash_acdc.py` runs these steps and keeps a flash log. It only accepts the author's test module: the MIDI device ID and the DFU serial number are constants at the top of the script.
 
 ```sh
 python3 tools/flash_acdc.py acdc1-build7-fx5a          # offline checks only
-python3 tools/flash_acdc.py acdc1-build7-fx5a --yes    # flash
-python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build7-fx5a   # after the restart
+python3 tools/flash_acdc.py acdc1-build7-fx5a --yes    # flash, leave DFU, check (A1)
+python3 tools/flash_acdc.py acdc1-build7-fx5a --yes --cold   # flash, then restart by hand
+python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build7-fx5a   # after a restart by hand
 ```
 
 ## Repository layout
@@ -137,7 +139,7 @@ python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build7-fx5a   # after 
 | `docs/en/` | English versions of the reference documents, see [docs/en/README.md](docs/en/README.md) |
 | `firmware/OpenWare/` | Submodule, the firmware fork |
 | `firmware/patches/`, `firmware/builds/`, `firmware/flashlog/` | Patches, build records, flash records |
-| `owl/` | Own OWL patches for the module: `Tanh3` (triple tanh waveshaper with a mix channel) and an output limiter for FX patches, with a host test |
+| `owl/` | Own OWL patches for the module: `Tanh3` (triple tanh waveshaper with a mix channel), `Schliere` (a chain of 61 second-order allpass filters: frequency-dependent delay, phaser notches, resonator, mono in and stereo out) an output limiter for FX patches and an input canceller for the block-rate lines, with host tests |
 | `recordings/manifest.toml` | Metadata of every recording |
 | `out/<ID>/` | Analysis report of each measurement |
 | `TODO.md`, `CLAUDE.md` | Open points and the project context used when working with Claude Code |

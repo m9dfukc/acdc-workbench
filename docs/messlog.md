@@ -2012,3 +2012,740 @@ Familienpegel, Mittel je Block, Δ gegen das Mittel der vier fx4b-Aufnahmen, Dat
 **Nachtrag D65 – Fork:** Der Branch `acdc/fx1d` ist lokal nachgezogen: `bd04588e` (Patch 16), `c222fa49` (Version), `b4b95e43` (README). Ein Build von `c222fa49` ohne Patches ist bytegleich mit fx5a (`firmware/builds/verify-fx1d-c222fa49`, `b69c25b3…`). Gepusht ist nichts.
 
 **Nachtrag 2 zu D65:** Fork-Branch `acdc/fx1d` (`b4b95e43`) und Workbench gepusht, Release `acdc-v22.4.r-fx5a` am Fork angelegt (Tag auf `b4b95e43`, reguläres Release, „Latest“), je mit Freigabe des Nutzers.
+
+### D66 – Patch „Schliere“: lange Allpass-Kette, Host-Test, Slot 6 (2026-11-18, 17:33–17:41)
+
+**Anlass (Nutzer):** Ein weiterer eigener Patch für Slot 6, nach dem Vorbild eines digitalen Eurorack-Moduls mit zwei Allpass-Sektionen zu je 98 Polen. Nachgebaut ist eine Sektion: mono hinein, stereo heraus, dazu zwei abgeleitete Signale. Grundlage waren das Handbuch des Vorbilds (v1.2.1) und der Forum-Thread des Herstellers (vom Nutzer als Datei geliefert).
+
+**Aufbau [Code]:** `owl/SchlierePatch.hpp`, 61 gleiche Allpässe 2. Ordnung in Reihe (1 Stufe = 2 Pole).
+- Regler 1–4: Frequency (20 Hz…20 kHz), Resonance (Q 0,01…16), Tap (sieben Rastpunkte mit Haltezonen, dazwischen Überblendung), Feedback (0…97 %).
+- In 1 Audio oder CV (Vorwärtsweg DC-gekoppelt), In 2 Frequency-CV 1 V/Okt ohne Totzone, In 3 Tap-CV, In 4 Feedback-CV (unter null negatives Feedback), In 3/4 mit Totzone ±0,5 V.
+- Out 1 (L): Abgriffe 2, 18 … 98 Pole. Out 2 (R): 2, 22 … 122 Pole. Out 3: (L − R)/2. Out 4: Ende der Kette (122 Pole).
+- Feedback von Out 1 über Hochpass 10 Hz und weiche Begrenzung (ab 5 V) auf den Eingang, Eingang mit √(1 − fb²) abgesenkt. Ausgänge linear bis 7,5 V, höchstens 9,8 V.
+- LEDs 1–3: Rastpunkt binär, LED 4: Feedback, Rot = Begrenzung in der Schleife.
+
+**Filterform, Vergleich am Rechner [gemessen, Host]:** 61 Stufen in float, 1-kHz-Sinus, Rest neben dem Sinus nach 8 s.
+
+| Mittenfrequenz, Q | Direktform (2 Multiplikationen) | Zustandsvariablenfilter |
+|---|---|---|
+| 100 Hz, Q 16 | −70,5 dB | −114,7 dB |
+| 100 Hz, Q 0,5 | −81,1 dB | −124,3 dB |
+| 1 kHz, Q 16 | −83,9 dB | −102,7 dB |
+| 1 kHz, Q 0,01 | −69,9 dB | −120,1 dB |
+| 10 kHz, Q 16 | −124,4 dB | −134,5 dB |
+
+Gewählt ist das Zustandsvariablenfilter (trapezförmige Integration, Allpass = Eingang − 2k · Bandpass). Bei 20 Hz stecken in den Zahlen noch Einschwingreste (Laufzeit der Kette bis ≈ 30 s), sie sind deshalb nicht aufgeführt.
+
+**Host-Test [gemessen, Host]:** `tools/test_owl_dsp.sh`, neu `owl/test/schliere_test.cpp`, 25 Fälle, alle bestanden (auch mit `-O3 -ffast-math` wie im Patch-Build). Übertragungsfunktion aus der Impulsantwort.
+- Eine Stufe gegen die Lehrbuchformel, Q 0,01 … 16: Fehler höchstens 2 · 10⁻⁵.
+- Gruppenlaufzeit bei 98 Polen, Q 16: 0,5005 s bei 1 kHz, 1,2483 s bei 400 Hz. Das Handbuch nennt 0,50 und 1,25 s.
+- Zwischen den Rastpunkten 4 und 5: 8 Kerben an L (Handbuch: 8), 10 an R.
+- Auf einem Rastpunkt ohne Feedback: Pegel höchstens 0,0007 dB neben flach.
+- Feedback 90 %, kleines Signal: Spitzen +12,7 dB, Täler −12,8 dB (Rechnung ±12,8 dB), mit negativem Feedback vertauscht.
+- Gleichspannung: läuft mit Faktor 1 durch, bei Feedback 90 % mit √(1 − fb²), wird also nicht verstärkt.
+- 9 V Rechteck plus Rauschen bei vollem Feedback und Q 16: Ausgänge höchstens 0,968 (9,7 V), endlich. Die Schleife klingt aus (−139 dB nach 12 s), keine Selbstschwingung.
+- Modulation aller CV-Eingänge mit Audio-Rate und Frequenzsprünge über 4 Oktaven bei Q 16: endlich, keine Pegelspitze.
+
+**Build:** `SRC=owl tools/build_owl_patch.sh Schliere SchlierePatch SchlierePatch.hpp`, OWL3, patchram. `owl-patches/builds/Schliere/`: 17 196 B, CRC `0x99171e91`, `patch.bin` `bf9c0c5d…`, Quelle `e1407810…`.
+
+**Am Gerät (acdc1, fx5a) [gemessen]:**
+1. Vorher (`out/owl_read/acdc1/20261118_173350/`): Slot 1 „ACDC“ läuft, CPU 5 %, Slots 1–5 belegt, Storage 108 032 B.
+2. `owl_write.py Schliere.syx --run` (17:34): 84 Pakete in 1,4 s, läuft aus dem RAM.
+3. **CPU 28 %**, drei Lesungen, Regler 61–63 von 127 (alle um 12 Uhr), Speicher 1040 B.
+4. Das Gerät war danach kurz nicht am USB. Ein erster Store-Versuch brach deshalb ab, bevor etwas gesendet wurde („MIDI port not found“).
+5. Wieder am USB (17:39): Schliere lief weiter aus dem RAM, CPU 28 %, Slot 6 frei.
+6. `owl_write.py Schliere.syx --store 6 --yes` (Freigabe des Nutzers): Slot 6 „Schliere“, 17 196 B, CRC `0x99171e91` zurückgelesen (`out/owl_write/acdc1/20261118/owl_write_173957.json`).
+7. `owl_read.py --slots 6` (`out/owl_read/acdc1/20261118_174016/`): Download `ok`, bytegleich mit `patch.bin`. Slots 1–5 unverändert, Storage 125 440 B, Programm 6 läuft, CPU 29 % bei Reglern 25 / 69 / 35 / 51.
+
+**Fazit:** Schliere liegt auf Slot 6 von acdc1 und braucht 28–29 % CPU [gemessen]. Die Last hängt kaum von den Reglern ab [Code: die Kette rechnet immer alle 61 Stufen].
+
+**Einschränkungen und offen:**
+- Der Nutzer hat nach dem Probelauf im RAM das Speichern freigegeben. Ein ausführliches Hörurteil steht aus.
+- Übertragungsfunktion, CV-Skalierung und LEDs sind nur am Rechner geprüft, nicht am Gerät. Eine Loop-Messung (Out n → In 1, Impuls oder Sinus-Serie mit `acdc_rec.py`) fehlt.
+- Die Breite der Haltezonen am Tap-Regler (je 15 % um einen Rastpunkt) ist geschätzt, das Handbuch nennt keine Zahl.
+- In 2 ist nicht kalibriert. Der Offset des offenen Eingangs (−0,2…−0,4 V, D36) verstimmt um 0,2 bis 0,4 Oktaven, die Regler-Endwerte 20 Hz und 20 kHz bleiben durch eine halbe Oktave Reserve erreichbar [Code].
+- Loop-Test und Rauschen unter dieser Patch-Last sind nicht gemessen. Mit Tanh3 bei 53 % war der Loop-Test bestanden (D57).
+- Ob der gemerkte Slot (`ACDC.slot`) unverändert ist, wurde nicht geprüft.
+
+**Nachtrag D66 – Fiepsen (Nutzer, 2026-11-18 abends):** Im Patch ist ein eindeutiges Fiepsen zu hören. Gemessen ist es am Gerät noch nicht, eingegrenzt wurde am Rechner.
+
+- **Der Patch erzeugt es nicht aus seinen Eingangsdaten [gemessen, Host]:** Eine echte Aufnahme der offenen Eingänge (`20261118_acdc1_fx5a-open-inputs-7-r1…`, 40 s, alle vier Kanäle auf In 1–4) lief durch den Patch. Ohne Signal liegt Out 1 bei −81…−88 dBFS wie der Eingang (−83 dBFS), die Linien bei 1, 2, 3, 6, 12 und 18 kHz bleiben innerhalb von ±6 dB. Neue Linien entstehen nicht.
+- **Der offene Frequency-Eingang ist es auch nicht [gemessen, Host]:** Mit einem Sinus (220 oder 640 Hz, 2,5 V) an In 1 erzeugen die Störlinien auf In 2 Seitenbänder bei ±1 kHz von −74…−88 dBc, mit In 2 = 0 V sind es −103…−118 dBc. Das liegt unter dem Rauschen neben dem Ton. Die Abschätzung „Phase = Laufzeit × Verstimmung“ lag 26 dB zu hoch: Eine Modulation, die schneller ist als die Laufzeit der Kette, mittelt sich über die Stufen weg. Ein versuchsweise eingebauter Tiefpass auf In 2 ist deshalb wieder entfernt.
+- **Verdacht LED-PWM [Code, Hypothese]:** Fassung 1 lässt LED 1–3 auf einem Rastpunkt dauerhaft mit Wert 0,6 leuchten und LED 4 mit 0,9 × Feedback. Die Firmware dimmt Grün per PWM (`setLed()` in `ACDC.cpp`: Tastgrad = Wert, TIM2/TIM3, 2320,54 Hz). Die LED-PWM ist als Störquelle bekannt (H3 in `docs/02`: 2320 und 4641 Hz mit −75…−80 dBFS, sobald die LEDs leuchten). In den Aufnahmen und mit den anderen Patches leuchten die LEDs nur mit Signal. Schliere gibt die Eingänge mit Faktor 1 auf die Ausgänge.
+- **Fassung 2 (`owl-patches/builds/Schliere/`, 17 268 B, CRC `0xcd590595`, `e2fb0332…`, Quelle `321e0cc5…`):** LEDs nur noch aus oder rot. Rot ist ein statischer Pin, Grün steht dabei auf Tastgrad 1023/1024 [Code], die Grundwelle der PWM ist damit rechnerisch 50 dB kleiner als bei 60 %. LED 4 zeigt nur noch die Begrenzung. Host-Test 26 Fälle bestanden. Fassung 1 liegt in `owl-patches/builds/Schliere-v1/` (`bf9c0c5d…`) und auf Slot 6.
+- **Probe ohne neuen Build:** Tap zwischen zwei Rastpunkte und Feedback auf null stellen, dann sind in Fassung 1 alle vier LEDs aus. Verschwindet das Fiepsen, ist es die LED-PWM. Das wäre zugleich der fehlende Beweis für H3.
+- **Nicht ausgeschlossen:** höhere Blockraten-Linie (6 kHz) durch die Rechenlast (D42), der Kamm am Ausgang bei gestecktem USB (D20).
+- **Fassung 2 im RAM [gemessen], 17:49:** `owl_write.py Schliere.syx --run`, 85 Pakete in 1,4 s. Danach läuft Programm 0 „Schliere“ mit 17 268 B, CPU 28 %, Regler 42 / 83 / 115 / 68. Slots 1–6 unverändert, auf Slot 6 liegt weiter Fassung 1 (`out/owl_read/acdc1/20261118_174928/`). Das Hörurteil des Nutzers zum Vergleich steht aus.
+- **Hörurteil zu Fassung 2 (Nutzer, ≈ 17:55):** Das Fiepsen ist unverändert da. Die gedimmten LEDs sind damit nicht die Ursache, jedenfalls nicht allein. H3 bleibt ohne Beweis.
+- **Neuer Umstand (Nutzer):** acdc1 ist heute zum ersten Mal ins Case geschraubt. Bei allen bisherigen Messungen und beim Hören lag das Modul neben dem Case. Der Nutzer vermutet Einstreuungen aus dem Case und will Schritt für Schritt selbst eingrenzen [Hypothese, ungeprüft]. Ob das Fiepsen an Schliere hängt oder mit jedem Patch auftritt, ist damit offen.
+- **Zurückschalten:** Der Programmwechsel auf Slot 6 scheiterte, weil acdc1 nicht am USB war („MIDI port not found“). Gesendet wurde nichts. Fassung 2 läuft bis zum nächsten Neustart aus dem RAM, danach startet der gemerkte Slot. Auf Slot 6 liegt Fassung 1, die Quelle `owl/SchlierePatch.hpp` und der Build in `owl-patches/builds/Schliere/` sind Fassung 2.
+- **Zurückgeschaltet [gemessen], 18:07:** `owl_read.py --program 6` (Auftrag des Nutzers). Es läuft wieder Fassung 1 aus Slot 6 (17 196 B), CPU 28 %, Slots 1–6 unverändert (`out/owl_read/acdc1/20261118_180730/`). Der Programmwechsel wird nicht gemerkt.
+
+### D67 – Das Fiepsen in Schliere ist die LED-PWM: Out 1 über das zweite Interface aufgenommen (2026-11-18, 18:16)
+
+**Frage:** Woher kommt das Fiepsen, das der Nutzer mit Schliere hört (D66, Nachtrag)?
+
+**Setup:** acdc1 fx5a, ins Case geschraubt, USB gesteckt, kein Stream am AC/DC. Slot 6 „Schliere“ Fassung 1 nach einem Neustart. Kein Eingang gepatcht, alle Regler auf 12 Uhr. acdc1 Out 1 → UMC202HD In 1 (Kette des Nutzers, Pegel nicht kalibriert). Der Nutzer dreht Regler 3 (Tap) langsam zum Rechtsanschlag, zurück zum Linksanschlag und wieder auf 12 Uhr.
+
+**Aufnahme:** `D67-schliere-out1-umc`, `20261118_acdc1_schliere-out1-via-umc-tap_g12_usb-plugged.wav`, 30 s, 48 kHz, 24 Bit, `acdc_rec.py --device UMC202HD --input-only --channels 2 --progress 1 --prompt` im Terminal des Nutzers (Zeitanzeige im Sekundentakt). Plot `out/D67-schliere-out1-umc/spectrogram.png`. Alle Pegel in dBFS des UMC.
+
+**Ergebnis [gemessen]:**
+
+| Linie | Pegel | über dem Rauschteppich |
+|---|---|---|
+| **2321,0 Hz** | −51,4 dBFS im Mittel, **−44 … −71 dBFS je nach Stellung von Regler 3** | +45 dB |
+| Vielfache: 4642, 6963, 9284, 11 605, 13 926, 16 247, 18 568, 20 889 Hz | −67 … −77 dBFS | +23 … +34 dB |
+| 6001,5 / 12 002 / 18 004 Hz (Blockrate) | −65,5 / −66,2 / −69,6 dBFS | +29 … +34 dB |
+| k · 1000 Hz (1 bis 5, 8, 9, 16, 17, 20 kHz) | −78 … −86 dBFS | +13 … +20 dB |
+
+- Die Linie bei 2321,0 Hz und ihre Vielfachen sind die **LED-PWM** (240 MHz / (101 × 1024) = 2320,54 Hz im Takt von acdc1, hier im Takt des UMC gemessen, Auflösung 0,7 Hz).
+- **Ihr Pegel folgt dem Tap-Regler:** zu Beginn auf 12 Uhr −62 dBFS, am Rechtsanschlag (6–8 s) −46,6 dBFS, zwischen zwei Rastpunkten (15 s, 23 s) −66 und −71 dBFS, am Linksanschlag (18–19 s) −48 dBFS. Fassung 1 zeigt den Rastpunkt binär auf LED 1–3 mit Wert 0,6, zwischen zwei Rastpunkten sind sie aus [Code]. LED 4 leuchtet bei Feedback auf 12 Uhr dauernd mit ≈ 0,44 [Code], das erklärt den Rest von −66 … −71 dBFS [Hypothese].
+- Am Rechtsanschlag ist die Linie so stark wie der ganze übrige Ausgang zusammen (RMS gesamt −47,6 dBFS, Linie −46,6 dBFS).
+- Das Rauschen selbst ändert mit dem Tap-Regler seine Färbung (Kerben beim Überblenden). Das ist die erwartete Wirkung des Patches auf das Eingangsrauschen.
+
+**Fazit:** Das Fiepsen von Fassung 1 ist die LED-PWM. **H3 ist damit am Ausgang bewiesen [gemessen]:** Bei sonst gleichem Zustand ändert allein das LED-Muster die Linie um bis zu 27 dB. Der Verdacht aus dem Nachtrag zu D66 war richtig.
+
+**Einschränkungen und offen:**
+- Der Nutzer hörte das Fiepsen auch mit Fassung 2 (LEDs nur aus oder rot). Eine Aufnahme mit Fassung 2 fehlt. Mögliche Reste [Hypothese]: die Blockraten-Linien bei 6, 12 und 18 kHz, Grün auf Tastgrad 1023/1024 neben Rot, die Ausgangs-LEDs (PWM nach Ausgangspegel, Schliere reicht den Eingangsoffset an die Ausgänge durch).
+- Ob die Blockraten-Linien mit Schliere (28 % CPU) höher sind als mit dem Default-Patch, zeigt diese Aufnahme nicht.
+- Der Weg der Einkopplung ist offen: über die Eingänge (H3 in den ADC-Daten) oder direkt auf den Ausgang. Ob der Einbau ins Case mitspielt, ebenfalls.
+- Nur Out 1. Kanal 2 der Datei ist UMC In 2, die Belegung ist nicht notiert.
+- Die Auswertung lief mit einem Einmal-Skript (Welch 65 536 Punkte, Spektren je Sekunde), nicht mit `analysis`.
+
+### D68 – Schliere Fassung 2: LED-Linie um 31 dB kleiner, es bleiben die Blockraten-Linien (2026-11-18, 18:21)
+
+**Frage:** Beseitigt Fassung 2 (LEDs nur aus oder rot) die LED-PWM-Linie aus D67, und was fiept dann noch?
+
+**Setup:** wie D67, dieselbe Kette und dieselbe Reglerbewegung (alle Regler 12 Uhr, Regler 3 rechts, links, 12 Uhr). Fassung 2 per `owl_write.py --run` im RAM (17 268 B, `e2fb0332…`, CPU 28 %, `out/owl_write/acdc1/20261118/owl_write_182100.json`). Aufnahme `D68-schliere-v2-out1-umc`, `20261118_acdc1_schliere-v2-out1-via-umc-tap_g12_usb-plugged.wav`, 30 s. Plot beider Fassungen: `out/D68-schliere-v2-out1-umc/spectrogram_f1_f2.png`. Pegel in dBFS des UMC, je Linie aus Sekundenspektren (Band ±6 Hz).
+
+**Ergebnis [gemessen]:** Mittel über 30 s, in Klammern Maximum und Minimum der Sekundenwerte.
+
+| Linie | Fassung 1 (D67) | Fassung 2 (D68) | Δ Mittel |
+|---|---|---|---|
+| 2321 Hz (LED-PWM) | −51,1 (−44,2 … −72,7) | −82,1 (−75,1 … −91,2) | **−31,0 dB** |
+| 4642 Hz | −67,3 (−61,6 … −81,7) | −81,7 (−75,8 … −90,0) | −14,4 dB |
+| 6963 Hz | −65,8 (−60,4 … −81,6) | −85,3 (−78,0 … −94,7) | −19,5 dB |
+| 9284 Hz | −70,7 | −85,4 | −14,7 dB |
+| 6001,5 Hz (Blockrate) | −64,0 (−57,6 … −77,2) | −58,3 (−53,6 … −66,9) | +5,7 dB |
+| 12 002 Hz | −65,9 | −61,4 | +4,5 dB |
+| 18 004 Hz | −68,3 | −63,1 | +5,2 dB |
+| 1000 Hz (USB-Kamm) | −78,9 | −73,6 | +5,3 dB |
+| RMS gesamt | −51,0 | −48,4 | +2,6 dB |
+
+- **Die LED-Linie ist mit Fassung 2 um 31 dB kleiner** und liegt jetzt 24 dB unter der 6-kHz-Linie. Sie folgt dem Tap-Regler nicht mehr erkennbar.
+- **Es bleiben die Blockraten-Linien bei 6, 12 und 18 kHz**, +30 … +35 dB über dem Rauschteppich, dazu der 1-kHz-Kamm (+16 … +19 dB). Das sind die bekannten Störfamilien aus den ADC-Daten (`docs/02`).
+- **Die 6-kHz-Linie schwankt mit dem Tap-Regler um 13 dB.** Sie läuft also durch das Filter des Patches und steckt schon im Eingangssignal. Eine Störung, die erst am Ausgang dazukäme, bliebe vom Regler unberührt.
+- Ihr Abstand zum Gesamtpegel (≈ −10 dB) liegt nahe am Abstand in den rohen Eingangsdaten von heute Nachmittag (6 kHz −96,0 gegen RMS −83,0 dBFS in der Datei, also −13 dB, `fx5a-open-inputs-7-r1`, D64).
+
+**Fazit:** Fassung 2 behebt das Fiepsen der LED-PWM. Was der Nutzer mit Fassung 2 weiter hört, sind sehr wahrscheinlich die Blockraten-Linien und der Kamm der offenen Eingänge, die Schliere wie jedes Signal mit Faktor 1 an die Ausgänge gibt [gemessen: Linien und ihr Verhalten, Hypothese: dass genau sie das Gehörte sind].
+
+**Einschränkungen und offen:**
+- Die Blockraten-Linien, der Kamm und der Gesamtpegel sind in D68 um 3 bis 6 dB höher als in D67. **Der Nutzer hat zwischen den Aufnahmen den Eingangspegel am UMC verstellt** (Angabe des Nutzers), die absoluten Pegel beider Aufnahmen sind deshalb nicht vergleichbar. Bezogen auf die 6-kHz-Linie fällt die LED-Linie um ≈ 37 dB (D67: 12,9 dB darüber, D68: 23,8 dB darunter), die −31 dB der Tabelle sind die vorsichtige Zahl.
+- **Hörurteil (Nutzer):** Mit Fassung 2 ist das Fiepsen weniger geworden, mehr im Hintergrund, eventuell bei einer anderen Frequenz. Das passt zum Befund: 2321 Hz fällt weg, 6 kHz bleibt.
+- Ob die Rechenlast von Schliere (28 %) die Blockraten-Linie hebt (D42) und ob der Einbau ins Case mitspielt, zeigt erst eine Aufnahme der rohen Eingänge im Case gegen D64.
+- Ohne Eingangssignal ist am Ausgang nur das Eingangsrauschen (≈ −83 dBFS am Gerät). Das Fiepsen fällt bei stark aufgedrehter Abhöre auf. Wie weit es unter einem echten Signal stört, ist nicht gemessen.
+- Auf Slot 6 liegt weiter Fassung 1.
+
+### D69 – Case-Sitzung: rohe Eingänge im Case, Schliere gegen Default-Patch (2026-11-18, 18:28–18:33)
+
+**Fragen:** Hebt der Einbau ins Case die Störlinien in den ADC-Daten? Hebt die Rechenlast von Schliere die Blockraten-Linie (D42)?
+
+**Setup:** acdc1 fx5a, ins Case geschraubt, Alltags-Kette, Eingänge offen, Out 1 steckt am zweiten Interface. `acdc_rec.py`, je Block 2 × 60 s, rohe ADC-Daten. Regler 68…69 / 57…58 / 58…59 / 73 von 127 (nach Augenmaß auf 12 Uhr, nicht nachgestellt).
+1. `C1-schliere-r1/-r2` (18:28): Schliere Fassung 2 läuft aus dem RAM, CPU 29 %.
+2. `C1-acdc-r1/-r2` (18:30): nach `owl_read.py --program 1` läuft der Default-Patch, CPU 6 %. Kontrolle derselben Sitzung.
+3. Danach Fassung 2 wieder per `--run` geladen (`owl_write_183254.json`).
+
+Vergleich mit den vier fx5a-Aufnahmen von heute Nachmittag neben dem Case (D64, Slot 1, Regler 60…63).
+
+**Familienpegel [gemessen]**, Mittel je Block, Datei-dBFS, Δ gegen `C1-acdc` (`out/C1-session-table.md`):
+
+| Block | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
+|---|---|---|---|---|---|
+| B7-fx5a, neben dem Case, Slot 1 (D64) | −73,05 (−0,36) | −78,42 (+0,09) | −75,23 (−0,65) | −83,27 (+0,19) | −113,83 (+3,65) |
+| C1-acdc, im Case, Slot 1 | −72,69 | −78,50 | −74,58 | −83,47 | −117,48 |
+| **C1-schliere, im Case, Schliere läuft** | −72,32 (+0,37) | −78,40 (+0,10) | −74,79 (−0,22) | **−79,69 (+3,77)** | **−104,11 (+13,37)** |
+
+Die beiden Wiederholungen je Block liegen bei RMS, Rest, Kamm und fs/8 höchstens 0,16 dB auseinander, bei den Mischprodukten 0,5 (Schliere) und 1,2 dB (Kontrolle).
+
+**Deutung:**
+- **Die Rechenlast von Schliere hebt die Blockraten-Linie um 3,8 dB und die Mischprodukte um 13,4 dB [gemessen].** Rest und Kamm bleiben innerhalb ±0,25 dB. Das passt zu D42: Was die CPU im Blocktakt tut, erscheint bei fs/8. Hier sind es 29 % statt 6 % Last.
+- **Der Einbau ins Case zeigt in den ADC-Daten keine Verschlechterung [gemessen]:** im Case gegen daneben, je Slot 1, Rest −0,09 dB, fs/8 −0,19 dB, Mischprodukte −3,65 dB, Kamm +0,65 dB, RMS +0,36 dB. Der Kamm liegt leicht über der Streuung zwischen Läufen (≈ 0,4 dB, D35). Zwischen beiden Sitzungen lagen aber zwei Stunden, andere Reglerstellungen und das Kabel an Out 1, eine Kontrolle in derselben Sitzung gibt es für diese Frage nicht.
+- **Die Mischprodukte bleiben mit −104 dB 29 dB unter dem Kamm.** Hörbar wird vor allem fs/8 (6, 12, 18 kHz): mit Schliere nur noch 4,9 dB unter dem Kamm.
+
+**Fazit:** Das restliche Fiepsen von Fassung 2 (D68) sind die Blockraten-Linien. Sie stecken in den ADC-Daten, Schliere hebt sie durch seine Rechenlast um 3,8 dB und reicht sie mit Faktor 1 an die Ausgänge. Der Verdacht „Einstreuung aus dem Case“ ist für die Eingänge nicht bestätigt.
+
+**Einschränkungen und offen:**
+- Gemessen sind die Eingänge. Ob das Case direkt auf die Ausgänge einstreut, zeigt das nicht.
+- Regler nicht genau auf 12 Uhr (Abstand bis 16 von 127). Das betrifft die Regler-Linien (D61), die in keiner der fünf Familien stecken.
+- Meldung in beiden Blöcken `tx ovf 1.0000 1.0000 32` (Stream-Start).
+- **Mögliche Abhilfe im Patch [Hypothese]:** Die Blockraten-Störung ist sample-synchron und hat genau die Periode eines Blocks (8 Samples). Ein Patch kann je Position im Block einen langsamen Mittelwert des Eingangs führen und dessen Abweichung vom Gesamtmittel abziehen. Das nimmt 6, 12, 18 und 24 kHz heraus, ohne Gleichspannung oder Audio zu berühren. Nicht gebaut, nicht gemessen.
+
+### D70 – Sperre für die Blockraten-Linien: am Rechner geprüft, Schliere Fassung 3 gebaut (2026-11-18, abends)
+
+**Frage:** Lässt sich die Blockraten-Störung (fs/8 mit Vielfachen, D68/D69) im Patch aus dem Eingang herausrechnen?
+
+**Verfahren [Code]:** `owl/AcdcInput.h`, `AcdcBlockRateCanceller`. Je Position im Takt von 8 Samples ein langsamer Mittelwert des Eingangs (0,5 s). Abgezogen wird dessen Abweichung vom Mittel der letzten 8 Mittelwerte, also genau der Anteil mit Periode 8. Gelernt wird nur, wenn der Unterschied zum Sample 8 Takte vorher unter 20 mV bleibt (Hüllkurve, 50 ms Nachlauf). Die Korrektur ist auf 10 mV begrenzt.
+
+**An den Aufnahmen aus D69 [gemessen, Host]:** rohe Eingänge durch den C++-Baustein, Datei-dBFS, Mittel über vier Kanäle, Bänder ±0,3 Hz, ohne die ersten 5 s.
+
+| Aufnahme | fs/8 (6 + 12 + 18 kHz) vor | nach | Δ | 5999,2 Hz (6. Kamm-Harmonische) | 1 kHz | RMS vor / nach |
+|---|---|---|---|---|---|---|
+| `C1-schliere-r1` | −82,62 | −130,12 | −47,5 dB | −100,5 → −101,1 | unverändert | −77,78 / −78,56 |
+| `C1-schliere-r2` | −82,79 | −124,87 | −42,1 dB | −100,4 → −101,0 | unverändert | −77,47 / −78,16 |
+| `C1-acdc-r1` | −86,45 | −131,61 | −45,2 dB | −100,3 → −101,0 | unverändert | −77,71 / −78,01 |
+| `C1-acdc-r2` | −86,51 | −131,93 | −45,4 dB | −100,2 → −100,9 | unverändert | −78,27 / −78,61 |
+| `B7-fx5a-loop` (Sinus −9 dBFS) | −83,75 | −83,75 | 0,0 dB | unverändert | unverändert | −9,08 / −9,08 |
+
+- **Die Blockraten-Familie fällt um 42 bis 47 dB auf den Rauschteppich.** Der Gesamtpegel sinkt mit Schliere-Last um 0,7 bis 0,8 dB, mit dem Default-Patch um 0,3 dB.
+- Kamm und Mischprodukte bleiben, wie erwartet. Neben 6000,0 Hz steht die 6. Kamm-Harmonische bei 5999,2 Hz (−100 dB), sie ist jetzt die stärkste Linie dort.
+- Mit einem lauten Dauersignal (Loop-Aufnahme) lernt die Sperre nicht und ändert nichts. Die Linie liegt dann 77 dB unter dem Signal.
+
+**Host-Test [gemessen, Host]:** `owl/test/blockrate_test.cpp` (10 Fälle) und zwei neue Fälle in `schliere_test.cpp`. `tools/test_owl_dsp.sh` hat damit 56 Fälle, alle bestanden. Die beiden neuen Testdateien laufen auch mit `-O3 -ffast-math` durch.
+- Störung 9 · 10⁻⁵ mit Offset und Rauschen: nach 2 s unter 2 · 10⁻⁶, nach 4 s bei 4 · 10⁻⁷. Der Offset läuft unverändert durch.
+- 1-Hz-CV mit 5 V: Abweichung höchstens 7 · 10⁻⁵, kein Anteil im Blocktakt.
+- 2 s Rauschen mit 3 V nach dem Lernen: die Schätzung bleibt stehen, danach ist die Störung sofort wieder weg.
+- Ein Ton genau auf fs/8 mit 2,5 V verliert 13 mV.
+- Schliere mit Störung am Eingang: an L, R und Tail unter 3 · 10⁻⁶.
+
+**Fassung 3 von Schliere:** In 1 läuft durch die Sperre, sonst wie Fassung 2. `owl-patches/builds/Schliere/`: 17 860 B, CRC `0x936d0028`, `db33b525…`, Quelle `18a11124…`, `AcdcInput.h` `39c3f2ab…`. Fassung 2 liegt in `owl-patches/builds/Schliere-v2/` (`e2fb0332…`), Fassung 1 in `Schliere-v1/` und auf Slot 6.
+
+**Einschränkungen und offen:**
+- Nichts davon ist am Gerät gemessen. Offen ist vor allem, ob am Ausgang noch ein Anteil der Blockrate entsteht, der nicht über den Eingang kommt.
+- Die Aufnahmen sind 16 Bit über USB, der Patch sieht die ADC-Daten in voller Auflösung.
+- Rechenlast und Lage der Störung im Takt sind am Gerät dieselben wie in der Aufnahme [Hypothese]: Der Patch rechnet in Blöcken zu 8, die Sperre zählt die Position selbst.
+- Bei wechselnder Rechenlast (Grainz) hinkt die Schätzung nach, solange es laut ist.
+
+### D71 – Schliere Fassung 3 am Gerät: Blockraten-Linien am Ausgang um 22 bis 25 dB kleiner (2026-11-18, 18:47–18:51)
+
+**Frage:** Wirkt die Blockraten-Sperre (D70) am Gerät, gemessen am Ausgang?
+
+**Setup:** acdc1 fx5a im Case, USB gesteckt, kein Stream, kein Eingang gepatcht. Out 1 → UMC202HD In 1, Kette und Pegel in der Sitzung unverändert. Regler fest auf 68 / 57…58 / 58 / 72 von 127 (vor jedem Block gelesen). Je 30 s, `acdc_rec.py --device UMC202HD --input-only`, 24 Bit. Reihenfolge mit `owl_write.py --run`: Fassung 2 (`D71-schliere-f2-a`) → Fassung 3 (`D71-schliere-f3-r1/-r2`) → Fassung 2 (`D71-schliere-f2-b`). Nach jedem Laden 6 s Wartezeit. CPU: Fassung 2 29…30 %, Fassung 3 30 %, Speicher 1040 und 1128 B.
+
+**Auswertung:** Linienpegel aus dem Spektrum über 30 s, Bänder ±0,25 Hz, Kanal 1, dBFS des UMC. Der Takt des UMC liegt 183 ppm über dem von acdc1 (6000 Hz erscheinen bei 6001,10 Hz), die Linien sind entsprechend umgerechnet. Plot `out/D71-schliere-f3-out1-umc/psd_f2_f3.png`.
+
+| Linie (im Takt von acdc1) | F2 a | F3 r1 | F3 r2 | F2 b | F3 − F2 |
+|---|---|---|---|---|---|
+| **6000 Hz (Blockrate)** | −72,7 | −97,6 | −97,2 | −72,6 | **−24,7 dB** |
+| **12 000 Hz** | −76,0 | −100,8 | −100,9 | −75,6 | **−25,1 dB** |
+| **18 000 Hz** | −79,0 | −101,3 | −101,1 | −79,7 | **−21,9 dB** |
+| 5999,2 Hz (6. Kamm-Harmonische) | −88,7 | −89,1 | −89,3 | −89,0 | −0,3 dB |
+| 1 / 2 / 3 kHz (Kamm) | −93,2 / −92,8 / −93,8 | −93,8 / −92,4 / −93,0 | −94,0 / −92,7 / −93,0 | −93,5 / −92,7 / −92,6 | −0,6 / +0,2 / +0,2 dB |
+| 2320,5 Hz (LED-PWM) | −112,3 | −114,0 | −111,0 | −110,8 | im Teppich |
+| Umgebung bei 6 kHz (gleiches Band) | −113,2 | −113,6 | −113,8 | −113,4 | −0,4 dB |
+| RMS gesamt | −64,9 | −65,7 | −65,7 | −65,0 | −0,8 dB |
+
+**Deutung [gemessen]:**
+- **Die Sperre wirkt am Gerät:** Die drei Blockraten-Linien fallen am Ausgang um 22 bis 25 dB. Die beiden Kontrollen mit Fassung 2 liegen höchstens 0,7 dB auseinander.
+- **Es bleibt ein Rest von −97 … −101 dBFS, 12 bis 16 dB über dem Teppich.** Am Rechner fiel die Familie bis auf den Teppich (D70). Der Rest kommt also nicht über den Eingang, den die Sperre sieht [Hypothese: Anteil, der erst am Ausgang entsteht, oder Übersprechen in der Messkette].
+- **Stärkste Linien sind jetzt die des Kamms:** die 6. Harmonische bei 5999,2 Hz mit −89 dBFS und 1 bis 3 kHz mit −93 dBFS. Sie sind unverändert.
+- Die LED-Linie liegt mit beiden Fassungen im Teppich. Beide Fassungen zeigen die LEDs nur aus oder rot, und die Regler standen so, dass die Linie nicht messbar ist.
+- Der Gesamtpegel sinkt um 0,8 dB, wie am Rechner.
+
+**Fazit:** Fassung 3 senkt das restliche Fiepsen von Fassung 2 messbar. Von den drei Ursachen sind zwei behoben (LED-PWM: D68, Blockrate: D71), der USB-Kamm bleibt.
+
+**Einschränkungen und offen:**
+- Ohne Eingangssignal und mit festen Reglern gemessen. Mit Signal, bei bewegten Reglern und über längere Zeit ist die Sperre am Gerät nicht geprüft.
+- Das Hörurteil des Nutzers steht aus.
+- Nur Out 1. Der Pegel am UMC war ein anderer als in D67/D68, die Zahlen sind nur innerhalb dieser Sitzung vergleichbar.
+- Am Ende läuft Fassung 3 aus dem RAM (`owl_write_…`, 17 860 B). Auf Slot 6 liegt weiter Fassung 1.
+
+**Nachtrag D71 – Fassung 3 auf Slot 6 (19:17, Freigabe des Nutzers):** `owl_write.py Schliere.syx --store 6 --yes --backup-file owl-patches/builds/Schliere-v1/patch.bin`. Die Sicherung von Fassung 1 passte in Größe und CRC zum Slot (`backup/acdc1/20261118/owl_write_191742/`). Slot 6 danach „Schliere“, 17 860 B, CRC `0x936d0028`. `owl_read.py --slots 6`: Download `ok`, bytegleich mit dem Build von Fassung 3 (`db33b525…`). Slots 1–5 unverändert, Storage 125 952 B, Programm 6 läuft mit 30 % CPU (`out/owl_read/acdc1/20261118_191753/`).
+
+---
+
+## D72 – Schliere Fassung 3: Störgeräusch bei leuchtenden LEDs? (2026-11-18, 22:14)
+
+**Anlass:** Hörurteil des Nutzers zu Fassung 3: viel besser. Sobald die LEDs aufleuchten, hört er aber wieder ein leises Störgeräusch, und bei „Rot“ leuchten Rot und Grün zusammen. Seine These: Die LEDs sind generell für die Störgeräusche verantwortlich, auch bei Aufnahmen.
+
+**Code-Befund [Code]:** `setLed()` und die Hauptschleife (`ACDC/Core/Src/ACDC.cpp`, `acdcOnLoopLate()`) behandeln einen Wert ab 4090 so, alle 2 ms neu:
+- Zuerst `setLed(i+1, value)`: Der rote Pin geht auf high (aus), die grüne PWM bekommt den Vergleichswert 1024 − 1023 = 1. Grün leuchtet also mit Tastgrad 1023/1024 weiter, mit einer Lücke von 0,42 µs je Periode (2320,54 Hz). Der Vergleichswert 0 (dauerhaft an) ist über `setLed()` nicht erreichbar.
+- Danach `setLed(i+1, RED_COLOUR)`: Der rote Pin geht auf low (an). Die grüne PWM bleibt, die Zeile zum Abschalten ist auskommentiert.
+- Folge: „Rot“ ist Rot plus fast volles Grün. Der rote Pin bekommt 500-mal pro Sekunde einen kurzen Puls, die grüne PWM schaltet weiter. Die Aussage aus D68 („Rot ist ein statischer Pin“) stimmt für den Pin, aber nicht für die LED als Ganzes. Ein Patch kann eine LED nur ganz aus ohne Schaltflanken betreiben.
+
+**Setup:** acdc1 fx5a im Case, USB gesteckt, kein Stream, kein Eingang gepatcht, Slot 6 (Schliere Fassung 3). Out 1 → UMC202HD In 1, UMC-Gain vom Nutzer deutlich erhöht (nach den Kamm-Linien etwa +23 dB gegen D71). Regler 1, 2, 4 auf 12 Uhr. Regler 3 (Tap) erst am Linksanschlag, dann zum Rechtsanschlag, dort bis zum Ende. Nach dem Spektrogramm lief die Drehung etwa von 7,5 bis 22,5 s, schneller als geplant.
+
+**Aufnahme:** `D72-schliere-f3-tap-leds-umc`, `20261118_acdc1_schliere-f3-out1-via-umc-tap-sweep_g12_usb-plugged.wav`, 45 s, 48 kHz, 24 Bit, `acdc_rec.py --device UMC202HD --input-only --channels 2 --prompt --progress 1`. Plot `out/D72-schliere-f3-tap-leds-umc/spectrogram.png`. Alle Pegel in dBFS des UMC, Kanal 1. Takt des UMC 188 ppm über dem von acdc1, f0 des Kamms 999,868 Hz.
+
+**Auswertung:** Zwei ruhende Abschnitte, in denen die LEDs dauerhaft leuchten: A = Linksanschlag (0,5–7 s, Rastpunkt 1, LED 1) und B = Rechtsanschlag (25–44,8 s, Rastpunkt 7, LED 1–3). Spektrum mit 0,37 Hz (A) und 0,18 Hz (B) Auflösung. „über Umgebung“ = stärkster Bin in ±0,4 Hz gegen den Median der Nachbarschaft, bei reinem Rauschen ergibt dieses Maß bis etwa +8 dB.
+
+| Linie (im Takt von acdc1) | A: Linksanschlag, LED 1 | B: Rechtsanschlag, LED 1–3 |
+|---|---|---|
+| Kamm 1 kHz / 5 kHz | −72,1 / −64,4 | −75,0 / −73,7 |
+| **Regler-Linie 2200,95 Hz** | **−72,7** (+21,9 dB) | −77,8 (+17,5 dB) |
+| **Regler-Linie 4401,90 Hz** | **−66,5** (+21,9 dB) | −80,5 (+19,6 dB) |
+| **Regler-Linie 6602,85 Hz** | **−67,7** (+20,0 dB) | −80,3 (+16,4 dB) |
+| Regler-Linie 8549,33 Hz | −77,4 (+13,9 dB) | −86,8 (+14,0 dB) |
+| Blockrate 6000 / 18 000 Hz | vom Kamm verdeckt / −81,1 | −81,8 / −81,4 |
+| LED-PWM 2320,54 Hz, k = 1…10 | −84,6 … −100,6, höchstens +4,3 dB | −84,9 … −96,4, höchstens +7,9 dB (einmal +9,8 bei k = 8) |
+| 500 Hz, ungerade Vielfache bis 6,5 kHz | höchstens +6,4 dB | höchstens +8,5 dB |
+
+Verlauf der Regler-Linien in Fenstern von 1 s: am Linksanschlag 16–21 dB über der Umgebung, während der Drehung fallend, um die Mitte des Regelwegs (etwa 15–19 s) nicht vom Rauschen zu unterscheiden, am Rechtsanschlag wieder 8–16 dB darüber.
+
+**Deutung:**
+- **Keine LED-Linie [gemessen]:** Mit einer und mit drei dauerhaft leuchtenden LEDs (Rot plus fast volles Grün) gibt es an Out 1 weder bei der PWM-Frequenz und ihren Vielfachen noch bei Vielfachen von 500 Hz eine Linie über dem Rauschen. Was die LEDs in diesem Zustand beitragen, liegt mindestens 20 dB unter den Kamm-Linien. Die beiden Verdachtsstellen aus dem Code sind damit am Ausgang nicht nachweisbar.
+- **Dem dritten Regler folgen die Regler-Linien [gemessen]:** 2200,95 / 4401,90 / 6602,85 Hz (D58, D60, D61) stehen am Linksanschlag mit −66 … −73 dBFS am Ausgang, so stark wie die stärksten Kamm-Linien. In der Mitte des Regelwegs verschwinden sie, am Rechtsanschlag sind sie 5 bis 14 dB schwächer als links. Bisher waren sie nur in den rohen ADC-Daten gemessen. Ein FX-Patch reicht sie wie Kamm und Blockrate an den Ausgang durch.
+- **[Hypothese]** Was der Nutzer beim Drehen von Regler 3 hört, sind diese Linien (fester Ton, Pegel folgt der Reglerstellung) und die Klangfarbe des Patches selbst: Bei 12 Uhr steht Feedback auf etwa der Hälfte, das Eingangsrauschen bekommt Resonanzen, die auf einem Rastpunkt stehen und beim Überblenden wandern. Beides fällt mit den LEDs zusammen, weil alles an Regler 3 hängt.
+- **Die These des Nutzers stimmt zum Teil:** Die LED-PWM ist eine von vier Störfamilien und nur bei gedimmten LEDs messbar (D67: bis −44 dBFS). Kamm und Blockrate sind auch bei dunklen LEDs da (D20, D33, D42, D69).
+
+**Einschränkungen und offen:**
+- Die Aufnahme trennt „LED leuchtet“ nicht von „Abgriff steht auf einem Rastpunkt“. Die Haltezonen dauerten bei dieser Drehung unter 1 s, zu kurz für Linienpegel je Zone. Ob das Schalten der LEDs an den Zonengrenzen stört (Regler-Rauschen lässt sie dort flackern), ist nicht geprüft.
+- Entscheidend wäre ein Test-Build, der die LEDs nach der Uhr schaltet (aus, eine rot, drei rot, gedimmt grün), bei unbewegten Reglern auf 12 Uhr.
+- Neu gegen D71 und nicht zugeordnet: schmale Linien, die im Lauf der Aufnahme wandern, mit Vielfachen nur in Oktaven. A: 684,8 Hz mit ×2, ×4, ×8, ×16 (bis −67 dBFS), 942,5 Hz mit ×2, ×4, 281,6 Hz mit ×4. B: 686,2 Hz mit ×2, ×4, ×16, 490,1 Hz mit ×2, 299,6 Hz mit ×4. Sie hängen nicht am Takt von acdc1. Ob sie der Reglerstellung folgen oder von außen kommen (andere Module im Case, Messkette), ist offen.
+- Nur Out 1, Pegel des UMC anders als in D67, D68 und D71.
+
+---
+
+## D73 – LED-Test-Patch: Stören die LEDs selbst? (2026-11-18, 22:29)
+
+**Frage (aus D72):** Trägt eine leuchtende LED etwas zum Ausgang bei, wenn sich sonst nichts ändert? D72 konnte „LED leuchtet“ nicht von „Abgriff steht auf einem Rastpunkt“ trennen.
+
+**Mess-Patch:** `owl/test/SchliereLedTestPatch.hpp`, eine von `SchlierePatch` abgeleitete Klasse. Der Klang ist unverändert (`SchlierePatch::processAudio()` läuft wie auf Slot 6, dieselbe Funktion mit 0xab0 Bytes im ELF), nur die vier LED-Werte werden danach überschrieben. Ablauf je 5 s, ab dem Laden, wiederholt: aus, LED 1 rot, LED 1–3 rot, LED 1–4 rot, aus, LED 1–3 blinken rot mit 40 Hz (12,5 ms an, 12,5 ms aus), aus, LED 1–3 grün mit 60 %. Host-Test `owl/test/ledtest_test.cpp` (10 Fälle, Zeitplan). Build `owl-patches/builds/SchliereLedTest/` (15 412 B, CRC `0x1ce0c9a6`, `fbfca250…`). Geladen mit `owl_write.py --run` um 22:26 (nur RAM, `out/owl_write/acdc1/20261118/owl_write_222628.json`), Stand davor `out/owl_read/acdc1/20261118_222618/`: Programm 6, Regler 62 / 51 / 58 / 58.
+
+**Setup:** acdc1 fx5a im Case, USB gesteckt, kein Stream, kein Eingang gepatcht. Out 1 → UMC202HD In 1, UMC-Gain wie D72. Regler vom Nutzer vor der Aufnahme gestellt und dann nicht bewegt: 78 / 45 / 77 / 1 von 127 (nach der Aufnahme gelesen, `out/owl_read/acdc1/20261118_223105/`), Feedback also am Linksanschlag. CPU 29 %.
+
+**Aufnahme:** `D73-schliere-ledtest-umc`, `20261118_acdc1_schliere-ledtest-out1-via-umc_g12_usb-plugged.wav`, 90 s, 48 kHz, 24 Bit, `acdc_rec.py --device UMC202HD --input-only --channels 2 --prompt --progress 1`. Plot `out/D73-schliere-ledtest-umc/led_phases.png`. Alle Pegel in dBFS des UMC, Kanal 1.
+
+**Auswertung:** Die Lage der Phasen folgt aus der grünen Phase (2321-Hz-Linie an bei 29,813 und 69,806 s, aus bei 34,810 und 74,804 s). Je Zustand alle Phasen gemittelt, je 0,6 s nach und 0,4 s vor einem Wechsel ausgelassen. Linien: stärkster Bin in ±0,8 Hz, Raster 0,73 Hz.
+
+| | aus | LED 1 rot | LED 1–3 rot | LED 1–4 rot | blinken 40 Hz | grün 60 % |
+|---|---|---|---|---|---|---|
+| RMS gesamt | −47,4 | −47,3 | −47,6 | −47,5 | **−29,8** | **−40,6** |
+| Rauschen 200–2000 Hz (Median) | −58,3 | −58,5 | −58,4 | −58,5 | −54,7 | −58,6 |
+| Rauschen 2–8 kHz (Median) | −56,5 | −56,6 | −56,7 | −56,6 | −56,2 | −56,5 |
+| LED-PWM 2320,54 Hz | −90,9 | −91,4 | −88,8 | −88,7 | −85,2 | **−39,8** |
+| LED-PWM ×2 / ×3 | −89,0 / −83,1 | −91,3 / −83,7 | −86,3 / −81,6 | −84,4 / −78,9 | −86,5 / −83,3 | **−48,5 / −49,4** |
+| Kamm 1 kHz / 5 kHz | −71,8 / −65,5 | −71,8 / −64,6 | −71,9 / −64,7 | −72,4 / −64,6 | −71,2 / −65,1 | −71,5 / −65,1 |
+| Blockrate 6 / 12 / 18 kHz | −77,7 / −82,0 / −79,5 | −77,7 / −82,4 / −78,4 | −78,3 / −81,1 / −78,9 | −78,4 / −81,5 / −79,1 | −77,9 / −82,5 / −78,3 | −78,5 / −83,2 / −78,1 |
+| Regler-Linien 2200,95 / 6602,85 Hz | −79,6 / −76,0 | −80,3 / −75,1 | −79,5 / −74,4 | −79,3 / −74,2 | −73,9 / −75,5 | −80,8 / −75,4 |
+
+Schaltvorgänge (Signal mit 300 Hz tiefpassgefiltert, Rauschen dort 0,0020 Vollausschlag effektiv):
+
+| Wechsel | Spitze (Vollausschlag UMC) | gegen das Rauschen |
+|---|---|---|
+| aus → LED 1 rot | +0,013 / +0,015 | 6…7-fach |
+| LED 1 rot → LED 1–3 rot | +0,026 / +0,024 / +0,026 | 12…13-fach |
+| LED 1–3 rot → LED 1–4 rot | +0,015 / +0,013 | 6…7-fach |
+| LED 1–4 rot → aus | −0,049 / −0,051 | 24…25-fach |
+| aus → grün 60 % / zurück | +0,013 / −0,017 … −0,013 | 6…8-fach |
+
+Blinken mit 40 Hz: Grundton −28,3 dBFS, 120 Hz −40,1, 200 Hz −41,3, je 35–37 dB über dem Zustand „aus“ an derselben Stelle. Die ungeraden Vielfachen stehen bei 2 kHz noch 18 dB und bei 4 kHz 11 dB darüber, ab etwa 8 kHz gehen sie im Rauschen auf.
+
+**Deutung [gemessen]:**
+- **Dauerhaft leuchtende LEDs stören nicht messbar.** Mit einer, drei und vier roten LEDs (Rot plus Grün mit Tastgrad 1023/1024) sind Gesamtpegel, Rauschen, Kamm, Blockrate und Regler-Linien gleich wie bei dunklen LEDs (±1 dB). Bei den Vielfachen der PWM-Frequenz gibt es mit vier LEDs höchstens +2…5 dB an Linien um −79…−89 dBFS, mindestens 14 dB unter der stärksten Kamm-Linie und nicht gesichert. Das bestätigt D72.
+- **Jeder Wechsel einer LED verschiebt den Ausgang.** Der Sprung ist additiv, etwa +0,0125 Vollausschlag des UMC je LED, die eingeschaltet wird, und zeigt beim Ausschalten in die andere Richtung. Schon eine LED ergibt einen Knack mit dem 6-fachen des Rauschens im Bass, etwa 26 dB über der Amplitude der stärksten Kamm-Linie. Der UMC ist wechselspannungsgekoppelt, die wahre Stufe ist deshalb eher größer als die Spitze.
+- **Schnelles Schalten wird zum Brummen und Knattern:** Drei LEDs mit 40 Hz heben den Gesamtpegel um 17,6 dB, mit Oberwellen bis in den kHz-Bereich.
+- **Gedimmtes Grün fiepst wie in D67:** 2320,54 Hz mit −39,8 dBFS, 25 dB über der stärksten Kamm-Linie, Gesamtpegel +6,8 dB. Die Gegenprobe zeigt, dass die Messung LED-Einflüsse erfasst.
+- **Folgerung für Schliere Fassung 2 und 3 [Hypothese]:** Die LEDs schalten hart, sobald der Abgriff in eine Haltezone kommt. Das knackt bei jedem Rastpunkt, und an der Grenze einer Zone lässt das Rauschen des Reglers die LEDs flackern. Das passt zum Hörurteil des Nutzers („sobald die LEDs aufleuchten“).
+- **Folgerung für den Alltag [Hypothese]:** Die Pegel-LEDs der Firmware folgen dem Signal. Ihr Strom verschiebt den Ausgang dann im Takt der Hüllkurve, zusätzlich zur PWM-Linie.
+
+**Einschränkungen und offen:**
+- Wo die Verschiebung entsteht, ist offen: am Ausgang (DAC, Ausgangsstufe) oder am Eingang (ADC), von wo der gleichspannungsgekoppelte Patch sie an Out 1 durchreicht. Nur im zweiten Fall träfe sie auch die Aufnahmen. Test: derselbe Ablauf mit digital stummen Ausgängen.
+- Die Größe in Volt ist nicht bekannt (UMC nicht kalibriert). Die Form der Stufe ist durch die Wechselspannungskopplung des UMC verfälscht, die Spitze liegt 75–105 ms nach dem Wechsel.
+- Nur Out 1, nur die Eingangs-LEDs. Die Ausgangs-LEDs steuert die Firmware nach dem Ausgangspegel, sie waren dunkel.
+- Nach der Aufnahme per Program Change zurück auf Slot 6 (Schliere Fassung 3), nichts gespeichert.
+
+---
+
+## D74 – LED-Strom: Eingang oder Ausgang? (2026-11-18, 22:39–22:47)
+
+**Frage (aus D73):** Entsteht die Verschiebung durch den LED-Strom am Eingang (ADC), von wo der Patch sie durchreicht, oder am Ausgang? Nur im ersten Fall trifft sie auch die Aufnahmen.
+
+**Mess-Patch:** `owl/test/SchliereLedPathPatch.hpp`, von `SchlierePatch` abgeleitet. Zehn Phasen zu je 5 s, wiederholt: (0) Schliere, LEDs aus, (1) Schliere, LED 1–3 blinken mit 40 Hz, (2) Ausgänge digital null, aus, (3) null, blinken, (4) null, aus, (5) null, LED 1–4 rot, (6) null, aus, (7) null, Eichton 300 Hz mit Amplitude 0,001 an Out 1, (8) alle Ausgänge = 4 × In 1, aus, (9) 4 × In 1, blinken. Der Patch misst dazu selbst an den rohen Eingängen 1–3 und meldet per `debugMessage` in 1e-7 Vollausschlag: „LEDblink“ = Mittel bei LED an minus LED aus in Phase 3 (ohne die ersten 4 ms nach jedem Wechsel, über alle Durchläufe), „LEDstat“ = Mittel in Phase 5 minus Mittel der Phasen 4 und 6 (je ohne die erste Sekunde). In den Phasen 2–7 liegt am Ausgang kein Signal, das auf die Eingänge übersprechen könnte. Host-Test `owl/test/ledpath_test.cpp` (11 Fälle: Zeitplan, Ausgänge je Phase, die Messung findet eine eingebaute Verschiebung auf 0,1 % wieder). Build `owl-patches/builds/SchliereLedPath/` (20 108 B, CRC `0xb0fa2194`, `98fdd642…`), geladen mit `owl_write.py --run` um 22:39 (nur RAM, `out/owl_write/acdc1/20261118/owl_write_223933.json`).
+
+**Setup:** acdc1 fx5a im Case, USB gesteckt, kein Stream, kein Eingang gepatcht, Regler 61 / 68 / 62 / 58 von 127, nicht bewegt. CPU 28–31 %.
+
+### Messung am Eingang (vom Patch selbst, über `owl_read.py`)
+
+| gelesen | Meldung | In 1 | In 2 | In 3 |
+|---|---|---|---|---|
+| 22:40:05 | LEDblink (3 LEDs, 40 Hz) | −8008 | −7956 | −8333 |
+| 22:40:19 | LEDstat (4 LEDs, dauerhaft) | −11774 | −11521 | −11557 |
+| 22:46:53 | LEDblink | −7974 | −7928 | −8310 |
+| 22:46:58 | LEDstat | −11796 | −11469 | −11656 |
+| 22:47:36 | LEDblink | −7973 | −7927 | −8309 |
+
+Einheit 1e-7 Vollausschlag, bei ±10 V also 1 ≙ 1 µV. Reports in `out/owl_read/acdc1/20261118_2240*/` und `…_2246*/`, `…_2247*/`.
+
+### Aufnahme am Ausgang
+
+`D74-schliere-ledpath-umc`, `20261118_acdc1_schliere-ledpath-out1-via-umc_g12_usb-plugged.wav`, 110 s, 48 kHz, 24 Bit, Out 1 → UMC202HD In 1, UMC-Gain wie D72/D73, `acdc_rec.py --device UMC202HD --input-only --channels 2 --prompt --progress 1`. Lage der Phasen aus dem Eichton (an bei 27,234 und 77,224 s). Eichton: −22,14 dBFS am UMC für 0,001 Vollausschlag am Ausgang, also 1 Vollausschlag UMC ≙ 0,01279 Vollausschlag von acdc1 ≈ 128 mV (bei 10 V).
+
+| Phase | 40 Hz am UMC (dBFS) | am Ausgang von acdc1 (Spitze) |
+|---|---|---|
+| Schliere, blinken | −24,5 | 7,58 mV |
+| Ausgänge null, blinken | −52,8 | 0,29 mV |
+| 4 × In 1, blinken | −16,4 | 19,4 mV |
+| Ausgänge null, LEDs aus | −97 … −108 | unter 0,002 mV |
+
+Schalten von vier LEDs bei stummem Ausgang (Tiefpass 300 Hz): +0,51 / +0,56 mV beim Einschalten, −0,72 / −0,71 mV beim Ausschalten, Rauschen davor 0,03–0,06 mV.
+
+**Deutung [gemessen]:**
+- **Die Verschiebung entsteht am Eingang.** Jede leuchtende Eingangs-LED verschiebt die rohen ADC-Daten um −2,9e-4 Vollausschlag (statisch: −2,95 / −2,87 / −2,91e-4 an In 1 / 2 / 3), das sind etwa −2,9 mV oder −70,8 dBFS. Beim Blinken mit 40 Hz sind es −2,7e-4 je LED. Die Werte sind über sieben Minuten auf 0,5 % gleich.
+- **Alle drei gemessenen Eingänge verschieben sich gleich** (±2 %). [Hypothese] Der LED-Strom verschiebt einen gemeinsamen Bezugspunkt des Wandlers (Masse oder Referenz).
+- **Die Rechnung geht auf:** Ein Rechteck mit 8,0e-4 Spitze-Spitze hat einen Grundton von 5,1e-4. Mit 4 × In 1 stehen am Ausgang 19,4e-4, auf den Eingang bezogen 4,8e-4 (95 %). Mit Schliere sind es 7,6e-4, mehr als 5,1e-4, weil Feedback bei 12 Uhr auf etwa 44 % steht.
+- **Am Ausgang selbst kommt ein kleiner Anteil dazu:** Bei digital stummem Ausgang bleiben 0,29 mV Grundton, das entspricht etwa 0,15 mV je LED, 24 dB weniger als über den Eingang bei Verstärkung 1. Die Sprünge beim Schalten von vier LEDs (0,5–0,7 mV) passen dazu.
+- **Die LED-PWM-Linie ist derselbe Effekt.** Eine gedimmte LED schaltet die Verschiebung 2321-mal pro Sekunde. Ein Rechteck mit 2,9e-4 und Tastgrad 60 % hätte einen Grundton von 1,8e-4 = −75 dBFS je LED. In den frühen Aufnahmen lag die Linie mit Signal bei −75 … −80 dBFS (H3 in `docs/02`). Am Ausgang waren es in D73 mit drei LEDs 1,3e-4 (−39,8 dBFS am UMC), 12 dB weniger als diese Rechnung: Der Effekt ist bei 2,3 kHz also schwächer als statisch, oder der Patch dämpfte dort.
+- **Die These des Nutzers stimmt im Kern:** Was die LEDs tun, steht in den ADC-Daten und damit in jeder Aufnahme. Dauerlicht ist nur ein fester Versatz. Jeder Wechsel ist ein Sprung von −71 dBFS je LED, rund 30 dB über den Kamm-Linien der rohen Eingänge.
+
+**Folgerungen:**
+- [Hypothese] Im Alltag folgen die Pegel-LEDs dem Signal (gedimmtes Grün, Zeitkonstante 40 ms, Rot beim Übersteuern). Der Nullpunkt aller Eingänge wandert dann mit der Hüllkurve des lautesten Kanals, um bis zu etwa 1,2e-3 Vollausschlag bei vier hellen LEDs, und die PWM-Linie kommt dazu. Wie hörbar das unter Musik ist, ist nicht gemessen.
+- Für Patches: LEDs gar nicht oder selten schalten, nie flackern lassen, nie dimmen.
+- Für die Firmware: Ein Schalter „LEDs aus“ beseitigt beides. Eine PWM-Frequenz über dem Hörbereich nähme die Linie, ließe die langsame Verschiebung aber stehen. Pegel-LEDs in Stufen mit Hysterese statt gedimmt würden sie seltener machen.
+
+**Einschränkungen und offen:**
+- In 4 ist nicht gemessen (die Meldung fasst drei Werte). Die Ausgangs-LEDs und die Eingangs-LEDs einzeln sind nicht gemessen, nur LED 1–3 zusammen und LED 1–4 zusammen.
+- Volt-Angaben mit ±10 V Vollausschlag gerechnet (gemessen ≈ ±9,5 V am Eingang, D29). Frequenzgang des UMC zwischen 40 und 300 Hz nicht bekannt.
+- Der UMC übersteuert kurz bei den Wechseln der Ausgangsart, weil der Eingangsoffset am Ausgang erscheint oder verschwindet. Die Bezugsphasen direkt danach (0, 2, 8) tragen noch den Ausschwinger, ihre Pegel sind deshalb obere Grenzen.
+- Nach der Aufnahme per Program Change zurück auf Slot 6 (Schliere Fassung 3), nichts gespeichert.
+
+---
+
+## D75 – Build 8 `v22.4.r-fx6a` auf acdc1: Flash, LED-Modi am Gerät (2026-11-18, 23:10–23:45)
+
+**Anlass:** Abnahme von Build 8 (Patch 17, LED-Modus im Boot-Menü über Regler 2, `docs/05`, „Build 8“). Freigabe des Nutzers für den Flash.
+
+**Flash:** `tools/flash_acdc.py acdc1-build8-fx6a --yes`, Log `firmware/flashlog/20261118_build8-fx6a/`. Vorher fx5a mit sechs Slots, DFU-Neustart, 110 088 B geschrieben, Readback bytegleich, Rest 0xFF. Nach dem Neustart durch den Nutzer `--a1`: bestanden (acdc1, `AC/DC v22.4.r-fx6a`, 48 000 Hz, Blockgröße 8, Slots unverändert, Storage 125 952 B, Slot 6 startet mit 30 % CPU).
+
+**Messung der LED-Verschiebung je Modus:** Mess-Patch aus D74 (`SchliereLedPath`, nur RAM), Meldungen über `owl_read.py`, Einheit 1e-7 Vollausschlag (≙ µV bei ±10 V), In 1 / In 2 / In 3. Kein Kabel gesteckt, kein Stream.
+
+| Modus | gelesen | LEDblink (3 LEDs, 40 Hz) | LEDstat (4 LEDs dauerhaft) |
+|---|---|---|---|
+| normal (nach dem Flash) | 23:15 | −8421 / −8085 / −8507 | −12344 / −11742 / −11875 |
+| aus (im Boot-Menü gewählt) | 23:27 | +108 / +107 / +96 | +190 / +231 / +192 |
+
+Eine Messung um 23:24 zeigte noch die volle Verschiebung (−9329 / −7226 / −7966, statisch −34606 / −10650 / −11066). Laut Nutzer war dabei der falsche Modus eingestellt, die Regler standen während der Messung nicht still (47 / 17 / 58 / 95). Welcher Modus das war, ist offen (siehe unten).
+
+**Boot-Menü am Gerät (Nutzer):** Modus aus und danach nur Clip über Regler 2 gewählt und mit Regler 4 bestätigt. Storage nach der ersten Wahl 126 208 B (+256 B, neue Ressource `ACDC.led`), bei den späteren Wechseln unverändert: `getUsedSize()` zählt nur gültige Ressourcen, die alte Fassung wird als gelöscht markiert [Code].
+
+**Clip-Anzeige im Modus nur Clip:** Kabel Out 2 → In 1, In 2–4 offen, Slot 1 (per Program Change, damit Schliere mit dem Kabel keine Schleife bildet), Aufnahme der rohen Eingänge mit `acdc_rec.py --dc 0 ∓1 --dc-ramp 20`, 30 s, 16 Bit (Datei = Gerätewerte).
+- `D75-fx6a-clip-ramp` (+1,0): In 1 erreicht nur +0,9635, unter der Schwelle 0,9886 (negativer Eingangsoffset, wie D36). Kein Clip. In 2–4 ändern sich über die ganze Rampe um weniger als 6e-5.
+- `D75-fx6a-clip-ramp-neg` (−1,0): In 1 erreicht die Schwelle bei 18,437 s und steht danach am Anschlag (−0,99992). In diesem Moment springen die offenen Eingänge: In 2 −101e-6, In 3 −146e-6, In 4 −82e-6 Vollausschlag (Mittel 0,05–1,2 s danach gegen den Trend der 4 s davor).
+
+**Deutung:**
+- **[gemessen] Der Modus aus wirkt am Gerät:** Die Verschiebung der Eingänge fällt von −1,2e-3 auf +2e-5 Vollausschlag (vier LEDs), also auf 1,7 %, rund 37 dB weniger. Beim Blinken sind es 1,3 %.
+- Der Rest hat das umgekehrte Vorzeichen und ist an allen drei Eingängen gleich. Die LEDs fasst die Firmware in diesem Modus nicht an. [Hypothese] Etwas anderes folgt den LED-Parametern des Patches, zum Beispiel deren Weitergabe in der Firmware.
+- **[gemessen] Im Modus normal ist die Verschiebung unter fx6a dieselbe wie unter fx5a** (D74: −11774 / −11521 / −11557), hier 2 bis 5 % größer.
+- **Clip-Anzeige:** Der Sprung der offenen Eingänge fällt mit dem Erreichen der Schwelle zusammen und passt in der Größe zu einer einzelnen roten LED ohne Grün (ein Drittel bis die Hälfte der −2,9e-4 für Rot plus Grün). [Hypothese] Das ist LED 1. Ob stattdessen das Übersteuern von In 1 selbst die anderen Kanäle verschiebt, trennt die Messung nicht. Gegenprobe: dieselbe Rampe im Modus aus.
+
+**Offen:**
+- Bestätigung des Nutzers, dass bei der negativen Rampe nur LED 1 rot wurde.
+- Modus nur Clip ohne Stream mit dem Mess-Patch (Eingänge müssen ruhig bleiben), gemerkter Modus nach Aus und Ein.
+- Welcher Modus bei der Messung um 23:24 eingestellt war. Wäre es nur Clip gewesen, hätte der Modus ohne Stream einen Fehler.
+- Rausch-A/B gegen fx5a, Loop-Test, Download-Stresstest (`docs/05`, „Build 8“, Abnahme 5).
+
+### Nachtrag 2026-11-19, 10:10–10:14: Modus nur Clip ohne Stream, nach Aus und Ein
+
+**Setup:** Der Nutzer hat das Kabel Out 2 → In 1 gezogen und das Case aus- und eingeschaltet, ohne das Menü zu öffnen. acdc1 im Case, alle Eingänge offen, kein Stream. Zuletzt gewählt war am Vorabend nur Clip.
+
+- **Zustand nach dem Neustart** (`out/owl_read/20261119_fx6a_after-restart/`): `v22.4.r-fx6a`, es läuft Slot 6 (Schliere, 29 % CPU), Storage 126 208 B, Regler 66 / 61 / 64 / 61.
+- **Kabelprobe vor dem Mess-Patch:** Der Mess-Patch gibt in zwei Phasen 4 × In 1 auf alle Ausgänge, mit einem Kabel Out 2 → In 1 wäre das eine Schleife. Deshalb zuerst 3 s Sinus 220 Hz mit −40 dBFS an Out 2 bei offenem Stream (`acdc_rec.py --no-manifest`, Datei nur im Scratch-Ordner): an In 1–4 liegt 220 Hz bei −92…−99 dBFS (Datei), mit Kabel wären es etwa −34 dBFS. Kein Kabel.
+- **Mess-Patch** `SchliereLedPath` um 10:11:28 mit `owl_write.py --run` geladen (nur RAM, `out/owl_write/acdc1/20261119/owl_write_101128.json`), 14-mal ausgelesen (`out/owl_read/20261119_fx6a_clip-nostream/01…14`). Einheit 1e-7 Vollausschlag, In 1 / In 2 / In 3:
+
+| gelesen | Meldung | Wert |
+|---|---|---|
+| 10:11:58 | LEDblink (3 LEDs, 40 Hz) | +22 / +21 / +31 |
+| 10:12:14 | LEDstat (4 LEDs dauerhaft) | +70 / +121 / +78 |
+| 10:12:45 | LEDblink (laufendes Mittel über beide Durchläufe) | +26 / +27 / +33 |
+| 10:13:01 | LEDstat | +272 / +257 / +156 |
+
+- Danach per Program Change auf Slot 1 (`out/owl_read/20261119_fx6a_slot1/`: ACDC, 5 % CPU, `SR/BS/CH 48000 8 4`).
+
+**Deutung:**
+- **[gemessen] Nach Aus und Ein ohne Menü ist ein dunkler Modus aktiv, die Eingänge bleiben ohne Stream ruhig:** beim Blinken 0,3 % der Verschiebung im Modus normal (etwa −50 dB), statisch 0,6–2,2 %. Im Modus normal stünden hier −8000 und −12000. Damit ist der Modus gemerkt und nur Clip ohne Stream stört nicht.
+- Ob nur Clip oder aus gemerkt ist, trennt diese Messung nicht: Ohne Stream tun beide Modi dasselbe [Code]. Die Ressourcen `ACDC.slot` und `ACDC.led` lassen sich mit `owl_read.py --slots 40…43` nicht lesen (keine Antwort). Den Unterschied zeigt erst die Clip-Probe mit Stream.
+- Der statische Rest streut von Durchlauf zu Durchlauf um den Faktor 2 bis 4 (+70…+272). [Hypothese] Das ist langsame Drift der offenen Eingänge im 5-s-Fenster und keine feste Wirkung der LED-Parameter. Der Blink-Wert ist gegen Drift unempfindlich und liegt heute bei +2e-6…+3e-6, am Vorabend im Modus aus bei +1e-5. Der „Rest von +2e-5“ aus der ersten Messung ist damit keine feste Größe.
+
+### Zweiter Nachtrag 2026-11-19, 10:21: Clip-Probe im gemerkten Modus
+
+**Setup:** Wie oben, dazu Kabel Out 2 → In 1 (vom Nutzer gesteckt, vorher Slot 1 geprüft: ACDC, 5 % CPU). In 2–4 offen, Regler 66 / 61 / 64 / 62. `acdc_rec.py --dc 0 -1 0 0 --dc-ramp 20 --duration 30 --owl-read`, Manifest `D75-fx6a-clip-ramp-neg-b`, 16 Bit (Datei = Gerätewerte). Zum Vergleich die Aufnahme vom Vorabend (`D75-fx6a-clip-ramp-neg`) mit derselben Auswertung.
+
+| | Vorabend (nur Clip im Menü gewählt) | heute (gemerkter Modus) |
+|---|---|---|
+| In 1 erreicht die Clip-Schwelle 0,9886 | 18,4373 s | 18,4149 s |
+| In 1 erreicht den Anschlag (−0,99992) | 18,6633 s | 18,6387 s |
+| Stufe im Mittel von In 2–4 (beste einzelne Stufe) | bei 18,4369 s | bei 18,4166 s |
+| Abstand der Stufe zur Schwelle / zum Anschlag | −0,3 ms / −226 ms | +1,7 ms / −222 ms |
+| Höhe der Stufe, In 2 / In 3 / In 4 (Mittel 1,2 s danach gegen den Trend davor) | −101 / −146 / −82e-6 | −195 / −210 / −196e-6 |
+| Mittel In 2–4, 0,3–1,3 s danach gegen 16–18,2 s | −108e-6 | −202e-6 |
+
+Die Stufe bleibt bis zum Ende der Aufnahme stehen (heute −215…−258e-6 gegen das Mittel 14–18 s). Streuung derselben Statistik an Stellen ohne Ereignis: 10…26e-6.
+
+**Deutung:**
+- **[gemessen] Die offenen Eingänge springen in dem Moment, in dem In 1 die Clip-Schwelle der Firmware erreicht, nicht erst am Anschlag des Wandlers** (in beiden Aufnahmen innerhalb von 2 ms an der Schwelle, 220 ms vor dem Anschlag). Die Schwelle 0,9886 kennt nur die Firmware. Der Sprung ist also die rote LED 1 und nicht das Übersteuern von In 1. Damit entfällt die Gegenprobe im Modus aus als Pflicht.
+- **[gemessen] Gemerkt ist nur Clip:** Im Modus aus reagiert die Firmware an der Schwelle nicht [Code]. Der Modus hat Aus und Ein überstanden.
+- **Eine rote LED ohne Grün kostet −1,1e-4…−2,0e-4 Vollausschlag** (etwa −1…−2 mV), gegen −2,9e-4 für Rot mit Grün im Modus normal (D74). Der Wert von heute ist fast doppelt so groß wie der vom Vorabend. Unterschiede zwischen beiden Aufnahmen: Reglerstellung (127 / 52 / 2 / 74 gegen 12 Uhr), am Vorabend hing Out 1 am zweiten Interface, heute nicht geprüft. Die Ursache ist offen.
+- **Folge für den Modus nur Clip:** Ein Clip kostet einen Knack von der Größe einer LED. Das ist gewollt (der Clip selbst ist die größere Störung), der Modus ist aber nur bis zum ersten Clip störungsfrei.
+
+**Wiederholung um 10:32** (`D75-fx6a-clip-ramp-neg-c`, damit der Nutzer die LED beobachten kann, sonst unverändert): Schwelle bei 18,3794 s, Anschlag bei 18,6006 s, Stufe bei 18,3796 s (+0,2 ms zur Schwelle, −221 ms zum Anschlag), In 2 / In 3 / In 4 −211 / −219 / −217e-6, Mittel danach −242e-6. Die Höhe von heute ist damit wiederholt, der kleinere Wert vom Vorabend bleibt ungeklärt. **Beobachtung des Nutzers:** Die LED hat rot geleuchtet. Damit ist die Clip-Anzeige im Modus nur Clip auch am Gerät gesehen.
+
+**Zur Messung um 23:24 (Nutzer, 2026-11-19):** Er meint, es sei nur Clip eingestellt gewesen, ist aber nicht sicher. Welche LED bei der Rampe am Vorabend leuchtete, weiß er nicht mehr. Heute ist nur Clip ohne Stream ruhig, allerdings aus der Ressource gelesen und nicht frisch im Menü gewählt. Im Code ist der Weg derselbe (`acdc_boot.led_mode`). Probe: nur Clip im Menü wählen und sofort ohne Stream messen.
+
+### Dritter Nachtrag 2026-11-19, 10:36–10:39: nur Clip frisch aus dem Menü, ohne Stream
+
+**Setup:** Der Nutzer hat das Kabel gezogen, das Boot-Menü geöffnet, mit Regler 2 nur Clip gewählt und mit Regler 4 bestätigt, danach kein Aus und Ein. Zustand (`out/owl_read/20261119_fx6a_after-menu-clip/`): Slot 6 (Schliere, 30 % CPU), Storage 126 208 B, Regler 68 / 59 / 63 / 61. Kabelprobe wie im ersten Nachtrag (220 Hz, −40 dBFS an Out 2, 4 s Stream): In 1–4 bei −93…−100 dBFS, kein Kabel. Mess-Patch um 10:36:18 geladen (`out/owl_write/acdc1/20261119/owl_write_103618.json`), 20-mal ausgelesen (`out/owl_read/20261119_fx6a_clip-menu-nostream/01…20`), danach Program Change auf Slot 1.
+
+| gelesen | Meldung | Wert (1e-7 Vollausschlag, In 1 / In 2 / In 3) |
+|---|---|---|
+| 10:36:46 | LEDblink | +34 / +35 / +34 |
+| 10:36:59 | LEDstat | +5 / +15 / +44 |
+| 10:37:33 | LEDblink (laufendes Mittel) | +41 / +39 / +38 |
+| 10:37:47 | LEDstat | +75 / +37 / +84 |
+| 10:38:27 | LEDblink (laufendes Mittel) | +46 / +43 / +39 |
+
+**Deutung:**
+- **[gemessen] Nur Clip ist auch frisch aus dem Menü ohne Stream ruhig:** Blinken 0,4–0,5 % der Verschiebung im Modus normal, statisch unter 1 %. Die laute Messung vom 2026-11-18, 23:24 lässt sich mit nur Clip nicht nachstellen.
+- [Hypothese] Um 23:24 war der Modus normal aktiv, zum Beispiel weil Regler 2 im linken Drittel stand oder das Menü ohne Bestätigung endete. Dazu passen die Werte von damals (volle Verschiebung wie im Modus normal).
+- Einschränkung: Zwischen Menü und Messung lief für die Kabelprobe 4 s lang ein Stream. Ein Fehler, der nur ohne jeden Stream seit dem Einschalten auftritt, wäre damit nicht ausgeschlossen. Im Code gibt es dafür keinen Anhalt [Code].
+- Der statische Wert streut wieder (+5…+84), der Blink-Wert liegt stabil bei +3e-6…+5e-6.
+
+### Vierter Nachtrag 2026-11-19, 10:39–10:43: Download-Stresstest
+
+`tools/dump_stress.py`, LED-Modus nur Clip, kein Kabel, kein Stream, je 20 Runden über alle sechs Slots.
+
+| Serie | laufender Patch | CPU | Downloads | beschädigt | Hänger |
+|---|---|---|---|---|---|
+| `D75-fx6a-slot2` | TapeDelay | 31–32 % | 120 | 0 | nein |
+| `D75-fx6a-slot5` | Tanh3 | 50–51 % | 120 | 0 | nein |
+
+Tabellen in `out/D75-fx6a-slot2-session-table.md` und `out/D75-fx6a-slot5-session-table.md`, danach Program Change auf Slot 1. **[gemessen] 240 von 240 Downloads in Ordnung, wie fx5a (D63).** Der Lauf mit Audio-Stream fehlt noch, er gehört zum Loop-Test.
+
+**Offen (ersetzt die Liste oben):**
+- Warum die Stufe einer roten LED heute doppelt so groß ist wie am Vorabend.
+- Rausch-A/B gegen fx5a (weitere Flashes). Loop-Test und Stresstest mit Stream: D76.
+
+## D76 – fx6a: Loop-Test bestanden, Program Change bei offenem Stream bricht die Wiedergabe (2026-11-19, 10:44–10:55)
+
+**Anlass:** Abnahme Build 8, Punkt 5 (Loop-Test wie D57/D63). Dabei ein neuer Fehler, der mit Build 8 vermutlich nichts zu tun hat.
+
+**Setup:** acdc1 im Case, fx6a, LED-Modus nur Clip, Alltags-Kette, vier Patchkabel Out n → In n (Nutzer), Regler 68 / 60 / 63 / 60. `acdc_rec.py --sine 440 530 670 790` (−6 dBFS, 1 s Einblenden), danach `phase_slips.py` und `stale_samples.py` (JSON in `out/B8/`).
+
+### Loop-Test
+
+| ID | laufender Patch | Slips | veraltete Samples | Geräte-Meldung | CPU |
+|---|---|---|---|---|---|
+| `B8-fx6a-loop` | Slot 1 ACDC | 0 auf allen 4 Kanälen | 0 von 96 000 je Kanal | `tx ovf 0.3819 0.9513 4` | 8 % |
+| `B8-fx6a-loop-tanh3-b` | Slot 5 Tanh3, schon vor dem Stream gewählt | 0 | 0 | `tx ovf 1.0000 1.0000 32` (Stream-Start) | 52 % |
+| `B8-fx6a-loop-tanh3-dl` | Tanh3, währenddessen 48 Slot-Downloads (`D75-fx6a-slot5-stream`, 48 von 48 in Ordnung) | 0 ganze Samples | 0 | nicht gelesen | – |
+
+- Stream-Meldungen von PortAudio: 0 in allen Läufen. Pegel −6,04…−6,10 dBFS wie D57 und D63.
+- Im Lauf mit Downloads meldet `phase_slips.py` wieder nur auf Kanal 2 (530 Hz) 30 Ereignisse unter 0,005 Samples zwischen 10 und 33 s, solange die Downloads liefen. Derselbe Nebenbefund wie unter fx5a (D63).
+- Die Meldung `tx ovf 0.3819 0.9513 4` im ersten Lauf ist neu: Der Sendepuffer war zu 95 % voll, vier Samples (ein Frame) wurden verworfen [Code: `usbd_tx_convert`]. In den 60 s der Aufnahme gibt es keinen Slip, das Ereignis lag also in den 3 s davor (Stream-Start). Sonst steht dort `… 1.0000 32`.
+- **[gemessen] Loop-Test bestanden**, auch unter 52 % Patch-Last und während der Downloads. Damit zusammen mit D75: 288 von 288 Downloads in Ordnung.
+
+### Program Change bei offenem Stream
+
+Im ersten Tanh3-Lauf (`B8-fx6a-loop-tanh3`) hatte ich die Reihenfolge geändert: erst den Stream geöffnet, dann per Program Change auf Slot 5 geschaltet (damit Tanh3 mit den Kabeln nie ohne Stream läuft). Ergebnis: Die Wiedergabe setzt periodisch aus. Zwei kurze Läufe (25 s, Program Change etwa 5 s nach dem Start) grenzen das ein:
+
+| ID | Program Change bei offenem Stream | stiller Anteil danach | Abstand / Länge der Aussetzer (Median) | Geräte-Meldung | CPU |
+|---|---|---|---|---|---|
+| `B8-fx6a-loop-tanh3` | Slot 1 → 5 (Tanh3), vor Beginn der Aufnahme | 10,3 %, über 60 s gleichbleibend | 4223 / 415 Frames | `fb 48.0088 46.3203` | 52 % |
+| `B8-fx6a-pc2-stream` | Slot 1 → 2 (TapeDelay) | 10,0…10,7 % | 4223 / 397 Frames | `fb clamp -72 32` | 36 % |
+| `B8-fx6a-pc1-stream` | Slot 1 → 1 (derselbe Patch) | 9,8…11,3 % | 4224 / 435 Frames | `fb clamp -57 32` | 6 % |
+
+- In den stillen Abschnitten lesen alle vier Eingänge gleichzeitig nur ihren Ruhewert (−0,035 / −0,037 / −0,026 / −0,033, Streuung 1e-4): Die Ausgänge geben wirklich nichts aus, die Aufnahme selbst läuft weiter.
+- Die Phase der Töne ist nach jedem Aussetzer dieselbe wie davor (auf 0,03 Samples). Die Samples, die der Rechner in dieser Zeit schickt, gehen also verloren und werden nicht verspätet gespielt.
+- Vor dem Program Change ist die Aufnahme sauber, der erste Aussetzer kommt 7,2 s nach Beginn der Datei, also mit dem Wechsel. Nach dem Schließen und neuen Öffnen des Streams ist alles wieder in Ordnung (`B8-fx6a-loop-tanh3-b` lief direkt danach).
+- `fb clamp -72 32`: Der Füllstand des Empfangspuffers liegt 57…72 Samples unter dem Soll, die Regelung aus Patch 06 steht am Anschlag (+32 LSB ≈ 40 ppm) und kann 10 % Verlust nicht ausgleichen [Code].
+
+**Deutung:**
+- **[gemessen] Ein Program Change bei offenem Stream bricht die USB-Wiedergabe bis zum nächsten Stream-Start:** rund 10 % der Zeit Stille an allen Ausgängen, etwa alle 88 ms für 8–9 ms. Unabhängig vom Ziel-Patch und von der Rechenlast.
+- [Hypothese] Der Fehler ist älter als Build 8. Patch 17 fasst weder den Program Change noch den USB-Audio-Weg an, und diese Reihenfolge wurde bisher nie gemessen (D57 und D63 wählten den Patch vor dem Stream). Kandidaten [Code, ungeprüft]: Der Audio-Task steht während des Ladens, Empfangspuffer und Zähler passen danach nicht mehr zusammen, oder Schreib- und Lesezeiger des Ringpuffers stehen so, dass je Umlauf ein Stück verworfen wird (4223 Frames Abstand).
+- Folge im Alltag: Wer vom Rechner aus den Patch wechselt, während ein Aufnahmeprogramm das AC/DC offen hält, bekommt gestörte Wiedergabe über die AC/DC-Ausgänge. Die Aufnahme der rohen Eingänge ist nach dieser Messung nicht betroffen (nicht eigens geprüft).
+
+**Einschränkungen und offen:**
+- Gegenprobe unter fx5a (gleiche 25 s) beim Zurückflashen für das Rausch-A/B: zeigt, ob der Fehler älter ist.
+- Ursache im Code finden und beheben (eigener Patch), danach dieselben Läufe.
+- Ob auch die Aufnahme (TX) in diesem Zustand Samples verliert, ist nicht gemessen: dafür braucht es eine Quelle, die nicht über die Wiedergabe läuft.
+- Der Loop-Test lief im LED-Modus nur Clip. Im Modus normal ist der Code der LED-Schleife derselbe wie unter fx5a.
+
+## D77 – Build-8-Sitzung: Rauschen fx6a gegen fx5a, Gegenprobe zum Program Change unter fx5a (2026-11-19, 10:58–11:23)
+
+**Anlass:** Letzter Punkt der Abnahme von Build 8 (`docs/05`, „Build 8“, Abnahme 5) und Gegenprobe zu D76. Freigabe des Nutzers für beide Flashes.
+
+**Setup:** acdc1 im Case, Alltags-Kette, Eingänge offen, Regler 12 Uhr (62…66 / 58…59 / 66 / 62…63), Slot 1 ACDC (vor dem Stream gewählt), je 2 × 60 s `acdc_rec.py --reps 2 --owl-read`. fx6a im LED-Modus normal (vom Nutzer im Menü gewählt, mit dem Mess-Patch geprüft). Reihenfolge: `B8-fx6a-a` → Flash fx5a (`firmware/flashlog/20261119_build7-fx5a-ab/`, Readback bytegleich, A1 bestanden) → `B8-fx5a` → Kabel Out 1 → In 1, `B8-fx5a-pc1-stream` → Flash fx6a (`firmware/flashlog/20261119_build8-fx6a-zurueck/`, Readback bytegleich, A1 bestanden) → `B8-fx6a-b`. Vor jeder Messung ohne Kabel eine Kabelprobe mit leisen Testtönen (alle Eingänge unter −97 dBFS).
+
+**Störgröße (Nutzer):** Bei `B8-fx6a-a` und bei allen Messungen des Vormittags davor (D75-Nachträge, D76) hing ein Oszillator im Case am Strom, am Vorabend nicht. Ab `B8-fx5a` ist er abgesteckt.
+
+### Rauschen
+
+Tabelle `out/B8-session-table.md` (`family_table.py`, Datei-dBFS, Mittel über 4 Kanäle und 2 Läufe, Δ gegen fx5a):
+
+| Messung | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
+|---|---|---|---|---|---|
+| `B8-fx6a-a` (Anfang, mit Oszillator) | −72,88 (−1,04) | −77,30 (−0,74) | −75,58 (−1,44) | −83,08 (+0,34) | −119,88 (−3,40) |
+| `B8-fx5a` | −71,84 | −76,56 | −74,14 | −83,42 | −116,48 |
+| `B8-fx6a-b` (Ende) | −70,84 (+1,00) | −75,26 (+1,30) | −73,22 (+0,92) | −83,26 (+0,16) | −118,87 (−2,39, ein Lauf) |
+
+- Die Sitzung driftet stetig nach oben: RMS, Rest und Kamm steigen von der ersten zur letzten Messung um 2,0…2,4 dB. fx5a liegt dazwischen, beim RMS auf 0,02 dB in der Mitte der beiden fx6a-Kontrollen, beim Kamm 0,26 dB darüber, beim Rest 0,28 dB darunter.
+- fs/8 bleibt in allen sechs Läufen innerhalb von ±0,3 dB. Die Mischprodukte findet die Analyse nicht in jedem Lauf (in `B8-fx6a-b-r2` gar nicht), sie sind wie in D64 nicht entscheidbar.
+- Wiederholungen innerhalb eines Blocks liegen ≤ 0,45 dB auseinander.
+- `family_table.py` brach ab, wenn eine Familie in einer Aufnahme fehlt. Es schreibt jetzt „–“ und mittelt über die Läufe, die sie haben.
+
+**Deutung:**
+- **[gemessen] Kein Hinweis auf einen Unterschied zwischen fx6a (Modus normal) und fx5a:** fx5a liegt zwischen den beiden fx6a-Kontrollen. Das passt zum Code, im Modus normal ist der periodische Pfad derselbe.
+- Die Drift von 2 dB in 20 Minuten (Start der Blöcke 11:00, 11:09, 11:19) ist größer als in früheren Sitzungen (0,4…0,8 dB, D44). Sie trifft auch den breitbandigen Rest. Ursache offen: Aufwärmen nach den Neustarts, der Oszillator (abgesteckt wurde es lauter, nicht leiser), etwas anderes im Case. Eine Aussage auf wenige Zehntel dB erlaubt die Sitzung deshalb nicht.
+- Der Vergleich der dunklen Modi gegen normal (Linie der LED-PWM mit Signal) steht aus. Mit offenen Eingängen leuchten die LEDs auch im Modus normal nicht.
+
+### Program Change bei offenem Stream unter fx5a
+
+`B8-fx5a-pc1-stream`: Loop Out 1 → In 1, 440 Hz, Program Change Slot 1 → 1 etwa 5 s nach dem Start. Danach 9,4…10,8 % Stille, 214 Aussetzer, Abstand 4223 Frames, Länge 387 Frames (Median), Meldung am Ende `tx ovf 0.4375 1.0000 32`.
+
+**[gemessen] Der Fehler aus D76 tritt unter fx5a genauso auf.** Er ist älter als Build 8 und kein Mangel von Patch 17. Ab welchem Build es ihn gibt, ist offen (Kandidaten: die Feedback-Regelung aus Patch 06 oder schon die Original-Firmware).
+
+### LED-Verschiebung im Modus normal an diesem Tag
+
+Mess-Patch `SchliereLedPath`, Einheit 1e-7 Vollausschlag, In 1 / In 2 / In 3:
+
+| gelesen | Oszillator | LEDblink | LEDstat |
+|---|---|---|---|
+| 2026-11-18, 23:15 (D75) | ab | −8421 / −8085 / −8507 | −12344 / −11742 / −11875 |
+| 10:59 | am Strom | −11376 / −10797 / −11132 | −16399 / −15470 / −15502 |
+| 11:19 | ab | −10530 / −10563 / −10933 | −15226 / −15007 / −15051 |
+
+Die Verschiebung ist heute 25…35 % größer als am Vorabend, mit und ohne Oszillator. Dazu passt, dass die Stufe einer roten LED heute doppelt so groß war (D75, zweiter Nachtrag). [Hypothese] Die Kopplung hängt von etwas ab, das sich über Nacht geändert hat (Temperatur, Versorgung im Case, Reglerstellung: am Vorabend standen die Regler zeitweise nicht auf 12 Uhr). Die Werte aus D74 gelten deshalb nur als Größenordnung.
+
+**Fazit:** Die Abnahme von Build 8 ist vollständig: Flash, A1, drei LED-Modi, gemerkter Modus, Clip-Anzeige, Stresstest (288 von 288), Loop-Test, Rauschen ohne Hinweis auf eine Änderung. Über die Alltags-Firmware entscheidet der Nutzer.
+
+**Einschränkungen und offen:**
+- Drift der Sitzung (2 dB) und die größere LED-Verschiebung von heute sind nicht erklärt.
+- Der Fehler beim Program Change ist nicht behoben.
+
+
+---
+
+## D78 – Build 9 `v22.4.r-fx7a` auf acdc1: Flash und A1 (2026-11-19, 11:46–11:47)
+
+**Anlass:** Abnahme von Build 9 (Patch 18, LED-PWM mit 48 000 Hz statt 2320,54 Hz, `docs/05`, „Build 9“). Freigabe des Nutzers für den Flash.
+
+**Flash:** `tools/flash_acdc.py acdc1-build9-fx7a --yes`, Log `firmware/flashlog/20261119_build9-fx7a/`. Vorher fx6a mit sechs Slots, DFU-Neustart, 110 088 B geschrieben, Readback bytegleich, Rest 0xFF. Neustart durch den Nutzer (Case aus, USB ab, Case an, USB an), danach `--a1`: bestanden (acdc1, `AC/DC v22.4.r-fx7a`, 48 000 Hz, Blockgröße 8, Slots 1–6 unverändert, Storage 126 208 B).
+
+**Zustand danach:** Slot 6 (Schliere) läuft als gemerkter Slot, CPU 29 %, Regler 62 / 58 / 65 / 63 von 127. LED-Modus normal (gemerkt aus D77, nicht neu gewählt). Kein Kabel gesteckt, kein Stream. Oszillator im Case weiter abgesteckt (Nutzer), wie am Ende von D77.
+
+### LED-Linie am Ausgang (11:53)
+
+**Setup:** wie D73: Mess-Patch `SchliereLedTest` (nur RAM, `owl_write.py --run` um 11:50, `out/owl_write/acdc1/20261119/owl_write_115008.json`), Out 1 → UMC202HD In 1, UMC-Gain unverändert seit D73 (Nutzer), kein Stream an acdc1. Vorher Kabelprobe (−60 dBFS Sinus an alle Ausgänge, an keinem Eingang über −95 dB, also kein Kabel an den Eingängen). Regler 62 / 58 / 66 / 63 von 127 (nach der Aufnahme gelesen), nicht bewegt. CPU 31 %.
+
+**Aufnahme:** `D78-fx7a-ledtest-umc`, `20261119_acdc1_fx7a-schliere-ledtest-out1-via-umc_g12_usb-plugged.wav`, 90 s, 48 kHz, 24 Bit, `scale = 1`, `acdc_rec.py --device UMC202HD --input-only --channels 2 --format pcm24 --scale 1 --prompt --progress 1`. Lage der Phasen aus dem 40-Hz-Blinken (an bei 28,5 und 68,45 s), weil die grüne Phase keine Linie mehr hat. D73 mit demselben Skript neu ausgewertet (Blinken an bei 19,9 und 59,9 s). Je Phase 0,6 s nach dem Wechsel bis 1,0 s vor dem nächsten, Welch 65 536 Punkte, Linie = stärkster Bin in ±0,8 Hz. Skripte in `out/D78-fx7a-ledtest-umc/` (`phases.py`, `ctrl.py`). Alle Pegel in dBFS des UMC, Kanal 1.
+
+| | D73 fx5a aus | D73 grün 60 % | D78 fx7a aus | D78 grün 60 % |
+|---|---|---|---|---|
+| RMS gesamt | −47,4 | **−40,6** | −41,5 | **−41,5** |
+| Rauschen 200–2000 Hz (Median) | −88,0 | −87,9 | −82,1 | −82,2 |
+| LED-PWM 2320,54 Hz | −90,0 | **−39,8** | −82,9 | **−85,2** |
+| ×2 / ×3 | −92,2 / −80,3 | −52,2 / −51,9 | −85,7 / −85,3 | −83,7 / −85,5 |
+| Kamm 1 kHz / 5 kHz | −70,8 / −65,2 | −71,6 / −65,0 | −72,2 / −70,2 | −71,5 / −70,1 |
+| Blockrate 6 / 12 / 18 kHz | −77,4 / −77,8 / −74,4 | −77,7 / −77,8 / −74,7 | −73,2 / −75,8 / −71,2 | −74,9 / −76,6 / −70,6 |
+
+(Rauschen hier als Median je Bin, deshalb andere Zahlen als die Tabelle in D73. Die Werte aus D73 stimmen sonst auf ±1 dB mit der ersten Auswertung überein.)
+
+Suche nach neuen Linien, grün gegen das Mittel der drei Aus-Phasen, 50 Hz–20 kHz: unter fx7a höchstens +15,1 dB an einzelnen Bins, 99,9-%-Quantil +7,9 dB. Dieselbe Rechnung für LED 1 rot (+14,6 / +7,8 dB) und LED 1–4 rot (+18,2 / +8,0 dB) gibt dasselbe, also Streuung. Unter fx5a (D73) waren es +51,4 dB bei 2321 Hz und +17,0 dB im Quantil. 0,5–20 Hz: grün −53,7, aus −53,5 dB (D73: −54,8 / −54,8).
+
+**Deutung [gemessen]:**
+- **Die LED-PWM-Linie ist mit fx7a weg.** Gedimmtes Grün bringt bei 2321 Hz und den Vielfachen nichts mehr über das Rauschen (−85,2 dBFS gegen −39,8 dBFS unter fx5a, also mindestens 45 dB weniger, begrenzt durch das Rauschen). Der Gesamtpegel in der grünen Phase ist gleich wie bei dunklen LEDs (unter fx5a +6,8 dB).
+- **Es taucht keine neue Linie auf**, weder im Hörbereich noch unter 20 Hz. Der Unterschied grün gegen aus ist so groß wie zwischen zwei Phasen ohne PWM.
+- Das Blinken mit 40 Hz stört weiter (RMS −30,6 dBFS, +10,9 dB über aus): Das ist der Effekt des Schaltens, nicht der PWM, und war so erwartet.
+
+**Einschränkungen:**
+- Das Grundrauschen liegt heute 6 dB höher als in D73 (RMS −41,5 gegen −47,4 dBFS). Ursache sind sehr wahrscheinlich die Regler: In D73 stand Feedback (Regler 4) am Linksanschlag (1 von 127), heute auf 12 Uhr (63) [Hypothese]. Die Nachweisgrenze für eine Linie liegt damit bei etwa −85 dBFS statt −90 dBFS.
+- Ob die Faltung der 48 kHz in den ADC-Daten wirklich bei ≈ 0 Hz landet, zeigt diese Aufnahme nicht (UMC wechselspannungsgekoppelt, Ausgang nach dem Patch). Das prüft die Messung an den Eingängen.
+- Nur Out 1, nur die Eingangs-LEDs gedimmt.
+
+### LED-Verschiebung an den Eingängen (11:59–12:01)
+
+**Setup:** Mess-Patch `SchliereLedPath` aus D74 (nur RAM, `owl_write.py --run` um 11:59, `out/owl_write/acdc1/20261119/owl_write_115907.json`). Kein Kabel gesteckt (Out 1 → UMC vorher gezogen), kein Stream, Regler wie oben, LED-Modus normal, Oszillator abgesteckt. Zwölf Mal `owl_read.py` im Abstand von etwa 13 s, Reports in `out/owl_read/acdc1/20261119_1159*/` bis `…_1201*/`. Einheit 1e-7 Vollausschlag (≙ µV bei ±10 V), In 1 / In 2 / In 3.
+
+| Build | gelesen | LEDblink (3 LEDs, 40 Hz) | LEDstat (4 LEDs dauerhaft) |
+|---|---|---|---|
+| fx6a (D77) | 11:19 | −10530 / −10563 / −10933 | −15226 / −15007 / −15051 |
+| fx7a | 11:59:39 | −10605 / −10530 / −11156 | −15440 / −15019 / −15391 |
+| fx7a | 12:00:31 | −10620 / −10546 / −11167 | −15278 / −14883 / −15280 |
+| fx7a | 12:01:22 | −10635 / −10558 / −11175 | −15612 / −15172 / −15475 |
+
+**Deutung [gemessen]:** Die Verschiebung der Eingänge durch den LED-Strom ist unter fx7a gleich wie unter fx6a vor 40 Minuten (Blinken +0,2…+2 %, statisch −1…+2 %). Das war erwartet: Die Messung schaltet LEDs ganz ein und aus, die PWM-Frequenz spielt dafür keine Rolle. Gegen die langsame Verschiebung helfen weiter nur die Modi „nur Clip“ und „aus“ (Build 8).
+
+**Einschränkung:** Diese Messung prüft nicht, wohin eine gedimmte LED mit 48 kHz in den ADC-Daten faltet. Dafür bräuchte es gedimmte LEDs bei laufender Aufnahme der rohen Eingänge. Mit Stream zeigen die Eingangs-LEDs im Modus normal aber den rohen Pegel und überschreiben, was der Patch setzt (D36).
+
+Danach läuft weiter `SchliereLedPath` im RAM.
+
+### Helligkeit am Gerät
+
+Laut Nutzer passt die Helligkeit der LEDs unter fx7a („led helligkeit passt“, 12:05).
+
+**Offen:** Rauschen gegen fx6a und Loop-Test (`docs/05`, „Build 9“, Punkt 4), siehe D79.
+
+---
+
+## D79 – Build-9-Sitzung: Rauschen fx7a gegen fx6a (2026-11-19, ab 12:05)
+
+**Setup:** acdc1 im Case, Alltags-Kette, Eingänge offen (Kabelprobe in D78), Regler 12 Uhr, Slot 1 ACDC (vor dem Stream per Program Change gewählt), LED-Modus normal, Oszillator im Case abgesteckt, je 2 × 60 s `acdc_rec.py --reps 2 --owl-read`. Reihenfolge: `B9-fx7a-a` → Flash fx6a (`firmware/flashlog/20261119_build8-fx6a-ab9/`, Readback bytegleich) → `B9-fx6a` → Flash fx7a → `B9-fx7a-b`.
+
+### Neustart über `dfu-util :leave` statt von Hand (12:20)
+
+**Anlass:** Der Nutzer fragte, ob der Neustart mit Case aus, USB ab, Case an, USB an nötig ist. Nur Case aus und an reicht nicht, weil das USB-Kabel das Board versorgt und es im DFU bleibt (D3).
+
+**Test:** Nach dem Flash von fx6a (Readback bytegleich) hing acdc1 noch im DFU-Modus. Der Nutzer hatte USB kurz abgezogen (Case blieb an) und wieder gesteckt, acdc1 war weiter im DFU (`0483:df11`, Seriennummer `200364500000`). Dann nur lesend: `dfu-util -d 0483:df11 -S 200364500000 -a 0 -s 0x08000000:131072:leave -U readback_leave.bin` (Log `dfu-util_upload_leave.txt` im Flash-Log-Ordner). Readback 131 072 B bytegleich mit fx6a, Rest 0xFF. Danach „Submitting leave request...“ und „Error during download get_status“, Exit 74: Das Gerät verlässt den DFU-Modus, bevor es den Status melden kann. 4 s später kein DFU-Gerät mehr.
+
+**Ergebnis [gemessen]:** acdc1 startete ohne Zutun des Nutzers die Firmware. `flash_acdc.py --a1` bestanden (acdc1, `AC/DC v22.4.r-fx6a`, 48 000 Hz, Blockgröße 8, Slots unverändert, Slot 6 mit 29 % CPU). Ob das Audio nach diesem Start gleich läuft wie nach einem Kaltstart, zeigt `B9-fx6a` und der Vergleich `B9-fx7a-a` (Kaltstart) gegen `B9-fx7a-b` (über `:leave`).
+
+**Unterschied zum Kaltstart [Hypothese]:** Der Codec und alles andere außerhalb der MCU bleiben unter Strom. Ob der ROM-Bootloader beim Verlassen einen Reset auslöst oder springt, ist nicht geprüft. Die Firmware lief nach dem Start jedenfalls mit richtiger Version, Abtastrate und Slots.
+
+### Beobachtung: Das Modul fiept hörbar (Nutzer, etwa 12:10)
+
+Mit acdc1 im DFU-Modus (nach dem Flash von fx6a, vor dem Neustart, also ohne Firmware, Audio und LED-PWM) hört der Nutzer ein leises Fiepen aus dem Modul, ohne dass etwas angeschlossen ist. Fast konstant, vielleicht leicht wandernd, geschätzt 800–1000 Hz, zu leise für eine genaue Angabe. Heute schon vorher gehört, gestern vielleicht auch (da mit Kopfhörern).
+
+**Nachtrag (Nutzer):** Zieht man im DFU-Modus das USB-Kabel ab (Case weiter an), wird das Fiepen deutlich leiser und höher.
+
+**Deutung [Hypothese]:** Da es im DFU-Modus auftritt, hängt es nicht an Build 8 oder 9. Dass es sich mit dem USB-Kabel ändert, spricht für eine Abhängigkeit von Laststrom oder Versorgung über USB (USB-Schnittstelle aktiv, Strom über VBUS oder die Kabelmasse). Ein leiser Ton, der mit der Last wandert, passt zu einem Schaltregler im Pulsbetrieb bei geringer Last, dessen Spule oder ein Keramikkondensator hörbar mitschwingt. Ob die Quelle auf dem Modul oder im Netzteil des Cases sitzt, ist offen. Ob es mit den elektrischen Störlinien zusammenhängt, ebenfalls.
+
+### Rauschen (12:05–12:35)
+
+Tabelle `out/B9-session-table.md` (`family_table.py`, Datei-dBFS, Mittel über 4 Kanäle, Δ gegen fx6a). Alle sechs Läufe ohne Stream-Fehler (am Ende nur `tx ovf … 32` vom Stream-Start), CPU 6–7 %, Regler 12 Uhr.
+
+| | Start | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
+|---|---|---|---|---|---|---|
+| `B9-fx7a-a` (Anfang) | Kaltstart (11:46) | −72,09 (−1,02) | −75,71 (−0,08) | −75,26 (−1,86) | −83,25 (±0,00) | −119,05 (+1,03) |
+| `B9-fx6a` (Mitte) | `:leave` | −71,08 | −75,63 | −73,40 | −83,26 | −120,08 |
+| `B9-fx7a-b` (Ende) | `:leave` | −71,00 (+0,08) | −75,59 (+0,05) | −73,29 (+0,11) | −83,30 (−0,04) | −119,39 (+0,69) |
+
+LED-PWM-Linie (2320,54 Hz und Vielfache) in den rohen ADC-Daten laut Analyse-Report:
+
+| | gefunden |
+|---|---|
+| `B9-fx6a-r1` / `-r2` | ja, 2320,544 Hz auf 3 von 4 Kanälen, −115…−117 dB, dazu k = 9 (20 884,9 Hz) auf Kanal 2, −114 dB |
+| `B9-fx7a-a`, `B9-fx7a-b` (je 2 Läufe) | nein, auf keinem Kanal |
+
+**Deutung:**
+- **[gemessen] fx7a rauscht wie fx6a.** `B9-fx7a-b` liegt in allen Familien innerhalb von 0,15 dB bei fx6a (Mischprodukte +0,7 dB, die streuen von Lauf zu Lauf um mehrere dB). fs/8 und Rest sind in allen sechs Läufen gleich (±0,1 dB).
+- **[gemessen] Die LED-PWM-Linie ist auch in den rohen ADC-Daten weg.** Unter fx6a steht sie mit offenen Eingängen bei −115 dB (die Eingangs-LEDs zeigen beim Aufnehmen den rohen Pegel, mit offenem Eingang schwach), unter fx7a ist sie in keinem Lauf zu finden. Eine neue Linie meldet die Analyse nicht. [Hypothese] Ein Teil davon kann auch daher kommen, dass unter fx7a Werte unter 2,4 % dunkel bleiben und die LEDs mit offenem Eingang gar nicht leuchten.
+- **Kontrolle A weicht ab:** Kamm −1,9 dB und RMS −1,0 dB gegen die beiden späteren Läufe, Rest und fs/8 gleich. Zwei Erklärungen sind möglich: die Drift der Sitzung (D77: +1…2 dB in 20 Minuten, alle Starts kalt, gleiche Richtung) oder die Art des Starts (A nach Kaltstart, fx6a und B nach `:leave`). Diese Sitzung trennt das nicht.
+
+**Kaltstart-Probe (12:30):** Direkt nach `B9-fx7a-b` hat der Nutzer acdc1 kalt neu gestartet (Case aus, USB ab, Case an, USB an), dann Slot 1 und `B9-fx7a-c` (2 × 60 s, ohne Stream-Fehler):
+
+| | Start | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
+|---|---|---|---|---|---|---|
+| `B9-fx7a-c` (12:31) | Kaltstart | −70,64 (+0,44) | −75,19 (+0,45) | −72,91 (+0,49) | −83,38 (−0,13) | −123,03 (−2,96) |
+
+Auch hier keine LED-PWM-Linie in den rohen Eingängen.
+
+- **[gemessen] Die Abweichung von Kontrolle A ist Drift, nicht die Art des Starts.** Nach dem Kaltstart liegt der Kamm bei −72,9 dBFS, also nicht wieder bei −75,3 wie um 12:05, sondern weiter oben als nach `:leave`. Über die Sitzung steigt der Kamm stetig: −75,3 (12:05) → −73,4 (12:22) → −73,3 (12:28) → −72,9 (12:31), dazu RMS und Rest ab etwa 12:30 um 0,4 dB. fs/8 bleibt in allen acht Läufen innerhalb von 0,15 dB.
+- Ein Start über `:leave` ändert das Rauschen also nicht messbar gegen einen Kaltstart (innerhalb der Drift von etwa 0,5 dB zwischen zwei benachbarten Läufen).
+
+**Fazit:** Build 9 bringt beim Rauschen keinen Nachteil gegen fx6a und nimmt die LED-PWM-Linie aus Ausgängen (D78) und rohen Eingängen. Der Start über `dfu-util :leave` taugt als Ersatz für den Neustart von Hand. Die Drift des Kamms (+2,4 dB in 26 Minuten) ist wie in D77 nicht erklärt.
+
+### Loop-Test (12:36)
+
+Kabel Out 1–4 → In 1–4 (Nutzer), Gain 12 Uhr, Slot 1, `acdc_rec.py --sine 440 530 670 790 --duration 60 --owl-read`, Aufnahme `B9-fx7a-loop` (`20261119_acdc1_fx7a-loop_g12_usb-stream.wav`). Stream-Meldungen 0, Geräte-Meldung am Ende `tx ovf 1.0000 1.0000 32` (Stream-Start).
+
+- `phase_slips.py`: Pegel −6,0…−6,1 dBFS, Streuung 0,00 dB, 0 Ereignisse auf allen vier Kanälen (1-Sample-Sprung 5800- bis 14 000-fach über dem Phasenrauschen).
+- `stale_samples.py`: 0 von 96 000 Samples falsch auf allen vier Kanälen.
+- Ergebnisse in `out/B9-fx7a-loop/` (`phase_slips.json`, `stale_samples.json`).
+
+**[gemessen] Loop-Test bestanden.** Die Abnahme von Build 9 ist damit vollständig (D78, D79). Über die Alltags-Firmware entscheidet der Nutzer.
+
+Danach: Kabel stecken noch, Slot 1 läuft.
+
+### Folge für den Flash-Ablauf (Entscheidung des Nutzers, 2026-11-19)
+
+`:leave` ist ab jetzt der Standard: `tools/flash_acdc.py` liest nach dem Readback ein zweites Mal nur lesend mit `:leave` zurück, wartet, bis das DFU-Gerät verschwindet, und macht A1 selbst. Kaltstart von Hand nur noch mit `--cold`: wenn `:leave` scheitert, wenn ein Build am Einschalten etwas ändert (Takt, Codec-Init), wenn der Test das Einschalten betrifft und auf dem Rückweg nach einem Problem. Im Skript bisher nur gegen Attrappen getestet.
+
+**Entscheidung (Nutzer, 2026-11-19):** fx7a ist die Alltags-Firmware auf acdc1. Rückweg fx6a, dann fx5a.

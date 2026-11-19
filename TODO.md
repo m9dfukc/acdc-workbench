@@ -2,7 +2,7 @@
 
 Oben steht, was offen ist, nach Themen geordnet. Darunter folgen offene Fragen, dann Entfallenes mit Grund, dann die Chronik des Erledigten. Details jeweils in `docs/`, Belege im Messlog (`docs/messlog.md`, IDs wie D49).
 
-Stand der Neuordnung: 2026-11-16, zuletzt ergänzt 2026-11-18 (Build 7).
+Stand der Neuordnung: 2026-11-16, zuletzt ergänzt 2026-11-18 (Build 7, Patch Schliere).
 
 ## Offen
 
@@ -63,7 +63,8 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [x] `tools/flash_acdc.py` am Gerät erprobt (2026-11-18, D63/D64): drei Flashes mit Readback und A1, ohne Fehler. `--from-dfu` und der Abbruchweg liefen am Gerät noch nicht
 - [x] `tools/dump_stress.py` (2026-11-18): Download-Stresstest für den MIDI-Sendeweg, am Gerät benutzt in D62/D63
 - [x] `tools/line_levels.py` (Linienpegel direkt bei der Frequenz) und `tools/knob_series.py` (geführte Reglerserie), 2026-11-18, am Gerät benutzt in D60
-- [ ] Flash-Ablauf: Prüfen, ob `dfu-util … :leave` den Neustart (Case aus, USB ab) ersetzen kann, A1 + Loop gegen Kaltstart (Nutzer-Frage 2026-11-16)
+- [x] Flash-Ablauf: `dfu-util … :leave` ersetzt den Neustart von Hand (D79): A1 bestanden, Rauschen nach `:leave` wie nach Kaltstart, Loop-Test nach Kaltstart bestanden. Seit 2026-11-19 Standard in `flash_acdc.py`, `--cold` für den Kaltstart
+- [ ] `flash_acdc.py` mit `:leave` beim nächsten Flash am Gerät erproben (bisher nur gegen Attrappen)
 - [ ] Abhängigkeiten von `tools/owl_read.py` festhalten: Python 3.12, `mido`, `python-rtmidi`. `pyproject.toml` verlangt Python ≥ 3.14 und nennt beide Pakete nicht
 - [ ] Werkzeuge in einem Doc beschreiben. Heute stehen sie nur in `CLAUDE.md` und in `--help`, `docs/03` beschreibt nur `analysis/`
 - [x] Englische Hilfe- und Konsolentexte für `tools/` und `analysis/` (2026-11-16). Kommentare im Code und Reports bleiben deutsch
@@ -90,6 +91,51 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - Rahmen: Der FX liegt nur ohne Rechner-Stream an den Buchsen (D20, `docs/01`). Mit fx3l bleiben 39,3 KB Patch-Heap im CCM
 - [ ] Erste FX-Patches: Mixer/Attenuator, danach Write/Read-Buffer (Reaktor-artig). Steuerung über 4 Knobs + Audio-Rate-Trigger an den Eingängen
 - [x] OwlProgram für C++-Patches aufgesetzt (2026-11-17): `tools/build_owl_patch.sh`, Upload mit `tools/owl_write.py`. Vier Patches aus `burstMembrane/acdc-patches` liegen auf acdc1 (D50)
+- [x] Eigener Patch „Schliere“ (2026-11-18, D66): Kette aus 61 Allpässen 2. Ordnung nach dem Vorbild eines Eurorack-Moduls, mono hinein, stereo heraus, dazu Diff und Tail. Host-Test mit 25 Fällen bestanden, 28 % CPU, liegt auf Slot 6 von acdc1
+- [x] Fiepsen in Schliere Fassung 1 ist die LED-PWM (D67): 2321 Hz mit Vielfachen an Out 1, Pegel folgt dem LED-Muster des Tap-Reglers um bis zu 27 dB. H3 damit am Ausgang bewiesen
+- [x] Schliere Fassung 2 gegengemessen (D68): LED-Linie 2321 Hz um 31 dB kleiner. Es bleiben die Blockraten-Linien 6/12/18 kHz und der 1-kHz-Kamm, sie stecken schon im Eingangssignal
+- [x] Rohe Eingänge im Case gemessen (D69): Schliere hebt fs/8 um 3,8 dB und die Mischprodukte um 13,4 dB gegen den Default-Patch (29 % statt 6 % CPU). Im Case gegen daneben keine Verschlechterung in den ADC-Daten
+- [x] Blockraten-Sperre am Rechner geprüft (D70): `owl/AcdcInput.h`, an den C1-Aufnahmen fällt die fs/8-Familie um 42–47 dB, Host-Test bestanden. Schliere Fassung 3 damit gebaut
+- [x] Schliere Fassung 3 am Gerät gemessen (D71): Blockraten-Linien an Out 1 um 22–25 dB kleiner, Kontrollen mit Fassung 2 innerhalb 0,7 dB. Rest −97…−101 dBFS am UMC, 12–16 dB über dem Teppich
+- [x] Schliere Fassung 3 auf Slot 6 gespeichert und bytegleich zurückgelesen (D71, Nachtrag, 2026-11-18)
+- [ ] Schliere Fassung 3: Hörurteil des Nutzers. Mit Signal und bewegten Reglern prüfen (Sperre lernt nur in der Stille)
+- [ ] Blockraten-Sperre als Hülle für die anderen FX-Patches (`AcdcInput.h`, Schalter in `build_owl_patch.sh` wie `LIMIT=1`), danach je Patch gegenmessen. Woher kommt der Rest von −97 dBFS am Ausgang (D71)?
+- [x] D72: Fassung 3 mit Regler 3 von Anschlag zu Anschlag am UMC aufgenommen. Bei dauerhaft leuchtenden LEDs (Rot plus fast volles Grün, [Code]) keine LED-Linie über dem Rauschen. Dem Regler folgen die Regler-Linien 2200,95 / 4401,90 / 6602,85 Hz, am Linksanschlag so stark wie der Kamm
+- [x] D73: LED-Test-Patch (`owl/test/SchliereLedTestPatch.hpp`) am UMC gemessen. Dauerhaft rote LEDs stören nicht messbar. Jeder Wechsel einer LED verschiebt den Ausgang (Knack, 6-fach über dem Rauschen je LED), Blinken mit 40 Hz hebt den Pegel um 17,6 dB, gedimmtes Grün fiepst mit −39,8 dBFS
+- [x] D74: Die Verschiebung entsteht am Eingang. Mess-Patch `owl/test/SchliereLedPathPatch.hpp` misst an den rohen Eingängen 1–3 je leuchtender LED −2,9e-4 Vollausschlag (≈ −2,9 mV, −71 dBFS), auf allen Kanälen gleich. Direkt am Ausgang kommt bei digital stummem Ausgang etwa 0,15 mV je LED dazu (24 dB weniger)
+- [ ] LED-Strom in den Aufnahmen (D74): Wie stark wandert der Nullpunkt mit den Pegel-LEDs bei Musik? Aufnahme der rohen Eingänge mit einem Burst auf einem Kanal, die anderen offen
+- [x] Build 8 `v22.4.r-fx6a` vorbereitet (2026-11-18): Patch 17, LED-Modus (normal, nur Clip, aus) im Boot-Menü über Regler 2, Ressource `ACDC.led`. Host-Tests (48 Fälle) und `check_itcm` bestanden, `6a3fc427…`. Nicht geflasht
+- [x] Build 8 auf acdc1 geflasht (2026-11-18, D75): Readback bytegleich, A1 bestanden. Modus aus: Verschiebung der Eingänge auf 1,7 % (−37 dB). Modus normal wie fx5a. Clip-Test im Modus nur Clip: Sprung der offenen Eingänge um −0,08…−0,15 mV, als In 1 die Schwelle erreicht
+- [ ] **Fehler: Program Change bei offenem Stream bricht die USB-Wiedergabe (D76, unter fx5a genauso: D77).** Danach rund 10 % Stille an allen Ausgängen bis zum nächsten Stream-Start, `fb clamp`. Unabhängig von Patch und Last. Ursache im Code suchen (Audio-Task steht beim Laden, Empfangspuffer und Zähler), eigener Patch, danach die Läufe `B8-fx6a-pc*-stream` wiederholen. Bis dahin: Patch nur ohne offenen Stream wechseln
+- [x] Abnahme Build 8 vollständig (D75–D77). Als Alltags-Firmware abgelöst durch fx7a (2026-11-19), fx6a ist der Rückweg. Stand 2026-11-19, 11:23: fx6a, LED-Modus normal, es läuft Slot 1 per Program Change, gemerkt ist Slot 6, kein Kabel, Oszillator im Case abgesteckt
+  - [x] Mess-Patch `SchliereLedPath` nach Aus und Ein ohne Stream: Eingänge ruhig (Blinken 0,3 % von normal), ein dunkler Modus ist gemerkt (D75, Nachtrag 2026-11-19)
+  - [x] Clip-Probe im gemerkten Modus: Die offenen Eingänge springen an der Clip-Schwelle der Firmware, 220 ms vor dem Anschlag des Wandlers. Gemerkt ist nur Clip, der Sprung ist die rote LED 1, vom Nutzer bei der Wiederholung gesehen (D75, zweiter Nachtrag). Die Gegenprobe im Modus aus ist damit keine Pflicht mehr
+  - [x] Nur Clip frisch aus dem Menü, ohne Stream: ruhig (Blinken 0,4–0,5 % von normal). Die laute Messung vom 2026-11-18, 23:24 lässt sich damit nicht nachstellen, vermutlich war da der Modus normal aktiv (D75, dritter Nachtrag)
+  - Warum ist die Stufe einer roten LED am 2026-11-19 doppelt so groß (−2,0e-4) wie am Vorabend (−1,1e-4)? Regler, zweites Interface an Out 1?
+  - Drift von 2 dB in der Sitzung D77 und LED-Verschiebung heute 25–35 % größer als am Vorabend: Ursache offen
+  - Der statische Rest im dunklen Modus streut (+70…+272e-7), vermutlich Drift. Nur klären, wenn er stört
+  - [x] Download-Stresstest ohne Stream: 240 von 240 in Ordnung, mit TapeDelay und mit Tanh3 als laufendem Patch (D75, vierter Nachtrag)
+  - [x] Loop-Test bestanden, auch mit Tanh3 und während 48 Downloads (D76)
+  - [x] Rausch-A/B gegen fx5a: kein Hinweis auf einen Unterschied, fx5a liegt zwischen den beiden fx6a-Kontrollen. Die Sitzung driftet um 2 dB (D77)
+  - Danach Entscheidung des Nutzers über die Alltags-Firmware, dann Fork-Commits, Release und englische Fassung von `docs/05`
+- [x] Build 9 `v22.4.r-fx7a` gebaut (2026-11-19): Patch 18, LED-PWM mit 48 000 Hz (TIM2/3/4/8 Vorteiler 4, Period 999), fest an den Audio-Takt gekoppelt (gleicher Quarz, 0,1 ppm). Variante A: nur Timer-Init, `setLed()` unverändert, Werte unter 2,4 % dunkel. `check_itcm --same-itcm fx6a` (ITCM bytegleich), Host-Tests, Offline-Prüfung bestanden, `cac6fee0…`. Nicht geflasht
+- [x] Build 9 auf acdc1 geflasht (2026-11-19, D78): Readback bytegleich, A1 bestanden
+- [x] Build 9, LED-Linie am Ausgang (D78): gedimmtes Grün bringt keine Linie mehr (2321 Hz −85,2 dBFS im Rauschen statt −39,8), keine neue Linie
+- [x] Build 9, LED-Verschiebung an den Eingängen (D78): gleich wie fx6a (±2 %), wie erwartet
+- [x] Build 9: Rauschen gleich fx6a, LED-PWM-Linie auch in den rohen Eingängen weg, Loop-Test bestanden, Helligkeit in Ordnung (D78, D79)
+- [x] fx7a ist die Alltags-Firmware (Entscheidung des Nutzers, 2026-11-19), Rückweg fx6a
+- [ ] Nach der Entscheidung für fx7a: Fork-Commits (Patch 17 und 18 auf `acdc/fx1d`, Prüf-Build bytegleich), Release `acdc-v22.4.r-fx7a`, englische Fassung von `docs/05`, Commit im Hauptrepo. Alles nur mit Freigabe
+- [ ] Hörbares Fiepen des Moduls (D79, auch im DFU-Modus, ≈ 800–1000 Hz, leise): Quelle eingrenzen (Modul oder Netzteil, Ohr oder Mikrofon), hören, ob es mit Last, Slot oder Reglern wandert. USB abziehen macht es leiser und höher (Nutzer). [Hypothese] Schaltregler im Pulsbetrieb
+- [ ] Idee (D74): Die Verschiebung ist auf allen Eingängen gleich. Ein offener Eingang als Bezug, den ein Patch abzieht? Kostet Rauschen, träfe aber auch Kamm und Blockrate, soweit sie auf allen Kanälen gleich sind
+- [ ] Schliere Fassung 4: LEDs aus oder mit Hysterese, damit sie an der Grenze einer Haltezone nicht flackern (D73). Ganz ohne Knack geht es nur ohne LEDs
+- [ ] Regler-Linien am Ausgang eines FX-Patches (D72): Quelle klären (D61) und prüfen, ob die Firmware sie senken kann (Abtastzeit oder Scanrate des Regler-ADC)
+- [ ] Wandernde Linien in D72 (684,8 Hz mit Oktaven, 942,5 Hz, 281,6 Hz) zuordnen: Reglerstellung, andere Module im Case oder Messkette?
+- [ ] Stärkste Linien am Ausgang sind jetzt die des USB-Kamms (D71). Der ist nicht sample-synchron, eine Sperre müsste f0 nachführen
+- [ ] Ausgänge im Case gegen daneben messen (zweites Interface, gleiche Kette, gleicher Pegel): Streut das Case direkt auf die Ausgänge ein? (D69 hat nur die Eingänge)
+- [ ] LED-PWM als Störquelle (D67): betrifft jeden Patch, der LEDs dimmt, und die Ausgangs-LEDs der Firmware. Möglicher Firmware-Weg: PWM-Frequenz über den Hörbereich legen oder LEDs nur schalten
+- [ ] Schliere anhören und beurteilen (D66): Breite der Haltezonen am Tap-Regler (geschätzt 15 %), Regelweg des Feedbacks, Pegel der Ausgänge 3/4
+- [ ] Schliere am Gerät nachmessen (D66): Gruppenlaufzeit und Kerben per Loop Out n → In 1, CV-Skalierung an In 2–4, LEDs
+- [ ] Schliere, Ideen: Abgriffe als Ressource einstellbar, Regler für die Streuung der Koeffizienten (Richtung Diffusion), Hüllkurven-CV statt Tail an Out 4
 - [ ] FAUST-Patches bauen (`TapeDelay.dsp`, `FaustTapeDelay.dsp`): braucht den FAUST-Compiler und laut antisvin seinen OwlProgram-Branch
 - [ ] Optional: Auto-Switching zur Laufzeit statt per Compile-Flag
 - [ ] Idee (Nutzer, Q7): Regler bei aktivem Stream als MIDI-CC an den Host senden, nur wenn es weder Last noch Störlinien bringt. Die Firmware sendet sie heute nur auf Anfrage [Code]

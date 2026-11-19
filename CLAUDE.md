@@ -12,7 +12,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 
 | Modul | Device-UUID (als Seriennummer) | Firmware | Slot 1 | Stand |
 |---|---|---|---|---|
-| acdc1 | `0039001c:31315101:39333437` | **v22.4.r-fx5a** (eigener Build 7, `b69c25b3…` = fx4b + Patch 16, Alltags-Firmware seit 2026-11-18, D63–D65). Erster Rückweg fx4b `v22.4.r-fx4b` (Build 6b, `a21f35c9…`, Alltags-Firmware 2026-11-17 bis 18, D55–D59). Danach fx3l `v22.4.r-fx3l` (Build 5c, `b55b94d8…`), danach Build 3d `v22.4.r-fx2d` (`d212cf8d…`) | ACDC, 9,93 KB. Slots 2–5: TapeDelay, Grainz, RingsReverb, Tanh3 (D54) | owl_read 2026-11-18 |
+| acdc1 | `0039001c:31315101:39333437` | **Seit 2026-11-19, 11:46 geflasht: v22.4.r-fx7a** (Build 9, `cac6fee0…` = fx6a + Patch 18, LED-PWM 48 kHz, Abnahme vollständig, D78, D79, **Alltags-Firmware seit 2026-11-19**). Davor und Rückweg: **v22.4.r-fx6a** (Build 8, `6a3fc427…` = fx5a + Patch 17, LED-Modus, **Abnahme vollständig, Entscheidung offen**, D75–D77). Davor und Rückweg: **v22.4.r-fx5a** (eigener Build 7, `b69c25b3…` = fx4b + Patch 16, Alltags-Firmware seit 2026-11-18, D63–D65). Erster Rückweg fx4b `v22.4.r-fx4b` (Build 6b, `a21f35c9…`, Alltags-Firmware 2026-11-17 bis 18, D55–D59). Danach fx3l `v22.4.r-fx3l` (Build 5c, `b55b94d8…`), danach Build 3d `v22.4.r-fx2d` (`d212cf8d…`) | ACDC, 9,93 KB. Slots 2–6: TapeDelay, Grainz, RingsReverb, Tanh3 (D54), Schliere (Fassung 3, D71) | owl_read 2026-11-18 |
 | acdc2 (DIY) | `00250049:31315102:39333437` | v22.4.q (`e81cfc3`, Hack-Branch, nie veröffentlicht) | ACDC, 9,32 KB | Device-Status 2026-11-13 |
 
 - **acdc2** = die **DIY-Variante** (M1–M3 wurden damit aufgenommen). „Gerät 1“ in älteren Docs = acdc1, „Gerät 2“ = acdc2.
@@ -27,10 +27,23 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 - **Signalfluss (Nutzer, 2026-11-15):** AC/DC-Eingänge = Aufnahmen aus dem Eurorack. AC/DC-Ausgänge = CV oder Audio, das zurück ins Rack und wieder in die AC/DC-Eingänge geht. Der UMC ist nur Ausgabe an Boxen/Kopfhörer. **AC/DC-Out → UMC-In gibt es im Alltag nicht** (nur Messaufbau S3/G).
 - **USB-Kette:** AC/DC → kleiner passiver USB-Hub → USB-Hub im Monitor → Thunderbolt-Hub. Der Mac wird über den TB-Hub versorgt, der Monitor hängt am TB-Hub.
 - **Nur ein Rechner** vorhanden. Tests mit Host-Wechsel fallen weg.
+- **Einbau:** Bis 2026-11-18 lag acdc1 bei allen Messungen und beim Hören neben dem Case. Seit dem 2026-11-18 (abends) ist es ins Case geschraubt (Nutzer, D66 Nachtrag). Bei neuen Messungen den Einbau notieren.
 - Forum-Handle: `m9dfukc` (community.rebeltech.org), eigener Thread: #2244.
 
 ## Aktueller Stand (2026-11-18)
 
+- **Auf acdc1 läuft seit 2026-11-19 Build 9 `v22.4.r-fx7a`, Abnahme vollständig (D78, D79). fx7a ist die Alltags-Firmware (Entscheidung des Nutzers, 2026-11-19), Rückweg ist fx6a:** fx6a + Patch 18, LED-PWM mit 48 000 Hz statt 2320,54 Hz, im Takt der Abtastung (Timer und SAI aus demselben Quarz, 0,1 ppm Abstand). Nur der Timer-Init ändert sich, `setLed()` und der ITCM bleiben bytegleich, LED-Werte unter 2,4 % bleiben dunkel. Gemessen: Die LED-PWM-Linie ist am Ausgang (gedimmtes Grün −85 statt −39,8 dBFS am UMC) und in den rohen Eingängen weg, Rauschen gleich fx6a, LED-Verschiebung unverändert, Loop-Test bestanden. Rückweg ist fx6a.
+- **Auf acdc1 ist seit 2026-11-18 (23:10) Build 8 `v22.4.r-fx6a` geflasht und in Abnahme (D75).** Neu ist nur der LED-Modus (Patch 17): im Boot-Menü wählt Regler 2 normal (linkes Drittel), nur Clip (Mitte) oder aus (rechts), gemerkt in der Ressource `ACDC.led`.
+  - Bestanden: Flash mit Readback, A1, Modus aus (Verschiebung der Eingänge auf 1,7 %, etwa −37 dB), Modus normal wie fx5a.
+  - Bestanden am 2026-11-19 (D75, Nachtrag): Nach Aus und Ein ohne Menü ist ein dunkler Modus aktiv, die Eingänge bleiben ohne Stream ruhig (Blinken 0,3 % von normal).
+  - Bestanden am 2026-11-19 (D75, zweiter Nachtrag): Gemerkt ist nur Clip. Bei der Clip-Probe springen die offenen Eingänge an der Clip-Schwelle der Firmware, 220 ms vor dem Anschlag des Wandlers, um −2,0e-4 Vollausschlag (am Vorabend −1,1e-4): Das ist die rote LED 1, nicht das Übersteuern. Der Nutzer hat die rote LED bei einer Wiederholung gesehen.
+  - Bestanden am 2026-11-19 (D75, dritter Nachtrag): nur Clip frisch aus dem Menü ist ohne Stream ruhig. Die LED-Modi sind damit am Gerät abgenommen.
+  - Bestanden am 2026-11-19 (D75, vierter Nachtrag): Download-Stresstest ohne Stream, 240 von 240 in Ordnung.
+  - Bestanden am 2026-11-19 (D76): Loop-Test mit Slot 1, mit Tanh3 und während 48 Downloads (0 Slips, 0 veraltete Samples).
+  - **Neuer Fehler (D76), vermutlich älter als Build 8:** Ein Program Change bei offenem Stream bricht die USB-Wiedergabe bis zum nächsten Stream-Start (rund 10 % Stille an allen Ausgängen, `fb clamp`). Patch deshalb nur ohne offenen Stream wechseln. Unter fx5a genauso (D77), der Fehler ist also älter als Build 8.
+  - Bestanden am 2026-11-19 (D77): Rauschen gegen fx5a ohne Hinweis auf einen Unterschied (fx5a liegt zwischen zwei fx6a-Kontrollen, die Sitzung driftet um 2 dB). **Die Abnahme ist vollständig, über die Alltags-Firmware ist nicht entschieden, Rückweg ist fx5a.**
+  - Zustand am 2026-11-19, 11:23: fx6a nach zwei Flashes (fx5a und zurück), LED-Modus normal, es läuft Slot 1 per Program Change, gemerkt ist Slot 6 (Schliere), kein Kabel gesteckt.
+  - Alles Folgende zu fx5a gilt auch für fx6a im Modus normal.
 - **Auf acdc1 läuft seit 2026-11-18 fx5a** (`firmware/builds/acdc1-build7-fx5a/`, `b69c25b3…` = fx4b + Patch 16, MIDI-Sendeweg). Abnahme D62–D64: Download-Stresstest 240 von 240 in Ordnung, Loop-Test bestanden, Rauschen ohne Hinweis auf eine Änderung (Mischprodukte nicht entscheidbar). **fx5a ist die Alltags-Firmware (Entscheidung des Nutzers, D65)**, fx4b ist der erste Rückweg. Alles Folgende zu fx4b gilt auch für fx5a.
 - **acdc1 läuft mit fx4b als Alltags-Firmware** (Entscheidung des Nutzers, D59): `firmware/builds/acdc1-build6b-fx4b/`, `a21f35c9…` = fx3l + Patch 15b. Abnahme bestanden: Boot-Menü am Gerät (D52/D53), Loop-Test auch unter 53 % Patch-Last (D57), Rauschen gleich fx3l innerhalb ±0,4 dB (D58).
 - **Boot-Menü zur Patch-Wahl:**
@@ -45,9 +58,9 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
   - Mit TX-Stream zeigen die Eingangs-LEDs den rohen Pegel, Rot ab −0,1 dBFS für 300 ms (D36).
   - Patch-Heap im CCM 39,2 KB statt 52 KB, weil der heiße Pfad im ITCM liegt.
 - **Rauschen gegen 3d [gemessen, D48, gilt auch für fx4b, D58]:** fs/8 −5,1 dB, Mischprodukte −35 dB, Rest −1,25 dB, RMS −1,1 dB, Kamm +0,2…+0,4 dB. Der SOF-Kamm ist damit die stärkste verbleibende Störfamilie.
-- **Auf acdc1 liegen fünf Patches** (D54, D56): Slot 1 ACDC, 2 TapeDelay, 3 Grainz, 4 RingsReverb (je mit Limiter auf Out 1/2), 5 Tanh3 (Fassung 2 mit 4× Oversampling, 48 % CPU). Gemerkter Slot zuletzt 5. Die Builds aus D50 und Tanh3 Fassung 1 liegen in `owl-patches/builds-owl2/`. Wechsel vom Rechner aus per `owl_read.py --program N` (wird nicht gemerkt).
+- **Auf acdc1 liegen sechs Patches** (D54, D56, D66): Slot 1 ACDC, 2 TapeDelay, 3 Grainz, 4 RingsReverb (je mit Limiter auf Out 1/2), 5 Tanh3 (Fassung 2 mit 4× Oversampling, 48 % CPU), 6 Schliere (Kette aus 61 Allpässen, Fassung 3 mit Blockraten-Sperre, 30 % CPU, seit 2026-11-18, D66–D71). Gemerkter Slot zuletzt 5. Die Builds aus D50 und Tanh3 Fassung 1 liegen in `owl-patches/builds-owl2/`. Wechsel vom Rechner aus per `owl_read.py --program N` (wird nicht gemerkt).
 - **Slot-Downloads bei laufendem Patch sind bis fx4b unzuverlässig (D53/D54, D62):** Wettlauf im MIDI-Sendeweg der Original-Firmware [Code]. Auf fx4b waren 19 von 79 Downloads beschädigt, danach sendete acdc1 bis zum Neustart kein MIDI mehr [gemessen, D62]. **fx5a behebt das (Patch 16): 240 von 240 Downloads in Ordnung, kein Hänger (D63).** Unter fx4b und älter weiter `owl_write.py` mit `--backup-file` benutzen und bei `owl_read.py --dump` auf `ok` im Report achten. Test: `tools/dump_stress.py`.
-- **Offen:** Störung auf Kanal 2 während Downloads (D63), Mischprodukte im Rausch-A/B nicht entscheidbar (D64). Hörurteil zu Tanh3, Quelle der Regler-Linien (D61), Last von Tanh3 (D56). Alles Weitere: `TODO.md`, Abschnitt „Offen“.
+- **Offen:** Störung auf Kanal 2 während Downloads (D63), Mischprodukte im Rausch-A/B nicht entscheidbar (D64). **Fiepsen in Schliere:** Fassung 1 fiepst durch die LED-PWM (2321 Hz mit Vielfachen an Out 1, bis −44 dBFS am UMC, folgt dem LED-Muster, D67). Fassung 2 (LEDs nur aus oder rot) senkt die Linie um 31 dB (D68). Was dann noch fiept, sind die Blockraten-Linien 6/12/18 kHz und der Kamm aus den offenen Eingängen, die Rechenlast von Schliere hebt fs/8 um 3,8 dB (D69). Fassung 3 hat dagegen eine Sperre am Eingang (`owl/AcdcInput.h`): an den Aufnahmen aus D69 −42…−47 dB bei fs/8 (D70), am Gerät an Out 1 gemessen −22…−25 dB (D71). Stärkste Linien am Ausgang sind danach die des USB-Kamms.  acdc1 ist seit 2026-11-18 erstmals ins Case geschraubt. Auf Slot 6 liegt Fassung 3 wie Quelle und Build (ältere Builds in `owl-patches/builds/Schliere-v1/`, `-v2/`). Hörurteil zu Tanh3 und Schliere, Schliere am Gerät nachmessen (D66), Quelle der Regler-Linien (D61), Last von Tanh3 (D56). Alles Weitere: `TODO.md`, Abschnitt „Offen“.
 
 ## Dateien
 
@@ -62,7 +75,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 | `docs/03-messplan-python.md` | Messprotokoll + Spezifikation der Python-Analyse (uv) |
 | `docs/04-software-filter.md` | Notch-Bank: Filterform, Python-Prototyp, Plugin, FAUST-Patch |
 | `docs/05-firmware-plan.md` | OpenWare-Stand, Forks, Build-Plan und Ergebnis jedes Builds (chronologisch), Fork, Flashen |
-| `docs/messlog.md` | **Alle eigenen Messungen** (M1 … D65): Setup, Dateien, Linien-Tabelle, Deutung, Einschränkungen |
+| `docs/messlog.md` | **Alle eigenen Messungen** (M1 … D77): Setup, Dateien, Linien-Tabelle, Deutung, Einschränkungen |
 | `docs/uebergaben/` | Falls es Übergaben zwischen Sitzungen gibt, liegen sie hier. **Nur lokal, nicht im Repo** (Nutzer-Entscheidung 2026-11-18): Arbeitszettel, die schnell überholt sind. Die Datei mit dem jüngsten Datum ist die aktuelle. Nie löschen, nicht committen. `CLAUDE.md` und die anderen Docs verweisen nicht auf einzelne Übergaben, Dauerhaftes gehört nach `TODO.md`, `CLAUDE.md` oder in den Messlog |
 | `docs/99-quellen.md` | Alle Links |
 | `docs/en/` | Englische Fassungen von `01`–`05` und `99`, aus dem Deutschen erzeugt. Nie von Hand ändern. Übersicht, Marker-Legende und Glossar in `docs/en/README.md` |
@@ -72,7 +85,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 | `out/<ID>/` | Report, JSON, Plots je Messung. Dazu `out/*-session-table.md` (Sitzungstabellen), `out/owl_read/` (Geräte-Reports je Aufnahme), `out/v0/` (alte Plots des ersten Skripts, überholte Gain-Deutung im Text) |
 | `firmware/` | Firmware-Arbeit: Quell-Klon, Quelltext-Patches, Builds, Flash-Logs. Übersicht in `firmware/README.md` |
 | `backup/<gerät>/<datum>/` | Geräte-Backups: `flash/` (DFU-Readback), `owl/` (Slots, Settings, Report). Nie überschreiben. Nur lokal, nicht im Repo |
-| `owl/` | Eigene OWL-Patch-Quellen: `Tanh3Patch.hpp` (dreifacher tanh-Waveshaper mit Mix-Kanal), `AcdcOutput.h` (Limiter-Hülle für FX-Patches), `test/` (Host-Test). Der Ordnername bleibt, trotz der Nähe zu `owl-patches/` (Nutzer 2026-11-18) |
+| `owl/` | Eigene OWL-Patch-Quellen: `Tanh3Patch.hpp` (dreifacher tanh-Waveshaper mit Mix-Kanal), `SchlierePatch.hpp` (Kette aus 61 Allpässen 2. Ordnung: mono hinein, stereo heraus, dazu Diff und Tail, Belegung im Kopf der Datei), `AcdcOutput.h` (Limiter-Hülle für FX-Patches), `AcdcInput.h` (Sperre für die Blockraten-Linien 6/12/18 kHz am Eingang, lernt in der Stille, D70/D71), `test/` (Host-Tests und die Mess-Patches `SchliereLedTestPatch.hpp` (LEDs nach der Uhr, D73) und `SchliereLedPathPatch.hpp` (Eingang oder Ausgang, misst selbst an den Eingängen, D74)). Der Ordnername bleibt, trotz der Nähe zu `owl-patches/` (Nutzer 2026-11-18) |
 | `owl-patches/`, `vcv-patches/` | Nur lokal, nicht im Repo. `owl-patches/library/`: Quellen von OWL-Patches aus der Library (ohne Lizenz). `owl-patches/acdc-patches/` (`burstMembrane` `78ffa22`), `owl-patches/OwlProgram/` (SDK `60f44ab` + DaisySP `4263388`), `owl-patches/downloads/` (Tarballs), `owl-patches/builds/<name>/` (`patch.bin`, `<name>.syx`, `BUILD_INFO.txt`). `vcv-patches/`: Host-Patches der frühen Messungen |
 | `tools/` | Geräte- und Build-Werkzeuge, siehe unten |
 | `docs/research/report-2026-10-23.md` | Vollständiger Recherchebericht (Deep Research) |
@@ -84,15 +97,15 @@ Bei Detailfragen zuerst `docs/research/notes/` durchsuchen, bevor neu recherchie
 
 | Werkzeug | Zweck |
 |---|---|
-| `acdc_rec.py` | Aufnahmen und Testsignale, Standard seit 2026-11-16 |
+| `acdc_rec.py` | Aufnahmen und Testsignale, Standard seit 2026-11-16. Auch für andere Geräte (`--device UMC202HD --input-only --channels 2`). `--prompt --progress 1` im Terminal des Nutzers gibt Start per Enter und eine Zeitanzeige im Sekundentakt |
 | `owl_read.py` | Gerät per MIDI/SysEx auslesen (nur lesend), Neustart in den DFU-Modus |
 | `owl_write.py` | Patch hochladen: `--run` (nur RAM) oder `--store N --yes` (Slot im Patch-Flash). Nur acdc1, sichert einen belegten Slot vorher, liest danach zurück. `--info` und `--syx-out` laufen offline |
 | `build_owl_patch.sh` | C++-Patch mit OwlProgram bauen, SysEx nach `owl-patches/builds/` |
-| `sim_boot_menu.sh` | Host-Test der Boot-Menü-Logik (Patch 15/15b) mit simulierten Reglern |
-| `test_owl_dsp.sh` | Host-Test der eigenen Patch-Quellen in `owl/` (Tanh3, Limiter) |
+| `sim_boot_menu.sh` | Host-Test der Boot-Menü-Logik (Patch 15/15b, ab Build 8 auch Regler 2 für den LED-Modus) mit simulierten Reglern, dazu ab Build 8 die LED-Schleife je Modus (`firmware/sim/led_loop_sim.cpp`) |
+| `test_owl_dsp.sh` | Host-Test der eigenen Patch-Quellen in `owl/` (Tanh3, Limiter, Schliere, Blockraten-Sperre, beide LED-Mess-Patches) |
 | `dfu_readback.sh`, `compare_firmware.py` | Internes Flash lesen und mit einer Referenz vergleichen |
 | `dump_stress.py` | Download-Stresstest für den MIDI-Sendeweg: lädt bei laufendem Patch alle Slots in Runden herunter und zählt beschädigte Downloads. Nur acdc1, nur lesend bis auf einen Program Change. Läuft wie `owl_read.py` mit Python 3.12 und mido. Bricht ab, wenn das Gerät nicht mehr antwortet (D62) |
-| `flash_acdc.py` | Build auf acdc1 flashen: Offline-Prüfung, Auslesen, DFU-Neustart, Schreiben, Readback-Vergleich, Flash-Log. `--a1` prüft nach dem Neustart. Ohne `--yes` nur die Offline-Prüfung |
+| `flash_acdc.py` | Build auf acdc1 flashen: Offline-Prüfung, Auslesen, DFU-Neustart, Schreiben, Readback-Vergleich, Flash-Log. Danach Start der Firmware per `:leave` und A1 (D79), `--cold` für den Neustart von Hand, dann `--a1`. Ohne `--yes` nur die Offline-Prüfung |
 | `build_acdc.sh` | Reproduzierbarer Firmware-Build aus Commit + Libraries-Tarball + Patches |
 | `setup_repo.sh` | Frischen Klon einrichten: Submodul, `upstream`-Remote, Libraries-Tarball und offizielle `ACDC.bin` mit SHA-Prüfung |
 | `i18n_check.py` | Listet veraltete englische Fassungen in `docs/en/` auf (Prüfsumme der deutschen Quelle im Kopf). `--stamp` schreibt den Kopf nach einer neuen Übersetzung |
@@ -143,18 +156,23 @@ Bei Detailfragen zuerst `docs/research/notes/` durchsuchen, bevor neu recherchie
   - **SOF-Kamm** bei k·≈1 kHz
   - **fs/8** = 6000,00 Hz (Audio-Blockrate bei Blockgröße 8, sample-synchron)
   - **Mischprodukte** n·f1k + m·6000 Hz
-  - **LED-PWM** 2320,98 Hz auf acdc2, 2320,54 Hz auf acdc1 (nur mit Signal oder hohem Gain, H3 noch ohne Beweis)
+  - **LED-PWM** 2320,98 Hz auf acdc2, 2320,54 Hz auf acdc1 (in den Aufnahmen nur mit Signal oder hohem Gain). **Am Ausgang bewiesen [gemessen, D67]:** Ein Patch, der LEDs gedimmt leuchten lässt, bringt 2321 Hz mit Vielfachen auf den Ausgang, der Pegel folgt dem LED-Muster um bis zu 27 dB. Patches sollten LEDs deshalb nicht dauerhaft dimmen. Bei „Rot“ lässt die Firmware Grün mit Tastgrad 1023/1024 weiterlaufen und setzt den roten Pin alle 2 ms neu [Code], am Ausgang ist davon nichts messbar [gemessen, D72]
+  - **Jeder Wechsel einer LED verschiebt den Ausgang [gemessen, D73]:** Dauerhaft rote LEDs stören nicht, aber jedes Ein- oder Ausschalten gibt einen Knack (je LED etwa das 6-Fache des Rauschens im Bass, additiv), Blinken mit 40 Hz hebt den Gesamtpegel um 17,6 dB. Patches sollten LEDs deshalb selten und nie flackernd schalten. Mess-Patch: `owl/test/SchliereLedTestPatch.hpp`
+  - **Der LED-Strom verschiebt den Nullpunkt aller Eingänge [gemessen, D74]:** je leuchtender Eingangs-LED −2,9e-4 Vollausschlag (≈ −2,9 mV, −71 dBFS), an In 1–3 gleich, vom Patch selbst an den rohen Eingängen gemessen (`owl/test/SchliereLedPathPatch.hpp`, Meldung über `owl_read.py`). Direkt am Ausgang kommen bei digital stummem Ausgang etwa 0,15 mV je LED dazu. Die PWM-Linie ist derselbe Effekt, 2321-mal pro Sekunde geschaltet. Folge [Hypothese]: Die Pegel-LEDs der Firmware bewegen den Nullpunkt der Aufnahme im Takt der Hüllkurve
 - **Der Kamm hängt am USB-SOF des Host-Controllers [gemessen, S2-6].** f0 hängt vom Anschluss ab: Mac-Port 999,99 Hz, TB-Hub 999,868 oder 999,997 Hz je Port (im acdc1-Takt). Ein Notch-Filter muss f0 je Modul und Anschluss messen.
 - **Am Ausgang ist der Kamm ohne USB weg und schon ohne Stream da [gemessen, D20].** Standalone ist der Ausgang sauber.
 - **Masseschleife [gemessen, D21]:** nur mit AC/DC am Mac-Port und UMC am Hub (+20 dB). Beide am Hub → weg. Kein Isolator nötig. Die Alltags-Kette ist für Aufnahmen in Ordnung (D22/D23).
 - **Die Lage des Codes im Speicher verschiebt die Störlinien [gemessen, D33].** Ein reiner Füll-Build ohne Funktionsänderung ändert fs/8, Kamm und Mischprodukte um 1,5–4,5 dB. Liegt der heiße Pfad im ITCM, zählt die Flash-Lage nicht mehr (fx3lp ≤ 0,25 dB bei fx3l, D48).
 - **Was die CPU im Blocktakt tut, erscheint bei fs/8 [gemessen, D42]:** Ein paar µs Abfrage eines DMA-Registers pro Block heben fs/8 um ≈ 10,6 dB. Mechanismus [Hypothese]: Busverkehr bzw. Strompuls.
+- **Auch die Rechenlast eines Patches hebt fs/8 [gemessen, D69]:** Schliere (29 % CPU) gegen den Default-Patch (6 %) in derselben Sitzung: fs/8 +3,8 dB, Mischprodukte +13,4 dB, Rest und Kamm ±0,25 dB. Ein FX-Patch reicht diese Linien samt Kamm an die Ausgänge durch, ohne Eingangssignal sind sie das, was man hört (D68).
+- **Einbau ins Case [gemessen, D69]:** in den ADC-Daten keine Verschlechterung gegen „neben dem Case“ (Rest −0,1 dB, fs/8 −0,2 dB, Kamm +0,65 dB bei zwei Stunden Abstand). Die Ausgänge sind dazu nicht gemessen.
 - **Den Kamm senkt nur USB-Code im ITCM [gemessen, D42/D44]:** USB im Flash +2,5…+3,5 dB gegen 3d, im ITCM ±0.
 - **Ungleich gestellte Regler heben eigene Linien an [gemessen, D58, D60, D61]:** 2200,95 / 4401,90 / 6602,85 Hz und 8549,33 Hz, an den Gerätetakt gekoppelt, unabhängig von der Firmware (fx3l = fx4b).
   - **Es zählt der Unterschied zwischen den Reglern, nicht der Anschlag [gemessen, D61].** Alle vier am selben Anschlag liegen wie 12 Uhr (−114…−119 dB). Ein Regler allein am Anschlag bringt ≈ −100 dB, abwechselnd links und rechts (LRLR) −94 dB. Der Pegel wächst stetig mit dem Abstand.
   - Das Muster bestimmt die Linie: LLRR hebt 2200,95 und 6602,85 Hz, LRLR hebt 4401,90 Hz.
   - Auf 12 Uhr bleiben sie 6…16 dB über dem Grundrauschen, weg sind sie nie.
   - [Hypothese] Der Abtastkondensator des Regler-ADC wird von Kanal zu Kanal umgeladen. Die Quelle der Frequenz 2200,95 Hz ist offen: Die ADC-Scanrate faltet auf 9633,80 Hz, die LED-PWM liegt bei 2320,54 Hz.
+  - Ein FX-Patch reicht sie an den Ausgang durch [gemessen, D72]: Schliere mit Regler 3 am Linksanschlag −66…−73 dBFS am UMC, so stark wie die stärksten Kamm-Linien, in der Mitte des Regelwegs im Rauschen.
   - Rauschmessungen deshalb immer mit allen Reglern auf 12 Uhr.
 - **Drei Linien stammen aus Takten der MCU [Code, gemessen, D60]:**
   - Scanrate des Regler-ADC 105 633,8 Hz, gefaltet auf 9633,80 und 19 267,6 Hz (acdc2: 9653,46 Hz), −116…−129 dB, fast unabhängig von den Reglern.
@@ -176,6 +194,8 @@ Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`)
 | 6 | `v22.4.r-fx4a`, `e7ee9b90…` | fx3l + 15 (Boot-Menü, Slot wird gemerkt, Abbruch nach 60 s) | Menü am Gerät geprüft (D50–D53), abgelöst durch 6b |
 | 6b | **`v22.4.r-fx4b`, `a21f35c9…`** | fx3l + 15b (wie 15, Abbruch nach 30 s). ITCM-Inhalt bytegleich mit fx4a | Alltags-Firmware bis 2026-11-18 (D55, D59). Loop-Test bestanden (D57), Rauschen = fx3l (D58). **Rückweg** |
 | 7 | **`v22.4.r-fx5a`, `b69c25b3…`** | fx4b + 16 (MIDI-Sendeweg unteilbar, Lesezeiger erst nach Abschluss der Übertragung, Flusskontrolle beim Slot-Download). ITCM-Code +48 B | **Alltags-Firmware auf acdc1** (D63, D65). Downloads 240/240 statt 60/79, Loop-Test bestanden (D63), Rauschen ohne Hinweis auf eine Änderung (D64) |
+| 8 | `v22.4.r-fx6a`, `6a3fc427…` | fx5a + 17 (LED-Modus normal / nur Clip / aus, im Boot-Menü mit Regler 2, gemerkt in `ACDC.led`). ITCM-Ende und alle Funktionen außerhalb von `.text.onLoop` wie fx5a | Abnahme vollständig (D75–D77). Rückweg von fx7a |
+| 9 | `v22.4.r-fx7a`, `cac6fee0…` | fx6a + 18 (LED-PWM 48 000 Hz statt 2320,54 Hz: TIM2/3/4/8 Vorteiler 4, Period 999, fest am Audio-Takt). Nur Timer-Init in `main.c`, ITCM bytegleich mit fx6a. Werte unter 2,4 % bleiben dunkel | **Alltags-Firmware auf acdc1** (2026-11-19, Nutzer). Abnahme vollständig (D78, D79): LED-Linie weg, Rauschen = fx6a, Loop-Test bestanden |
 
 - **Vier Fehler im Original-Code, gefunden und behoben:**
   - **Feedback in offener Schleife:** macOS liefert ≈ 1 LSB zu wenig, der RX-Puffer läuft alle 2–3 min um einen Block leer. Patch 06 regelt nach dem Füllstand (D12–D18).
@@ -188,7 +208,7 @@ Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`)
   - Ohne ITCM gilt die alte Regel: neuen Code ans Ende legen (`.late_text`/`.late_bss`) oder die Adressen per `nm` gegen den Referenz-Build prüfen.
   - Keine Abfrage-Schleifen im Blocktakt (D42).
   - Loop-Prüfung immer mit `phase_slips.py` **und** `stale_samples.py` auf derselben WAV.
-- **Rückwege für acdc1:** von fx5a aus fx4b (`a21f35c9…`), dann fx3l (`b55b94d8…`), dann 3d (`d212cf8d…`), dann Build 2, dann 1d, dann das Readback (`433b3fd3…`).
+- **Rückwege für acdc1:** von fx7a aus fx6a (`6a3fc427…`), von fx6a aus fx5a (`b69c25b3…`), von fx5a aus fx4b (`a21f35c9…`), dann fx3l (`b55b94d8…`), dann 3d (`d212cf8d…`), dann Build 2, dann 1d, dann das Readback (`433b3fd3…`).
 - **Fork:** https://github.com/m9dfukc/OpenWare
   - `acdc/thru-usb-feedback` = Build 1d + README, Spitze `edb32852`.
   - `acdc/fx1d` = Build 2 → 3d → fx3l → fx4b → fx5a + README, Spitze `b4b95e43`. Ein Build von `5cb2c17c` ist bytegleich mit fx3l (`firmware/builds/verify-fx1d-5cb2c17c`), einer von `2c963e3a` bytegleich mit fx4b (`verify-fx1d-2c963e3a`), einer von `c222fa49` bytegleich mit fx5a (`verify-fx1d-c222fa49`).
@@ -202,31 +222,36 @@ Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`)
 2. `owl_read.py --reset-to-dfu --yes`
 3. `dfu-util -d 0483:df11 -S 200364500000 -a 0 -s 0x08000000 -D <bin>`
 4. Readback `-s 0x08000000:131072 -U`, mit dem Binary vergleichen und auf 0xFF prüfen
-5. Nutzer startet neu: Case aus, USB ab, Case an, USB an
+5. Start der Firmware: **Standard seit 2026-11-19 (D79)** ein zweites, nur lesendes Readback mit `-s 0x08000000:131072:leave -U`. Der ROM-DFU startet danach die Firmware, `dfu-util` endet dabei mit „Error during download get_status“ (normal). Kein Kaltstart, der Codec bleibt unter Strom. **Kaltstart** (Nutzer: Case aus, USB ab, Case an, USB an; nur Case aus reicht nicht, USB versorgt das Board) nur, wenn `:leave` scheitert, wenn ein Build am Einschalten etwas ändert (Takt, Codec-Init), wenn der Test das Einschalten betrifft (Boot-Menü, gemerkter Slot oder LED-Modus nach Aus und Ein) und auf dem Rückweg nach einem Problem
 6. A1 per `owl_read.py`: Version, `SR/BS/CH 48000 8 4`, Slots unverändert
 
 Je Flash ein Ordner in `firmware/flashlog/`.
 
-**Als Skript (seit 2026-11-18): `tools/flash_acdc.py`**, außerhalb des Sandbox. Es führt die Schritte 1–4 aus und nach dem Neustart Schritt 6:
+**Als Skript (seit 2026-11-18): `tools/flash_acdc.py`**, außerhalb des Sandbox. Es führt die Schritte 1–6 aus, mit `--cold` nur 1–4 und Schritt 6 nach dem Neustart von Hand:
 
 - `python3 tools/flash_acdc.py <build>`: nur die Offline-Prüfung (Größe, Vektortabelle, Version, SHA gegen `BUILD_INFO.txt`, `check_itcm.json`). `<build>` ist eine `.bin`, ein Build-Ordner oder ein Ordnername in `firmware/builds/`.
 - `… <build> --yes [--name <log>]`: flasht acdc1. Geprüft werden die MIDI-Geräte-ID und die DFU-Seriennummer. Der Log-Ordner heißt `firmware/flashlog/<datum>_<name>` (Standard: Build-Ordner ohne `acdc1-`), ein vorhandener wird nie benutzt (dann z. B. `--name …-zurueck`).
-- `… --a1 <log-ordner>`: nach dem Neustart. Prüft Gerät, Version, 48000 Hz, Blockgröße 8 und die Slots gegen den Stand vor dem Flash. Die Kanalzahl prüft es nicht.
+- Standard nach dem Readback: `:leave`, warten, bis das DFU-Gerät verschwindet (`--leave-wait`, 10 s), dann A1 mit bis zu drei Versuchen. Exit 6: `:leave` hat nicht gewirkt oder acdc1 meldet sich nicht über MIDI, dann Neustart von Hand und `--a1`. Exit 7: A1 bestanden, aber das zweite Readback weicht ab.
+- `--cold`: kein `:leave`, nach dem Readback auf den Neustart von Hand warten.
+- `… --a1 <log-ordner>`: nach einem Neustart von Hand. Prüft Gerät, Version, 48000 Hz, Blockgröße 8 und die Slots gegen den Stand vor dem Flash. Die Kanalzahl prüft es nicht.
 - `--from-dfu`: acdc1 steht schon im DFU-Modus (z. B. nach einem fehlgeschlagenen Flash). Dann nicht neu starten, sondern damit den Rückweg flashen.
 - Bricht es ab, bevor etwas geschrieben wurde, benennt es den Log-Ordner in `…-abgebrochen-<zeit>` um.
-- **Stand:** Am Gerät erprobt (2026-11-18, D63/D64): drei Flashes mit Readback und `--a1`, ohne Fehler. `--from-dfu` und der Abbruchweg liefen bisher nur gegen Attrappen.
+- **Stand:** Am Gerät erprobt (2026-11-18, D63/D64): drei Flashes mit Readback und `--a1`, ohne Fehler. `--from-dfu` und der Abbruchweg liefen bisher nur gegen Attrappen. `:leave` von Hand am Gerät erprobt (2026-11-19, D79: zweimal, A1 bestanden, Rauschen gleich wie nach Kaltstart). Im Skript seit 2026-11-19, bisher nur gegen Attrappen (Erfolg, bleibt im DFU, kein MIDI, abweichendes Readback).
 
 ### USB-Stabilität prüfen
 
 - Patchkabel Out n → In n, Gain 12 Uhr, `tools/acdc_rec.py --sine 440 530 670 790 --owl-read`, 60 s.
+- **Vor jedem Kabel von einem Ausgang auf einen Eingang prüfen, welcher Patch läuft.** Ein FX-Patch, der diesen Eingang auf diesen Ausgang gibt (Schliere, Mess-Patches mit Verstärkung), bildet damit eine Rückkopplungsschleife. Erst auf Slot 1 schalten oder den Stream öffnen, dann stecken lassen (D75).
+- Über den Loop lässt sich ein Eingang nur mit negativer Spannung übersteuern (`--dc … -1`), wegen des negativen Eingangsoffsets (D36, D75).
 - Danach `tools/phase_slips.py --freqs 440 530 670 790` und `tools/stale_samples.py`.
+- **Den Patch vor dem Öffnen des Streams wählen**, nie währenddessen: Ein Program Change bei offenem Stream bricht die Wiedergabe (D76).
 - Die Geräte-Meldung lesen, **bevor** der Stream schließt (`--owl-read` tut das).
 - Debug-Meldungen (PROGRAM_MESSAGE, nur die letzte bleibt):
   - `rx unf 0.9513 0.4722 4.0000` = Unterlauf mitten im Lauf
   - `rx unf 1.0000 … 32` = Puffer leer, typisch Stream-Ende
   - `tx ovf 1.0000 1.0000 32` = typisch Stream-Start
   - `fb <alt> <neu>` = Feedback-Messung verworfen, z. B. ≈ 32 ms ohne SOF (D18)
-  - `fb clamp` = Regler an der Grenze, bei laufendem Stream ein Fehlerzeichen (D38)
+  - `fb clamp` = Regler an der Grenze, bei laufendem Stream ein Fehlerzeichen (D38). Tritt nach einem Program Change bei offenem Stream auf (D76)
   - `midi tx ovf` (ab fx5a) = MIDI-Sendepuffer voll, eine Nachricht wurde verworfen
   - `Sending 100` = Fortschrittsanzeige nach einem Slot-Download, kein Fehler
 

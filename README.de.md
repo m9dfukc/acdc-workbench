@@ -21,7 +21,7 @@ English version: [README.md](README.md)
 | `tools/sim_boot_menu.sh` | Testet die Logik des Boot-Menüs (Patch 15) am Rechner mit simulierten Reglern |
 | `tools/dfu_readback.sh`, `tools/compare_firmware.py` | Internes Flash über DFU lesen und mit einer Referenz vergleichen |
 | `tools/dump_stress.py` | Stresstest für den MIDI-Sendeweg: lädt bei laufendem Patch alle Slots immer wieder herunter und zählt beschädigte Downloads |
-| `tools/flash_acdc.py` | Flasht einen Build über DFU und führt ein Flash-Log: prüft das Binary offline, liest das Modul aus, startet es in den DFU-Modus, schreibt, liest zurück und vergleicht. `--a1` prüft das Modul nach dem Neustart. Über die Geräte-ID an das Testmodul des Autors gebunden |
+| `tools/flash_acdc.py` | Flasht einen Build über DFU und führt ein Flash-Log: prüft das Binary offline, liest das Modul aus, startet es in den DFU-Modus, schreibt, liest zurück und vergleicht, startet danach die Firmware mit einem nur lesenden `dfu-util … :leave` und prüft das Modul (A1). `--cold` wartet stattdessen auf einen Neustart von Hand, `--a1` prüft danach. Über die Geräte-ID an das Testmodul des Autors gebunden |
 | `tools/build_acdc.sh` | Reproduzierbarer Firmware-Build aus Commit, festem Libraries-Tarball und Patch-Liste. Schreibt `BUILD_INFO.txt` mit allen Prüfsummen |
 | `tools/check_itcm.py` | Prüft einen ITCM-Build am ELF vor dem Flash: was liegt wo, welche Aufrufe verlassen das ITCM, Vergleich mit einem Referenz-Build |
 | `tools/phase_slips.py`, `tools/stale_samples.py` | Prüfen eine Loop-Aufnahme (Out → In) auf verlorene oder doppelte Samples und auf einzelne veraltete Samples |
@@ -39,6 +39,7 @@ English version: [README.md](README.md)
 - **Die Lage des Codes im Flash verschiebt die Linien.** Ein Build, der nur Füllbytes ergänzt und an der Funktion nichts ändert, hat die Familien um 1,5 bis 4,5 dB verschoben.
 - **Periodisch laufender Code im ITCM hilft.** Mit dem heißen Pfad im ITCM sinkt die fs/8-Linie um rund 5 dB, die Mischprodukte verschwinden, und das Ergebnis hängt nicht mehr von der Flash-Lage ab.
 - **Kleine Linien aus den Takten der MCU.** Der frei laufende Regler-ADC scannt mit 105,634 kHz und erscheint gefaltet bei 9633,8 Hz, etwa −118 dBFS. Eine weitere Gruppe von Linien (2200,95 Hz und Harmonische) steigt, wenn die vier Regler verschieden stehen: Ein Regler am Anschlag bringt sie auf etwa −100 dBFS, abwechselnde Anschläge auf −94 dBFS, immer noch 19 dB unter dem Kamm. Stehen alle vier Regler gleich, egal wo, bleibt sie bei etwa −116 dBFS. Woher ihre Frequenz kommt, ist offen.
+- **Der LED-Strom verschiebt den Nullpunkt aller Eingänge.** Jede leuchtende Eingangs-LED verschiebt die rohen ADC-Daten aller Kanäle um etwa −2,9 mV (−71 dBFS). Eine dauerhaft leuchtende LED ist still, jeder Wechsel ist ein Knack, und eine gedimmte LED wiederholt den Sprung 2321-mal pro Sekunde: Das ist die LED-PWM-Linie. Ein Patch, der seinen Eingang durchreicht, bringt all das an die Ausgänge. Build 9 (`v22.4.r-fx7a`) lässt die LED-PWM mit 48 kHz im Takt der Abtastung laufen: Die Linie bei 2321 Hz ist an Ein- und Ausgängen weg, die langsame Verschiebung bleibt.
 - **Drei Timing-Fehler im ursprünglichen USB-Audio-Code** wurden dabei gefunden und behoben: ein Feedback in offener Schleife, ein Wettlauf zwischen RX- und TX-DMA und ein Start-of-Frame-Handler, der zweimal je Frame lief.
 
 Firmware `v22.4.r-fx3l` gegen den Vorgänger `v22.4.r-fx2d`, offene Eingänge, Gain auf 12 Uhr, je 2 × 60 s, Pegel in dBFS des USB-Stroms:
@@ -94,7 +95,7 @@ Die Aufrufe für Aufnahme, Loop-Prüfung, Auslesen und Nachbau stehen im englisc
 | `docs/en/` | Englische Fassungen der Referenz-Docs, siehe [docs/en/README.md](docs/en/README.md) |
 | `firmware/OpenWare/` | Submodul, der Firmware-Fork |
 | `firmware/patches/`, `firmware/builds/`, `firmware/flashlog/` | Patches, Build-Protokolle, Flash-Protokolle |
-| `owl/` | Eigene OWL-Patches für das Modul: `Tanh3` (dreifacher tanh-Waveshaper mit Mix-Kanal) und ein Ausgangs-Limiter für FX-Patches, mit Test am Rechner |
+| `owl/` | Eigene OWL-Patches für das Modul: `Tanh3` (dreifacher tanh-Waveshaper mit Mix-Kanal), `Schliere` (Kette aus 61 Allpässen 2. Ordnung: Laufzeit je Frequenz, Phaser-Kerben, Resonator, mono hinein und stereo heraus) ein Ausgangs-Limiter für FX-Patches und eine Sperre für die Blockraten-Linien am Eingang, mit Tests am Rechner |
 | `recordings/manifest.toml` | Metadaten jeder Aufnahme |
 | `out/<ID>/` | Analyse-Report je Messung |
 | `TODO.md`, `CLAUDE.md` | Offene Punkte und der Projektkontext für die Arbeit mit Claude Code |
