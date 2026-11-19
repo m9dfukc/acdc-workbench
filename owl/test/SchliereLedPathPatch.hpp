@@ -29,7 +29,7 @@
  *   SRC=owl tools/build_owl_patch.sh SchliereLedPath SchliereLedPathPatch test/SchliereLedPathPatch.hpp
  */
 
-#include "SchlierePatch.hpp"
+#include "../schliere/SchlierePatch.hpp"
 
 void debugMessage(const char* msg, int, int, int); // message.h des SDK, im Host-Test ein Ersatz
 

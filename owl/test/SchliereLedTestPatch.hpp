@@ -21,7 +21,7 @@
  *   SRC=owl tools/build_owl_patch.sh SchliereLedTest SchliereLedTestPatch test/SchliereLedTestPatch.hpp
  */
 
-#include "SchlierePatch.hpp"
+#include "../schliere/SchlierePatch.hpp"
 
 class SchliereLedTestPatch : public SchlierePatch {
 public:

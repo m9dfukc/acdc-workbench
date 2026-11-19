@@ -1,7 +1,11 @@
-#ifndef __SCHLIERE_PATCH_HPP__
-#define __SCHLIERE_PATCH_HPP__
+#ifndef __SCHLIERE_A_PATCH_HPP__
+#define __SCHLIERE_A_PATCH_HPP__
 
-/* Schliere: lange Allpass-Kette für das AC/DC, nach dem Vorbild eines digitalen
+/* SchliereA = Schliere Fassung 3 (2026-11-18, messlog D70/D71), unverändert bis auf den
+ * Klassennamen. Gebaut als „SchliereA“ bytegleich mit dem Build auf Slot 6. Übersicht über
+ * alle Varianten: README.md in diesem Ordner.
+ *
+ * Schliere: lange Allpass-Kette für das AC/DC, nach dem Vorbild eines digitalen
  * Eurorack-Moduls mit 98 Allpass-Polen je Sektion (Nutzer-Wunsch 2026-11-18). Nachgebaut
  * ist eine Sektion: mono hinein, stereo heraus, dazu zwei abgeleitete Signale.
  *
@@ -75,7 +79,7 @@
  */
 
 #include "Patch.h"
-#include "AcdcInput.h"
+#include "../AcdcInput.h"
 #include <math.h>
 #include <stdint.h>
 
@@ -83,7 +87,7 @@
 #define SCHLIERE_STAGES 61 // Länge der Kette in Stufen, mindestens 61 (letzter Abgriff von R)
 #endif
 
-class SchlierePatch : public Patch {
+class SchliereAPatch : public Patch {
   static constexpr size_t STAGES = SCHLIERE_STAGES;
   static constexpr size_t TAPS = 7;
   static constexpr float KNOB_DEAD = 0.03f;      // der Linksanschlag liest ≈ 0,016–0,023 (D51)
@@ -162,7 +166,7 @@ class SchlierePatch : public Patch {
   }
 
 public:
-  SchlierePatch(){
+  SchliereAPatch(){
     static_assert(STAGES >= 61, "SCHLIERE_STAGES muss mindestens 61 sein");
     channels = getNumberOfChannels();
     sampleRate = getSampleRate();
@@ -280,4 +284,4 @@ public:
   }
 };
 
-#endif // __SCHLIERE_PATCH_HPP__
+#endif // __SCHLIERE_A_PATCH_HPP__
