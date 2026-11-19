@@ -1,4 +1,4 @@
-<!-- i18n source=docs/05-firmware-plan.md sha256=7e9e1aaeb1ee239473ef98b21d2b2835f9ab84fa2a503cf191d912959a86e2c2 date=2026-11-19 -->
+<!-- i18n source=docs/05-firmware-plan.md sha256=397b7d8f729f0b462d8ab8888192a8a34ab7d1700889d4882c980ed3f50819f1 date=2026-11-19 -->
 > English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-19. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 05 – Firmware: Status, Forks, Build Plan
@@ -656,7 +656,7 @@ A build of `2c963e3a` without patches is byte-identical with fx4b (`firmware/bui
 
 **Fallback:** fx4a (`e7ee9b90…`), then fx3l (`b55b94d8…`), after that 3d as before.
 
-### Build 7 – MIDI send path atomic, `v22.4.r-fx5a` (grilling round, build and acceptance 2026-11-18, lab notebook D62–D64, **daily firmware on acdc1 since 2026-11-18**)
+### Build 7 – MIDI send path atomic, `v22.4.r-fx5a` (grilling round, build and acceptance 2026-11-18, lab notebook D62–D64, daily firmware on acdc1 from 2026-11-18 to 2026-11-19)
 
 **Reason:** While a patch is running and the computer downloads a slot, data arrives damaged, and afterwards the module may send no MIDI until a restart (D53, D54). Reproduced on fx4b: 19 of 79 downloads damaged, then the hang (D62).
 
@@ -701,7 +701,7 @@ A build of `2c963e3a` without patches is byte-identical with fx4b (`firmware/bui
 2. `c222fa49` version `v22.4.r-fx5a`
 3. `b4b95e43` README: section "MIDI send path", tables and test status
 
-A build of `c222fa49` without patches is byte-identical with fx5a (`firmware/builds/verify-fx1d-c222fa49`, `b69c25b3…`). In addition the release `acdc-v22.4.r-fx5a` (tag on `b4b95e43`, "Latest") with `ACDC-v22.4.r-fx5a.bin` and `BUILD_INFO-v22.4.r-fx5a.txt`.
+A build of `c222fa49` without patches is byte-identical with fx5a (`firmware/builds/verify-fx1d-c222fa49`, `b69c25b3…`). In addition the release `acdc-v22.4.r-fx5a` (tag on `b4b95e43`, "Latest" until the release of fx7a) with `ACDC-v22.4.r-fx5a.bin` and `BUILD_INFO-v22.4.r-fx5a.txt`.
 
 **Open:** a small disturbance on channel 2 during downloads (D63).
 

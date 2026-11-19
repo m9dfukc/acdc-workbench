@@ -653,7 +653,7 @@ Ein Build von `2c963e3a` ohne Patches ist bytegleich mit fx4b (`firmware/builds/
 
 **Rückweg:** fx4a (`e7ee9b90…`), dann fx3l (`b55b94d8…`), danach wie bisher 3d.
 
-### Build 7 – MIDI-Sendeweg unteilbar, `v22.4.r-fx5a` (Grill-Runde, Build und Abnahme 2026-11-18, messlog D62–D64, **Alltags-Firmware auf acdc1 seit 2026-11-18**)
+### Build 7 – MIDI-Sendeweg unteilbar, `v22.4.r-fx5a` (Grill-Runde, Build und Abnahme 2026-11-18, messlog D62–D64, Alltags-Firmware auf acdc1 vom 2026-11-18 bis 2026-11-19)
 
 **Anlass:** Läuft ein Patch und der Rechner lädt einen Slot herunter, kommen Daten beschädigt an, und das Gerät kann danach bis zum Neustart kein MIDI mehr senden (D53, D54). Auf fx4b reproduziert: 19 von 79 Downloads beschädigt, dann der Hänger (D62).
 
@@ -698,7 +698,7 @@ Ein Build von `2c963e3a` ohne Patches ist bytegleich mit fx4b (`firmware/builds/
 2. `c222fa49` Version `v22.4.r-fx5a`
 3. `b4b95e43` README: Abschnitt „MIDI send path“, Tabellen und Teststand
 
-Ein Build von `c222fa49` ohne Patches ist bytegleich mit fx5a (`firmware/builds/verify-fx1d-c222fa49`, `b69c25b3…`). Dazu das Release `acdc-v22.4.r-fx5a` (Tag auf `b4b95e43`, „Latest“) mit `ACDC-v22.4.r-fx5a.bin` und `BUILD_INFO-v22.4.r-fx5a.txt`.
+Ein Build von `c222fa49` ohne Patches ist bytegleich mit fx5a (`firmware/builds/verify-fx1d-c222fa49`, `b69c25b3…`). Dazu das Release `acdc-v22.4.r-fx5a` (Tag auf `b4b95e43`, bis zum Release von fx7a „Latest“) mit `ACDC-v22.4.r-fx5a.bin` und `BUILD_INFO-v22.4.r-fx5a.txt`.
 
 **Offen:** Kleine Störung auf Kanal 2 während Downloads (D63).
 

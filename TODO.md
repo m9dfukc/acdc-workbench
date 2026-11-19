@@ -21,7 +21,7 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [ ] Ursache der Kamm-Änderung +2,9 dB zwischen D35 und D37 klären. Aufbau laut Nutzer unverändert, aber mehr CPU-Last am Mac → A/B Mac im Leerlauf gegen Mac unter Last (z. B. `yes > /dev/null` je Kern), 2 × 60 s offene Eingänge [Hypothese: Host-Last → Masse/SOF]
 - [ ] Optional: HAL löscht `GINTSTS.SOF` vor dem Callback (überzählige Interrupt-Einsprünge weg), A/B gegen fx3l
 
-### 1a. fx4a/fx4b/fx5a: Boot-Menü und MIDI-Fix (fx5a läuft auf acdc1, Abnahme D52–D58 und D62–D65)
+### 1a. fx4a/fx4b/fx5a: Boot-Menü und MIDI-Fix (Abnahme D52–D58 und D62–D65, fx5a war Alltags-Firmware bis 2026-11-19)
 - Stand: `firmware/builds/acdc1-build6-fx4a/` = fx3l + Patch 15. `check_itcm` und Host-Test bestanden (D50). Plan und Abnahme: `docs/05`, „Build 6“
 - [x] Endwerte der vier Regler gemessen: links 2, rechts 127 von 127, Schwellen passen (D51)
 - [x] fx4a geflasht, Readback bytegleich (D51)
