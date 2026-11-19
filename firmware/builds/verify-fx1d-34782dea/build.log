@@ -1,0 +1,4 @@
+/Applications/ArmGNUToolchain/12.2.rel1/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/12.2.1/../../../../arm-none-eabi/bin/ld: warning: Build/ACDC.elf has a LOAD segment with RWX permissions
+Built ACDC Release firmware in ./Build/ACDC.bin
+   text	   data	    bss	    dec	    hex	filename
+ 109504	    584	 128676	 238764	  3a4ac	/Users/m9dfukc/Desktop/acdc/firmware/_work/verify-fx1d-34782dea/ACDC/Build/ACDC.elf

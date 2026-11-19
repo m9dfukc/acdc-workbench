@@ -124,7 +124,8 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [x] Build 9, LED-Verschiebung an den Eingängen (D78): gleich wie fx6a (±2 %), wie erwartet
 - [x] Build 9: Rauschen gleich fx6a, LED-PWM-Linie auch in den rohen Eingängen weg, Loop-Test bestanden, Helligkeit in Ordnung (D78, D79)
 - [x] fx7a ist die Alltags-Firmware (Entscheidung des Nutzers, 2026-11-19), Rückweg fx6a
-- [ ] Nach der Entscheidung für fx7a: Fork-Commits (Patch 17 und 18 auf `acdc/fx1d`, Prüf-Build bytegleich), Release `acdc-v22.4.r-fx7a`, englische Fassung von `docs/05`, Commit im Hauptrepo. Alles nur mit Freigabe
+- [x] Fork-Commits für fx6a und fx7a auf `acdc/fx1d` (`1cf56d3e` … `13b58412`), Prüf-Builds bytegleich (2026-11-19)
+- [ ] Fork pushen, Release `acdc-v22.4.r-fx7a`, englische Fassung von `docs/05`. Nur mit Freigabe
 - [ ] Hörbares Fiepen des Moduls (D79, auch im DFU-Modus, ≈ 800–1000 Hz, leise): Quelle eingrenzen (Modul oder Netzteil, Ohr oder Mikrofon), hören, ob es mit Last, Slot oder Reglern wandert. USB abziehen macht es leiser und höher (Nutzer). [Hypothese] Schaltregler im Pulsbetrieb
 - [ ] Idee (D74): Die Verschiebung ist auf allen Eingängen gleich. Ein offener Eingang als Bezug, den ein Patch abzieht? Kostet Rauschen, träfe aber auch Kamm und Blockrate, soweit sie auf allen Kanälen gleich sind
 - [ ] Schliere Fassung 4: LEDs aus oder mit Hysterese, damit sie an der Grenze einer Haltezone nicht flackern (D73). Ganz ohne Knack geht es nur ohne LEDs

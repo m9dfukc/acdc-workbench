@@ -86,3 +86,5 @@ fx7a = fx6a + **18**. fx6a = fx5a + **17**. fx5a = fx4b + **16**. fx4b = fx3l + 
 | `verify-fx1d-5cb2c17c` | `v22.4.r-fx3l` | nein | Build aus dem Fork-Branch, bytegleich mit fx3l |
 | `verify-fx1d-2c963e3a` | `v22.4.r-fx4b` | nein | Build aus dem Fork-Branch, bytegleich mit fx4b (D59) |
 | `verify-fx1d-c222fa49` | `v22.4.r-fx5a` | nein | Build aus dem Fork-Branch, bytegleich mit fx5a (D65) |
+| `verify-fx1d-34782dea` | `v22.4.r-fx6a` | nein | Build aus dem Fork-Branch, bytegleich mit fx6a (2026-11-19) |
+| `verify-fx1d-351b2071` | `v22.4.r-fx7a` | nein | Build aus dem Fork-Branch, bytegleich mit fx7a (2026-11-19) |
