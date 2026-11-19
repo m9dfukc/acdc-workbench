@@ -7,11 +7,18 @@ source of the running firmware (`Source/MidiHandler.cpp`, `FirmwareLoader.hpp`):
      data (210 bytes each, 7-bit encoded), the last packet the CRC32.
   2. then either SysEx 0x12 (FIRMWARE_RUN): run from RAM, nothing is stored,
      or SysEx 0x11 + slot (FIRMWARE_STORE): write to the patch flash.
+  3. --erase: SysEx 0x14 + slot (FLASH_ERASE) marks one stored patch as deleted.
 
 Safety:
   - Only for acdc1 (device UUID is checked first). acdc2 is refused.
-  - The tool cannot send erase (0x14), firmware flash (0x13), settings
-    store/reset (0x15/0x16), device reset or the bootloader command.
+  - The tool cannot send firmware flash (0x13), settings store/reset
+    (0x15/0x16), device reset or the bootloader command.
+  - Erase (0x14) only as --erase SLOT for one slot >= 2, with --yes, and only
+    when PATCH is a local copy with the size and CRC of that slot (it becomes
+    the backup). The slot number is always sent: the firmware empties the
+    WHOLE patch storage when the number is missing. Afterwards all other slots
+    must read back unchanged. Slot numbers do not shift, the slot stays empty.
+    Not yet tried on the device.
   - --store needs --yes. Slot 1 (the patch that starts at power-on) needs
     --allow-slot1 in addition.
   - An occupied target slot is saved first. If that backup fails, nothing is
@@ -35,6 +42,7 @@ Usage (CoreMIDI is not available inside a sandbox, rtmidi needs Python 3.12):
   UV_CACHE_DIR=.uv-cache UV_NO_BUILD=1 uv run --no-project --python 3.12 \
       --with mido --with python-rtmidi python tools/owl_write.py PATCH --run
   ... python tools/owl_write.py PATCH --store 2 --yes
+  ... python tools/owl_write.py COPY_OF_SLOT_7 --erase 7 --yes [--program-after 6]
   python3 tools/owl_write.py PATCH --info            (offline, no MIDI needed)
   python3 tools/owl_write.py PATCH --syx-out x.syx   (offline)
 
@@ -63,6 +71,7 @@ from owl_read import (  # noqa: E402
 SYSEX_FIRMWARE_UPLOAD = 0x10
 SYSEX_FIRMWARE_STORE = 0x11
 SYSEX_FIRMWARE_RUN = 0x12
+SYSEX_FLASH_ERASE = 0x14
 SYSEX_PROGRAM_ERROR = 0x30
 
 PATCH_MAGIC = 0xDADAC0DE
@@ -186,6 +195,69 @@ def patch_names(owl) -> dict[int, dict]:
             if e.get("cmd") == "PRESET_NAME"}
 
 
+def erase_slot(owl, args, data: bytes, info: dict, before: dict, device: str, now, log: dict) -> int:
+    """Einen Slot löschen (SysEx 0x14 + Slot). PATCH muss eine Kopie des Slots sein."""
+    import mido
+    slot = args.erase
+    old = before.get(slot)
+    if old is None:
+        print(f"Slot {slot} is empty. Nothing to do.")
+        log["steps"].append("empty, nothing erased")
+        return 0
+    if old["size"] != len(data) or old["crc"] != info["crc"]:
+        print(f"Aborted: {args.patch} has {len(data)} B, CRC {info['crc']}; slot {slot} holds {old['name']!r}, "
+              f"{old['size']} B, CRC {old['crc']}. Nothing was erased.", file=sys.stderr)
+        return 6
+    bdir = args.backup / device / now.strftime("%Y%m%d") / now.strftime("owl_write_%H%M%S")
+    safe = "".join(c if c.isalnum() or c in "-_." else "_" for c in old["name"])
+    base = bdir / f"slot{slot:02d}_{safe}"
+    bdir.mkdir(parents=True, exist_ok=False)
+    base.with_suffix(".bin").write_bytes(data)
+    log["backup"] = {"slot": slot, "name": old["name"], "size": len(data), "crc": info["crc"],
+                     "source": str(args.patch), "files": [str(base.with_suffix(".bin"))]}
+    print(f"Backup of slot {slot} ({old['name']!r}, {len(data)} B) from {args.patch}: {base.with_suffix('.bin')}")
+
+    number = list(encode_int(slot))
+    # Ohne die 5 Bytes der Slotnummer löscht die Firmware den ganzen Patch-Speicher
+    # (MidiHandler::handleFlashEraseCommand, size == 0). Deshalb hart prüfen.
+    if len(number) != 5 or decode_int(bytes(number)) != slot or not 2 <= slot <= MAX_SLOT:
+        print("Aborted: internal error in the slot number. Nothing was sent.", file=sys.stderr)
+        return 9
+    owl.drain()
+    owl.out.send(mido.Message("sysex", data=[MANUFACTURER, OMNI_DEVICE, SYSEX_FLASH_ERASE, *number]))
+    errors: list[str] = []
+    after: dict = {}
+    t0 = time.monotonic()
+    while time.monotonic() - t0 < 20.0:
+        errors += owl_errors(owl.collect(quiet=0.5, timeout=2.0))
+        after = patch_names(owl)
+        if slot not in after or errors:
+            break
+    others_before = {k: (v["name"], v["size"], v["crc"]) for k, v in before.items() if k not in (0, slot)}
+    others_after = {k: (v["name"], v["size"], v["crc"]) for k, v in after.items() if k not in (0, slot)}
+    log["slots_after"] = {k: {"name": v["name"], "size": v["size"], "crc": v["crc"]} for k, v in sorted(after.items())}
+    log["steps"].append({"erase": slot, "errors": errors, "seconds": round(time.monotonic() - t0, 2),
+                         "slot_gone": slot not in after, "others_unchanged": others_before == others_after})
+    if others_before != others_after:
+        print(f"ERROR: other slots changed! before {others_before}, after {others_after}", file=sys.stderr)
+        return 8
+    if slot in after or errors:
+        print(f"Erase FAILED: slot {slot} reads back as {after.get(slot)}, errors {errors}", file=sys.stderr)
+        return 8
+    print(f"Erased slot {slot} ({old['name']!r}). Other slots unchanged: "
+          + ", ".join(f"{k}={v[0]!r}" for k, v in sorted(others_after.items())))
+    if args.program_after is not None:
+        if args.program_after in after and args.program_after >= 1:
+            owl.program_change(args.program_after)
+            time.sleep(1.0)
+            running = patch_names(owl).get(0, {})
+            log["steps"].append({"program_after": args.program_after, "running": running.get("name")})
+            print(f"Program Change -> slot {args.program_after}, now running: {running.get('name')!r}")
+        else:
+            print(f"Slot {args.program_after} is empty, no Program Change sent", file=sys.stderr)
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("patch", type=Path, help="patch binary (.bin) or SysEx file (.syx)")
@@ -194,10 +266,13 @@ def main(argv=None) -> int:
     act.add_argument("--syx-out", type=Path, help="only write the upload packets as .syx (offline)")
     act.add_argument("--run", action="store_true", help="upload and run from RAM, nothing is stored")
     act.add_argument("--store", type=int, metavar="SLOT", help="upload and store in this slot (needs --yes)")
-    ap.add_argument("--yes", action="store_true", help="confirmation for --store")
+    act.add_argument("--erase", type=int, metavar="SLOT",
+                     help="delete this slot (>= 2, needs --yes). PATCH must be a copy of the slot (same size "
+                          "and CRC), it is kept as the backup")
+    ap.add_argument("--yes", action="store_true", help="confirmation for --store and --erase")
     ap.add_argument("--allow-slot1", action="store_true", help="allow --store 1 (the power-on patch)")
     ap.add_argument("--program-after", type=int, metavar="SLOT",
-                    help="after a store, send a Program Change to this slot (RAM only)")
+                    help="after a store or erase, send a Program Change to this slot (RAM only)")
     ap.add_argument("--download-check", action="store_true",
                     help="after a store, download the slot and compare the bytes (not reliable while a patch runs)")
     ap.add_argument("--backup-file", type=Path, metavar="FILE",
@@ -243,6 +318,13 @@ def main(argv=None) -> int:
             return 4
         if args.store > MENU_SLOTS:
             print(f"Note: the boot menu only reaches slots 1..{MENU_SLOTS}.")
+    if args.erase is not None:
+        if not args.yes:
+            print("--erase needs --yes", file=sys.stderr)
+            return 4
+        if not (2 <= args.erase <= MAX_SLOT):
+            print(f"Invalid slot {args.erase}: --erase only takes one slot 2..{MAX_SLOT}", file=sys.stderr)
+            return 2
 
     import mido
     from owl_read import Owl, parse, reassemble
@@ -255,7 +337,9 @@ def main(argv=None) -> int:
     owl = Owl(ins[0])
     now = dt.datetime.now()
     log: dict = {"time": now.isoformat(timespec="seconds"), "port": ins[0], "file": str(args.patch),
-                 "patch": info, "action": "run" if args.run else f"store {args.store}", "steps": []}
+                 "patch": info, "steps": [],
+                 "action": "run" if args.run else (f"erase {args.erase}" if args.erase is not None
+                                                   else f"store {args.store}")}
     rc = 0
     try:
         dev = parse(owl.request(0x21))
@@ -272,6 +356,9 @@ def main(argv=None) -> int:
         log["slots_before"] = {k: {"name": v["name"], "size": v["size"], "crc": v["crc"]}
                                for k, v in sorted(before.items())}
         print("Slots before: " + ", ".join(f"{k}={v['name']!r}" for k, v in sorted(before.items()) if k))
+
+        if args.erase is not None:
+            return erase_slot(owl, args, data, info, before, name, now, log)
 
         # Belegten Ziel-Slot vorher sichern
         if args.store is not None and args.store in before:
