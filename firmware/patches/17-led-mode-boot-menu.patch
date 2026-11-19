@@ -1,0 +1,308 @@
+Patch 17: LED-Modus, im Boot-Menü mit Regler 2 wählbar und gemerkt.
+
+Anlass (messlog D73, D74): Jede leuchtende Eingangs-LED verschiebt den Nullpunkt aller Eingänge
+um etwa −2,9e-4 Vollausschlag (≈ −2,9 mV, −71 dBFS), gemessen an den rohen ADC-Daten von
+In 1–3. Dauerlicht ist nur ein fester Versatz, jeder Wechsel ein Sprung, und eine gedimmte LED
+wiederholt den Sprung im Takt der PWM (2320,54 Hz): Das ist die LED-PWM-Linie. Die Pegel-LEDs
+folgen im Alltag dem Signal, die Störung steht damit in jeder Aufnahme.
+
+Änderung (Absprache mit dem Nutzer, 2026-11-18), nur ACDC/Core/Src/ACDC.cpp:
+- Drei Modi (ACDC_LEDS_*): NORMAL wie bisher. CLIP: alles dunkel, eine Eingangs-LED wird nur rot
+  (statischer Pin, keine PWM), solange der Rechner aufnimmt und ein roher Eingang −0,1 dBFS
+  erreicht hat, 300 ms Haltezeit. OFF: alles dunkel, die rohen Eingänge werden auch nicht gemessen.
+- Hauptschleife (alle 2 ms, im ITCM): onLoop() ruft in den dunklen Modi acdcOnLoopDark() statt
+  acdcOnLoopLate(). Die Funktion schaltet die acht LEDs einmal aus und schreibt danach kein Pin-
+  und kein Timer-Register mehr, solange sich nichts ändert. PARAMETER_BA…BD (Ausgangspegel)
+  laufen weiter.
+- Lage im Speicher: acdcOnLoopLate() bleibt unverändert. acdcOnLoopDark() (0x124 B) und das
+  größere onLoop() (0x18 B) liegen in .text.onLoop (im ITCM) und nehmen ihren Platz aus der
+  Füllung dort (ACDC_ONLOOP_PAD 0x1cc → 0x94). Alle anderen Funktionen im ITCM behalten ihre
+  Adresse aus fx5a, das ITCM wächst nicht.
+- Boot-Menü: Regler 2 wählt den Modus, linkes Drittel normal, mittleres nur Clip, rechtes aus.
+  Er zählt wie Regler 1 erst nach Bewegung, sonst bleibt der gemerkte Modus. Die Ausgangs-LEDs
+  zeigen den Modus (vier, zwei, keine) und blinken, wenn das Bestätigen Slot oder Modus ändert.
+- Gemerkt wird der Modus in einer eigenen Ressource „ACDC.led“ (4 Byte: Modus, ~Modus, 'L', 'D'),
+  getrennt von „ACDC.slot“. Ältere Builds dieses Forks finden ihren Slot nach einem Rückweg
+  weiter. Dieselbe Reserve wie beim Slot (64 KB frei, sonst nicht merken und 1 s rot blinken):
+  Der gewählte Modus gilt dann bis zum nächsten Einschalten.
+- Menü und Slot-Anzeige beim Einschalten nutzen die LEDs in jedem Modus.
+- AcdcBootState wächst von 2 auf 4 Byte (.late_bss, 64 B reserviert), onSetup() setzt die
+  neuen Felder.
+
+Nicht geändert: der Zweig ohne USE_USBD_AUDIO_TX_PRE_FX (wird nicht gebaut, kennt den Modus
+nicht), die PWM-Frequenz, setLed().
+
+Auf fx5a (db9d3dd + 01 02 04 05 06 03 07d 08 11g 12b 14 15b 16). Prüfung: tools/sim_boot_menu.sh
+(Menü und LED-Schleife am Rechner), tools/check_itcm.py <build>.
+
+--- a/ACDC/Core/Src/ACDC.cpp
++++ b/ACDC/Core/Src/ACDC.cpp
+@@ -185,8 +185,20 @@
+  * (2 ms). Lives in .late_bss like the other state added by this fork: no other
+  * object in RAM moves. .late_bss is not zeroed at boot, onSetup() sets it. */
+ static constexpr uint16_t ACDC_LED_HOLD_BOOT = 0xffff;
++/* LED mode, chosen in the boot menu with knob 2 and remembered (see below).
++ * Each lit input LED shifts the zero point of all inputs by about -2.9e-4 of
++ * full scale, a dimmed LED repeats that step at the PWM rate (2320.54 Hz).
++ *   NORMAL  as before: patch values, or the raw input level while recording
++ *   CLIP    dark. Red only while the host records and an input clips
++ *   OFF     dark, and the raw inputs are not measured either
++ * The boot menu and the slot display at power-on use the LEDs in every mode. */
++static constexpr uint8_t ACDC_LEDS_NORMAL = 0;
++static constexpr uint8_t ACDC_LEDS_CLIP = 1;
++static constexpr uint8_t ACDC_LEDS_OFF = 2;
+ struct AcdcBootState {
+   volatile uint16_t led_hold;
++  volatile uint8_t led_mode;  // ACDC_LEDS_*
++  volatile uint8_t led_dark;  // dark modes: the LEDs have been switched off
+ };
+ static AcdcBootState acdc_boot __attribute__((section(".late_bss")));
+ 
+@@ -208,6 +220,8 @@
+   // codec.setHighPass(false);
+   led_in1.outputMode();
+   led_in1.afMode();
++  acdc_boot.led_mode = ACDC_LEDS_NORMAL;   // set by acdcBootSelect()
++  acdc_boot.led_dark = 0;
+   acdc_boot.led_hold = ACDC_LED_HOLD_BOOT; // released by acdcBootSelect()
+ }
+ 
+@@ -314,13 +328,60 @@
+   }
+ }
+ 
++static void acdcOnLoopDark(uint8_t mode);
+ void onLoop(void){
+-  acdcOnLoopLate();
++  if(acdc_boot.led_hold == 0 && acdc_boot.led_mode != ACDC_LEDS_NORMAL)
++    acdcOnLoopDark(acdc_boot.led_mode);
++  else
++    acdcOnLoopLate();
++}
++
++/* LED modes CLIP and OFF: the LEDs are switched off once and then left alone,
++ * so that no pin or timer register is written while nothing changes. In CLIP
++ * mode an input LED turns red (the static pin only, no PWM) for 300 ms after a
++ * raw input sample reached -0.1 dBFS while the host records.
++ *
++ * Memory layout: this function and the larger onLoop() live in .text.onLoop,
++ * which is in ITCM like .late_text, and take their space from the padding
++ * below. acdcOnLoopLate() is unchanged, so every other function in ITCM keeps
++ * the address it has without the LED mode. */
++__attribute__((noinline, optimize("Os"), section(".text.onLoop")))
++static void acdcOnLoopDark(uint8_t mode){
++  extern float tx_levels[4];
++  for(size_t i=0; i<4; ++i)
++    setParameterValue(PARAMETER_BA+i, tx_levels[i]*4096);
++  const bool raw = mode == ACDC_LEDS_CLIP && usbd_tx != NULL;
++  if(!acdc_boot.led_dark || acdc_raw.magic != ACDC_RAW_MAGIC || (raw && !acdc_raw.was_raw)){
++    memset(&acdc_raw, 0, sizeof(acdc_raw));
++    acdc_raw.magic = ACDC_RAW_MAGIC;
++    for(size_t i=1; i<=8; ++i)
++      setLed(i, NO_COLOUR);
++    acdc_boot.led_dark = 1;
++  }
++  if(mode != ACDC_LEDS_CLIP)
++    return;
++  const uint8_t clip = raw ? acdcMeasureRawInputs() : 0;
++  acdc_raw.was_raw = raw;
++  const uint32_t now = HAL_GetTick();
++  for(size_t i=0; i<4; ++i){
++    if(clip & (1<<i)){
++      acdc_raw.clip_tick[i] = now;
++      if(!acdc_raw.clip_hold[i]){
++        acdc_raw.clip_hold[i] = 1;
++        setLed(i+1, RED_COLOUR);
++      }
++    }else if(acdc_raw.clip_hold[i] && (!raw || now - acdc_raw.clip_tick[i] >= ACDC_RAW_CLIP_HOLD_MS)){
++      acdc_raw.clip_hold[i] = 0;
++      setLed(i+1, NO_COLOUR);
++    }
++  }
+ }
+ 
+ /* Pads the input section .text.onLoop to the size of the original onLoop()
+- * (0x1d0 B) so that all following code keeps its address. Never called. */
+-#define ACDC_ONLOOP_PAD 0x1cc
++ * (0x1d0 B) so that all following code keeps its address. Never called.
++ * 0x1d0 = acdcOnLoopDark() 0x124 + onLoop() 0x18 + this padding. Whoever
++ * changes one of the two functions adjusts the padding (check with nm). */
++#define ACDC_ONLOOP_PAD 0x94
+ #define ACDC_STR2(x) #x
+ #define ACDC_STR(x) ACDC_STR2(x)
+ extern "C" __attribute__((used, naked, noinline, section(".text.onLoop"))) void acdc_onloop_pad(void){
+@@ -350,14 +411,20 @@
+  * Power on with knobs 1, 2 and 3 fully left and knob 4 fully right:
+  *   knob 1   selects among the occupied slots 1..15. It only counts once it
+  *            has been moved, until then the remembered slot stays selected.
+- *   knob 4   away from the right stop: confirm. The slot starts and is
+- *            remembered for the next power-on.
++ *   knob 2   selects the LED mode: left third normal, middle third clip only,
++ *            right third off (ACDC_LEDS_*). Like knob 1 it only counts once
++ *            it has been moved, until then the remembered mode stays.
++ *   knob 4   away from the right stop: confirm. The slot starts, slot and LED
++ *            mode are remembered for the next power-on.
+  *   knob 3   away from the left stop, or 30 s without confirming: cancel.
+- *            The remembered slot starts, nothing is written.
++ *            The remembered slot starts in the remembered LED mode, nothing
++ *            is written.
+  * The input LEDs show the slot number in binary (LED 1 = 1, 2 = 2, 3 = 4,
+- * 4 = 8). The output LEDs are lit while the menu is open and blink while
+- * confirming would change the slot. Without the knob pattern the remembered
+- * slot starts and its number is shown for one second.
++ * 4 = 8). The output LEDs show the LED mode while the menu is open: all four
++ * lit = normal, two lit = clip only, none = off. They blink while confirming
++ * would change the slot or the mode (in mode off there is nothing to blink).
++ * Without the knob pattern the remembered slot starts in the remembered LED
++ * mode and its number is shown for one second.
+  *
+  * The slot is remembered in a 4 byte system resource in the patch flash
+  * (QSPI). The application settings are not touched. Each change appends 256 B
+@@ -366,6 +433,10 @@
+  * ACDC_SLOT_RESERVE free bytes the slot starts without being remembered and
+  * the input LEDs flash red for a second.
+  *
++ * The LED mode is remembered the same way in a resource of its own, so that an
++ * older build of this fork still finds its slot record after a downgrade. If
++ * it cannot be written, the chosen mode applies until the next power-on.
++ *
+  * Runs in the manager task from bootstrap(), before the first patch starts.
+  * The scheduler is cooperative (configUSE_PREEMPTION 0): onSetup() has
+  * finished by then, and the main loop (MIDI, watchdog) only runs while this
+@@ -373,6 +444,8 @@
+  * led_hold test in onLoop(). All of this is ordinary flash code, on purpose
+  * not in .late_text (which is copied to ITCM). */
+ #define ACDC_SLOT_RESOURCE "ACDC.slot"
++#define ACDC_LED_RESOURCE "ACDC.led"
++static constexpr uint8_t ACDC_LED_MODES = 3;
+ static constexpr uint8_t ACDC_MENU_SLOTS = 15;         // 4 LEDs
+ static constexpr int32_t ACDC_KNOB_LOW = 205;          // below 5 %: at the left stop
+ static constexpr int32_t ACDC_KNOB_HIGH = 3890;        // above 95 %: at the right stop
+@@ -387,10 +460,11 @@
+ 
+ extern uint16_t adc_values[NOF_ADC_VALUES];
+ 
+-static void acdcBootLeds(uint8_t slot, uint32_t out){
++/* @param lit number of output LEDs that show out, the others stay dark */
++static void acdcBootLeds(uint8_t slot, uint32_t out, uint8_t lit = 4){
+   for(size_t i=0; i<4; ++i){
+     setLed(i+1, (slot & (1 << i)) ? ACDC_LED_ON : NO_COLOUR);
+-    setLed(i+5, out);
++    setLed(i+5, i < lit ? out : NO_COLOUR);
+   }
+ }
+ 
+@@ -422,14 +496,48 @@
+   return acdcReadSlot() == slot;
+ }
+ 
+-/* @return slot to start, or ACDC_BOOT_HOST */
+-static uint8_t acdcBootMenu(const uint8_t* slots, size_t count, uint8_t stored, int32_t* knob){
++/* @return remembered LED mode, ACDC_LEDS_NORMAL without a valid record */
++static uint8_t acdcReadLedMode(){
++  Resource* res = storage.getResourceByName(ACDC_LED_RESOURCE);
++  uint8_t data[4] = {};
++  if(res == NULL || res->getDataSize() != sizeof(data))
++    return ACDC_LEDS_NORMAL;
++  storage.readResource(res->getHeader(), data, 0, sizeof(data));
++  if(data[2] != 'L' || data[3] != 'D' || data[1] != (uint8_t)~data[0] || data[0] >= ACDC_LED_MODES)
++    return ACDC_LEDS_NORMAL;
++  return data[0];
++}
++
++static bool acdcStoreLedMode(uint8_t mode){
++  if(storage.getFreeSize(RESOURCE_PORT_MAPPED) < ACDC_SLOT_RESERVE)
++    return false; // writeResource() would defrag, i.e. erase the whole flash
++  uint32_t buffer[(sizeof(ResourceHeader) + 4) / sizeof(uint32_t)] = {};
++  uint8_t* data = (uint8_t*)buffer + sizeof(ResourceHeader);
++  data[0] = mode;
++  data[1] = ~mode;
++  data[2] = 'L';
++  data[3] = 'D';
++  storage.writeResource(ACDC_LED_RESOURCE, (uint8_t*)buffer, 4,
++                        RESOURCE_SYSTEM_RESOURCE | RESOURCE_PORT_MAPPED);
++  registry.init(); // writeResource() rebuilt the resource index the registry points into
++  return acdcReadLedMode() == mode;
++}
++
++/* @param mode in: remembered LED mode, out: LED mode to use
++ * @return slot to start, or ACDC_BOOT_HOST */
++static uint8_t acdcBootMenu(const uint8_t* slots, size_t count, uint8_t stored, int32_t* knob, uint8_t* mode){
+   const TickType_t start = xTaskGetTickCount();
+   const int32_t entry = knob[0];
+   const int32_t width = 4096 / (int32_t)count;
+   const int32_t hyst = width / 8 > 16 ? width / 8 : 16;
+   bool moved = false;
+   int32_t sel = 0;
++  const uint8_t stored_mode = *mode;
++  const int32_t entry2 = knob[1];
++  const int32_t width2 = 4096 / (int32_t)ACDC_LED_MODES;
++  const int32_t hyst2 = width2 / 8;
++  bool moved2 = false;
++  int32_t sel2 = 0;
+   for(;;){
+     vTaskDelay(pdMS_TO_TICKS(MAIN_LOOP_SLEEP_MS));
+     for(size_t i=0; i<4; ++i)
+@@ -449,10 +557,26 @@
+       sel = zone;
+     }
+     const uint8_t shown = moved ? slots[sel] : stored;
+-    const bool dark = shown != stored && (elapsed & 0x100); // blinks: confirming changes the slot
+-    acdcBootLeds(shown, dark ? NO_COLOUR : ACDC_LED_DIM);
+-    if(knob[3] < ACDC_KNOB_HIGH - ACDC_KNOB_LEAVE)
++    int32_t zone2 = knob[1] / width2;
++    if(zone2 > (int32_t)ACDC_LED_MODES - 1)
++      zone2 = ACDC_LED_MODES - 1;
++    if(!moved2){
++      if(knob[1] - entry2 > ACDC_KNOB_MOVE){
++        moved2 = true;
++        sel2 = zone2;
++      }
++    }else if(zone2 != sel2 && (knob[1] < sel2 * width2 - hyst2 || knob[1] >= (sel2 + 1) * width2 + hyst2)){
++      sel2 = zone2;
++    }
++    const uint8_t shown_mode = moved2 ? (uint8_t)sel2 : stored_mode;
++    // blinks: confirming changes the slot or the LED mode
++    const bool dark = (shown != stored || shown_mode != stored_mode) && (elapsed & 0x100);
++    acdcBootLeds(shown, dark ? NO_COLOUR : ACDC_LED_DIM,
++                 shown_mode == ACDC_LEDS_NORMAL ? 4 : (shown_mode == ACDC_LEDS_CLIP ? 2 : 0));
++    if(knob[3] < ACDC_KNOB_HIGH - ACDC_KNOB_LEAVE){
++      *mode = shown_mode;
+       return shown;  // confirm
++    }
+     if(knob[2] > ACDC_KNOB_LOW + ACDC_KNOB_LEAVE)
+       return stored; // cancel
+     if(elapsed >= pdMS_TO_TICKS(ACDC_MENU_TIMEOUT_MS))
+@@ -485,14 +609,21 @@
+     knob[i] /= 8;
+ 
+   uint8_t slot = stored;
++  const uint8_t stored_mode = acdcReadLedMode();
++  uint8_t mode = stored_mode;
+   if(count > 0 && knob[0] < ACDC_KNOB_LOW && knob[1] < ACDC_KNOB_LOW &&
+      knob[2] < ACDC_KNOB_LOW && knob[3] > ACDC_KNOB_HIGH){
+-    slot = acdcBootMenu(slots, count, stored, knob);
++    slot = acdcBootMenu(slots, count, stored, knob, &mode);
+     if(slot == ACDC_BOOT_HOST){
++      acdc_boot.led_mode = stored_mode;
++      acdc_boot.led_dark = 0;
+       acdc_boot.led_hold = 0;
+       return ACDC_BOOT_HOST;
+     }
+-    if(slot != stored && !acdcStoreSlot(slot)){
++    bool written = slot == stored || acdcStoreSlot(slot);
++    if(mode != stored_mode && !acdcStoreLedMode(mode))
++      written = false;
++    if(!written){
+       for(size_t i=0; i<4; ++i){
+         setLed(i+1, RED_COLOUR);
+         setLed(i+5, NO_COLOUR);
+@@ -501,6 +632,8 @@
+     }
+   }
+   acdcBootLeds(count > 0 ? slot : 0, NO_COLOUR);
++  acdc_boot.led_mode = mode;
++  acdc_boot.led_dark = 0;
+   acdc_boot.led_hold = ACDC_SHOW_LOOPS;
+   return slot;
+ }

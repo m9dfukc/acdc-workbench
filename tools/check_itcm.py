@@ -100,7 +100,7 @@ HOT: dict[str, list[str]] = {
         "HAL_ADC_ConvCpltCallback", "HAL_ADC_ConvHalfCpltCallback",
     ],
     "G onLoop (07d)": [
-        "_ZL20acdcMeasureRawInputsv", "_ZL14acdcOnLoopLatev", "setLed", "setLed.constprop.0",
+        "_ZL20acdcMeasureRawInputsv", "_ZL14acdcOnLoopLatev", "_ZL14acdcOnLoopDarkh", "setLed", "setLed.constprop.0",
         "getParameterValue", "setParameterValue",
     ],
     "H Hauptschleife (2 ms)": [

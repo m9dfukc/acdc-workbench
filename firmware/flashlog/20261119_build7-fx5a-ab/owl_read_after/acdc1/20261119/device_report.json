@@ -1,0 +1,232 @@
+{
+  "port": "OWL-ACDC",
+  "time": "2026-11-19T11:09:18",
+  "device_id": "0039001c:31315101:39333437",
+  "device": "acdc1",
+  "info": [
+    {
+      "type": "owl",
+      "cmd": "FIRMWARE_VERSION",
+      "text": "AC/DC v22.4.r-fx5a"
+    },
+    {
+      "type": "owl",
+      "cmd": "BOOTLOADER_VERSION",
+      "text": "N/A"
+    },
+    {
+      "type": "owl",
+      "cmd": "DEVICE_STATS",
+      "text": "Storage 126208/8388608"
+    },
+    {
+      "type": "owl",
+      "cmd": "PROGRAM_STATS",
+      "text": "CPU: 30% Memory: 1128"
+    }
+  ],
+  "settings_cc": [
+    {
+      "type": "program_change",
+      "program": 6,
+      "channel": 0
+    },
+    {
+      "type": "control_change",
+      "control": 20,
+      "value": 62,
+      "channel": 0
+    },
+    {
+      "type": "control_change",
+      "control": 21,
+      "value": 58,
+      "channel": 0
+    },
+    {
+      "type": "control_change",
+      "control": 22,
+      "value": 66,
+      "channel": 0
+    },
+    {
+      "type": "control_change",
+      "control": 23,
+      "value": 63,
+      "channel": 0
+    },
+    {
+      "type": "control_change",
+      "control": 24,
+      "value": 0,
+      "channel": 0
+    },
+    {
+      "type": "control_change",
+      "control": 1,
+      "value": 0,
+      "channel": 0
+    },
+    {
+      "type": "owl",
+      "cmd": "CONFIGURATION",
+      "key": "FS",
+      "name": "audio_samplingrate",
+      "value_hex": "bb80",
+      "value": 48000
+    },
+    {
+      "type": "owl",
+      "cmd": "CONFIGURATION",
+      "key": "BD",
+      "name": "audio_bitdepth",
+      "value_hex": "18",
+      "value": 24
+    },
+    {
+      "type": "owl",
+      "cmd": "CONFIGURATION",
+      "key": "DF",
+      "name": "audio_dataformat",
+      "value_hex": "18",
+      "value": 24
+    },
+    {
+      "type": "owl",
+      "cmd": "CONFIGURATION",
+      "key": "BS",
+      "name": "audio_blocksize",
+      "value_hex": "8",
+      "value": 8
+    },
+    {
+      "type": "owl",
+      "cmd": "CONFIGURATION",
+      "key": "BY",
+      "name": "audio_codec_bypass",
+      "value_hex": "0",
+      "value": 0
+    },
+    {
+      "type": "owl",
+      "cmd": "CONFIGURATION",
+      "key": "SW",
+      "name": "audio_codec_swaplr",
+      "value_hex": "0",
+      "value": 0
+    },
+    {
+      "type": "owl",
+      "cmd": "CONFIGURATION",
+      "key": "PC",
+      "name": "program_change_button",
+      "value_hex": "1",
+      "value": 1
+    },
+    {
+      "type": "owl",
+      "cmd": "CONFIGURATION",
+      "key": "BL",
+      "name": "bootloader_lock",
+      "value_hex": "0",
+      "value": 0
+    },
+    {
+      "type": "owl",
+      "cmd": "CONFIGURATION",
+      "key": "IO",
+      "name": "input_offset",
+      "value_hex": "-1056",
+      "value": -4182
+    },
+    {
+      "type": "owl",
+      "cmd": "CONFIGURATION",
+      "key": "IS",
+      "name": "input_scalar",
+      "value_hex": "-44a39",
+      "value": -281145
+    },
+    {
+      "type": "owl",
+      "cmd": "CONFIGURATION",
+      "key": "OO",
+      "name": "output_offset",
+      "value_hex": "1eec",
+      "value": 7916
+    },
+    {
+      "type": "owl",
+      "cmd": "CONFIGURATION",
+      "key": "OS",
+      "name": "output_scalar",
+      "value_hex": "-4a455",
+      "value": -304213
+    }
+  ],
+  "patch_names": [
+    {
+      "type": "owl",
+      "cmd": "PRESET_NAME",
+      "index": 0,
+      "name": "Schliere",
+      "size": 17860,
+      "crc": "0x00000000"
+    },
+    {
+      "type": "owl",
+      "cmd": "PRESET_NAME",
+      "index": 1,
+      "name": "ACDC",
+      "size": 10164,
+      "crc": "0xbeb3bb2e"
+    },
+    {
+      "type": "owl",
+      "cmd": "PRESET_NAME",
+      "index": 2,
+      "name": "TapeDelay",
+      "size": 30036,
+      "crc": "0xe104abf8"
+    },
+    {
+      "type": "owl",
+      "cmd": "PRESET_NAME",
+      "index": 3,
+      "name": "Grainz",
+      "size": 26700,
+      "crc": "0xcc5b8e81"
+    },
+    {
+      "type": "owl",
+      "cmd": "PRESET_NAME",
+      "index": 4,
+      "name": "RingsReverb",
+      "size": 21556,
+      "crc": "0x14db59ec"
+    },
+    {
+      "type": "owl",
+      "cmd": "PRESET_NAME",
+      "index": 5,
+      "name": "Tanh3",
+      "size": 18580,
+      "crc": "0xaed73395"
+    },
+    {
+      "type": "owl",
+      "cmd": "PRESET_NAME",
+      "index": 6,
+      "name": "Schliere",
+      "size": 17860,
+      "crc": "0x936d0028"
+    },
+    {
+      "type": "program_change",
+      "program": 6,
+      "channel": 0
+    }
+  ],
+  "resource_names": [],
+  "downloads": []
+}

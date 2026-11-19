@@ -1,0 +1,69 @@
+Patch 18: LED-PWM mit 48 000 Hz statt 2320,54 Hz, fest an den Audio-Takt gekoppelt.
+
+Anlass (messlog D67, D73, D74): Eine gedimmte LED schaltet die Verschiebung des Nullpunkts
+(−2,9e-4 Vollausschlag je Eingangs-LED) im Takt der PWM, das gibt die Linie bei 2320,54 Hz mit
+Vielfachen in Ein- und Ausgängen (240 MHz / (101 × 1024)).
+
+Änderung (Absprache mit dem Nutzer, 2026-11-19, Variante A), nur ACDC/Core/Src/main.c:
+- TIM2, TIM3, TIM4, TIM8: Vorteiler 100 → 4, Period 1023 → 999. PWM = 240 MHz / (5 × 1000)
+  = 48 000,000 Hz.
+- Takt: Timer aus PLL1 (HSE 8 MHz × 120 / 2 → 480 MHz, AHB /2, APB /2, Timer ×2 = 240 MHz),
+  SAI1 aus PLL3 (8 MHz / 7 × (172 + 262/8192) / 8 = 24,576 MHz, SAI1 ist Master, fs = /512
+  ≈ 47 999,995 Hz). Beide aus demselben Quarz, Abstand ≈ 0,1 ppm (0,0049 Hz). Was von der PWM
+  gefaltet in die ADC-Daten kommt, liegt damit bei ≈ 0 Hz.
+- setLed() (im ITCM) bleibt unverändert: pwm = 1024 − v mit v = 0…1023. Mit ARR 999 gilt
+  CCR ≥ 1000 → dauerhaft aus (v ≤ 24, unter 2,4 % dunkel), v = 1023 → CCR 1 → 999/1000 an.
+  Darüber Helligkeit (v − 24) / 1000 statt v / 1024, höchstens 2,4 % daneben. „Aus“ bleibt aus,
+  nichts läuft über. Der ITCM bleibt bytegleich mit fx6a.
+- Der Timer-Init läuft einmal beim Start, liegt im Flash, kein periodischer Code.
+
+--- a/ACDC/Core/Src/main.c
++++ b/ACDC/Core/Src/main.c
+@@ -653,9 +653,9 @@
+ 
+   /* USER CODE END TIM2_Init 1 */
+   htim2.Instance = TIM2;
+-  htim2.Init.Prescaler = 100;
++  htim2.Init.Prescaler = 4; // LED PWM 240 MHz / (5 * 1000) = 48 kHz, locked to the audio clock
+   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+-  htim2.Init.Period = 1023;
++  htim2.Init.Period = 999;
+   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+   if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
+@@ -710,9 +710,9 @@
+ 
+   /* USER CODE END TIM3_Init 1 */
+   htim3.Instance = TIM3;
+-  htim3.Init.Prescaler = 100;
++  htim3.Init.Prescaler = 4; // LED PWM 240 MHz / (5 * 1000) = 48 kHz, locked to the audio clock
+   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+-  htim3.Init.Period = 1023;
++  htim3.Init.Period = 999;
+   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+   if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+@@ -759,9 +759,9 @@
+ 
+   /* USER CODE END TIM4_Init 1 */
+   htim4.Instance = TIM4;
+-  htim4.Init.Prescaler = 100;
++  htim4.Init.Prescaler = 4; // LED PWM 240 MHz / (5 * 1000) = 48 kHz, locked to the audio clock
+   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+-  htim4.Init.Period = 1023;
++  htim4.Init.Period = 999;
+   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+   if (HAL_TIM_PWM_Init(&htim4) != HAL_OK)
+@@ -813,9 +813,9 @@
+ 
+   /* USER CODE END TIM8_Init 1 */
+   htim8.Instance = TIM8;
+-  htim8.Init.Prescaler = 100;
++  htim8.Init.Prescaler = 4; // LED PWM 240 MHz / (5 * 1000) = 48 kHz, locked to the audio clock
+   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
+-  htim8.Init.Period = 1023;
++  htim8.Init.Period = 999;
+   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+   htim8.Init.RepetitionCounter = 0;
+   htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;

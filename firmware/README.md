@@ -2,7 +2,7 @@
 
 Alles zur eigenen AC/DC-Firmware. Plan, Begründungen und Ergebnis jedes Builds: `docs/05-firmware-plan.md`, Messungen: `docs/messlog.md`.
 
-**Stand 2026-11-18:** Auf acdc1 läuft `builds/acdc1-build7-fx5a/` (`v22.4.r-fx5a`, SHA-256 `b69c25b3…`, D63) = fx4b + Patch 16 (MIDI-Sendeweg). Abnahme D62–D64, Alltags-Firmware seit 2026-11-18 (D65), Rückweg ist fx4b. **Stand 2026-11-17:** Auf acdc1 läuft `builds/acdc1-build6b-fx4b/` (`v22.4.r-fx4b`, SHA-256 `a21f35c9…`, D55) als Alltags-Firmware (D59). Loop-Test (D57) und Rausch-A/B gegen fx3l (D58) sind bestanden. Der Vorgänger `builds/acdc1-build6-fx4a/` (`e7ee9b90…`) hat das Boot-Menü am Gerät bestanden (D52/D53). Rückweg ist `builds/acdc1-build5c-fx3l/` (`v22.4.r-fx3l`, `b55b94d8…`, D49), danach `builds/acdc1-build3d-fx2/` (`d212cf8d…`).
+**Stand 2026-11-18, 23:10:** Auf acdc1 ist `builds/acdc1-build8-fx6a/` (`v22.4.r-fx6a`, SHA-256 `6a3fc427…`, D75) = fx5a + Patch 17 (LED-Modus) geflasht, Rückweg ist fx5a. Abnahme am 2026-11-19 vollständig (D75–D77, dazwischen einmal fx5a und zurück, `flashlog/20261119_*`), über die Alltags-Firmware ist nicht entschieden. **Seit 2026-11-19 Alltags-Firmware auf acdc1, Abnahme vollständig (D78, D79):** `builds/acdc1-build9-fx7a/` (`v22.4.r-fx7a`, `cac6fee0…`) = fx6a + Patch 18 (LED-PWM 48 kHz). **Davor am 2026-11-18:** Auf acdc1 läuft `builds/acdc1-build7-fx5a/` (`v22.4.r-fx5a`, SHA-256 `b69c25b3…`, D63) = fx4b + Patch 16 (MIDI-Sendeweg). Abnahme D62–D64, Alltags-Firmware seit 2026-11-18 (D65), Rückweg ist fx4b. **Stand 2026-11-17:** Auf acdc1 läuft `builds/acdc1-build6b-fx4b/` (`v22.4.r-fx4b`, SHA-256 `a21f35c9…`, D55) als Alltags-Firmware (D59). Loop-Test (D57) und Rausch-A/B gegen fx3l (D58) sind bestanden. Der Vorgänger `builds/acdc1-build6-fx4a/` (`e7ee9b90…`) hat das Boot-Menü am Gerät bestanden (D52/D53). Rückweg ist `builds/acdc1-build5c-fx3l/` (`v22.4.r-fx3l`, `b55b94d8…`, D49), danach `builds/acdc1-build3d-fx2/` (`d212cf8d…`).
 
 | Ordner | Inhalt | Regeln |
 |---|---|---|
@@ -44,9 +44,11 @@ Rückweg für acdc1 auf die Original-Firmware: `backup/acdc1/20261114/flash/acdc
 | **15** | Boot-Menü: Patch-Slot beim Einschalten wählen, der Slot bleibt gemerkt (Build 6, fx4a) |
 | 15b | = 15 mit Abbruch nach 30 s statt 60 s. Vollständiger Ersatz für 15 (fx4b) |
 | **16** | MIDI-Sendeweg über USB unteilbar, Lesezeiger erst nach Abschluss der Übertragung, Flusskontrolle beim Slot-Download (Build 7, fx5a) |
+| **17** | LED-Modus (normal, nur Clip, aus), im Boot-Menü mit Regler 2 wählbar und in der Ressource `ACDC.led` gemerkt (Build 8, fx6a) |
+| **18** | LED-PWM mit 48 000 Hz statt 2320,54 Hz (TIM2/3/4/8: Vorteiler 4, Period 999), fest an den Audio-Takt gekoppelt. Nur `main.c`, `setLed()` und ITCM unverändert (Build 9, fx7a) |
 | 90, 91 | Füllbytes für Lage-Tests: 90 wie 3c (`fx1p`), 91 hinter dem ITCM-Anker (`…p`-Varianten) |
 
-fx5a = fx4b + **16**. fx4b = fx3l + **15b**. fx3l = `db9d3dd` + Libraries `9e8f64e` + 01 02 04 05 06 03 07d 08 **11g 12b 14**. 01, 02, 04, 05, 06 stecken als Commits in `acdc/thru-usb-feedback`, der ganze fx5a-Stand in `acdc/fx1d`. Upstream-Analyse: `docs/research/notes/upstream_master_2026-11-16.md`.
+fx7a = fx6a + **18**. fx6a = fx5a + **17**. fx5a = fx4b + **16**. fx4b = fx3l + **15b**. fx3l = `db9d3dd` + Libraries `9e8f64e` + 01 02 04 05 06 03 07d 08 **11g 12b 14**. 01, 02, 04, 05, 06 stecken als Commits in `acdc/thru-usb-feedback`, der ganze fx5a-Stand in `acdc/fx1d`. Upstream-Analyse: `docs/research/notes/upstream_master_2026-11-16.md`.
 
 ## Builds
 
@@ -76,6 +78,8 @@ fx5a = fx4b + **16**. fx4b = fx3l + **15b**. fx3l = `db9d3dd` + Libraries `9e8f6
 | `acdc1-build6-fx4a` | `v22.4.r-fx4a` | ja | fx3l + 15 (Boot-Menü). `check_itcm` und Host-Test bestanden (D50), geflasht (D51), Menü läuft (D52). Loop-Test und Rausch-A/B offen |
 | **`acdc1-build6b-fx4b`** | **`v22.4.r-fx4b`** | ja | fx3l + 15b (Abbruch nach 30 s). ITCM-Inhalt bytegleich mit fx4a (D53). **Läuft auf acdc1** (D55). Loop-Test bestanden (D57), Rauschen = fx3l (D58) |
 | **`acdc1-build7-fx5a`** | **`v22.4.r-fx5a`** | ja | fx4b + 16 (MIDI-Sendeweg). `check_itcm` bestanden (D62). **Läuft auf acdc1** (D63). Download-Stresstest 240/240, Loop-Test bestanden (D63), Rauschen ohne Hinweis auf eine Änderung (D64) |
+| **`acdc1-build8-fx6a`** | **`v22.4.r-fx6a`** | ja | fx5a + 17 (LED-Modus). Host-Tests und `check_itcm` bestanden, ITCM-Ende und alle Funktionen außerhalb von `.text.onLoop` wie fx5a. Abnahme vollständig (D75–D77), Rückweg von fx7a |
+| **`acdc1-build9-fx7a`** | **`v22.4.r-fx7a`** | ja | fx6a + 18 (LED-PWM 48 kHz). `check_itcm --same-itcm fx6a` bestanden: ITCM bytegleich, alle Adressen gleich, 113 Bytes Unterschied nur im Timer-Init und im Versions-String. Host-Tests und Offline-Prüfung bestanden. **Alltags-Firmware auf acdc1** (2026-11-19). Abnahme vollständig (D78, D79): LED-Linie weg, Rauschen = fx6a, Loop-Test bestanden |
 | `cand-r-fx2d-gcc13flags` | `v22.4.r-fx2d` | nein | 3d + 08, bytegleich mit 3d |
 | `cand-r-merge2250-fx2d` | `v22.4.r-fx2d-m` | nein | 3d-Stand mit Patch 09 |
 | `cand-master-oldhal-fx` | `v22.5.0-oldhal-fx` | nein | `master` `36eaf1c4` + altes HAL + 10. Zeigt nur, dass es baut |
