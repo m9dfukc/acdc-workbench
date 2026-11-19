@@ -1,6 +1,6 @@
 # 05 – Firmware: Stand, Forks, Build-Plan
 
-> **Stand 2026-11-18:** Auf acdc1 läuft **Build 7 `v22.4.r-fx5a`** (`b69c25b3…`, Abschnitt „Build 7“, messlog D62–D65) als Alltags-Firmware (Entscheidung des Nutzers). Rückweg ist Build 6b `v22.4.r-fx4b` (`a21f35c9…`), dann Build 5c `v22.4.r-fx3l` (`b55b94d8…`), danach Build 3d (`d212cf8d…`).
+> **Stand 2026-11-19:** Auf acdc1 läuft **Build 9 `v22.4.r-fx7a`** (`cac6fee0…`, Abschnitt „Build 9“, messlog D78, D79) als Alltags-Firmware (Entscheidung des Nutzers). Rückweg ist Build 8 `v22.4.r-fx6a` (`6a3fc427…`), dann Build 7 `v22.4.r-fx5a` (`b69c25b3…`), Build 6b `v22.4.r-fx4b` (`a21f35c9…`), Build 5c `v22.4.r-fx3l` (`b55b94d8…`), danach Build 3d (`d212cf8d…`).
 >
 > Dieses Dokument ist chronologisch gewachsen. „Läuft auf acdc1“, „nicht abgestimmt“ und „nächste Schritte“ in den Abschnitten zu Build 1 bis 4z beschreiben den Stand des jeweiligen Abschnitts. Was heute offen ist, steht in `TODO.md`.
 
@@ -704,7 +704,7 @@ Ein Build von `c222fa49` ohne Patches ist bytegleich mit fx5a (`firmware/builds/
 
 **Rückweg:** fx4b (`a21f35c9…`), dann fx3l (`b55b94d8…`), danach wie bisher.
 
-### Build 8 – LED-Modus im Boot-Menü, `v22.4.r-fx6a` (Absprache und Build 2026-11-18, messlog D72–D75, **auf acdc1 geflasht 2026-11-18, Abnahme läuft**)
+### Build 8 – LED-Modus im Boot-Menü, `v22.4.r-fx6a` (Absprache und Build 2026-11-18, messlog D72–D77, **Abnahme vollständig, Rückweg von fx7a**)
 
 **Anlass [gemessen, D73, D74]:** Jede leuchtende Eingangs-LED verschiebt den Nullpunkt aller Eingänge um etwa −2,9e-4 Vollausschlag (≈ −2,9 mV, −71 dBFS). Dauerlicht ist nur ein fester Versatz, jeder Wechsel ein Sprung, und eine gedimmte LED wiederholt den Sprung im Takt der PWM (2320,54 Hz): Das ist die LED-PWM-Linie. Die Pegel-LEDs folgen im Alltag dem Signal, die Störung steht damit in jeder Aufnahme.
 
@@ -735,7 +735,7 @@ Ein Build von `c222fa49` ohne Patches ist bytegleich mit fx5a (`firmware/builds/
 2. Zum Teil erledigt (D75): Der Nutzer hat aus und nur Clip über Regler 2 gewählt, die Ressource `ACDC.led` wurde angelegt (+256 B). Nach Aus und Ein ohne Menü ist ein dunkler Modus aktiv (Nachtrag 2026-11-19). Gemerkt ist nur Clip (Clip-Probe, zweiter Nachtrag). Offen: Anzeige auf den Ausgangs-LEDs laut Nutzer, Slot-Wahl wie bisher.
 3. Zum Teil erledigt (D75): LED-Messung mit `owl/test/SchliereLedPathPatch.hpp`. Modus normal wie D74 (2–5 % mehr). Modus aus: Verschiebung auf 1,3–1,7 % mit umgekehrtem Vorzeichen, etwa −37 dB. Gemerkter dunkler Modus ohne Stream (Nachtrag 2026-11-19): Blinken 0,3 % von normal, statisch 0,6–2,2 %, der statische Rest streut. Nur Clip frisch aus dem Menü (dritter Nachtrag): ebenso ruhig, Blinken 0,4–0,5 %.
 4. Zum Teil erledigt (D75): Modus nur Clip, negative Gleichspannungsrampe auf In 1. Als In 1 die Schwelle erreicht, springen die offenen Eingänge um −0,08…−0,15 mV, wie bei einer roten LED ohne Grün. Am 2026-11-19 im gemerkten Modus wiederholt: Sprung −0,2 mV, in beiden Aufnahmen innerhalb von 2 ms an der Clip-Schwelle der Firmware und 220 ms vor dem Anschlag des Wandlers. Der Sprung ist also die rote LED, die Gegenprobe im Modus aus entfällt als Pflicht. Bei einer Wiederholung hat der Nutzer die rote LED gesehen. Punkt erledigt bis auf die Höhe des Sprungs (am Vorabend halb so groß).
-5. Rausch-A/B gegen fx5a in derselben Sitzung (Modus normal), Kontrolle am Anfang und Ende, je 2 × 60 s. Dazu Loop-Test (`phase_slips.py`, `stale_samples.py`) und `dump_stress.py`. Erledigt am 2026-11-19: `dump_stress.py` ohne Stream, 240 von 240 Downloads in Ordnung (D75, vierter Nachtrag). Loop-Test bestanden, auch mit Tanh3 und während 48 Downloads (D76). Rausch-A/B (D77): kein Hinweis auf einen Unterschied, fx5a liegt zwischen den beiden fx6a-Kontrollen, die Sitzung driftet um 2 dB. Nebenbei gefunden: Ein Program Change bei offenem Stream bricht die USB-Wiedergabe (D76), unter fx5a genauso (D77), also älter als Build 8. **Abnahme vollständig. fx7a ist die Alltags-Firmware (Entscheidung des Nutzers, 2026-11-19).**
+5. Rausch-A/B gegen fx5a in derselben Sitzung (Modus normal), Kontrolle am Anfang und Ende, je 2 × 60 s. Dazu Loop-Test (`phase_slips.py`, `stale_samples.py`) und `dump_stress.py`. Erledigt am 2026-11-19: `dump_stress.py` ohne Stream, 240 von 240 Downloads in Ordnung (D75, vierter Nachtrag). Loop-Test bestanden, auch mit Tanh3 und während 48 Downloads (D76). Rausch-A/B (D77): kein Hinweis auf einen Unterschied, fx5a liegt zwischen den beiden fx6a-Kontrollen, die Sitzung driftet um 2 dB. Nebenbei gefunden: Ein Program Change bei offenem Stream bricht die USB-Wiedergabe (D76), unter fx5a genauso (D77), also älter als Build 8. **Abnahme vollständig.** Als Alltags-Firmware hat der Nutzer danach fx7a gewählt (2026-11-19), fx6a ist der Rückweg.
 
 **Danach geplant (eigener Build):** PWM der LEDs mit genau 48 000 Hz (Timer-Vorteiler 4, 1000 Stufen statt 2320,54 Hz mit 1024 Stufen). [Hypothese] Die Schaltfrequenz liegt dann über dem Hörbereich und im Takt der Abtastung, die Linie verschwindet. Risiko: zwanzigmal so viele Schaltflanken. Die langsame Verschiebung des Nullpunkts mit der Helligkeit bleibt. → Build 9.
 
@@ -770,10 +770,10 @@ Ein Build von `c222fa49` ohne Patches ist bytegleich mit fx5a (`firmware/builds/
 **Risiken [Hypothese]:** zwanzigmal so viele Schaltflanken (ob hochfrequent mehr einstreut, zeigt nur die Messung). Die Verschiebung des Nullpunkts mit der mittleren Helligkeit bleibt (−2,9e-4 je LED, D74). 48 kHz direkt am Ausgang (≈ 0,15 mV je LED, D74) ist unhörbar, am UMC fiele ein Rest wegen dessen eigenen Takts auf wenige Hz. Die Schwebung von 204 s kann den Gleichanteil sehr langsam wandern lassen.
 
 **Abnahme (jeder Flash nur nach Freigabe, nur acdc1):**
-1. Erledigt (D78): Flash mit `tools/flash_acdc.py acdc1-build9-fx7a --yes`, Readback bytegleich, Neustart durch den Nutzer, A1 bestanden.
+1. Erledigt (D78): Flash mit `tools/flash_acdc.py acdc1-build9-fx7a --yes`, Readback bytegleich, Neustart durch den Nutzer, A1 bestanden. In D79 zweimal per `:leave` neu gestartet (fx6a und zurück).
 2. Erledigt (D78): LED-Linie am Ausgang mit `owl/test/SchliereLedTestPatch.hpp`, Phase „grün 60 %“: **keine Linie mehr** bei 2321 Hz und Vielfachen (−85,2 dBFS im Rauschen gegen −39,8 dBFS unter fx5a, D73), keine neue Linie, auch nicht unter 20 Hz.
 3. Erledigt (D78): LED-Verschiebung an den Eingängen mit `owl/test/SchliereLedPathPatch.hpp`: gleich wie fx6a in D77 (±2 %), wie erwartet.
-4. Erledigt (D79): Rauschen gegen fx6a, Kontrolle am Anfang und Ende: fx7a am Ende innerhalb von 0,15 dB bei fx6a, die LED-PWM-Linie fehlt auch in den rohen Eingängen (fx6a: −115 dB). Die Kontrolle am Anfang liegt beim Kamm 1,9 dB tiefer, eine Kaltstart-Probe zeigt: Drift der Sitzung. Loop-Test bestanden (D79): 0 Slips, 0 veraltete Samples. **Abnahme vollständig, Entscheidung des Nutzers offen.**
+4. Erledigt (D79): Rauschen gegen fx6a, Kontrolle am Anfang und Ende: fx7a am Ende innerhalb von 0,15 dB bei fx6a, die LED-PWM-Linie fehlt auch in den rohen Eingängen (fx6a: −115 dB). Die Kontrolle am Anfang liegt beim Kamm 1,9 dB tiefer, eine Kaltstart-Probe zeigt: Drift der Sitzung. Loop-Test bestanden (D79): 0 Slips, 0 veraltete Samples. **Abnahme vollständig. fx7a ist die Alltags-Firmware (Entscheidung des Nutzers, 2026-11-19).**
 5. Erledigt (D78): Helligkeit der LEDs am Gerät laut Nutzer in Ordnung („led helligkeit passt“).
 
 **Fork-Branch `acdc/fx1d` (gepusht 2026-11-19):**

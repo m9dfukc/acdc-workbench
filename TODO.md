@@ -127,7 +127,7 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [x] Fork-Commits für fx6a und fx7a auf `acdc/fx1d` (`1cf56d3e` … `13b58412`), Prüf-Builds bytegleich (2026-11-19)
 - [x] Fork `acdc/fx1d` gepusht (2026-11-19, `b4b95e43..13b58412`)
 - [x] Release `acdc-v22.4.r-fx7a` (2026-11-19, Tag auf `13b58412`, „Latest“)
-- [ ] englische Fassung von `docs/05`. Nur mit Freigabe
+- [x] Englische Fassung von `docs/05` für Build 8 und 9 aufgefrischt (2026-11-19)
 - [ ] Hörbares Fiepen des Moduls (D79, auch im DFU-Modus, ≈ 800–1000 Hz, leise): Quelle eingrenzen (Modul oder Netzteil, Ohr oder Mikrofon), hören, ob es mit Last, Slot oder Reglern wandert. USB abziehen macht es leiser und höher (Nutzer). [Hypothese] Schaltregler im Pulsbetrieb
 - [ ] Idee (D74): Die Verschiebung ist auf allen Eingängen gleich. Ein offener Eingang als Bezug, den ein Patch abzieht? Kostet Rauschen, träfe aber auch Kamm und Blockrate, soweit sie auf allen Kanälen gleich sind
 - [ ] Schliere Fassung 4: LEDs aus oder mit Hysterese, damit sie an der Grenze einer Haltezone nicht flackern (D73). Ganz ohne Knack geht es nur ohne LEDs

@@ -1,9 +1,9 @@
-<!-- i18n source=docs/05-firmware-plan.md sha256=9d265afefb474b378571d7f2b1fe311dd87f1ca139cc42b42156e64f3dd19abf date=2026-11-18 -->
-> English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-18. The German original is authoritative. This file is generated from it, do not edit it by hand.
+<!-- i18n source=docs/05-firmware-plan.md sha256=7e9e1aaeb1ee239473ef98b21d2b2835f9ab84fa2a503cf191d912959a86e2c2 date=2026-11-19 -->
+> English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-19. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 05 – Firmware: Status, Forks, Build Plan
 
-> **Status 2026-11-18:** acdc1 runs **Build 7 `v22.4.r-fx5a`** (`b69c25b3…`, section "Build 7", lab notebook D62–D65) as its daily firmware (the user's decision). The fallback is Build 6b `v22.4.r-fx4b` (`a21f35c9…`), then Build 5c `v22.4.r-fx3l` (`b55b94d8…`), then Build 3d (`d212cf8d…`).
+> **Status 2026-11-19:** acdc1 runs **Build 9 `v22.4.r-fx7a`** (`cac6fee0…`, section "Build 9", lab notebook D78, D79) as its daily firmware (the user's decision). The fallback is Build 8 `v22.4.r-fx6a` (`6a3fc427…`), then Build 7 `v22.4.r-fx5a` (`b69c25b3…`), Build 6b `v22.4.r-fx4b` (`a21f35c9…`), Build 5c `v22.4.r-fx3l` (`b55b94d8…`), then Build 3d (`d212cf8d…`).
 >
 > This document grew chronologically. "Runs on acdc1", "not agreed" and "next steps" in the sections on Build 1 to 4z describe the status of the respective section. What is open today is in `TODO.md`.
 
@@ -173,7 +173,7 @@ Next steps before the first flash (E7): boot pad probe, 10 min reference recordi
 
 ### E7 – Flash route, preconditions, fallback
 
-- Route: ROM DFU via the **front USB-B jack**. Entry with `tools/owl_read.py --reset-to-dfu --yes`, then `dfu-util -a 0 -s 0x08000000:leave -D <bin>`. We check the exact command before the first write. **Addendum:** Since D5, flashing is done **without** `:leave`, with a readback and comparison afterwards (procedure in `CLAUDE.md`). Whether `:leave` can replace the restart is open (`TODO.md`). Leaving DFU: case off **and** USB unplugged, then case on, then USB plugged in (D3).
+- Route: ROM DFU via the **front USB-B jack**. Entry with `tools/owl_read.py --reset-to-dfu --yes`, then `dfu-util -a 0 -s 0x08000000:leave -D <bin>`. We check the exact command before the first write. **Addendum:** Since D5, flashing is done **without** `:leave`, with a readback and comparison afterwards (procedure in `CLAUDE.md`). Since 2026-11-19 (D79) a second, read-only readback with `:leave` starts the firmware, the default in `tools/flash_acdc.py`. A cold start by hand (case off **and** USB unplugged, then case on, then USB plugged in, D3) only with `--cold`.
 - **Preconditions before the first write**, in this order:
   1. **Boot pad probe:** DFU entry via the boot pads on the Xibeca board, only `dfu-util -l`, write nothing. This is the emergency route in case USB is dead in a new build. **Without a successful probe there is no flashing.**
   2. **Reference recording:** 10 min with today's firmware, setup as in A6, as a comparison for clicks and dropouts. Recording in the host software, engine 48 kHz (no upsampling), lean patch, AC/DC input not patched to the output. The same patch later for A6. (Shortened from 30 to 10 min on 2026-11-14: gross USB errors such as a broken feedback endpoint show up within seconds at ≈ 190 ppm clock offset. With 0 clicks in 10 min, the rate is below ≈ 1 per 3 min with 95 %. If Build 1 is conspicuous, record longer in a targeted way.)
@@ -706,6 +706,89 @@ A build of `c222fa49` without patches is byte-identical with fx5a (`firmware/bui
 **Open:** a small disturbance on channel 2 during downloads (D63).
 
 **Fallback:** fx4b (`a21f35c9…`), then fx3l (`b55b94d8…`), after that as before.
+
+### Build 8 – LED mode in the boot menu, `v22.4.r-fx6a` (agreed and built 2026-11-18, lab notebook D72–D77, **acceptance complete, fallback from fx7a**)
+
+**Reason [measured, D73, D74]:** Every lit input LED shifts the zero point of all inputs by about −2.9e-4 full scale (≈ −2.9 mV, −71 dBFS). A steady light is only a fixed offset, every change is a step, and a dimmed LED repeats the step at the PWM rate (2320.54 Hz): that is the LED PWM line. In daily use the level LEDs follow the signal, so the disturbance is in every recording.
+
+**Decisions (user, 2026-11-18):**
+- One LED mode, selectable with knob 2 in the boot menu (the user's suggestion: knob 2 was still free there) and remembered.
+- Three modes: normal (as before), clip only (everything dark, red only when an input clips while recording), off.
+- The PWM frequency comes separately afterwards in a build of its own, so that its effect stays measurable on its own.
+- Not in this build: cleaning up red (nothing of it was measurable in D73), a switch over MIDI during operation.
+
+**Implementation (patch `17-led-mode-boot-menu.patch`, only `ACDC/Core/Src/ACDC.cpp`) [code]:**
+- **Boot menu:** knob 2 selects the mode, left third normal, middle clip only, right off. Like knob 1 it only counts after it has been moved (250 of 4096), otherwise the remembered mode stays. The output LEDs show the mode (four, two, none lit) and blink when confirming would change the slot or the mode. In mode off there is nothing that could blink. Cancelling (knob 3, 30 s) and a computer that takes over leave the remembered mode as it is.
+- **Storage:** a resource of its own, `ACDC.led`, in the patch flash (4 bytes: mode, ~mode, 'L', 'D'), separate from `ACDC.slot`. fx5a and fx4b still find their slot after a fallback. The same reserve as for the slot (64 KB free): otherwise the chosen mode only holds until the next power-up, and the input LEDs blink red for 1 s. The settings are not touched.
+- **Main loop (every 2 ms):** in the dark modes `onLoop()` calls `acdcOnLoopDark()` instead of `acdcOnLoopLate()`. The function switches the eight LEDs off once and then writes no pin and no timer register as long as nothing changes. In mode clip only it keeps measuring the raw inputs while recording and switches an input LED red for 300 ms (only the static pin, green stays off). In mode off this measurement is dropped as well. `PARAMETER_BA…BD` (output levels) keep running in all modes.
+- **Menu and slot display** at power-up use the LEDs in every mode.
+- **Memory layout:** `acdcOnLoopLate()` is unchanged. `acdcOnLoopDark()` (292 B) and the larger `onLoop()` (24 B) sit in `.text.onLoop` (in ITCM) and take their room from the padding that has been there since 3d (`ACDC_ONLOOP_PAD` 0x1cc → 0x94). `AcdcBootState` grows from 2 to 4 bytes (`.late_bss`).
+- The branch without `USE_USBD_AUDIO_TX_PRE_FX` does not know the mode. It is not built.
+
+**Build:** `firmware/builds/acdc1-build8-fx6a/`, `v22.4.r-fx6a`, 110 088 B, SHA-256 `6a3fc427b30ae1043b239f01e5ecf9894db92d9a6ca3dc51b47cc9a6f80260eb`. Patches as fx5a + 17.
+
+**Checks without the module [measured on the computer]:**
+- `tools/sim_boot_menu.sh`: 48 cases passed. 18 old menu cases, 15 new ones for knob 2 (selection, hysteresis, cancel, timeout, computer takes over, full storage, two writes for slot and mode) and 15 for the LED loop (`firmware/sim/led_loop_sim.cpp`: what the main loop writes to the LEDs in each mode).
+- `tools/check_itcm.py --ref fx5a`: PASSED, 0 FAIL, 0 WARN. ITCM end unchanged at 0x6338, patch heap unchanged at 40 136 B, all 180 RAM objects at the same address.
+- ITCM content against fx5a: all functions outside `.text.onLoop` (0x5de8–0x5fb7) are at the same address. 398 of 12 440 bytes differ: 316 in the new code, the rest in the veneers and in branch targets to them, because code moved in flash. Flash +564 B.
+- `tools/flash_acdc.py acdc1-build8-fx6a`: offline checks passed.
+
+**Acceptance (status D75, every flash only after approval):**
+1. Done (D75): flash with `tools/flash_acdc.py`, readback byte-identical, A1 passed.
+2. Partly done (D75): the user selected off and clip only with knob 2, the resource `ACDC.led` was created (+256 B). After power off and on without the menu a dark mode is active (addendum 2026-11-19). Only clip is remembered (clip probe, second addendum). Open: display on the output LEDs according to the user, slot selection as before.
+3. Partly done (D75): LED measurement with `owl/test/SchliereLedPathPatch.hpp`. Mode normal as in D74 (2–5 % more). Mode off: shift down to 1.3–1.7 % with the opposite sign, about −37 dB. Remembered dark mode without a stream (addendum 2026-11-19): blinking 0.3 % of normal, static 0.6–2.2 %, the static remainder scatters. Clip only fresh from the menu (third addendum): just as quiet, blinking 0.4–0.5 %.
+4. Partly done (D75): mode clip only, negative DC ramp on In 1. When In 1 reaches the threshold, the open inputs jump by −0.08…−0.15 mV, as with a red LED without green. Repeated on 2026-11-19 in the remembered mode: a step of −0.2 mV, in both recordings within 2 ms of the firmware's clip threshold and 220 ms before the converter's limit. So the step is the red LED, and the counter-check in mode off is no longer required. In a repetition the user saw the red LED. Item done except for the size of the step (half as large the evening before).
+5. Noise A/B against fx5a in the same session (mode normal), control at the beginning and end, 2 × 60 s each. Plus loop test (`phase_slips.py`, `stale_samples.py`) and `dump_stress.py`. Done on 2026-11-19: `dump_stress.py` without a stream, 240 of 240 downloads fine (D75, fourth addendum). Loop test passed, also with Tanh3 and during 48 downloads (D76). Noise A/B (D77): no sign of a difference, fx5a lies between the two fx6a controls, the session drifts by 2 dB. Found along the way: a program change while a stream is open breaks USB playback (D76), the same under fx5a (D77), so it is older than Build 8. **Acceptance complete.** As the daily firmware the user then chose fx7a (2026-11-19), fx6a is the fallback.
+
+**Planned afterwards (a build of its own):** LED PWM at exactly 48 000 Hz (timer prescaler 4, 1000 steps instead of 2320.54 Hz with 1024 steps). [hypothesis] The switching frequency is then above the audible range and in step with the sampling, the line disappears. Risk: twenty times as many switching edges. The slow shift of the zero point with the brightness stays. → Build 9.
+
+**Fallback:** fx5a (`b69c25b3…`), then fx4b (`a21f35c9…`), after that as before. The resource `ACDC.led` does not disturb older builds.
+
+### Build 9 – LED PWM at 48 kHz, `v22.4.r-fx7a` (agreed and built 2026-11-19, lab notebook D78, D79, **daily firmware on acdc1 since 2026-11-19**)
+
+**Reason [measured, D67, D73, D74]:** A dimmed LED switches the zero point shift at the PWM rate, which is the line at 2320.54 Hz with harmonics on inputs and outputs (up to −39.8 dBFS at the UMC with dimmed green, D73). Build 8 lets the LEDs go dark, Build 9 moves the PWM itself out of the audible range. Built separately so that the effect stays measurable on its own (user's decision, 2026-11-18).
+
+**Clocks [code]:**
+- Timers: HSE 8 MHz, PLL1 × 120 / 2 = 480 MHz system clock, AHB /2, APB1 and APB2 /2 = 120 MHz, timer clock ×2 = 240 MHz. Matches the measured 2320.54 Hz = 240 MHz / (101 × 1024) (D60).
+- Audio: SAI1 from PLL3 (8 MHz / 7 × (172 + 262/8192) / 8 = 24.576 MHz), SAI1 block A is master (`SAI_MODEMASTER_RX`), the codec is slave, frame 256 bits. fs ≈ 47 999.995 Hz (measured "exactly 48 kHz", D10).
+- Both come from the same crystal. With prescaler 4 and period 999 the PWM runs at 240 MHz / 5000 = 48 000.000 Hz, 0.1 ppm (0.0049 Hz) above fs. A drift of the crystal hits both alike. [hypothesis] Whatever folds from the PWM into the ADC data lands at ≈ 0 Hz (a beat every 204 s) instead of at 2321 Hz with harmonics. 48 kHz itself lies in the stop band of the codec's decimation filter.
+
+**Who uses the timers [code]:** only `MX_TIM2/3/4/8_Init()` in `main.c`, `initLed()` (start of the eight channels) and `setLed()` (`CCR`). No code reads `ARR`, `CNT` or `PSC`. The `htim8` references in `Source/Codec.cpp` belong to other codecs (`USE_IIS3DWB`, `USE_ADS1294`) and are not built for the AC/DC. The simulators do not compute with PWM values.
+
+**Decision (user, 2026-11-19): variant A, only the timer init.** `setLed()` lives in ITCM (0x5cd8, 204 B) before `.text.onLoop`, any change there would move the addresses behind it. Variant B (exact conversion to 1000 steps in `setLed()`) is therefore discarded.
+
+**Implementation (patch `18-led-pwm-48k.patch`, only `ACDC/Core/Src/main.c`) [code]:**
+- TIM2, TIM3, TIM4, TIM8: prescaler 100 → 4, period 1023 → 999.
+- `setLed()` stays: `pwm = 1024 − v` with v = 0…1023, mode PWM1, the LED is lit at CNT ≥ CCR. CCR ≥ 1000 is above ARR, the LED stays off permanently: that is NO_COLOUR and all values v ≤ 24 (below 2.4 %). v = 1023 gives CCR = 1, so 999/1000 on. Above that the brightness is (v − 24)/1000 instead of v/1024, at most 2.4 % off. "Off" stays off, nothing overflows. Red (static pin) is untouched.
+- Consequence: very faintly glowing level LEDs go dark. Patches that set LEDs below 2.4 % show nothing any more.
+
+**Build:** `firmware/builds/acdc1-build9-fx7a/`, `v22.4.r-fx7a`, 110 088 B (as fx6a), SHA-256 `cac6fee0f86426aed3d9b5bfaa2ff758b69de59ed7e11971f2a2ba0d0233ff20`. Patches as fx6a + 18.
+
+**Checks without the module [measured on the computer, 2026-11-19]:**
+- `tools/check_itcm.py --ref fx6a --same-itcm fx6a`: PASSED, 0 FAIL, 0 WARN. ITCM boundaries 0x32a0–0x6338 the same, `.itcm_text` (12 440 B) and vector table byte-identical, all 656 flash functions and 180 RAM objects at the same address.
+- Binary against fx6a: 113 bytes differ, all in `main()` (timer init, same length, `movs #4` / `movw #999` instead of `#100` / `#1023`) and one in the version string.
+- `tools/sim_boot_menu.sh`: all cases passed (boot menu and LED loop, unchanged against fx6a).
+- `tools/flash_acdc.py acdc1-build9-fx7a`: offline checks passed.
+
+**Risks [hypothesis]:** twenty times as many switching edges (only a measurement shows whether more couples in at high frequencies). The shift of the zero point with the mean brightness stays (−2.9e-4 per LED, D74). 48 kHz directly at the output (≈ 0.15 mV per LED, D74) is inaudible; at the UMC a remainder would fall to a few Hz because of its own clock. The beat of 204 s can let the DC level wander very slowly.
+
+**Acceptance (every flash only after approval, only acdc1):**
+1. Done (D78): flash with `tools/flash_acdc.py acdc1-build9-fx7a --yes`, readback byte-identical, restart by the user, A1 passed. In D79 restarted twice via `:leave` (fx6a and back).
+2. Done (D78): LED line at the output with `owl/test/SchliereLedTestPatch.hpp`, phase "green 60 %": **no line any more** at 2321 Hz and harmonics (−85.2 dBFS in the noise against −39.8 dBFS under fx5a, D73), no new line, also not below 20 Hz.
+3. Done (D78): LED shift at the inputs with `owl/test/SchliereLedPathPatch.hpp`: the same as fx6a in D77 (±2 %), as expected.
+4. Done (D79): noise against fx6a, control at the beginning and end: fx7a at the end within 0.15 dB of fx6a, the LED PWM line is also missing in the raw inputs (fx6a: −115 dB). The control at the beginning is 1.9 dB lower in the comb, a cold-start probe shows: session drift. Loop test passed (D79): 0 slips, 0 stale samples. **Acceptance complete. fx7a is the daily firmware (user's decision, 2026-11-19).**
+5. Done (D78): brightness of the LEDs on the module fine according to the user.
+
+**Fork branch `acdc/fx1d` (pushed 2026-11-19):**
+1. `1cf56d3e` LED mode (= patch 17)
+2. `34782dea` version `v22.4.r-fx6a`
+3. `bd5ee463` LED PWM at 48 kHz (= patch 18)
+4. `351b2071` version `v22.4.r-fx7a`
+5. `13b58412` README: section "LEDs: mode and PWM rate", tables, test status, `:leave` in the flash procedure
+
+Builds of `34782dea` and `351b2071` without patches are byte-identical with fx6a (`firmware/builds/verify-fx1d-34782dea`, `6a3fc427…`) and fx7a (`verify-fx1d-351b2071`, `cac6fee0…`). In addition the release `acdc-v22.4.r-fx7a` (tag on `13b58412`, "Latest", 2026-11-19) with `ACDC-v22.4.r-fx7a.bin` and `BUILD_INFO-v22.4.r-fx7a.txt`. fx6a has no release of its own.
+
+**Fallback:** fx6a (`6a3fc427…`), then fx5a (`b69c25b3…`), after that as before.
 
 ### Fork `m9dfukc/OpenWare` (pushed 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
 
