@@ -776,14 +776,14 @@ Ein Build von `c222fa49` ohne Patches ist bytegleich mit fx5a (`firmware/builds/
 4. Erledigt (D79): Rauschen gegen fx6a, Kontrolle am Anfang und Ende: fx7a am Ende innerhalb von 0,15 dB bei fx6a, die LED-PWM-Linie fehlt auch in den rohen Eingängen (fx6a: −115 dB). Die Kontrolle am Anfang liegt beim Kamm 1,9 dB tiefer, eine Kaltstart-Probe zeigt: Drift der Sitzung. Loop-Test bestanden (D79): 0 Slips, 0 veraltete Samples. **Abnahme vollständig, Entscheidung des Nutzers offen.**
 5. Erledigt (D78): Helligkeit der LEDs am Gerät laut Nutzer in Ordnung („led helligkeit passt“).
 
-**Fork-Branch `acdc/fx1d` (lokal 2026-11-19, noch nicht gepusht):**
+**Fork-Branch `acdc/fx1d` (gepusht 2026-11-19):**
 1. `1cf56d3e` LED-Modus (= Patch 17)
 2. `34782dea` Version `v22.4.r-fx6a`
 3. `bd5ee463` LED-PWM mit 48 kHz (= Patch 18)
 4. `351b2071` Version `v22.4.r-fx7a`
 5. `13b58412` README: Abschnitt „LEDs: mode and PWM rate“, Tabellen, Teststand, `:leave` im Flash-Ablauf
 
-Builds von `34782dea` und `351b2071` ohne Patches sind bytegleich mit fx6a (`firmware/builds/verify-fx1d-34782dea`, `6a3fc427…`) und fx7a (`verify-fx1d-351b2071`, `cac6fee0…`).
+Builds von `34782dea` und `351b2071` ohne Patches sind bytegleich mit fx6a (`firmware/builds/verify-fx1d-34782dea`, `6a3fc427…`) und fx7a (`verify-fx1d-351b2071`, `cac6fee0…`). Dazu das Release `acdc-v22.4.r-fx7a` (Tag auf `13b58412`, „Latest“, 2026-11-19) mit `ACDC-v22.4.r-fx7a.bin` und `BUILD_INFO-v22.4.r-fx7a.txt`. fx6a hat kein eigenes Release.
 
 **Rückweg:** fx6a (`6a3fc427…`), dann fx5a (`b69c25b3…`), danach wie bisher.
 
