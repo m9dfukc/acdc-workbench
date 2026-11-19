@@ -45,7 +45,8 @@ def levels(mid: str) -> dict[str, float]:
 
 def mean_of(ids: list[str]) -> dict[str, float]:
     ls = [levels(i) for i in ids]
-    return {k: pmean([l[k] for l in ls]) for k, _ in COLS}
+    # Eine Familie, die die Analyse in einer Aufnahme nicht findet, fehlt dort: Mittel über den Rest.
+    return {k: pmean([l[k] for l in ls if k in l]) for k, _ in COLS if any(k in l for l in ls)}
 
 
 def main() -> int:
@@ -62,8 +63,11 @@ def main() -> int:
     def row(name: str, lv: dict, fc) -> str:
         cells = []
         for k, _ in COLS:
+            if k not in lv:
+                cells.append("–")  # Familie nicht gefunden
+                continue
             c = f"{lv[k]:.2f}"
-            if ref:
+            if ref and k in ref:
                 c += f" ({lv[k] - ref[k]:+.2f})"
             cells.append(c)
         return f"| {name} | " + " | ".join(cells) + f" | {fc:.4f} |" if fc else f"| {name} | " + " | ".join(cells) + " | |"

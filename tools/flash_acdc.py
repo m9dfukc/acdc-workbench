@@ -5,14 +5,23 @@ The steps are the flash procedure from CLAUDE.md:
      check_itcm.json). Without --yes the tool stops here and touches no device.
   2. tools/owl_read.py -> <log>/owl_read_before, the device must be acdc1
   3. tools/owl_read.py --reset-to-dfu --yes, wait for the DFU device of acdc1
-  4. dfu-util -D to 0x08000000 (internal flash only, never option bytes, never ":leave")
+  4. dfu-util -D to 0x08000000 (internal flash only, never option bytes, no ":leave" here)
   5. Readback of the 128 KB, compared with the binary, the rest must be 0xFF
-  6. You restart the module: case off, USB unplugged, case on, USB plugged in
-  7. --a1 <log>: tools/owl_read.py -> <log>/owl_read_after, checks the firmware version,
+  6. Default (since 2026-11-19, messlog D79): a second, read-only readback with ":leave"
+     makes the ROM DFU start the firmware, then A1 runs by itself. Not a cold start: the
+     codec stays powered. With --cold, or if ":leave" fails: you restart the module
+     (case off, USB unplugged, case on, USB plugged in; case off alone is not enough,
+     USB powers the board and it stays in DFU) and run --a1 <log>.
+  7. A1: tools/owl_read.py -> <log>/owl_read_after, checks the firmware version,
      sample rate 48000, block size 8 and that the slots are unchanged
 
+Use --cold when the build changes something that acts at power-up (clocks, codec init),
+when the test is about power-up (boot menu, remembered slot or LED mode after power off),
+and on the way back after a problem.
+
 Writes to firmware/flashlog/<date>_<name>/: owl_read_before/, dfu-util_download.txt,
-dfu-util_upload.txt, readback_after.bin, sha256.txt, flash_report.json, owl_read_after/.
+dfu-util_upload.txt, readback_after.bin, sha256.txt, dfu-util_upload_leave.txt,
+readback_leave.bin, flash_report.json, owl_read_after/.
 An existing log folder is never reused. If the tool stops before anything was written to
 the flash, it renames the folder to <date>_<name>-abgebrochen-<time>.
 
@@ -22,9 +31,10 @@ they only run outside the sandbox. Standard library only, owl_read.py runs throu
 
 Usage:
   python3 tools/flash_acdc.py <build>                    offline checks only
-  python3 tools/flash_acdc.py <build> --yes              flash acdc1
+  python3 tools/flash_acdc.py <build> --yes              flash acdc1, leave DFU, A1
+  python3 tools/flash_acdc.py <build> --yes --cold       flash acdc1, restart by hand
   python3 tools/flash_acdc.py <build> --yes --from-dfu   acdc1 is already in DFU mode
-  python3 tools/flash_acdc.py --a1 <log folder>          after the restart
+  python3 tools/flash_acdc.py --a1 <log folder>          after a restart by hand
   python3 tools/flash_acdc.py --a1 <log folder> --reuse  evaluate the stored reports again
 
 <build> is a .bin file, a build folder or the name of a folder in firmware/builds/.
@@ -298,10 +308,10 @@ def flash(args) -> int:
 
     try:
         if args.from_dfu:
-            print("== 1/4 acdc1 is expected in DFU mode, no owl_read before the flash")
+            print("== 1/5 acdc1 is expected in DFU mode, no owl_read before the flash")
             alt = wait_for_dfu(3)
         else:
-            print("== 1/4 Reading the device (owl_read_before)")
+            print("== 1/5 Reading the device (owl_read_before)")
             rc, _ = owl_read("--out", str(log / "owl_read_before"))
             rep = newest_report(log / "owl_read_before")
             if rc != 0 or rep is None:
@@ -316,14 +326,14 @@ def flash(args) -> int:
             report["before"] = {"version": _info(before, "FIRMWARE_VERSION"), "report": str(rep)}
             save()
 
-            print("== 2/4 Restart into the DFU bootloader")
+            print("== 2/5 Restart into the DFU bootloader")
             rc, _ = owl_read("--reset-to-dfu", "--yes")
             if rc != 0:
                 raise Abort("The DFU reset failed. Nothing was written.", 3)
             alt = wait_for_dfu(args.dfu_wait)
         report["dfu_alt"] = alt
 
-        print(f"== 3/4 Writing {info['size']} bytes to 0x{FLASH_ADDR:08x} (alt {alt})")
+        print(f"== 3/5 Writing {info['size']} bytes to 0x{FLASH_ADDR:08x} (alt {alt})")
         sel = ["dfu-util", "-d", DFU_ID, "-S", ACDC1_DFU_SERIAL, "-a", str(alt)]
         rc, out = run(sel + ["-s", f"0x{FLASH_ADDR:08x}", "-D", str(path)],
                       log / "dfu-util_download.txt", timeout=300)
@@ -334,7 +344,7 @@ def flash(args) -> int:
             # trotzdem zurücklesen: der Vergleich zeigt, was im Flash steht
             print("   dfu-util reported an error, reading back anyway", file=sys.stderr)
 
-        print(f"== 4/4 Readback of {FLASH_LEN} bytes")
+        print(f"== 4/5 Readback of {FLASH_LEN} bytes")
         rbf = log / "readback_after.bin"
         rc, out = run(sel + ["-s", f"0x{FLASH_ADDR:08x}:{FLASH_LEN}", "-U", str(rbf)],
                       log / "dfu-util_upload.txt", timeout=300)
@@ -364,10 +374,63 @@ def flash(args) -> int:
         print("FAILED. acdc1 is still in DFU mode: do not restart. Flash the fallback build with\n"
               f"  python3 tools/flash_acdc.py <build> --yes --from-dfu --name {name}-zurueck", file=sys.stderr)
         return 1
-    print(f"\nFlash OK: {info['version']} is in the internal flash of acdc1.\n"
-          "Now restart the module: case off, USB unplugged, case on, USB plugged in.\n"
-          f"Then: python3 tools/flash_acdc.py --a1 {log}")
-    return 0
+    print(f"\nFlash OK: {info['version']} is in the internal flash of acdc1.")
+    if args.cold:
+        print("--cold: now restart the module: case off, USB unplugged, case on, USB plugged in.\n"
+              f"Then: python3 tools/flash_acdc.py --a1 {log}")
+        return 0
+    return leave_and_a1(args, log, report, sel, b, save)
+
+
+def leave_and_a1(args, log: Path, report: dict, sel: list[str], b: bytes, save) -> int:
+    """Leave the ROM DFU with dfu-util ':leave' (messlog D79) and run A1.
+
+    The leave request rides on a second, read-only readback, so nothing more is written.
+    dfu-util usually exits with an error after 'Submitting leave request', because the device
+    is gone before it can report its status; what counts is that the readback is complete and
+    identical and that the DFU device disappears. Not a cold start: the codec and everything
+    outside the MCU stay powered (use --cold when that matters).
+    """
+    log_hint = (f"Restart by hand (case off, USB unplugged, case on, USB plugged in), "
+                f"then: python3 tools/flash_acdc.py --a1 {log}")
+    print(f"== 5/5 Leaving DFU mode (read-only readback with ':leave'), then A1")
+    rbf = log / "readback_leave.bin"
+    rc, out = run(sel + ["-s", f"0x{FLASH_ADDR:08x}:{FLASH_LEN}:leave", "-U", str(rbf)],
+                  log / "dfu-util_upload_leave.txt", timeout=300)
+    res = check_readback(b, rbf.read_bytes()) if rbf.is_file() else None
+    gone = False
+    for _ in range(args.leave_wait):
+        time.sleep(1)
+        if dfu_alt() is None:
+            gone = True
+            break
+    report["leave"] = {"rc": rc, "leave_sent": "Submitting leave request" in out,
+                       "readback_identical": bool(res and res["identical"] and res["rest_ff"]),
+                       "dfu_gone": gone}
+    save()
+    if not (res and res["identical"] and res["rest_ff"]):
+        print("   The readback with ':leave' does not match the binary. The first readback did.",
+              file=sys.stderr)
+    if not gone:
+        print(f"   acdc1 is still in DFU mode after {args.leave_wait} s, ':leave' did not work.\n   {log_hint}",
+              file=sys.stderr)
+        return 6
+    print("   DFU device gone, the firmware starts")
+    a1_args = argparse.Namespace(a1=str(log), reuse=False, expect_version=None)
+    rb_ok = report["leave"]["readback_identical"]
+    for attempt in range(1, 4):
+        time.sleep(3)
+        try:
+            rc_a1 = a1(a1_args)
+            if rc_a1 == 0 and not rb_ok:
+                print("   A1 passed, but the second readback did not match: check readback_leave.bin",
+                      file=sys.stderr)
+                return 7
+            return rc_a1
+        except Abort as e:
+            print(f"   A1 attempt {attempt}: {e}", file=sys.stderr)
+    print(f"   acdc1 did not answer over MIDI after leaving DFU.\n   {log_hint}", file=sys.stderr)
+    return 6
 
 
 def a1(args) -> int:
@@ -413,6 +476,11 @@ def main(argv=None) -> int:
     ap.add_argument("--from-dfu", action="store_true",
                     help="acdc1 is already in DFU mode: skip owl_read and the DFU reset")
     ap.add_argument("--dfu-wait", type=int, default=20, help="seconds to wait for the DFU device (default 20)")
+    ap.add_argument("--cold", action="store_true",
+                    help="do not leave DFU with ':leave': stop after the readback and wait for a restart by hand "
+                         "(case off, USB unplugged, case on, USB plugged in), then --a1")
+    ap.add_argument("--leave-wait", type=int, default=10,
+                    help="seconds to wait for the DFU device to disappear after ':leave' (default 10)")
     ap.add_argument("--a1", metavar="LOG", help="after the restart: read the device and check it against the flash log")
     ap.add_argument("--reuse", action="store_true", help="with --a1: evaluate the stored reports, ask no device")
     ap.add_argument("--expect-version", help="with --a1: expected version string, e.g. 'AC/DC v22.4.r-fx4b' "

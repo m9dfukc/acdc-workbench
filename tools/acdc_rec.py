@@ -221,7 +221,7 @@ class Take:
                     f.write(blk)
                     written += len(blk)
                     now = time.monotonic() - t0
-                    if not a.simulate and now - last_report >= 10:
+                    if not a.simulate and now - last_report >= a.progress:
                         last_report = now
                         print(f"  {written / a.fs:5.1f} / {a.duration:g} s", flush=True)
                 hook_result = hook() if hook else None
@@ -291,6 +291,8 @@ def main() -> None:
     t.add_argument("--first-rep", type=int, default=1, help="number of the first repetition (suffix -rN)")
     t.add_argument("--pause", type=float, default=5.0, help="seconds to pause between repetitions (stream closed)")
     t.add_argument("--prompt", action="store_true", help="wait for Enter before each recording")
+    t.add_argument("--progress", type=float, default=10.0, metavar="SEC",
+                   help="seconds between progress lines (1 = a running timer for guided recordings)")
     t.add_argument("--owl-read", action="store_true", help="run owl_read.py after each recording, before closing the stream")
 
     n = ap.add_argument_group("Name and manifest")
