@@ -2017,7 +2017,7 @@ Familienpegel, Mittel je Block, Δ gegen das Mittel der vier fx4b-Aufnahmen, Dat
 
 **Anlass (Nutzer):** Ein weiterer eigener Patch für Slot 6, nach dem Vorbild eines digitalen Eurorack-Moduls mit zwei Allpass-Sektionen zu je 98 Polen. Nachgebaut ist eine Sektion: mono hinein, stereo heraus, dazu zwei abgeleitete Signale. Grundlage waren das Handbuch des Vorbilds (v1.2.1) und der Forum-Thread des Herstellers (vom Nutzer als Datei geliefert).
 
-**Aufbau [Code]:** `owl/SchlierePatch.hpp`, 61 gleiche Allpässe 2. Ordnung in Reihe (1 Stufe = 2 Pole).
+**Aufbau [Code]:** `owl/schliere/SchlierePatch.hpp`, 61 gleiche Allpässe 2. Ordnung in Reihe (1 Stufe = 2 Pole).
 - Regler 1–4: Frequency (20 Hz…20 kHz), Resonance (Q 0,01…16), Tap (sieben Rastpunkte mit Haltezonen, dazwischen Überblendung), Feedback (0…97 %).
 - In 1 Audio oder CV (Vorwärtsweg DC-gekoppelt), In 2 Frequency-CV 1 V/Okt ohne Totzone, In 3 Tap-CV, In 4 Feedback-CV (unter null negatives Feedback), In 3/4 mit Totzone ±0,5 V.
 - Out 1 (L): Abgriffe 2, 18 … 98 Pole. Out 2 (R): 2, 22 … 122 Pole. Out 3: (L − R)/2. Out 4: Ende der Kette (122 Pole).
@@ -2078,7 +2078,7 @@ Gewählt ist das Zustandsvariablenfilter (trapezförmige Integration, Allpass = 
 - **Fassung 2 im RAM [gemessen], 17:49:** `owl_write.py Schliere.syx --run`, 85 Pakete in 1,4 s. Danach läuft Programm 0 „Schliere“ mit 17 268 B, CPU 28 %, Regler 42 / 83 / 115 / 68. Slots 1–6 unverändert, auf Slot 6 liegt weiter Fassung 1 (`out/owl_read/acdc1/20261118_174928/`). Das Hörurteil des Nutzers zum Vergleich steht aus.
 - **Hörurteil zu Fassung 2 (Nutzer, ≈ 17:55):** Das Fiepsen ist unverändert da. Die gedimmten LEDs sind damit nicht die Ursache, jedenfalls nicht allein. H3 bleibt ohne Beweis.
 - **Neuer Umstand (Nutzer):** acdc1 ist heute zum ersten Mal ins Case geschraubt. Bei allen bisherigen Messungen und beim Hören lag das Modul neben dem Case. Der Nutzer vermutet Einstreuungen aus dem Case und will Schritt für Schritt selbst eingrenzen [Hypothese, ungeprüft]. Ob das Fiepsen an Schliere hängt oder mit jedem Patch auftritt, ist damit offen.
-- **Zurückschalten:** Der Programmwechsel auf Slot 6 scheiterte, weil acdc1 nicht am USB war („MIDI port not found“). Gesendet wurde nichts. Fassung 2 läuft bis zum nächsten Neustart aus dem RAM, danach startet der gemerkte Slot. Auf Slot 6 liegt Fassung 1, die Quelle `owl/SchlierePatch.hpp` und der Build in `owl-patches/builds/Schliere/` sind Fassung 2.
+- **Zurückschalten:** Der Programmwechsel auf Slot 6 scheiterte, weil acdc1 nicht am USB war („MIDI port not found“). Gesendet wurde nichts. Fassung 2 läuft bis zum nächsten Neustart aus dem RAM, danach startet der gemerkte Slot. Auf Slot 6 liegt Fassung 1, die Quelle `owl/schliere/SchlierePatch.hpp` und der Build in `owl-patches/builds/Schliere/` sind Fassung 2.
 - **Zurückgeschaltet [gemessen], 18:07:** `owl_read.py --program 6` (Auftrag des Nutzers). Es läuft wieder Fassung 1 aus Slot 6 (17 196 B), CPU 28 %, Slots 1–6 unverändert (`out/owl_read/acdc1/20261118_180730/`). Der Programmwechsel wird nicht gemerkt.
 
 ### D67 – Das Fiepsen in Schliere ist die LED-PWM: Out 1 über das zweite Interface aufgenommen (2026-11-18, 18:16)
@@ -2749,3 +2749,113 @@ Danach: Kabel stecken noch, Slot 1 läuft.
 `:leave` ist ab jetzt der Standard: `tools/flash_acdc.py` liest nach dem Readback ein zweites Mal nur lesend mit `:leave` zurück, wartet, bis das DFU-Gerät verschwindet, und macht A1 selbst. Kaltstart von Hand nur noch mit `--cold`: wenn `:leave` scheitert, wenn ein Build am Einschalten etwas ändert (Takt, Codec-Init), wenn der Test das Einschalten betrifft und auf dem Rückweg nach einem Problem. Im Skript bisher nur gegen Attrappen getestet.
 
 **Entscheidung (Nutzer, 2026-11-19):** fx7a ist die Alltags-Firmware auf acdc1. Rückweg fx6a, dann fx5a.
+
+## D80 – Schliere: Tap- und Feedback-Modulation, Fassung 4 und Schliere M (2026-11-19, nachmittags, am Rechner)
+
+**Anlass (Nutzer, 2026-11-19):** Moduliert man in Schliere den Tap, klingt es hart, bei Audio-Rate vermutlich mit Aliasing. Steckt man Out 2, 3 oder 4 auf In 4 (Feedback-CV), klingt es nach hartem digitalem Clipping in den Höhen. Frage: Wie macht das Vorbild das, und gibt es eine elegantere Art?
+
+**Vorbild [belegt]:** Handbuch v1.2.1 des Vorbilds (PDF von der Hersteller-Seite, Fassung 2026-11-07) und Forum-Thread 296092. Das Vorbild überblendet genauso linear zwischen festen Abgriffen, mit Haltezonen (Diagramm „Level of each tap“). Audio-Rate am Tap beschreibt das Handbuch selbst als metallisch, „like FM or ring modulation“. Den CV glättet es (Thread #36), mit Firmware 1.1.1 wurde die Glättung gelockert („more responsive“). Ein anderes Verfahren für den Tap ist nicht dokumentiert.
+
+**Mechanismus [Code]:** Zwischen zwei Abgriffen ist der Ausgang (1 − t)·A + t·B. Moduliert man t, werden die Kerben nicht verschoben, sondern ein- und ausgeblendet: eine Amplitudenmodulation, die Seitenbänder tragen fast die ganze Energie. Gefaltet wird, was die Abbildung CV → t an Oberwellen erzeugt. In Fassung 3 gab es drei Knicke: harte Totzone im Nulldurchgang (±0,5 V), Ränder der Haltezonen, Klemmung am Ende. Dazu wirkte der CV ungeglättet pro Sample. Beim Feedback-CV ist es dasselbe: Die Feedback-Menge multipliziert das Schleifensignal pro Sample, und die Grenze bei ±1 schnitt den CV hart ab.
+
+**Messung [gemessen, Host]:** echter Patch-Code gegen `owl/test/Patch.h`, Fassung 3 aus `git show HEAD`. Eingang Sinus 5 kHz mit 3 V, Frequency 632 Hz, Resonance 12 Uhr, Tap zwischen Rastpunkt 3 und 4. Modulator Sinus 441 Hz. „Gefaltet“ = Linien, die nicht auf dem Raster 5000 + k · 441 Hz liegen, gegen alle Linien des Rasters, Blackman-Harris über 2 s. Beim Selbst-Patch Out 2 → In 4 (ein Block Verzögerung) zählen die Vielfachen von 1 kHz, die keine von 5 kHz sind, gegen die Oberwellen von 5 kHz.
+
+| Fall | Fassung 3 | Fassung 4 | Schliere M |
+|---|---|---|---|
+| Tap-CV ±1 V | −51,0 dB | −116,2 dB | −69,9 dB |
+| Tap-CV ±3 V | −34,1 dB | −81,9 dB | −64,5 dB |
+| Feedback-CV ±3 V, Feedback 50 % | −69,0 dB | −124,6 dB | −122,7 dB |
+| Out 2 → In 4, Feedback 30 %, 2 V | −47,0 dB | −86,8 dB | −63,8 dB |
+| Out 2 → In 4, Feedback 30 %, 6 V | −19,0 dB | −69,8 dB | −48,8 dB |
+| Out 2 → In 4, Feedback 70 %, 2 V | −38,0 dB | −70,2 dB | −69,3 dB |
+| Out 2 → In 4, Feedback 70 %, 6 V | −20,7 dB | −59,8 dB | −41,3 dB |
+
+Bei Tap-CV ±1 V liegt der Ton selbst bei −7 dB, die Seitenbänder bei −0,9 dB, in allen drei Fassungen. Bei Schliere M mit ±3 V liegt der Ton bei −27 dB (Phasenmodulation mit großem Index).
+
+**Was Fassung 4 ändert [Code]:**
+- Totzone an In 3 und In 4 mit weicher Kante: bis 0,45 V null, bis 0,65 V Übergang y³ − y⁴/2, danach linear mit 0,55 V Versatz.
+- Rand der Haltezonen mit S-Kurve statt Knick.
+- Die Gewichte der sieben Abgriffe laufen einzeln durch zwei Tiefpässe 1. Ordnung (je 3 kHz, trapezförmig mit Nullstelle bei fs/2). Geglättet wird nach der Abbildung, nicht der CV. Mit einfachen Tiefpässen (y += (x − y)·a, nur −14 dB je Pol bei fs/2) lag Tap-CV ±3 V erst bei −62,6 dB.
+- Feedback-Menge: weiches Knie ab 90 % statt harter Grenze, danach zwei Tiefpässe mit je 1,5 kHz. Regler 4 erreicht damit 95 % statt 97 %, 97 % nur noch mit CV. Mit 3 kHz lag der Selbst-Patch bei 70 % und 6 V bei −50,6 dB, mit 800 Hz bei −70,0 dB.
+- Die Rastpunkt-LEDs folgen nur noch Regler 3, nicht dem CV, mit Hysterese (an ±12 %, aus ±18 % des Abstands). Vorher schalteten sie bei Tap-Modulation im Blocktakt, und jeder Wechsel gibt einen Knack am Ausgang (D73). Das erledigt auch den offenen Punkt zum Flackern an den Haltezonen.
+
+**Schliere M [Code]:** zweiter Patch in derselben Datei (`SchliereMPatch`). Tap ändert die Länge der Kette stufenlos: 1 + 8u Stufen links, 1 + 10u rechts (u = 0 … 6). Die angebrochene Stufe setzt von 0 Hz her ein, ihre Eckfrequenz ist so gewählt, dass sich die Phase bei Frequency linear mit dem Bruchteil ändert. Die Kette ist in jeder Stellung ein Allpass (Host-Test: 0,0004 dB Abweichung bei 27,4 Stufen). Ein langsamer Lauf über alle Stufen ändert den Pegel bei 1 kHz um weniger als 0,1 dB. Out 4 ist hier die Summe (L + R)/2 statt Tail. L und R brauchen getrennte Ketten, bis zu 49 + 61 Stufen.
+
+**Host-Test:** `schliere_test.cpp` hat jetzt 45 Fälle (vorher 28), alle bestanden. Neu sind drei Fälle zur Faltung, zwei zu den LEDs bei Modulation und Zittern und zwölf für Schliere M.
+
+**Builds:** `owl-patches/builds/Schliere/` (Fassung 4, 20 948 B, CRC `0xedf1ef5f`, `fe0beeba…`) und `owl-patches/builds/SchliereM/` (24 100 B, CRC `0x7261d05f`, `d5966d72…`). Fassung 3 (Slot 6) liegt als Kopie in `owl-patches/builds/Schliere-v3/`.
+
+**Einschränkungen und offen:**
+- Nichts davon ist am Gerät gemessen oder gehört. Rechenlast offen, bei Schliere M geschätzt 50–55 % statt 30 % [Hypothese].
+- Der Selbst-Patch ist mit einem Block Verzögerung modelliert. Am Gerät kommen Wandler und Codec-Filter dazu, die Schleife verhält sich dort anders.
+- Bei Schliere M faltet Tap-Modulation mit −64…−70 dB mehr als Fassung 4. Die Tiefpässe glätten die Tap-Stellung, aber die Abbildung Stellung → Koeffizient der Teilstufe liegt dahinter [Hypothese: Knicke der Gruppenlaufzeit an den ganzen Stufen abseits von Frequency]. Auch der Selbst-Patch faltet bei Schliere M mehr, Ursache nicht geklärt.
+- Weil die Teilstufe von unten einsetzt, hebt ein steigender Tap die Tonhöhe kurz an, ein fallender senkt sie [Code].
+- Ein Teil der Härte ist das Prinzip, nicht ein Fehler: Rückkopplung, die ihre eigene Stärke moduliert, ist Feedback-Amplitudenmodulation. Sie erzeugt schon ohne Faltung sägezahnartige, bei viel Verstärkung chaotische Spektren [Hypothese, nach der Literatur zu FBAM].
+
+**Nachtrag (2026-11-19, 14:45–14:46): auf acdc1 geladen.** Freigabe des Nutzers. Vorher Sicherung mit `owl_read.py --out backup --dump` nach `backup/acdc1/20261119/owl/`: sechs Slots, alle `ok`, Slot 6 = Fassung 3 (17 860 B, `0x936d0028`), Fassung 3 lief mit 31 % CPU.
+- Slot 6: `owl_write.py … --store 6 --yes --backup-file owl-patches/builds/Schliere-v3/Schliere.syx`. Gespeichert und zurückgemeldet als 'Schliere', 20 948 B, `0xedf1ef5f`. **33 % CPU** (`PROGRAM_STATS`, Regler 1–4: 91/33/100/1 von 127).
+- Slot 7 (leer): `--store 7 --yes`, zurückgemeldet als 'SchliereM', 24 100 B, `0x7261d05f`. **49 % CPU** bei Tap 82 von 127 (etwa 32 + 40 Stufen). Mit Tap am Rechtsanschlag (127 von 127, 49 + 61 Stufen, Regler 1/2/4: 127/50/15) **54 % CPU** [gemessen], weniger als geschätzt (60–65 %).
+- Danach läuft Slot 7 (Program Change nur im RAM). Der gemerkte Slot (`ACDC.slot`) ist unverändert.
+
+**Zweiter Nachtrag (2026-11-19, 14:54): Fassung 3 zusätzlich auf Slot 8.** Der Nutzer findet Fassung 4 zu zahm und mochte die Glitches von Fassung 3. `owl_write.py owl-patches/builds/Schliere-v3/Schliere.syx --store 8 --yes` (Slot 8 war leer), zurückgemeldet als 'Schliere', 17 860 B, `0x936d0028`, 30 % CPU. Zwei Slots heißen damit 'Schliere': 6 = Fassung 4, 8 = Fassung 3.
+
+**Was Fassung 4 zahm macht [gemessen, Host]:** Selbst-Patch Out 2 → In 4 wie oben, Eingang 5 kHz. „Obertöne“ = 10 + 15 + 20 kHz gegen 5 kHz, „gefaltet“ = Vielfache von 1 kHz, die keine von 5 kHz sind, gegen alle Linien von 5 kHz. Fassung 4 mit anderer Grenzfrequenz der Feedback-Glättung (je Pol), sonst unverändert (weiches Knie, LEDs):
+
+| Fassung | 30 %, 2 V Obert. / gef. | 30 %, 6 V | 70 %, 2 V | 70 %, 6 V |
+|---|---|---|---|---|
+| 3 | −31,7 / −47,0 | −6,3 / −19,0 | −18,3 / −38,0 | −10,3 / −20,7 |
+| 4 (1,5 kHz) | −58,1 / −86,8 | −44,4 / −69,8 | −46,3 / −70,2 | −38,0 / −59,8 |
+| 4 mit 6 kHz | −39,5 / −71,8 | −19,9 / −41,2 | −27,7 / −57,1 | −16,7 / −34,8 |
+| 4 mit 12 kHz | −34,3 / −56,2 | −10,8 / −32,2 | −21,9 / −49,5 | −11,4 / −29,7 |
+| 4 ohne Glättung (23 kHz) | −31,2 / −44,2 | −14,3 / +1,7 | −18,4 / −40,4 | −10,6 / −20,1 |
+
+- Die Glättung mit 1,5 kHz nimmt nicht nur die Faltung, sondern auch die neuen Obertöne: 28–38 dB weniger als Fassung 3. Das ist das „Zahme“.
+- Mit 12 kHz kommen die Obertöne fast wieder auf Fassung 3 (innerhalb 1–5 dB), gefaltet wird 9–13 dB weniger. Ohne Glättung faltet es wie Fassung 3, mit 30 % und 6 V sogar mehr als Nutzsignal (der Lauf wird chaotisch).
+- Die Obertöne aus der Feedback-Modulation sind also gewollt und lassen sich von der Faltung nur zum Teil trennen. Ganz trennen ließe sich das nur mit Oversampling des Produkts in der Schleife [Hypothese].
+
+**Dritter Nachtrag (2026-11-19, 15:00): Zwischenstufe SchliereW auf Slot 9.** Wunsch des Nutzers nach dem Vorschlag oben. `SchliereWPatch` = SchlierePatch (Fassung 4) mit Feedback-Glättung 12 kHz je Pol statt 1,5 kHz, sonst gleich (weiches Knie, Tap-Glättung 3 kHz, LEDs nach Regler 3). Die Klasse steht in `owl/schliere/SchlierePatch.hpp` hinter `SCHLIERE_WILD_PATCH` und wird über `owl/schliere/SchliereWPatch.hpp` gebaut: Schon eine abgeleitete Klasse änderte das Binary von SchlierePatch (20 844 statt 20 948 B), so bleibt der Build von Slot 6 bytegleich mit der Quelle (`fe0beeba…` erneut gebaut). Host-Test: vier neue Fälle, ohne CV gleich SchlierePatch, Selbst-Patch 70 % / 6 V gefaltet −29,7 dB, beschränkt, klingt aus. Build `owl-patches/builds/SchliereW/`: 21 028 B, CRC `0x3d5a81ad`, `fee4cf81…`. Gespeichert auf Slot 9 (war leer), zurückgemeldet mit Größe und CRC. CPU 32–36 % (zwei `PROGRAM_STATS` im selben Report). Danach läuft Slot 9. Am Gerät nicht gehört.
+
+**Vierter Nachtrag (2026-11-19, 15:07): SchliereO mit doppelter Abtastrate in der Schleife, Slot 10.** Wunsch des Nutzers: alle Fassungen nacheinander vergleichen. `owl/schliere/SchliereOPatch.hpp`: Überblendung wie Fassung 4, aber der Eingang der Kette läuft mit 96 kHz. Eingang (nach der Sperre), In 4 und Schleifensignal werden hochgerechnet, dort laufen Totzone, weiches Knie und beide Produkte, danach geht es zurück auf 48 kHz. Die Feedback-Menge wird nicht geglättet (wie Fassung 3, aber ohne harte Grenze).
+
+- **Filter [gemessen, Host]:** Polyphasen-IIR-Halbband aus sechs Allpässen 1. Ordnung (elliptischer Entwurf nach Valenzuela/Constantinides, Übergang 0,045, Koeffizienten im Kopf der Datei). Entwurf numerisch geprüft: Durchlass bis 20 kHz ohne Welligkeit, Sperre ab 28 kHz −77 dB. Am C++-Code: Spiegelbilder ≤ −78 dB, Faltung beim Heruntertakten ≤ −82 dB. Verzögerung je Richtung ≈ 1,4 Samples bei 48 kHz (1 kHz), die Schleife wird um 2,8 Samples länger (Host-Test). Wegen der IIR-Form steigt die Verzögerung zu 20 kHz hin auf ≈ 4,5 Samples je Richtung.
+- **Selbst-Patch Out 2 → In 4 [gemessen, Host]**, Obertöne / gefaltet wie im zweiten Nachtrag:
+
+| Fassung | 30 %, 2 V | 30 %, 6 V | 70 %, 2 V | 70 %, 6 V |
+|---|---|---|---|---|
+| 3 (Slot 8) | −31,7 / −47,0 | −6,3 / −19,0 | −18,3 / −38,0 | −10,3 / −20,7 |
+| 4 (Slot 6) | −58,1 / −86,8 | −44,4 / −69,8 | −46,3 / −70,2 | −38,0 / −59,8 |
+| W (Slot 9) | −34,3 / −56,2 | −10,8 / −32,2 | −21,9 / −49,5 | −11,4 / −29,7 |
+| O (Slot 10) | −21,0 / −56,8 | +4,3 / −33,4 | −13,8 / −53,0 | +1,4 / −35,1 |
+
+  SchliereO erzeugt mehr neue Obertöne als Fassung 3 (bei 6 V lauter als der Grundton), gefaltet wird 10–15 dB weniger. Was noch als gefaltet zählt, ist bei 6 V zum Teil vermutlich kein Aliasing, sondern nicht periodischer Anteil der rückgekoppelten Schleife [Hypothese]. Das Maß trennt beides nicht.
+- **Host-Test:** neun neue Fälle (Halbband, flacher Pegel und Verzögerung ohne Feedback, Selbst-Patch −34,4 dB, beschränkt, LEDs, klingt aus, Gleichspannung). `schliere_test.cpp` hat damit 58 Fälle (mit den vier für SchliereW), alle bestanden. Die Builds von Slot 6, 7 und 9 bauen weiter bytegleich (`fe0beeba…`, `d5966d72…`, `fee4cf81…`).
+- **Build und Slot:** `owl-patches/builds/SchliereO/`: 21 868 B, CRC `0x9d98ea19`, `76c2da97…`. Auf Slot 10 gespeichert (war leer), zurückgemeldet mit Größe und CRC. **43 % CPU** (Fassung 4: 33 %). Danach läuft Slot 10. Am Gerät nicht gehört.
+
+**Fünfter Nachtrag (2026-11-19, 15:12–15:13): Namen.** Zwei Slots hießen 'Schliere'. Auf Wunsch des Nutzers tragen alle Schliere-Slots jetzt einen Buchstaben: Slot 8 = **SchliereA** (Fassung 3, „alt“), Slot 6 = **SchliereZ** (Fassung 4, „zahm“), dazu SchliereM, SchliereW, SchliereO. Der Name steckt im Binary. SchliereA ist aus der Quelle von Fassung 3 gebaut (`git show HEAD:owl/SchlierePatch.hpp`, `AcdcInput.h` unverändert, lokal in `owl-patches/src-schliere-v3/`), SchliereZ aus der aktuellen Quelle. Gegen `Schliere-v3/` bzw. den Build von Fassung 4 unterscheiden sich beide nur in zwei Bytes, dem Buchstaben im Namen. Zwischendurch lag Fassung 4 kurz als 'Schliere4' auf Slot 6 (`owl-patches/builds/Schliere4/`), ersetzt nach dem Wunsch „Buchstaben statt Zahl“.
+- Slot 6: 'SchliereZ', 20 948 B, CRC `0x36b5b8e0`, `owl-patches/builds/SchliereZ/`. Vorher gesichert: `backup/acdc1/20261119/owl_write_151205/`, `owl_write_151255/`.
+- Slot 8: 'SchliereA', 17 860 B, CRC `0x80731b57`, `owl-patches/builds/SchliereA/`. Vorher gesichert: `backup/acdc1/20261119/owl_write_151305/`. 29 % CPU.
+- Danach läuft Slot 8. `owl-patches/builds/Schliere/` (Fassung 4 unter altem Namen) und `Schliere4/` sind überholt.
+
+**Sechster Nachtrag (2026-11-19, 15:14–15:40): Slots getauscht, Quellen in `owl/schliere/`.** Auf Wunsch des Nutzers, damit die Reihenfolge klar ist:
+- **Slots 6 und 8 getauscht:** Slot 6 = SchliereA (Fassung 3), Slot 8 = SchliereZ (Fassung 4), je mit lokaler Kopie als Sicherung (`backup/acdc1/20261119/owl_write_151430/`, `owl_write_151439/`), zurückgemeldet mit Größe und CRC. Belegung jetzt: 6 A, 7 M, 8 Z, 9 W, 10 O. Ein im Boot-Menü gemerkter Slot 6 oder 8 startet jetzt die andere Fassung.
+- **Quellen:** `owl/schliere/` mit `SchlierePatch.hpp` (Z), `SchliereAPatch.hpp` (Fassung 3, nur die Klasse umbenannt), `SchliereMPatch.hpp` (aus `SchlierePatch.hpp` herausgelöst), `SchliereWPatch.hpp`, `SchliereOPatch.hpp` und `README.md` (Varianten, Belegung, Messwerte, Bauen, deutsch und englisch in einer Datei). `AcdcInput.h` bleibt in `owl/`, die Mess-Patches `owl/test/SchliereLed*.hpp` auch (sie binden jetzt `../schliere/SchlierePatch.hpp` ein). `owl-patches/src-schliere-v3/` aus dem fünften Nachtrag ist gelöscht, die Quelle von A ist jetzt `SchliereAPatch.hpp`.
+- **Bytegleich:** Alle fünf Varianten aus `owl/schliere/` gebaut und mit den Slot-Builds verglichen: A `16ee54fe…`, Z `3e20acb3…`, M `d5966d72…`, W `fee4cf81…`, O `76c2da97…`, alle gleich. Host-Test mit zwei Fällen für A (Rastpunkt 7 wie das Lehrbuch; Tap-CV ±3 V faltet mit −34,1 dB wie oben), insgesamt 60 Fälle bestanden.
+- **SchliereM** sollte erst vom Modul, dann wollte der Nutzer doch alle Varianten behalten. Dafür hat `owl_write.py` jetzt `--erase SLOT --yes` (Wunsch des Nutzers, es zu behalten): nur ein Slot ab 2, nur mit einer lokalen Kopie, die in Größe und CRC zum Slot passt (wird zur Sicherung), Slotnummer immer mit 5 Bytes, danach müssen alle anderen Slots unverändert zurückkommen. Offline geprüft (Slot 1 und fehlendes `--yes` abgelehnt), am Gerät noch nie gesendet. Gefunden dabei [Code]: `MidiHandler::handleFlashEraseCommand` löscht ohne Slotnummer den ganzen Patch-Speicher, mit Slotnummer nur diesen Patch, die anderen Slots behalten ihre Nummern (`PatchRegistry` legt Patches nach ihrer Nummer ab).
+
+**Siebter Nachtrag (2026-11-19, 15:45–16:05): SchliereS auf Slot 11.** Der Nutzer mag O fast am liebsten, wünscht bei Feedback-Modulation aber „ein ganz klein wenig weniger Glitch“. `owl/schliere/SchliereSPatch.hpp`: von `SchliereOPatch` abgeleitet, glättet den CV an In 4 mit zwei Tiefpässen 1. Ordnung (trapezförmig, je 12 kHz bei 48 kHz, zusammen ≈ 7,7 kHz), bevor O ihn verarbeitet.
+- **Zuerst** sollte die Glättung nach der Kennlinie bei 96 kHz in O selbst sitzen (wie bei Z). Als Template gebaut, änderte das Binary von O (CRC `0x7756d25a` statt `0x9d98ea19`, gleiche Größe), deshalb verworfen. Eine Ableitung in eigener Datei lässt O bytegleich (erneut geprüft: `76c2da97…`).
+- **Wahl der Grenzfrequenz [gemessen, Host]**, Selbst-Patch wie oben, Obertöne / gefaltet:
+
+| Variante | 30 %, 2 V | 30 %, 6 V | 70 %, 2 V | 70 %, 6 V |
+|---|---|---|---|---|
+| O | −21,0 / −56,8 | +4,3 / −33,4 | −13,8 / −53,0 | +1,4 / −35,1 |
+| In 4 mit 18 kHz je Pol | −21,4 / −57,0 | −2,6 / −36,8 | −15,2 / −53,4 | +3,8 / −31,5 |
+| **In 4 mit 12 kHz je Pol (S)** | −22,0 / −58,4 | −5,3 / −42,9 | −17,0 / −57,3 | +2,6 / −35,5 |
+| In 4 mit 8 kHz je Pol | −24,2 / −63,8 | −9,0 / −49,3 | −21,1 / −72,4 | −3,2 / −41,1 |
+| Glättung der Feedback-Menge bei 96 kHz, 16 kHz je Pol (verworfen) | −22,1 / −61,3 | −4,8 / −42,9 | −18,0 / −57,4 | +0,5 / −34,9 |
+
+  Bei 70 % und 6 V läuft die Schleife chaotisch, die Werte streuen um einige dB. 12 kHz nimmt 1–9 dB Faltung und wenig Obertöne weg, wie „ganz klein wenig“ gewünscht.
+- **Host-Test:** vier neue Fälle (ohne CV an In 4 gleich O, Feedback-Modulation bei 3 kHz −0,5 dB gegen O, bei 15 kHz gedämpft, Selbst-Patch −35,7 dB, beschränkt). 65 Fälle in `schliere_test.cpp`, alle bestanden.
+- **Build und Slot:** `owl-patches/builds/SchliereS/`: 18 156 B, CRC `0xd9b2a0f9`, `9be06b12…`. Auf Slot 11 gespeichert (war leer), zurückgemeldet mit Größe und CRC, **39 % CPU**. Danach läuft Slot 11. Im Boot-Menü ist 11 = LED 1, 2 und 4.
+- Begriff: Im Deutschen heißt es „Oversampling“ (Nutzer), README und Messlog sind angepasst.
+

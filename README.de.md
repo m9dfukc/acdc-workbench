@@ -16,7 +16,7 @@ English version: [README.md](README.md)
 | `python -m analysis` | Rauschanalyse einer Aufnahme: Langzeit-Spektrum, gemessene Linienfrequenzen, Linienfamilien (USB-Frame-Kamm, fs/8, Mischprodukte, LED-PWM, Netz), Zeitverlauf, Report als Markdown, JSON und Plots |
 | `tools/family_table.py` | Tabelle der Familienpegel über mehrere Messungen, mit Differenz zur Kontrolle |
 | `tools/owl_read.py` | Liest das Modul per MIDI/SysEx aus, ohne zu schreiben: Firmware-Version, Settings, Patch-Slots, Statusmeldung. Kann es in den DFU-Bootloader neu starten |
-| `tools/owl_write.py` | Lädt einen OWL-Patch per MIDI/SysEx hoch: nur im RAM starten oder in einen Slot speichern. Sichert einen belegten Slot vorher und liest den neuen danach zurück |
+| `tools/owl_write.py` | Lädt einen OWL-Patch per MIDI/SysEx hoch: nur im RAM starten oder in einen Slot speichern. Sichert einen belegten Slot vorher und liest den neuen danach zurück. Löscht auf Wunsch einen einzelnen Slot, nur mit passender lokaler Kopie |
 | `tools/build_owl_patch.sh` | Baut einen C++-Patch mit OwlProgram für das AC/DC und schreibt die SysEx-Datei für `owl_write.py` |
 | `tools/sim_boot_menu.sh` | Testet die Logik des Boot-Menüs (Patch 15 und 17: Slot und LED-Modus) am Rechner mit simulierten Reglern, dazu, was die Hauptschleife je LED-Modus an die LEDs schreibt |
 | `tools/test_owl_dsp.sh` | Tests der eigenen OWL-Patches in `owl/` am Rechner (Waveshaper, Limiter, Allpass-Kette, Sperre für die Blockraten-Linien, LED-Mess-Patches) |
@@ -102,7 +102,7 @@ Die Aufrufe für Aufnahme, Loop-Prüfung, Auslesen und Nachbau stehen im englisc
 | `docs/en/` | Englische Fassungen der Referenz-Docs, siehe [docs/en/README.md](docs/en/README.md) |
 | `firmware/OpenWare/` | Submodul, der Firmware-Fork |
 | `firmware/patches/`, `firmware/builds/`, `firmware/flashlog/` | Patches, Build-Protokolle, Flash-Protokolle |
-| `owl/` | Eigene OWL-Patches für das Modul: `Tanh3` (dreifacher tanh-Waveshaper mit Mix-Kanal), `Schliere` (Kette aus 61 Allpässen 2. Ordnung: Laufzeit je Frequenz, Phaser-Kerben, Resonator, mono hinein und stereo heraus), ein Ausgangs-Limiter für FX-Patches und eine Sperre für die Blockraten-Linien am Eingang, mit Tests am Rechner. In `owl/test/` liegen dazu zwei Mess-Patches, die die LEDs nach Zeitplan schalten und die LED-Verschiebung selbst an den rohen Eingängen messen |
+| `owl/` | Eigene OWL-Patches für das Modul: `Tanh3` (dreifacher tanh-Waveshaper mit Mix-Kanal), `Schliere` in `owl/schliere/` (Kette aus 61 Allpässen 2. Ordnung: Laufzeit je Frequenz, Phaser-Kerben, Resonator, mono hinein und stereo heraus; fünf Varianten, beschrieben in `owl/schliere/README.md`), ein Ausgangs-Limiter für FX-Patches und eine Sperre für die Blockraten-Linien am Eingang, mit Tests am Rechner. In `owl/test/` liegen dazu zwei Mess-Patches, die die LEDs nach Zeitplan schalten und die LED-Verschiebung selbst an den rohen Eingängen messen |
 | `recordings/manifest.toml` | Metadaten jeder Aufnahme |
 | `out/<ID>/` | Analyse-Report je Messung |
 | `TODO.md`, `CLAUDE.md` | Offene Punkte und der Projektkontext für die Arbeit mit Claude Code |

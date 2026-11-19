@@ -130,7 +130,17 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [x] Englische Fassung von `docs/05` für Build 8 und 9 aufgefrischt (2026-11-19)
 - [ ] Hörbares Fiepen des Moduls (D79, auch im DFU-Modus, ≈ 800–1000 Hz, leise): Quelle eingrenzen (Modul oder Netzteil, Ohr oder Mikrofon), hören, ob es mit Last, Slot oder Reglern wandert. USB abziehen macht es leiser und höher (Nutzer). [Hypothese] Schaltregler im Pulsbetrieb
 - [ ] Idee (D74): Die Verschiebung ist auf allen Eingängen gleich. Ein offener Eingang als Bezug, den ein Patch abzieht? Kostet Rauschen, träfe aber auch Kamm und Blockrate, soweit sie auf allen Kanälen gleich sind
-- [ ] Schliere Fassung 4: LEDs aus oder mit Hysterese, damit sie an der Grenze einer Haltezone nicht flackern (D73). Ganz ohne Knack geht es nur ohne LEDs
+- [x] Schliere Fassung 4 (D80, am Rechner): Tap- und Feedback-CV bandbegrenzt, weiche Totzone und weiches Knie, gefaltete Linien bei Audio-Rate um 30–50 dB kleiner. Rastpunkt-LEDs nur noch nach Regler 3, mit Hysterese (D73). Dazu Schliere M (Tap ändert die Länge der Kette stufenlos)
+- [x] Schliere Fassung 4 auf Slot 6 und Schliere M auf Slot 7 geladen (D80, Nachtrag, 2026-11-19, 14:45): Rückmeldung von Größe und CRC stimmt, 33 % und 49 % CPU
+- [x] Schliere M: Rechenlast mit Tap am Rechtsanschlag 54 % (110 Stufen, D80 Nachtrag)
+- [x] Fassung 4 ist dem Nutzer zu zahm, er mochte die Glitches von Fassung 3. Fassung 3 liegt deshalb zusätzlich auf Slot 8 (D80, zweiter Nachtrag)
+- [x] Zwischenstufe SchliereW (Feedback-Glättung 12 kHz, weiches Knie bleibt) gebaut und auf Slot 9 geladen (D80, dritter Nachtrag)
+- [x] SchliereO: Eingang der Kette mit 96 kHz, Feedback ungeglättet, auf Slot 10 (D80, vierter Nachtrag)
+- [x] Schliere-Varianten in `owl/schliere/` mit README (de/en), Slots 6 A, 7 M, 8 Z, 9 W, 10 O (D80, sechster Nachtrag). SchliereM ist dem Nutzer zu zahm, bleibt aber vorerst auf Slot 7
+- [x] SchliereS (O mit ganz leicht geglättetem Feedback-CV) auf Slot 11 (D80, siebter Nachtrag)
+- [ ] Schliere-Varianten hören und entscheiden, welche bleiben: 6 SchliereA (Fassung 3), 8 SchliereZ (Fassung 4), 9 SchliereW, 10 SchliereO, 11 SchliereS
+- [ ] Schliere M anhören: Tap- und Feedback-Modulation, Out 2 → In 4
+- [ ] Schliere M: Faltung bei Tap-Modulation (−64…−70 dB) und im Selbst-Patch höher als Fassung 4 (D80), Ursache klären
 - [ ] Regler-Linien am Ausgang eines FX-Patches (D72): Quelle klären (D61) und prüfen, ob die Firmware sie senken kann (Abtastzeit oder Scanrate des Regler-ADC)
 - [ ] Wandernde Linien in D72 (684,8 Hz mit Oktaven, 942,5 Hz, 281,6 Hz) zuordnen: Reglerstellung, andere Module im Case oder Messkette?
 - [ ] Stärkste Linien am Ausgang sind jetzt die des USB-Kamms (D71). Der ist nicht sample-synchron, eine Sperre müsste f0 nachführen

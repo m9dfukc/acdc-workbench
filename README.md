@@ -16,7 +16,7 @@ Deutsche Fassung: [README.de.md](README.de.md)
 | `python -m analysis` | Noise analysis of a recording: long-term spectrum, measured line frequencies, line families (USB frame comb, fs/8, mixing products, LED PWM, mains), level over time, report as Markdown, JSON and plots |
 | `tools/family_table.py` | Table of family levels across several measurements, with the difference to a control |
 | `tools/owl_read.py` | Reads the module over MIDI/SysEx without writing: firmware version, settings, patch slots, status message. Can restart it into the DFU bootloader |
-| `tools/owl_write.py` | Uploads an OWL patch over MIDI/SysEx: run it from RAM only or store it in a slot. Backs up an occupied slot first and reads the new one back afterwards |
+| `tools/owl_write.py` | Uploads an OWL patch over MIDI/SysEx: run it from RAM only or store it in a slot. Backs up an occupied slot first and reads the new one back afterwards. Can delete a single slot, only with a matching local copy |
 | `tools/build_owl_patch.sh` | Builds a C++ patch with OwlProgram for the AC/DC and writes the SysEx file for `owl_write.py` |
 | `tools/sim_boot_menu.sh` | Tests the boot menu logic (patches 15 and 17: slot and LED mode) on the host with simulated knobs, plus what the main loop writes to the LEDs in each LED mode |
 | `tools/test_owl_dsp.sh` | Host tests of the own OWL patches in `owl/` (waveshaper, limiter, allpass chain, block-rate canceller, LED measurement patches) |
@@ -147,7 +147,7 @@ python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build9-fx7a   # after 
 | `docs/en/` | English versions of the reference documents, see [docs/en/README.md](docs/en/README.md) |
 | `firmware/OpenWare/` | Submodule, the firmware fork |
 | `firmware/patches/`, `firmware/builds/`, `firmware/flashlog/` | Patches, build records, flash records |
-| `owl/` | Own OWL patches for the module: `Tanh3` (triple tanh waveshaper with a mix channel), `Schliere` (a chain of 61 second-order allpass filters: frequency-dependent delay, phaser notches, resonator, mono in and stereo out), an output limiter for FX patches and an input canceller for the block-rate lines, with host tests. `owl/test/` also holds two measurement patches that switch the LEDs on a schedule and measure the LED shift at the raw inputs themselves |
+| `owl/` | Own OWL patches for the module: `Tanh3` (triple tanh waveshaper with a mix channel), `Schliere` in `owl/schliere/` (a chain of 61 second-order allpass filters: frequency-dependent delay, phaser notches, resonator, mono in and stereo out; five variants, described in `owl/schliere/README.md`), an output limiter for FX patches and an input canceller for the block-rate lines, with host tests. `owl/test/` also holds two measurement patches that switch the LEDs on a schedule and measure the LED shift at the raw inputs themselves |
 | `recordings/manifest.toml` | Metadata of every recording |
 | `out/<ID>/` | Analysis report of each measurement |
 | `TODO.md`, `CLAUDE.md` | Open points and the project context used when working with Claude Code |
