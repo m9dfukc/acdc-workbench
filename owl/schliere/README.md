@@ -12,7 +12,7 @@ Every stage passes all frequencies at the same level and delays them by differen
 Together, transients smear into a chirp, crossfading between two taps creates phaser-like
 notches, and feedback turns it into a resonator. Mono in, stereo out.
 
-There are six variants. They share the same controls and differ in what knob 3 (tap) does
+There are seven variants. They share the same controls and differ in what knob 3 (tap) does
 and how strongly feedback modulation at in 4 may act.
 
 ### Variants
@@ -25,6 +25,7 @@ and how strongly feedback modulation at in 4 may act.
 | 9 | **SchliereW** | `SchliereWPatch.hpp`, `SchliereWPatch` | as Z | smoothed, 12 kHz | 32–36 % |
 | 10 | **SchliereO** | `SchliereOPatch.hpp`, `SchliereOPatch` | as Z | unsmoothed, computed at 96 kHz | 43 % |
 | 11 | **SchliereS** | `SchliereSPatch.hpp`, `SchliereSPatch` | as Z | as O, in 4 smoothed very lightly (12 kHz) | 39 % |
+| 12 | **SchliereL** | `SchliereLPatch.hpp`, `SchliereLPatch` | as Z, chain of 160 stages | as S | 70 % |
 
 - **A (alt, "old")** is version 3 from 2026-11-18, the original. Audio-rate modulation of tap
   or feedback makes it glitchy and rough: part of the sidebands fold back at fs/2, the
@@ -42,6 +43,13 @@ and how strongly feedback modulation at in 4 may act.
 - **S (sanft, "gentle")** is O with very light smoothing: the CV at in 4 goes through two
   lowpass filters at 12 kHz each (≈ 7.7 kHz together) before O processes it. A tiny bit less
   glitch with feedback modulation, otherwise the same as O.
+- **L (lang, "long")** is S with a chain of 160 instead of 61 stages (320 instead of 122
+  poles), as many as the model reaches at most (160 poles per section with its config file,
+  two sections in series). Taps L 2, 44 … 254 poles, R 2, 56 … 320 poles, tail 320 poles. The
+  taps are 2.6 times further apart: 21 notches (L) and 26 to 27 (R) between two detents instead
+  of 8 and 10, and the delay at each tap is 2.6 times longer (1 kHz, Q 16: 1.3 s at L, 1.6 s
+  at R). With feedback the peaks sit 2.6 times closer. On slot 12 since 2026-11-21, not listened to
+  yet.
 - **M (morph)** does not crossfade but changes the chain length continuously. The chain stays
   a pure allpass at every setting: tap modulation shifts the delay (slow: vibrato, fast:
   FM-like) instead of fading notches in and out. Out 4 is the sum (L + R)/2 here, its notches
@@ -70,20 +78,20 @@ listening.
 |---|---|
 | Knob 1 | Frequency, 20 Hz … 20 kHz: where the delay acts |
 | Knob 2 | Resonance, Q 0.01 … 16 |
-| Knob 3 | Tap: tap position (A, Z, W, O) or chain length (M) |
+| Knob 3 | Tap: tap position (A, Z, W, O, S, L) or chain length (M) |
 | Knob 4 | Feedback (A: 0 … 97 %, others 0 … 95 %, up to 97 % with CV) |
 | In 1 | Audio (DC-coupled) |
 | In 2 | Frequency CV, about 1 V/oct |
 | In 3 | Tap CV, ±5 V = full travel |
 | In 4 | Feedback CV, ±5 V = full travel, negative feedback below zero |
-| Out 1, Out 2 | L (up to 98 poles), R (up to 122 poles) |
+| Out 1, Out 2 | L (up to 98 poles), R (up to 122 poles); variant L: 254 and 320 poles |
 | Out 3 | Diff (L − R)/2 |
-| Out 4 | Tail = end of the chain (A, Z, W, O) or sum (L + R)/2 (M) |
+| Out 4 | Tail = end of the chain (A, Z, W, O, S, L) or sum (L + R)/2 (M) |
 | LED 1–3 | Tap detent 1–7 of knob 3, binary, red |
 | LED 4 | Red while the loop limiter works |
 
 Details are in the header of `SchlierePatch.hpp`, for A in `SchliereAPatch.hpp`, for M in
-`SchliereMPatch.hpp`, for O in `SchliereOPatch.hpp`, for S in `SchliereSPatch.hpp`, in German.
+`SchliereMPatch.hpp`, for O in `SchliereOPatch.hpp`, for S in `SchliereSPatch.hpp`, for L in `SchliereLPatch.hpp`, in German.
 
 ### Build and test
 
@@ -94,10 +102,11 @@ SRC=owl/schliere tools/build_owl_patch.sh SchliereM SchliereMPatch SchliereMPatc
 SRC=owl/schliere tools/build_owl_patch.sh SchliereW SchliereWPatch SchliereWPatch.hpp
 SRC=owl/schliere tools/build_owl_patch.sh SchliereO SchliereOPatch SchliereOPatch.hpp
 SRC=owl/schliere tools/build_owl_patch.sh SchliereS SchliereSPatch SchliereSPatch.hpp
+SRC=owl/schliere tools/build_owl_patch.sh SchliereL SchliereLPatch SchliereLPatch.hpp
 tools/test_owl_dsp.sh
 ```
 
-Builds go to `owl-patches/builds/<name>/` and are byte-identical to the slots on acdc1. W, O, S and M
+Builds go to `owl-patches/builds/<name>/` and are byte-identical to the slots on acdc1. W, O, S, L and M
 live in files of their own: even a derived class in `SchlierePatch.hpp` changes the binary of
 SchliereZ. The name is part of the binary, so the builds are named like the slots.
 
@@ -112,7 +121,7 @@ lang. In der Summe verschmieren Transienten zu einem Zwitschern, zwischen zwei A
 entstehen Kerben wie bei einem Phaser, mit Feedback wird daraus ein Resonator. Mono hinein,
 stereo heraus.
 
-Es gibt sechs Varianten. Alle haben dieselbe Belegung, sie unterscheiden sich darin, was
+Es gibt sieben Varianten. Alle haben dieselbe Belegung, sie unterscheiden sich darin, was
 Regler 3 (Tap) tut und wie stark die Feedback-Modulation an In 4 wirken darf.
 
 ### Varianten
@@ -125,6 +134,7 @@ Regler 3 (Tap) tut und wie stark die Feedback-Modulation an In 4 wirken darf.
 | 9 | **SchliereW** | `SchliereWPatch.hpp`, `SchliereWPatch` | wie Z | geglättet, 12 kHz | 32–36 % |
 | 10 | **SchliereO** | `SchliereOPatch.hpp`, `SchliereOPatch` | wie Z | ungeglättet, mit 96 kHz gerechnet | 43 % |
 | 11 | **SchliereS** | `SchliereSPatch.hpp`, `SchliereSPatch` | wie Z | wie O, In 4 ganz leicht geglättet (12 kHz) | 39 % |
+| 12 | **SchliereL** | `SchliereLPatch.hpp`, `SchliereLPatch` | wie Z, Kette aus 160 Stufen | wie S | 70 % |
 
 - **A (alt)** ist Fassung 3 vom 2026-11-18, das Original. Moduliert man Tap oder Feedback mit
   Audio-Rate, wird es glitchig und rau: Teile der Seitenbänder falten über fs/2 zurück, die
@@ -142,6 +152,13 @@ Regler 3 (Tap) tut und wie stark die Feedback-Modulation an In 4 wirken darf.
 - **S (sanft)** ist O mit einer ganz leichten Glättung: Der CV an In 4 läuft durch zwei
   Tiefpässe mit je 12 kHz (zusammen ≈ 7,7 kHz), bevor O ihn verarbeitet. Ein klein wenig
   weniger Glitch bei Feedback-Modulation, sonst gleich O.
+- **L (lang)** ist S mit einer Kette aus 160 statt 61 Stufen (320 statt 122 Pole), so viele,
+  wie das Vorbild höchstens erreicht (160 Pole je Sektion mit der Config-Datei, zwei Sektionen
+  in Reihe). Abgriffe L 2, 44 … 254 Pole, R 2, 56 … 320 Pole, Tail 320 Pole. Die Abgriffe
+  liegen 2,6-mal so weit auseinander: zwischen zwei Rastpunkten 21 Kerben (L) bzw. 26 bis 27
+  (R) statt 8 und 10, und die Laufzeit an jedem Abgriff ist 2,6-mal so lang (1 kHz, Q 16:
+  1,3 s an L, 1,6 s an R). Mit Feedback liegen die Spitzen 2,6-mal so dicht. Seit 2026-11-21 auf
+  Slot 12, noch nicht gehört.
 - **M (Morph)** überblendet nicht, sondern ändert die Länge der Kette stufenlos. Die Kette
   bleibt in jeder Stellung ein reiner Allpass: Tap-Modulation verschiebt die Laufzeit
   (langsam ein Vibrato, schnell FM-artig) statt Kerben ein- und auszublenden. Out 4 ist hier
@@ -171,20 +188,20 @@ Hören.
 |---|---|
 | Regler 1 | Frequency, 20 Hz … 20 kHz: wo die Laufzeit wirkt |
 | Regler 2 | Resonance, Q 0,01 … 16 |
-| Regler 3 | Tap: Abgriff (A, Z, W, O) bzw. Länge der Kette (M) |
+| Regler 3 | Tap: Abgriff (A, Z, W, O, S, L) bzw. Länge der Kette (M) |
 | Regler 4 | Feedback (A: 0 … 97 %, sonst 0 … 95 %, mit CV bis 97 %) |
 | In 1 | Audio (DC-gekoppelt) |
 | In 2 | Frequency-CV, etwa 1 V/Okt |
 | In 3 | Tap-CV, ±5 V = voller Regelweg |
 | In 4 | Feedback-CV, ±5 V = voller Regelweg, unter null negatives Feedback |
-| Out 1, Out 2 | L (bis 98 Pole), R (bis 122 Pole) |
+| Out 1, Out 2 | L (bis 98 Pole), R (bis 122 Pole); Variante L: 254 bzw. 320 Pole |
 | Out 3 | Diff (L − R)/2 |
-| Out 4 | Tail = Ende der Kette (A, Z, W, O) bzw. Summe (L + R)/2 (M) |
+| Out 4 | Tail = Ende der Kette (A, Z, W, O, S, L) bzw. Summe (L + R)/2 (M) |
 | LED 1–3 | Rastpunkt 1–7 von Regler 3, binär in Rot |
 | LED 4 | Rot, solange die Begrenzung in der Schleife arbeitet |
 
 Einzelheiten stehen im Kopf von `SchlierePatch.hpp`, für A in `SchliereAPatch.hpp`, für M in
-`SchliereMPatch.hpp`, für O in `SchliereOPatch.hpp`, für S in `SchliereSPatch.hpp`.
+`SchliereMPatch.hpp`, für O in `SchliereOPatch.hpp`, für S in `SchliereSPatch.hpp`, für L in `SchliereLPatch.hpp`.
 
 ### Bauen und testen
 
@@ -195,10 +212,11 @@ SRC=owl/schliere tools/build_owl_patch.sh SchliereM SchliereMPatch SchliereMPatc
 SRC=owl/schliere tools/build_owl_patch.sh SchliereW SchliereWPatch SchliereWPatch.hpp
 SRC=owl/schliere tools/build_owl_patch.sh SchliereO SchliereOPatch SchliereOPatch.hpp
 SRC=owl/schliere tools/build_owl_patch.sh SchliereS SchliereSPatch SchliereSPatch.hpp
+SRC=owl/schliere tools/build_owl_patch.sh SchliereL SchliereLPatch SchliereLPatch.hpp
 tools/test_owl_dsp.sh
 ```
 
 Die Builds landen in `owl-patches/builds/<Name>/` und sind bytegleich mit den Slots auf acdc1.
-W, O, S und M stehen in eigenen Dateien: Schon eine abgeleitete Klasse in `SchlierePatch.hpp`
+W, O, S, L und M stehen in eigenen Dateien: Schon eine abgeleitete Klasse in `SchlierePatch.hpp`
 ändert das Binary von SchliereZ. Der Name steckt im Binary, deshalb
 heißen die Builds wie die Slots.

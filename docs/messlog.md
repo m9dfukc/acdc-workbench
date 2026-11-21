@@ -2859,3 +2859,27 @@ Bei Tap-CV ±1 V liegt der Ton selbst bei −7 dB, die Seitenbänder bei −0,9 
 - **Build und Slot:** `owl-patches/builds/SchliereS/`: 18 156 B, CRC `0xd9b2a0f9`, `9be06b12…`. Auf Slot 11 gespeichert (war leer), zurückgemeldet mit Größe und CRC, **39 % CPU**. Danach läuft Slot 11. Im Boot-Menü ist 11 = LED 1, 2 und 4.
 - Begriff: Im Deutschen heißt es „Oversampling“ (Nutzer), README und Messlog sind angepasst.
 
+## D81 – SchliereL: Kette aus 160 Stufen (2026-11-21, am Rechner)
+
+**Anlass (Nutzer, 2026-11-21):** Schliere soll mindestens so viele Stufen haben wie das Vorbild. Die alten Varianten bleiben, wie sie sind.
+
+**Vorbild [belegt]:** Laut Handbuch des Vorbilds (v1.2.1, 2026-11-07) hat eine Sektion 2 bis 98 Pole, mit der Config-Datei bis 160 Pole (Abgriffe 0 bis 80 Stufen, 1 Stufe = 2 Pole). Im Normalbetrieb laufen beide Sektionen in Reihe, im Split-Modus jede Sektion zweimal. Höchstens sind es damit 196 Pole je Kanal, mit Config-Datei 320. Die Config-Datei gibt es ab Firmware v1.2.1. Schliere hatte bisher 61 Stufen (L bis 98, R und Tail bis 122 Pole).
+
+**Umsetzung:** `owl/schliere/SchliereLPatch.hpp`, Klasse `SchliereLPatch`, auf Grundlage von S, der jüngsten Wunschfassung des Nutzers (D80, siebter Nachtrag): Eingang der Kette mit 96 kHz, Feedback-CV mit 2 × 12 kHz geglättet. Die Kette hat 160 Stufen (320 Pole). Abgriffe L: Stufen 1, 22, 43, 64, 85, 106, 127 (2 … 254 Pole, je 21), R: 1, 28, 54, 81, 107, 134, 160 (2 … 320 Pole, abwechselnd 27 und 26), L : R wie bisher etwa 4 : 5. Die Klasse ist eigenständig, mit eigener Konstante für die Länge. So bleiben O und S bytegleich, und alle Varianten laufen in einem Host-Test.
+
+**Host-Test [gemessen, Host]:** neun neue Fälle in `owl/test/schliere_test.cpp`, insgesamt 78, alle bestanden:
+- Rastpunkt 7 ohne Feedback flach (0,002 dB). Die Laufzeit entspricht 127 bzw. 160 Lehrbuch-Stufen plus 2,85 Samples (Halbbänder wie bei O).
+- 1 kHz, Q 16: Laufzeit an L 1,297 s, an R und Tail 1,634 s (Rechnung 0,501 s × 127/49 bzw. × 160/49).
+- Zwischen Rastpunkt 4 und 5: 21 Kerben an L, 26 an R (bisher 8 und 10).
+- Rastpunkt 1: L = R. Mit 50 % Feedback ist L und R gleich S bis auf Rundung (< 1e-6).
+- Out 2 → In 4, 70 % Feedback, 6 V: gefaltete Linien −35,3 dB (S: −35,5 dB in D80).
+- Audio-Rate an allen CV-Eingängen, Q und Feedback am Anschlag: endlich, unter 9,8 V, LEDs nur 0 oder 1. Feedback am Anschlag klingt aus (−98,5 dB nach 12 s). DC läuft mit Faktor 1 durch.
+
+**Build:** `owl-patches/builds/SchliereL/`: 22 948 B, CRC `0xb2496457`, `1213fdfe…`. Gegenprobe: SchliereS neu gebaut, bytegleich mit Slot 11 (`9be06b12…`).
+
+**Einschränkungen:** Nicht gehört. Rechenlast vor dem Laden geschätzt aus D80 (≈ 0,43 % je Stufe, S 39 %): ≈ 82 %, gemessen 70 % (Nachtrag). Mehr Rechenlast hebt fs/8 und die Mischprodukte (D69). Das Rauschen der float-Kette bei 160 Stufen ist nicht gemessen.
+
+**Nachtrag (2026-11-21, 12:11): auf Slot 12 geladen.** Freigabe des Nutzers. Vorher Sicherung mit `owl_read.py --out backup --dump` nach `backup/acdc1/20261121/owl/`: elf Slots, alle `ok`, Größen und CRC wie in D80, Slot 12 leer. `owl_write.py owl-patches/builds/SchliereL/SchliereL.syx --store 12 --yes`, zurückgemeldet als 'SchliereL', 22 948 B, `0xb2496457` (`out/owl_write/acdc1/20261121/owl_write_121126.json`). Danach läuft Slot 12 (Program Change, nicht gemerkt).
+- **Rechenlast [gemessen]:** dreimal ausgelesen (`out/owl_read/20261121_schliereL_1…3/`), jedes Mal `CPU: 70% Memory: 2640`. Alle Regler am Linksanschlag (2, bei Regler 1 einmal 1 von 127). Die Kette wird immer ganz gerechnet, die Last hängt kaum von den Reglern ab [Hypothese]. Geschätzt waren ≈ 82 %. Je zusätzliche Stufe sind es damit ≈ 0,31 % (S 39 %, 99 Stufen mehr).
+- Alle zwölf Slots melden Name, Größe und CRC wie vorher.
+- Nicht gehört, die Ausgänge sind nicht gemessen. Bei 70 % Last sind höhere Blockraten-Linien und Mischprodukte zu erwarten als bei S (D69) [Hypothese].

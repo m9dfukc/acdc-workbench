@@ -138,7 +138,10 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [x] SchliereO: Eingang der Kette mit 96 kHz, Feedback ungeglättet, auf Slot 10 (D80, vierter Nachtrag)
 - [x] Schliere-Varianten in `owl/schliere/` mit README (de/en), Slots 6 A, 7 M, 8 Z, 9 W, 10 O (D80, sechster Nachtrag). SchliereM ist dem Nutzer zu zahm, bleibt aber vorerst auf Slot 7
 - [x] SchliereS (O mit ganz leicht geglättetem Feedback-CV) auf Slot 11 (D80, siebter Nachtrag)
-- [ ] Schliere-Varianten hören und entscheiden, welche bleiben: 6 SchliereA (Fassung 3), 8 SchliereZ (Fassung 4), 9 SchliereW, 10 SchliereO, 11 SchliereS
+- [ ] Schliere-Varianten hören und entscheiden, welche bleiben: 6 SchliereA (Fassung 3), 8 SchliereZ (Fassung 4), 9 SchliereW, 10 SchliereO, 11 SchliereS, 12 SchliereL
+- [x] SchliereL: S mit 160 Stufen (320 Pole) wie das Vorbild mit Config-Datei, am Rechner geprüft, gebaut (D81)
+- [x] SchliereL auf Slot 12 geladen, 70 % CPU (D81, Nachtrag 2026-11-21)
+- [ ] SchliereL anhören, dazu die Linien am Ausgang bei 70 % Last (fs/8 und Mischprodukte steigen mit der Last, D69)
 - [ ] Schliere M anhören: Tap- und Feedback-Modulation, Out 2 → In 4
 - [ ] Schliere M: Faltung bei Tap-Modulation (−64…−70 dB) und im Selbst-Patch höher als Fassung 4 (D80), Ursache klären
 - [ ] Regler-Linien am Ausgang eines FX-Patches (D72): Quelle klären (D61) und prüfen, ob die Firmware sie senken kann (Abtastzeit oder Scanrate des Regler-ADC)

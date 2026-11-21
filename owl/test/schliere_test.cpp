@@ -1,10 +1,11 @@
-// Host-Test für owl/schliere/ (SchlierePatch.hpp mit SchliereMPatch, SchliereWPatch.hpp, SchliereOPatch.hpp): Übertragungsfunktion aus der Impulsantwort,
+// Host-Test für owl/schliere/ (SchlierePatch.hpp mit SchliereMPatch, SchliereWPatch.hpp, SchliereOPatch.hpp, SchliereSPatch.hpp, SchliereLPatch.hpp): Übertragungsfunktion aus der Impulsantwort,
 // geprüft gegen die Zahlen aus dem Handbuch des Vorbilds und gegen die Rechnung.
 #include "SchliereWPatch.hpp" // enthält SchlierePatch.hpp mit SchliereWPatch
 #include "SchliereOPatch.hpp"
 #include "SchliereAPatch.hpp"
 #include "SchliereMPatch.hpp"
 #include "SchliereSPatch.hpp"
+#include "SchliereLPatch.hpp"
 #include <cmath>
 #include <complex>
 #include <cstdio>
@@ -364,5 +365,54 @@ int main(){
       return c == 0 ? 0.6 * ((s >> 8) / 8388608.0 - 1.0) : (c == 1 ? 0.3 * std::sin(1300 * x) : (c == 2 ? 0.5 * std::sin(900 * x) : 0.9 * std::sin(2100 * x))); });
     double m = std::fmax(std::fmax(peak(o[0]), peak(o[1])), std::fmax(peak(o[2]), peak(o[3])));
     check("sanft: audio-rate CV everywhere, Q and feedback at max: finite, below 9.8 V", finite(o) && m <= 0.98, m, 0.98); }
+  // ---- SchliereLPatch (wie S, Kette mit 160 Stufen) ----
+  // Gruppenlaufzeit der Lehrbuch-Kette mit n Stufen bei f
+  auto refDelay = [](double f, double f0, double q, int n){ const double df = 0.1;
+    return -std::arg(reference(f + df, f0, q, n) / reference(f - df, f0, q, n)) / (2 * PI * 2 * df); };
+  { // Rastpunkt 7, kein Feedback: flach, Laufzeit wie 127 bzw. 160 Lehrbuch-Stufen plus 2,8 Samples
+    SchliereLPatch p; set(p, 1000, 0.5, 7, 0); auto o = impulse(p, 32768, A); double dev = 0;
+    for(int c : { 0, 1, 3 }) for(double f : { 30.0, 200.0, 1000.0, 3000.0, 15000.0 }) dev = std::fmax(dev, std::fabs(db(std::abs(response(o[c], f, A)))));
+    check("long: top tap, no feedback: level flat at L, R and tail (dB)", dev < 0.01, dev);
+    double eL = 0, eR = 0;
+    for(double f : { 300.0, 1000.0, 3000.0 }){
+      eL = std::fmax(eL, std::fabs(groupDelay(o[0], f, A) - refDelay(f, 1000, 0.51, 127)) * FS);
+      eR = std::fmax(eR, std::fabs(groupDelay(o[1], f, A) - refDelay(f, 1000, 0.51, 160)) * FS); }
+    check("  L = 127 stages (254 poles), R = 160 stages (320 poles), +2.8 samples", std::fabs(eL - 2.8) < 0.4 && std::fabs(eR - 2.8) < 0.4, eL, eR); }
+  { // 1 kHz, Q 16: Laufzeit wächst mit der Länge (98 Pole: 0,50 s laut Handbuch)
+    SchliereLPatch p; set(p, 1000, 1, 7, 0); auto o = impulse(p, 6 * 48000, A);
+    const double gl = groupDelay(o[0], 1000, A), gr = groupDelay(o[1], 1000, A), gt = groupDelay(o[3], 1000, A);
+    check("long: 1 kHz, Q 16: group delay at L = 0.50 s * 127 / 49", std::fabs(gl - 0.501 * 127 / 49) < 0.013, gl, 0.501 * 127 / 49);
+    check("  at R and tail = 0.50 s * 160 / 49", std::fabs(gr - 0.501 * 160 / 49) < 0.016 && std::fabs(gt - gr) < 1e-6, gr, 0.501 * 160 / 49); }
+  { // zwischen Rastpunkt 4 und 5: L 21 Stufen Abstand, R 26
+    SchliereLPatch p; set(p, 1000, 0.5, 4.5, 0); auto o = impulse(p, 16384, A); int l = notches(o[0], A, -25), r = notches(o[1], A, -25);
+    check("long: halfway between taps 4 and 5: 21 notches at L", l == 21, l, 21);
+    check("  26 notches at R", r == 26, r, 26); }
+  { // unterster Rastpunkt: L = R
+    SchliereLPatch p; set(p, 1000, 0.5, 1, 0); auto o = impulse(p, 4096, A); double diff = 0;
+    for(size_t i = 0; i < o[0].size(); ++i) diff = std::fmax(diff, std::fabs(o[0][i] - o[1][i]));
+    check("long: bottom tap: L and R identical, diff output silent", diff == 0 && peak(o[2]) == 0, diff, peak(o[2])); }
+  { // ohne CV an In 4 gleich SchliereS bis zum gemeinsamen Abgriff (Rastpunkt 1: Stufe 1)
+    SchliereLPatch lp; set(lp, 1000, 0.5, 1, 0.5); SchliereSPatch sp; set(sp, 1000, 0.5, 1, 0.5);
+    auto a = impulse(lp, 8192, A), b = impulse(sp, 8192, A); double d = 0;
+    for(int c : { 0, 1 }) for(size_t i = 0; i < a[c].size(); ++i) d = std::fmax(d, std::fabs(a[c][i] - b[c][i]));
+    check("long: bottom tap, feedback 50 %: L and R identical to SchliereS", d < 1e-6, d); }
+  { // Out 2 auf In 4
+    SchliereLPatch p; set(p, 632.4555, 0.5, 3.52, 0.66); double d = selfPatchedDb(p, 6);
+    check("long: out 2 patched to in 4, feedback 70 %, 6 V in: folded lines (dB, S: -43)", d < -30, d, -30); }
+  { // alles am Anschlag mit Audio-Rate
+    SchliereLPatch p; set(p, 200, 1, 4, 0.97); unsigned s = 3; bool dimmed = false;
+    auto o = run(p, 5 * 48000, [&](int c, size_t t){ s = s * 1664525u + 1013904223u; const double x = 2 * PI * t / FS;
+      for(int l = 0; l < 4; ++l){ float v = p.params[PARAMETER_AA + l]; dimmed |= v != 0.0f && v != 1.0f; }
+      return c == 0 ? 0.6 * ((s >> 8) / 8388608.0 - 1.0) : (c == 1 ? 0.3 * std::sin(1300 * x) : (c == 2 ? 0.5 * std::sin(900 * x) : 0.9 * std::sin(2100 * x))); });
+    double m = std::fmax(std::fmax(peak(o[0]), peak(o[1])), std::fmax(peak(o[2]), peak(o[3])));
+    check("long: audio-rate CV everywhere, Q and feedback at max: finite, below 9.8 V", finite(o) && m <= 0.98, m, 0.98);
+    check("  LED values only 0 or 1", !dimmed, dimmed); }
+  { // keine Selbstschwingung, Gleichspannung läuft durch
+    SchliereLPatch p; set(p, 1000, 0.5, 7, 0.97);
+    auto o = run(p, 14 * 48000, [&](int c, size_t t){ return c == 0 && t < 48000 ? 0.5 * std::sin(2 * PI * 997 * t / FS) : 0.0; });
+    double early = peak(std::vector<float>(o[0].begin() + 48000, o[0].begin() + 2 * 48000)), late = peak(o[0], 13 * 48000);
+    check("long: feedback at maximum rings out (dB after 12 s)", db(late / early) < -60, db(late / early), -60);
+    SchliereLPatch q; set(q, 1000, 0.5, 7, 0); auto d = run(q, 48000, [](int c, size_t){ return c == 0 ? 0.2 : 0.0; });
+    check("long: DC passes at unity at L, R and tail", std::fabs(d[0].back() - 0.2) < 1e-4 && std::fabs(d[1].back() - 0.2) < 1e-4 && std::fabs(d[3].back() - 0.2) < 1e-4, d[0].back(), 0.2); }
   printf("%s\n", fails ? "FAILURES" : "all cases ok"); return fails;
 }
