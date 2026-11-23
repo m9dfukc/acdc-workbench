@@ -1,6 +1,6 @@
 # 05 – Firmware: Stand, Forks, Build-Plan
 
-> **Stand 2026-11-19:** Auf acdc1 läuft **Build 9 `v22.4.r-fx7a`** (`cac6fee0…`, Abschnitt „Build 9“, messlog D78, D79) als Alltags-Firmware (Entscheidung des Nutzers). Rückweg ist Build 8 `v22.4.r-fx6a` (`6a3fc427…`), dann Build 7 `v22.4.r-fx5a` (`b69c25b3…`), Build 6b `v22.4.r-fx4b` (`a21f35c9…`), Build 5c `v22.4.r-fx3l` (`b55b94d8…`), danach Build 3d (`d212cf8d…`).
+> **Stand 2026-11-23:** Auf acdc1 läuft **Build 10 `v22.4.r-fx8a`** (`e1b1097b…`, Abschnitt „Build 10“, messlog D83–D85, I-Cache an) als Alltags-Firmware (Entscheidung des Nutzers). Rückweg ist Build 9 `v22.4.r-fx7a` (`cac6fee0…`), dann Build 8 `v22.4.r-fx6a` (`6a3fc427…`), dann Build 7 `v22.4.r-fx5a` (`b69c25b3…`), Build 6b `v22.4.r-fx4b` (`a21f35c9…`), Build 5c `v22.4.r-fx3l` (`b55b94d8…`), danach Build 3d (`d212cf8d…`).
 >
 > Dieses Dokument ist chronologisch gewachsen. „Läuft auf acdc1“, „nicht abgestimmt“ und „nächste Schritte“ in den Abschnitten zu Build 1 bis 4z beschreiben den Stand des jeweiligen Abschnitts. Was heute offen ist, steht in `TODO.md`.
 
@@ -741,7 +741,7 @@ Ein Build von `c222fa49` ohne Patches ist bytegleich mit fx5a (`firmware/builds/
 
 **Rückweg:** fx5a (`b69c25b3…`), dann fx4b (`a21f35c9…`), danach wie bisher. Die Ressource `ACDC.led` stört ältere Builds nicht.
 
-### Build 9 – LED-PWM mit 48 kHz, `v22.4.r-fx7a` (Absprache und Build 2026-11-19, messlog D78, D79, **Alltags-Firmware auf acdc1 seit 2026-11-19**)
+### Build 9 – LED-PWM mit 48 kHz, `v22.4.r-fx7a` (Absprache und Build 2026-11-19, messlog D78, D79, Alltags-Firmware auf acdc1 2026-11-19 bis 23, **Rückweg von fx8a**)
 
 **Anlass [gemessen, D67, D73, D74]:** Eine gedimmte LED schaltet die Verschiebung des Nullpunkts im Takt der PWM, das ist die Linie bei 2320,54 Hz mit Vielfachen in Ein- und Ausgängen (bis −39,8 dBFS am UMC mit gedimmtem Grün, D73). Build 8 lässt die LEDs dunkel schalten, Build 9 legt die PWM selbst aus dem Hörbereich. Getrennt gebaut, damit die Wirkung einzeln messbar bleibt (Entscheidung des Nutzers, 2026-11-18).
 
@@ -786,6 +786,36 @@ Ein Build von `c222fa49` ohne Patches ist bytegleich mit fx5a (`firmware/builds/
 Builds von `34782dea` und `351b2071` ohne Patches sind bytegleich mit fx6a (`firmware/builds/verify-fx1d-34782dea`, `6a3fc427…`) und fx7a (`verify-fx1d-351b2071`, `cac6fee0…`). Dazu das Release `acdc-v22.4.r-fx7a` (Tag auf `13b58412`, „Latest“, 2026-11-19) mit `ACDC-v22.4.r-fx7a.bin` und `BUILD_INFO-v22.4.r-fx7a.txt`. fx6a hat kein eigenes Release.
 
 **Rückweg:** fx6a (`6a3fc427…`), dann fx5a (`b69c25b3…`), danach wie bisher.
+
+### Build 10 – Befehls-Cache an, `v22.4.r-fx8a` (Build 2026-11-23, messlog D83–D85, **Alltags-Firmware auf acdc1 seit 2026-11-23**)
+
+**Anlass [Code, gemessen, D83]:** `ACDC/Core/Inc/hardware.h` setzt `USE_ICACHE` und `USE_DCACHE` nur `#ifdef NDEBUG`, `Hardware/owl3.mk` setzt im Release-Build nur `-O3`, nie `-DNDEBUG`. Das gilt auch für v22.5.0 und den Upstream-`master`. Unter fx7a meldet SCB->CCR auf acdc1 0, beide Caches sind aus. Plateau braucht dadurch 5000 Takte pro Sample bei rund 1000 Befehlen, alle Abschnitte gleichmäßig etwa fünfmal zu langsam.
+
+**Umsetzung (Patch `19-icache-on.patch`) [Code]:**
+- `hardware.h`: `USE_ICACHE` immer, `USE_DCACHE` bleibt hinter `NDEBUG`, also aus.
+- `Source/mpu.c`: Die MPU-Region für die DMA-Puffer nur noch mit `USE_DCACHE` statt mit `USE_ICACHE || USE_DCACHE`. Sie betrifft nur Daten, und das Symbol `_DMA_DATA` fehlt im Linker-Skript des ACDC (sonst Link-Fehler).
+- Was `USE_ICACHE` sonst schaltet: `SCB_InvalidateICache()` und `SCB_EnableICache()` in `main()` vor `HAL_Init`, `device_cache_invalidate()` (invalidiert den I-Cache; `PatchDefinition.hpp` ruft es nach dem Kopieren eines Patches und vor seinem Start), `device_reset_to()` vor dem Sprung in den Bootloader.
+- Warteschleifen über Befehlszahl gibt es im ACDC-Pfad nicht: Der Codec-Init wartet mit `HAL_Delay` (SysTick), `NopDelay` steckt nur im nicht gebauten CS4272-Treiber.
+
+**Was schneller wird [Hypothese]:** Firmware-Code im internen Flash (Hauptschleife, MIDI, Speicher) und Patches im AXI-SRAM (Link plusram, z. B. Plateau). ITCM und DTCM laufen am Cache vorbei. Der heiße Pfad im ITCM ändert sich also nicht, und Patches mit Link patchram (0x2000c000, im DTCM, Standard der Patch-Library und aller bisherigen eigenen Slots) holen ihre Befehle weiter ohne Cache. Für sie hilft erst der Link plusram.
+
+**Build:** `firmware/builds/acdc1-build10-fx8a/`, `v22.4.r-fx8a`, 110 208 B (+120 B), SHA-256 `e1b1097b21008486acc4cda4b446a0e72fcd2e974ef0f5b97c6a707e6086f39a`. Patches wie fx7a + 19.
+
+**Prüfung ohne Gerät [gemessen am Rechner, 2026-11-23]:**
+- `tools/check_itcm.py --same-itcm fx7a`: BESTANDEN, 0 FAIL, 0 WARN. ITCM-Grenzen 0x32a0–0x6338 gleich, `.itcm_text` (12 440 B) und Vektortabelle bytegleich, alle 180 RAM-Objekte an derselben Adresse. Von 656 Flash-Funktionen liegen 178 an derselben Adresse, 430 um 0x78 verschoben, der Rest um 0x48–0x5c.
+- Disassembly: `main()` beginnt mit ICIALLU und dem Setzen von CCR.IC (CMSIS `SCB_EnableICache`), `device_cache_invalidate()` invalidiert den I-Cache (unter fx7a leer). `MPU_Config` gleich wie fx7a bis auf Adressen, nur die QSPI-Region.
+- `tools/flash_acdc.py acdc1-build10-fx8a`: Offline-Prüfung bestanden.
+
+**Risiken [Hypothese]:** Die Flash-Lage hat seit dem ITCM-Build keinen Einfluss mehr auf die Linien gezeigt (D48), mit dem Cache ändert sich aber der Busverkehr des übrigen Firmware-Codes. Die Linien können sich deshalb in beide Richtungen bewegen, fs/8 eher nach unten (D42). Ein Patch-Wechsel ohne Invalidieren ließe alten Code laufen: Der Aufruf ist da, geprüft wird er am Gerät durch wiederholte Wechsel zwischen Slots und RAM-Patches.
+
+**Abnahme (jeder Flash nur nach Freigabe, nur acdc1):**
+1. Erledigt (D84): Flash mit `tools/flash_acdc.py acdc1-build10-fx8a --yes`, Readback bytegleich, `:leave` (erstmals aus dem Skript am Gerät), A1 bestanden.
+2. Erledigt (D84): Cache-Bits 2. PlateauProfile 3540 statt 5050 Takte pro Sample, Plateau 35 % statt 51 %. Leseschleife TCM 5–6, AXI 15, SDRAM 46 Takte. Slots (patchram) wie vorher, bei nicht gleichen Reglerstellungen.
+3. Erledigt (D84): Program Change durch alle zwölf Slots, `--run` von Plateau und PlateauProfile im Wechsel, alles läuft und meldet sich.
+4. Erledigt (D84): Download-Stresstest 240 von 240 in Ordnung.
+5. Erledigt (D85): Rauschen gegen fx7a (fx8a am Anfang und Ende, fx7a in der Mitte): **fs/8 +0,6 dB** in allen vier fx8a-Läufen, Mischprodukte +1…+3,4 dB, RMS, Rest und Kamm gleich. Keine neue Linie. Loop-Test bestanden (0 Slips, 0 veraltete Samples). **Abnahme vollständig. fx8a ist die Alltags-Firmware (Entscheidung des Nutzers, 2026-11-23).**
+
+**Rückweg:** fx7a (`cac6fee0…`), dann fx6a, danach wie bisher.
 
 ### Fork `m9dfukc/OpenWare` (gepusht 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
 

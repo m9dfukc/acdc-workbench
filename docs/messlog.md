@@ -2883,3 +2883,150 @@ Bei Tap-CV ±1 V liegt der Ton selbst bei −7 dB, die Seitenbänder bei −0,9 
 - **Rechenlast [gemessen]:** dreimal ausgelesen (`out/owl_read/20261121_schliereL_1…3/`), jedes Mal `CPU: 70% Memory: 2640`. Alle Regler am Linksanschlag (2, bei Regler 1 einmal 1 von 127). Die Kette wird immer ganz gerechnet, die Last hängt kaum von den Reglern ab [Hypothese]. Geschätzt waren ≈ 82 %. Je zusätzliche Stufe sind es damit ≈ 0,31 % (S 39 %, 99 Stufen mehr).
 - Alle zwölf Slots melden Name, Größe und CRC wie vorher.
 - Nicht gehört, die Ausgänge sind nicht gemessen. Bei 70 % Last sind höhere Blockraten-Linien und Mischprodukte zu erwarten als bei S (D69) [Hypothese].
+
+## D82 – Plateau: erster Lauf am Gerät aus dem RAM (2026-11-23, 13:51)
+
+**Anlass:** Plateau-Port (`owl/plateau/`, Valleys Plateau aus ValleyRackFree 2.4.5 in float) zum ersten Mal am Gerät, Freigabe des Nutzers. Nur RAM, kein Slot.
+
+**Setup:** acdc1 mit fx7a, Einbau im Case. Vorher lief Slot 12 (SchliereL, per Program Change), alle Regler am Linksanschlag (CC 20–23: 2, 1, 2, 1). Ob Kabel stecken und ob ein Stream offen war, ist nicht notiert. Vorher `owl_read.py` (`out/owl_read/acdc1/20261123/`), dann `owl_write.py owl-patches/builds/Plateau/Plateau.syx --run` (33 828 B, CRC `0x9594a7be`, PLUSRAM, 164 Pakete in 2,4 s, `out/owl_write/acdc1/20261123/owl_write_135129.json`), 3 s später `owl_read.py` (`out/owl_read/acdc1/20261123_135150/`).
+
+**Ergebnis [gemessen]:**
+- Program Message `Plateau KiB 30 66 461 28`: ITCM 30, DTCM 66, AXI 461, SDRAM 28 KiB. Das ist genau die Belegung aus dem Host-Test und dem Plan im README. Nur der Pre-Delay liegt im SDRAM.
+- `PROGRAM_STATS`: **CPU 51 %**, Memory 600 528 B (586 KiB, Puffer 584,7 KiB plus Verwaltung).
+- Alle zwölf Slots unverändert (Liste vor dem Upload), Firmware `v22.4.r-fx7a`.
+
+**Deutung:** Die Recherche schätzte 5–15 %. 51 % sind bei 480 MHz und 48 kHz etwa 5000 Takte pro Sample. Laut Disassembly rechnet der Patch pro Sample in der Größenordnung von 1000 Befehlen (`PlateauReverb::tank` 2,5 KB Code, `processAudio` 8 KB für einen Block, Funktionsaufrufe wie `expf`, `log10f`, `sqrtf` nur im Blocktakt). Das erklärt höchstens ein Drittel der Last [Hypothese]. Kandidaten:
+- Das SDRAM bei 0xC0000000 liegt im Standard-Speicherplan des Cortex-M7 als Device-Speicher, ohne Cache und ohne Schreibpuffer. Die MPU-Region dafür ist in OpenWare auskommentiert (`Source/mpu.c`, `#if 0`) [Code]. Der Pre-Delay greift dreimal pro Sample darauf zu.
+- Cache-Fehlgriffe im AXI-SRAM: 461 KiB Delay-Lines gegen 16 KiB D-Cache, etwa 40 Lese- und Schreibzeiger [Hypothese].
+- `__aeabi_d2ulz` (64-Bit-Umwandlung der LFO-Frequenz in Software) viermal pro Block [Code], fällt kaum ins Gewicht [Hypothese].
+
+**Einschränkungen:** Einmal gelesen, alle Regler am Linksanschlag (Mix trocken, Space klein, Decay kurz). Die Rechenlast des Kerns hängt kaum von den Reglern ab [Hypothese], gemessen ist das nicht. Nicht gehört, Ausgänge nicht gemessen. Nächster Schritt: Taktzähler (DWT) je Abschnitt im Patch messen und als Program Message melden, dann den Pre-Delay testweise ins AXI legen.
+
+## D83 – Plateau mit Taktzählern: Die Caches der MCU sind aus (2026-11-23, 14:06–14:12)
+
+**Anlass:** D82, 51 % CPU für Plateau, etwa fünfmal mehr als die Befehlszahl erwarten lässt. Freigabe des Nutzers für einen Mess-Build mit Taktzähler.
+
+**Mess-Patch:** `owl/test/PlateauProfilePatch.hpp`, Klasse `PlateauProfilePatch`. Das ist Plateau unverändert, dazu Messpunkte `PLATEAU_PROBE(n)` in `PlateauPatch.hpp` und `PlateauCore.h`. Im normalen Build sind sie leer: Plateau neu gebaut ist bytegleich mit dem Stand aus D82 (`11c0e9d6…`). Die Messpunkte lesen den DWT-Zykluszähler, den die Firmware zu Beginn jedes Blocks auf 0 setzt [Code, `ProgramManager.cpp`]. Beim Start misst der Patch einmal Lesezugriffe mit 32 Byte Abstand (neue Cache-Zeile je Zugriff, zweiter Durchgang zählt) über den größten Plateau-Puffer je Speicherbereich und Schreibzugriffe ins SDRAM. Er meldet abwechselnd `PA` (Takte pro Sample je Abschnitt) und `PB` (Summe, langsamster Block, Kosten eines Messpunkts, Zugriffszeiten, Cache-Bits aus SCB->CCR). Host-Test `owl/test/plateau_profile_test.cpp`. Build `owl-patches/builds/PlateauProfile/` (29 644 B, CRC `0xc893c62b`, PLUSRAM). Im Mess-Build ist `tank` in `processAudio` eingebettet, in Plateau nicht.
+
+**Ablauf:** zweimal `owl_write.py … --run` (14:06 ohne, 14:11 mit Cache-Bits), dazwischen und danach `owl_read.py` (`out/owl_read/20261123_plateauprofile_*`). Der Nutzer hatte die Regler inzwischen bewegt (CC 20–23 etwa 36, 120, 44, 8, später Regler 2 auf 2 und Regler 3 gedreht).
+
+**Ergebnis [gemessen]:**
+
+| Abschnitt | Takte pro Sample |
+|---|---|
+| c: Kontrollrate am Blockanfang (je Sample) | 856–885 |
+| i: Eingänge (zwei Blockraten-Sperren, Normalisierung In 2, Clear-Hülle) | 594–596 |
+| n: Kern-Eingang (DC-Sperren, Eingangsfilter, Pre-Delay, vier Allpässe) | 722–724 |
+| t: Tank-Schleife | 1216–1232 |
+| o: 14 Abgriffe des Tanks | 485–489 |
+| s: Mix, Sättigung, Energie-Folger | 652–660 |
+| p: Blockende (Clear, NaN-Prüfung, LEDs, je Sample) | 436–460 |
+| **Summe** | **4990–5149** (langsamster Block 5422–10 754) |
+
+- Firmware-Anzeige im Mess-Build 53–56 % (Plateau selbst 51 %, D82). 5000 Takte entsprechen 52 % von 10 000 Takten pro Sample.
+- Ein Messpunkt kostet 5–6 Takte, etwa 30 pro Sample, unter 1 %.
+- Leseschleife mit 32 Byte Abstand: ITCM 24–25, DTCM 24, AXI 26, SDRAM 46–47 Takte pro Zugriff. SDRAM schreiben 5 Takte (Schreibpuffer).
+- **SCB->CCR meldet 0: I-Cache und D-Cache sind aus.**
+
+**Deutung:**
+- `ACDC/Core/Inc/hardware.h` setzt `USE_ICACHE` und `USE_DCACHE` nur `#ifdef NDEBUG`. `Hardware/owl3.mk` setzt im Release-Build nur `-O3`, nie `-DNDEBUG` [Code]. Das gilt für unseren Stand, für v22.5.0 und für den Upstream-`master`. Im fx7a-Binary fehlt der Code zum Einschalten der Caches, `MPU_Config` richtet nur die QSPI-Region ein [Code, Disassembly]. Am Gerät bestätigt (CCR = 0) [gemessen].
+- Ohne I-Cache holt der Kern jeden Befehl über den Bus aus dem AXI-SRAM (Patch-Code mit plusram) bzw. dem DTCM (patchram). Die Leseschleife braucht deshalb in allen internen Speichern gleich viel, etwa 24 Takte statt einer Handvoll: Es bremst der Befehlsabruf, nicht der Datenzugriff [Hypothese, gestützt durch ITCM ≈ AXI]. Alle Abschnitte von Plateau sind gleichmäßig etwa fünfmal zu langsam. Das SDRAM kostet pro Lesezugriff etwa 22 Takte mehr, beim Pre-Delay also rund 50 Takte pro Sample, 1 % der Last.
+- Das betrifft alle Patches auf beiden Modulen, nicht nur Plateau. Es passt zu den bisherigen Befunden: Die Lage des Codes im Flash verschob die Störlinien (D33), und erst der heiße Pfad im ITCM machte die Firmware davon unabhängig (D48). Mit Cache wäre der Busverkehr kleiner, was nach D42 auch fs/8 senken könnte [Hypothese].
+- Ein Firmware-Build mit eingeschaltetem I-Cache ist der naheliegende nächste Schritt. Der D-Cache braucht dagegen mehr: die MPU-Region für die DMA-Puffer (`_DMA_DATA` fehlt im Linker-Skript des ACDC) und Kohärenz für SAI und USB.
+
+**Einschränkungen:** Wenige Lesungen, Regler nicht auf festen Stellungen, keine Aufnahme. Der langsamste Block schwankt stark (einmal 10 754 Takte pro Sample, Ursache offen, etwa MIDI-Verkehr durch `owl_read.py`). Ob die Abschnitte mit Cache gleichmäßig schneller werden, ist nicht gemessen. Danach lief `PlateauProfile` aus dem RAM weiter.
+
+## D84 – Build 10 `v22.4.r-fx8a` (I-Cache an) auf acdc1: Flash, A1, Rechenlast, Patch-Wechsel (2026-11-23, 14:32–)
+
+**Anlass:** D83, beide Caches aus. Build 10 = fx7a + Patch 19 (I-Cache an, D-Cache weiter aus, `docs/05`, „Build 10“). Freigabe des Nutzers zum Flashen.
+
+**Vorher:** Sicherung mit `owl_read.py --out backup --dump` nach `backup/acdc1/20261123/owl/`: zwölf Slots, alle `ok`, Größen und CRC wie in D81.
+
+**Flash [gemessen]:** `tools/flash_acdc.py acdc1-build10-fx8a --yes`, Log `firmware/flashlog/20261123_build10-fx8a/`. Vorher lief PlateauProfile aus dem RAM unter fx7a. 110 208 B geschrieben, Readback bytegleich, Rest 0xFF. Start per `:leave` (erstmals im Skript am Gerät), A1 bestanden: `v22.4.r-fx8a`, 48000 Hz, Blockgröße 8, Slots unverändert. Danach lief der gemerkte Slot 12 (SchliereL).
+
+**Rechenlast Plateau [gemessen]:** `PlateauProfile` mit `--run`, Regler 40, 119, 22–23, 8 (wie in den letzten Lesungen von D83):
+
+| | fx7a (D83) | fx8a |
+|---|---|---|
+| Cache-Bits (SCB->CCR) | 0 | **2 (I-Cache an)** |
+| c Kontrollrate | 856–885 | 500 |
+| i Eingänge | 594–596 | 385 |
+| n Kern-Eingang | 722–724 | 506 |
+| t Tank-Schleife | 1216–1232 | 926 |
+| o 14 Abgriffe | 485–489 | 400 |
+| s Mix, Sättigung, Energie | 652–660 | 511 |
+| p Blockende | 436–460 | 301 |
+| **Summe (Takte pro Sample)** | **4990–5149** | **3528–3555** |
+| Firmware-Anzeige | 53–56 % | 38–39 % |
+| Leseschleife ITCM / DTCM / AXI / SDRAM | 24 / 24 / 26 / 46 | **5 / 5–6 / 15 / 46** |
+
+- Plateau selbst (ohne Messpunkte): **35 %** statt 51 % (D82). Speichermeldung unverändert `Plateau KiB 30 66 461 28`.
+- Deutung: Ohne I-Cache bremste der Befehlsabruf alles gleich (die Leseschleife brauchte überall 24 Takte). Jetzt zeigt die Schleife die Datenzugriffe selbst: TCM 5–6 Takte, AXI ohne D-Cache 15, SDRAM 46 [gemessen]. Plateau liegt mit 461 KiB im AXI, der Rest von 3500 Takten hängt vermutlich an diesen Datenzugriffen und an Zustand und Stack im AXI [Hypothese]. Den Abschnitt s (wenige Dutzend Befehle, 511 Takte) erklärt das Rechnen allein nicht.
+
+**Patch-Wechsel [gemessen]:** Program Change durch alle zwölf Slots, dann `--run` Plateau, Program Change 6, `--run` PlateauProfile, nach jedem Schritt `owl_read.py` (`out/owl_read/20261123_fx8a_switch_*`). Jeder Patch läuft und meldet sich, Plateau mit der Speichermeldung, PlateauProfile mit Cache-Bits 2 und denselben Takten wie vorher. Kein Hänger, kein Fehler. Der I-Cache wird beim Wechsel also invalidiert, wie im Code (`device_cache_invalidate`).
+
+**Rechenlast der Slots unter fx8a [gemessen]**, alle mit Link patchram (DTCM), Regler 40, 119, 22–23, 8, in Klammern der letzte Wert unter fx7a oder älter, mit anderen Reglerstellungen:
+
+| Slot | fx8a | vorher |
+|---|---|---|
+| 1 ACDC | 5 % | 5 % (D75) |
+| 2 TapeDelay | 31 % | 32 % (D62, fx4b) |
+| 3 Grainz | 76 % | – |
+| 4 RingsReverb | 16 % | 16 % (D55) |
+| 5 Tanh3 | 50 % | 48–49 % (D56) |
+| 6 SchliereA | 29 % | 29 % (D69) |
+| 7 SchliereM | 25 % | 49–54 % je nach Tap (D80) |
+| 8 SchliereZ | 36 % | 33 % (D80) |
+| 9 SchliereW | 35 % | 32–36 % (D80) |
+| 10 SchliereO | 44 % | 43 % (D80) |
+| 11 SchliereS | 45 % | 39 % (D80) |
+| 12 SchliereL | 76–78 % | 70 % (D81, Regler links) |
+
+- Wie erwartet: Patches im DTCM holen ihre Befehle am Cache vorbei, ihre Last ändert sich nicht messbar [Hypothese, Reglerstellungen nicht gleich]. Die Unterschiede bei M, S und L passen zur Abhängigkeit von den Reglern (M: Tap), eine Messung bei gleichen Stellungen fehlt. Schneller würden diese Patches erst mit Link plusram.
+
+**Download-Stresstest [gemessen]:** `tools/dump_stress.py`, je 10 Runden über alle zwölf Slots, einmal bei laufendem Slot 5 (Tanh3, 50 %), einmal bei Slot 2 (TapeDelay), danach Program Change auf 12. **240 von 240 Downloads in Ordnung**, kein Hänger (`out/D84-fx8a-slot5-session-table.md`, `out/D84-fx8a-slot2-session-table.md`). Kein Kabel bekannt, ob ein Stream offen war, ist nicht notiert.
+
+**Einschränkungen und offen:** Rauschen gegen fx7a (Kontrolle am Anfang und Ende) und Loop-Test fehlen noch, beide brauchen den Nutzer am Gerät (Kabel, Reglerstellung 12 Uhr). Erst danach ist die Abnahme vollständig und über die Alltags-Firmware zu entscheiden. Danach läuft Slot 12 per Program Change. **Rückweg ist fx7a.**
+
+## D85 – Build-10-Sitzung: Rauschen fx8a gegen fx7a, Loop-Test (2026-11-23, ab etwa 14:45)
+
+**Setup:** acdc1 im Case, Alltags-Kette, Eingänge offen, keine Kabel, Oszillator im Case abgesteckt (Nutzer), Regler etwa 12 Uhr (CC 69/55–56/72/56 von 127), Slot 1 ACDC (vor dem Stream per Program Change gewählt), LED-Modus wie gemerkt, je 2 × 60 s `acdc_rec.py --reps 2 --owl-read`. Vor der ersten Aufnahme lief wieder der gemerkte Slot 12, acdc1 war also neu gestartet worden, vermutlich beim Umstecken (Kaltstart). Reihenfolge: `B10-fx8a-a` → Flash fx7a (`firmware/flashlog/20261123_build9-fx7a-ab10/`, Readback bytegleich, `:leave`, A1) → `B10-fx7a` → Flash fx8a (`firmware/flashlog/20261123_build10-fx8a-b/`, ebenso) → `B10-fx8a-b`. Diesmal ist der Testkandidat an beiden Enden, die Kontrolle fx7a in der Mitte.
+
+**Nebenbei [gemessen]:** Slot 12 (SchliereL, patchram) direkt nach den Flashes bei gleichen Reglern: fx7a 70 %, fx8a 71 %. Patches im DTCM werden durch den I-Cache nicht schneller, wie erwartet (D84).
+
+### Rauschen
+
+Tabelle `out/B10-session-table.md` (`family_table.py`, Datei-dBFS, Mittel über 4 Kanäle, Δ gegen fx7a). Alle sechs Läufe ohne Stream-Fehler (am Ende nur `tx ovf … 32` vom Stream-Start), CPU 6–8 %.
+
+| | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
+|---|---|---|---|---|---|
+| `B10-fx8a-a-r1` | −72,85 (−0,21) | −78,32 (+0,44) | −75,10 (−0,62) | −82,37 (**+0,58**) | −114,54 (+1,44) |
+| `B10-fx8a-a-r2` | −72,89 (−0,24) | −78,60 (+0,16) | −75,02 (−0,54) | −82,40 (**+0,55**) | −112,55 (+3,42) |
+| `B10-fx7a-r1` | −72,74 (−0,10) | −78,74 (+0,02) | −74,64 (−0,16) | −82,97 (−0,02) | −115,70 (+0,27) |
+| `B10-fx7a-r2` | −72,55 (+0,10) | −78,78 (−0,02) | −74,33 (+0,15) | −82,93 (+0,02) | −116,26 (−0,29) |
+| `B10-fx8a-b-r1` | −72,62 (+0,03) | −78,83 (−0,07) | −74,51 (−0,03) | −82,32 (**+0,63**) | −114,97 (+1,00) |
+| `B10-fx8a-b-r2` | −72,51 (+0,13) | −78,75 (+0,01) | −74,37 (+0,11) | −82,35 (**+0,59**) | −112,72 (+3,26) |
+
+Weitere Linien: Die Analyse findet keine neue Linie. Der bekannte Kamm bei k · 500 Hz um −100 dB (auch in B9, gleicher Pegel) liegt unter fx8a 0,3–0,5 dB höher als unter fx7a, ebenso die Vielfachen bis 7,5 kHz.
+
+**Deutung:**
+- **[gemessen] fx8a hebt fs/8 um 0,6 dB.** Alle vier fx8a-Läufe liegen +0,55 bis +0,63 dB über fx7a, die beiden fx7a-Läufe stimmen auf 0,04 dB überein. Weil fx8a vor und nach der Kontrolle gleich liegt, ist das keine Drift.
+- **Mischprodukte +1,0 bis +3,4 dB** in allen vier fx8a-Läufen. Sie streuen von Lauf zu Lauf um mehrere dB (D79), die Richtung ist aber in allen Läufen gleich. [Hypothese] Eine kleine Zunahme, passend zu fs/8.
+- **RMS, Rest und Kamm unverändert** innerhalb der Streuung (Kamm am Anfang −0,6 dB, am Ende ±0,1 dB: Drift wie in D79).
+- Die Hypothese aus D83 (mit Cache weniger Busverkehr, also weniger fs/8) trifft nicht zu. [Hypothese] Mit I-Cache erledigt die CPU die Arbeit jedes Blocks in kürzerer Zeit, der Strompuls im Blocktakt wird kürzer und höher. Das wäre derselbe Mechanismus wie in D42 und D69 (mehr Arbeit oder Busverkehr im Blocktakt hebt fs/8), nur über die Form statt die Menge.
+- Größenordnung: +0,6 dB bei fs/8 ist kleiner als das, was ein FX-Patch mit 29 % Last bringt (+3,8 dB, D69). Plateau spart unter fx8a 16 Prozentpunkte Last.
+- Der Rest liegt in dieser Sitzung rund 3 dB tiefer als in D79 (−78,8 gegen −75,6 dBFS), bei derselben Firmware fx7a. Ursache offen (Umgebung, anderer Tag).
+
+### Loop-Test
+
+Kabel Out 1–4 → In 1–4 (Nutzer), Regler etwa 12 Uhr, Slot 1, `acdc_rec.py --sine 440 530 670 790 --duration 60 --owl-read`, Aufnahme `B10-fx8a-loop` (`20261123_acdc1_fx8a-loop_g12_usb-stream.wav`). Stream-Meldungen 0, Geräte-Meldung am Ende `tx ovf 1.0000 1.0000 32` (Stream-Start), CPU 7 %.
+
+- `phase_slips.py`: Pegel −6,0…−6,1 dBFS, Streuung 0,00 dB, 0 Ereignisse auf allen vier Kanälen.
+- `stale_samples.py`: 0 von 96 000 Samples falsch auf allen vier Kanälen.
+- Ergebnisse in `out/B10-fx8a-loop/`.
+
+**[gemessen] Loop-Test bestanden.** Die Abnahme von Build 10 ist damit vollständig (D84, D85): Flash, A1, Cache-Bits 2, Patch-Wechsel, Downloads 240/240, Loop-Test. Beim Rauschen fs/8 +0,6 dB, sonst gleich. Über die Alltags-Firmware entscheidet der Nutzer.
+
+Danach: Kabel stecken noch, fx8a, Slot 1 läuft.
+
+**Entscheidung (Nutzer, 2026-11-23):** fx8a ist die Alltags-Firmware auf acdc1. Rückweg fx7a, dann fx6a.

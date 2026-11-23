@@ -1,0 +1,56 @@
+Patch 19: Befehls-Cache (I-Cache) der MCU einschalten.
+
+Anlass (messlog D83): ACDC/Core/Inc/hardware.h setzt USE_ICACHE und USE_DCACHE nur mit NDEBUG,
+Hardware/owl3.mk setzt im Release-Build aber nur -O3, nie -DNDEBUG (auch v22.5.0 und Upstream-
+master). Auf acdc1 unter fx7a gemessen: SCB->CCR = 0, beide Caches aus. Patch-Code läuft aus dem
+AXI-SRAM bzw. DTCM ohne Cache, Plateau braucht 5000 Takte pro Sample bei rund 1000 Befehlen.
+
+Änderung:
+- hardware.h: USE_ICACHE immer. USE_DCACHE bleibt hinter NDEBUG, also weiter aus.
+- Source/mpu.c: Die MPU-Region für die DMA-Puffer (ohne Cache) nur mit USE_DCACHE. Sie betrifft
+  nur Daten, und das Symbol _DMA_DATA gibt es im Linker-Skript des ACDC nicht (Link-Fehler).
+
+Was USE_ICACHE sonst schaltet [Code]:
+- main.c: SCB_InvalidateICache() und SCB_EnableICache() vor HAL_Init.
+- support.c: device_cache_invalidate() invalidiert den I-Cache. PatchDefinition.hpp ruft das nach
+  dem Kopieren eines Patches in den RAM und vor seinem Start auf, also kein alter Code im Cache
+  nach einem Patch-Wechsel. device_reset_to() invalidiert vor dem Sprung in den Bootloader.
+- ITCM und DTCM laufen am Cache vorbei, der heiße Pfad im ITCM (Patch 11g) ändert sich nicht.
+  Schneller werden Firmware-Code im internen Flash und Patches im AXI-SRAM (Link plusram).
+  Patches im DTCM (Link patchram, Standard der Patch-Library) holen ihre Befehle weiter ohne Cache.
+
+--- a/ACDC/Core/Inc/hardware.h
++++ b/ACDC/Core/Inc/hardware.h
+@@ -17,8 +17,11 @@
+ 
+ #define USE_FAST_POW_RESOURCES
+ 
+-#ifdef NDEBUG
++/* Instruction cache always on: the Release build never defines NDEBUG, so without this
++   both caches stayed off (messlog D83). The data cache stays off for now: it needs an MPU
++   region for the DMA buffers (_DMA_DATA is missing in the linker script). */
+ #define USE_ICACHE
++#ifdef NDEBUG
+ #define USE_DCACHE
+ #endif
+ 
+--- a/Source/mpu.c
++++ b/Source/mpu.c
+@@ -14,7 +14,7 @@
+   size_t region_number = 0;
+ 
+   /* Configure the MPU attributes for DMA RAM */
+-#if defined USE_ICACHE || defined USE_DCACHE
++#ifdef USE_DCACHE // only the data cache needs the DMA buffers uncached
+   // D2 DMA buffers: cache off
+   // TEX=1 C=0 B=0 S=1: Normal Non-cacheable
+   extern char _DMA_DATA;
+@@ -30,7 +30,7 @@
+   MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+   MPU_InitStruct.IsBufferable = MPU_ACCESS_BUFFERABLE;
+   HAL_MPU_ConfigRegion(&MPU_InitStruct);
+-#endif /* USE_ICACHE || USE_DCACHE */
++#endif /* USE_DCACHE */
+ 
+   /* Configure the MPU attributes for SDRAM */
+ #if 0 // using defaults

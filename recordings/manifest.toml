@@ -2423,3 +2423,101 @@ files = ["20261119_acdc1_fx7a-loop_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
 note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:36:30. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx7a-loop (rc 0). Kabel Out 1–4 → In 1–4, Gain 12 Uhr. messlog D79."
+
+[[measurement]]
+id = "B10-fx8a-a-r1"
+date = "2026-11-23"
+device = "acdc1"
+test = "Build-10-Sitzung: fx8a am Anfang, LED-Modus wie gemerkt, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B10-fx8a-a-r1 – acdc1 fx8a-open-inputs-10a, 60 s (Wiederholung 1)"
+files = ["20261123_acdc1_fx8a-open-inputs-10a-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:52:59. Stream-Meldungen: 0. owl_read: out/owl_read/B10-fx8a-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (I-Cache an), acdc1 im Case. Vor der Aufnahme lief wieder der gemerkte Slot 12, acdc1 wurde vermutlich beim Umstecken neu gestartet. Regler 69/55/72/56 von 127. Oszillator im Case abgesteckt (Nutzer). messlog D85."
+
+[[measurement]]
+id = "B10-fx8a-a-r2"
+date = "2026-11-23"
+device = "acdc1"
+test = "Build-10-Sitzung: fx8a am Anfang, LED-Modus wie gemerkt, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B10-fx8a-a-r2 – acdc1 fx8a-open-inputs-10a, 60 s (Wiederholung 2)"
+files = ["20261123_acdc1_fx8a-open-inputs-10a-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:54:12. Stream-Meldungen: 0. owl_read: out/owl_read/B10-fx8a-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (I-Cache an), acdc1 im Case. Vor der Aufnahme lief wieder der gemerkte Slot 12, acdc1 wurde vermutlich beim Umstecken neu gestartet. Regler 69/55/72/56 von 127. Oszillator im Case abgesteckt (Nutzer). messlog D85."
+
+[[measurement]]
+id = "B10-fx7a-r1"
+date = "2026-11-23"
+device = "acdc1"
+test = "Build-10-Sitzung: fx7a als Kontrolle in der Mitte, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B10-fx7a-r1 – acdc1 fx7a-open-inputs-10, 60 s (Wiederholung 1)"
+files = ["20261123_acdc1_fx7a-open-inputs-10-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:56:16. Stream-Meldungen: 0. owl_read: out/owl_read/B10-fx7a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 9 v22.4.r-fx7a, geflasht aus fx8a (firmware/flashlog/20261123_build9-fx7a-ab10/), Start über dfu-util :leave. Regler etwa 12 Uhr. Oszillator im Case abgesteckt (Nutzer). messlog D85."
+
+[[measurement]]
+id = "B10-fx7a-r2"
+date = "2026-11-23"
+device = "acdc1"
+test = "Build-10-Sitzung: fx7a als Kontrolle in der Mitte, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B10-fx7a-r2 – acdc1 fx7a-open-inputs-10, 60 s (Wiederholung 2)"
+files = ["20261123_acdc1_fx7a-open-inputs-10-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:57:29. Stream-Meldungen: 0. owl_read: out/owl_read/B10-fx7a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 9 v22.4.r-fx7a, geflasht aus fx8a (firmware/flashlog/20261123_build9-fx7a-ab10/), Start über dfu-util :leave. Regler etwa 12 Uhr. Oszillator im Case abgesteckt (Nutzer). messlog D85."
+
+[[measurement]]
+id = "B10-fx8a-b-r1"
+date = "2026-11-23"
+device = "acdc1"
+test = "Build-10-Sitzung: fx8a am Ende, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B10-fx8a-b-r1 – acdc1 fx8a-open-inputs-10b, 60 s (Wiederholung 1)"
+files = ["20261123_acdc1_fx8a-open-inputs-10b-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:59:22. Stream-Meldungen: 0. owl_read: out/owl_read/B10-fx8a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (I-Cache an), geflasht aus fx7a (firmware/flashlog/20261123_build10-fx8a-b/), Start über dfu-util :leave. Regler etwa 12 Uhr. Oszillator im Case abgesteckt (Nutzer). messlog D85."
+
+[[measurement]]
+id = "B10-fx8a-b-r2"
+date = "2026-11-23"
+device = "acdc1"
+test = "Build-10-Sitzung: fx8a am Ende, Eingänge offen, Regler 12 Uhr, rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B10-fx8a-b-r2 – acdc1 fx8a-open-inputs-10b, 60 s (Wiederholung 2)"
+files = ["20261123_acdc1_fx8a-open-inputs-10b-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:00:36. Stream-Meldungen: 0. owl_read: out/owl_read/B10-fx8a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (I-Cache an), geflasht aus fx7a (firmware/flashlog/20261123_build10-fx8a-b/), Start über dfu-util :leave. Regler etwa 12 Uhr. Oszillator im Case abgesteckt (Nutzer). messlog D85."
+
+[[measurement]]
+id = "B10-fx8a-loop"
+date = "2026-11-23"
+device = "acdc1"
+test = "Build-10-Sitzung: Loop-Test fx8a, Out n → In n, Sinus 440/530/670/790 Hz"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS"
+patch = "Slot 1: ACDC (Default-Patch)"
+title = "B10-fx8a-loop – acdc1 fx8a-loop, 60 s"
+files = ["20261123_acdc1_fx8a-loop_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:03:41. Stream-Meldungen: 0. owl_read: out/owl_read/B10-fx8a-loop (rc 0). Firmware Build 10 v22.4.r-fx8a (I-Cache an). Kabel Out 1–4 → In 1–4 (Nutzer), Regler etwa 12 Uhr. messlog D85."
