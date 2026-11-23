@@ -2,3 +2,7 @@
 	path = firmware/OpenWare
 	url = https://github.com/m9dfukc/OpenWare.git
 	branch = acdc/fx1d
+[submodule "owl"]
+	path = owl
+	url = https://github.com/m9dfukc/acdc-patches.git
+	branch = main

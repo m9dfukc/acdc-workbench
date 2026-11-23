@@ -174,6 +174,8 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [x] `acdc-workbench` auf GitHub angelegt, gepusht und öffentlich geschaltet (2026-11-16): https://github.com/m9dfukc/acdc-workbench
 - [x] Releases am Fork angelegt 2026-11-16: `acdc-v22.4.r-fx2d` (3d, Tag auf `abc3a72a`) und `acdc-v22.4.r-fx3l` (Vorabversion, Tag auf `3e3a74fd`), je `ACDC-<version>.bin` und `BUILD_INFO`. Anhänge heruntergeladen und gegen die SHA-256 geprüft
 - [ ] fx3l-Release von „Vorabversion“ auf Release stellen, wenn Alltagstest und zweite Rauschsitzung bestanden sind
+- [x] Eigene OWL-Patches als eigenes Repo `m9dfukc/acdc-patches` (öffentlich, GPL-3.0-or-later, Geschichte von `owl/` übernommen), hier als Submodul `owl/` eingebunden (2026-11-23). Dazu die `BUILD_INFO.txt` der eigenen Builds aus `owl-patches/` nach `owl/builds/`
+- [ ] Gebaute `.syx` der eigenen Patches (Tanh3, Schliere A–L) als Release-Assets an `acdc-patches` hängen (Nutzer 2026-11-23: nicht ins Repo). Prüfsummen stehen in `owl/builds/<name>/BUILD_INFO.txt`
 - [ ] Eventuell: Ergebnisse als GitHub-Issue anlegen. Wo (Upstream `RebelTechnology/OpenWare` oder eigenes Repo) ist offen
 
 ### 7. Serielles MIDI oder I2C über den Header hinten (irgendwann, keine Eile)

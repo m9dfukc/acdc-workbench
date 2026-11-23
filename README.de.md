@@ -2,7 +2,7 @@
 
 Eine Werkbank für das **Befaco / Rebel Technology AC/DC**, das Eurorack-USB-Audiointerface mit OpenWare-Firmware. Sie liest das Modul aus, nimmt automatisch auf, wertet das Rauschspektrum aus, baut die Firmware reproduzierbar und protokolliert jeden Flash.
 
-Anlass war das Rauschen in meinen AC/DC-Aufnahmen. Die Werkzeuge, die dabei entstanden sind, sind inzwischen das wichtigste Ergebnis. Die Firmware selbst liegt in einem Fork: [m9dfukc/OpenWare](https://github.com/m9dfukc/OpenWare), Branch `acdc/fx1d`, hier als Submodul eingebunden.
+Anlass war das Rauschen in meinen AC/DC-Aufnahmen. Die Werkzeuge, die dabei entstanden sind, sind inzwischen das wichtigste Ergebnis. Die Firmware selbst liegt in einem Fork: [m9dfukc/OpenWare](https://github.com/m9dfukc/OpenWare), Branch `acdc/fx1d`, hier als Submodul eingebunden. Die eigenen OWL-Patches liegen in [m9dfukc/acdc-patches](https://github.com/m9dfukc/acdc-patches), eingebunden als Submodul `owl/`.
 
 > **Inoffiziell und eng gefasst.** Gemessen wurde an einem Modul, mit einem Rechner, unter macOS. Ein zweites Modul dient als unberührte Referenz. Flashen geschieht auf eigene Gefahr: vorher die Firmware des eigenen Moduls sichern.
 
@@ -87,7 +87,7 @@ Voraussetzungen: macOS, [uv](https://docs.astral.sh/uv/), `dfu-util` für Readba
 ```sh
 git clone https://github.com/m9dfukc/acdc-workbench.git
 cd acdc-workbench
-tools/setup_repo.sh    # Submodul, Upstream-Remote, feste Downloads mit Prüfsumme
+tools/setup_repo.sh    # Submodule, Upstream-Remote, feste Downloads mit Prüfsumme
 uv sync
 ```
 
@@ -102,7 +102,7 @@ Die Aufrufe für Aufnahme, Loop-Prüfung, Auslesen und Nachbau stehen im englisc
 | `docs/en/` | Englische Fassungen der Referenz-Docs, siehe [docs/en/README.md](docs/en/README.md) |
 | `firmware/OpenWare/` | Submodul, der Firmware-Fork |
 | `firmware/patches/`, `firmware/builds/`, `firmware/flashlog/` | Patches, Build-Protokolle, Flash-Protokolle |
-| `owl/` | Eigene OWL-Patches für das Modul: `Tanh3` (dreifacher tanh-Waveshaper mit Mix-Kanal), `Schliere` in `owl/schliere/` (Kette aus 61 Allpässen 2. Ordnung: Laufzeit je Frequenz, Phaser-Kerben, Resonator, mono hinein und stereo heraus; fünf Varianten, beschrieben in `owl/schliere/README.md`), ein Ausgangs-Limiter für FX-Patches und eine Sperre für die Blockraten-Linien am Eingang, mit Tests am Rechner. In `owl/test/` liegen dazu zwei Mess-Patches, die die LEDs nach Zeitplan schalten und die LED-Verschiebung selbst an den rohen Eingängen messen |
+| `owl/` | Submodul [acdc-patches](https://github.com/m9dfukc/acdc-patches), eigene OWL-Patches für das Modul: `Tanh3` (dreifacher tanh-Waveshaper mit Mix-Kanal), `Schliere` in `owl/schliere/` (Kette aus 61 Allpässen 2. Ordnung: Laufzeit je Frequenz, Phaser-Kerben, Resonator, mono hinein und stereo heraus; sieben Varianten, beschrieben in `owl/schliere/README.md`), ein Ausgangs-Limiter für FX-Patches und eine Sperre für die Blockraten-Linien am Eingang, mit Tests am Rechner. In `owl/test/` liegen dazu zwei Mess-Patches, die die LEDs nach Zeitplan schalten und die LED-Verschiebung selbst an den rohen Eingängen messen. `owl/builds/` hält die Builds fest, die auf dem Gerät liefen (`BUILD_INFO.txt`) |
 | `recordings/manifest.toml` | Metadaten jeder Aufnahme |
 | `out/<ID>/` | Analyse-Report je Messung |
 | `TODO.md`, `CLAUDE.md` | Offene Punkte und der Projektkontext für die Arbeit mit Claude Code |
@@ -120,4 +120,4 @@ Die Arbeitsdokumente sind deutsch und bleiben es, Deutsch ist die Quelle.
 
 ## Lizenz
 
-Werkzeuge MIT, Firmware-Patches GPL-2.0, Dokumente und Messdaten CC BY 4.0. Einzelheiten: [LICENSE.md](LICENSE.md).
+Werkzeuge MIT, Firmware-Patches GPL-2.0, OWL-Patches (Submodul `owl/`) GPL-3.0-or-later, Dokumente und Messdaten CC BY 4.0. Einzelheiten: [LICENSE.md](LICENSE.md).

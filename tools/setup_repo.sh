@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Richtet einen frischen Klon ein. Wiederholbar, überschreibt nichts.
 #
-#   1. Submodul firmware/OpenWare holen (ohne dessen eigenes Submodul Libraries)
+#   1. Submodule holen: firmware/OpenWare (ohne dessen eigenes Submodul Libraries) und owl/
+#      (eigene OWL-Patches, m9dfukc/acdc-patches)
 #   2. Remote `upstream` (RebelTechnology) im Submodul anlegen und holen.
 #      Die Docs nennen Upstream-Commits, die an keinem Fork-Branch hängen (z. B. 7f3cc41, 62a0187).
 #   3. Libraries-Tarball mit festem Commit nach firmware/downloads/ laden (für tools/build_acdc.sh)
@@ -53,8 +54,8 @@ fetch() {
   echo "ok  $(basename "$file")  sha256 ${sha:0:12}…"
 }
 
-echo "== submodule firmware/OpenWare"
-git -C "$ROOT" submodule update --init firmware/OpenWare
+echo "== submodules firmware/OpenWare, owl"
+git -C "$ROOT" submodule update --init firmware/OpenWare owl
 
 if [ "$DO_UPSTREAM" = 1 ]; then
   if ! git -C "$SUB" remote get-url upstream >/dev/null 2>&1; then

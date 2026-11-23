@@ -2,7 +2,7 @@
 
 A workbench for the **Befaco / Rebel Technology AC/DC**, the Eurorack USB audio interface that runs the OpenWare firmware. It reads out the module, records from it automatically, analyses the noise spectrum, builds the firmware reproducibly and documents every flash.
 
-It started as a hunt for the noise in my AC/DC recordings. The tooling that grew around that hunt is now the main result. The firmware itself lives in a fork: [m9dfukc/OpenWare](https://github.com/m9dfukc/OpenWare), branch `acdc/fx1d`, included here as a submodule.
+It started as a hunt for the noise in my AC/DC recordings. The tooling that grew around that hunt is now the main result. The firmware itself lives in a fork: [m9dfukc/OpenWare](https://github.com/m9dfukc/OpenWare), branch `acdc/fx1d`, included here as a submodule. The own OWL patches live in [m9dfukc/acdc-patches](https://github.com/m9dfukc/acdc-patches), included as the submodule `owl/`.
 
 > **Unofficial, and narrow in scope.** Everything was measured on one module, with one computer, on macOS. A second module serves as an untouched reference. Flashing is at your own risk: back up the firmware of your module first.
 
@@ -87,7 +87,7 @@ Requirements: macOS, [uv](https://docs.astral.sh/uv/), `dfu-util` for readback a
 ```sh
 git clone https://github.com/m9dfukc/acdc-workbench.git
 cd acdc-workbench
-tools/setup_repo.sh    # submodule, upstream remote, pinned downloads with checksum
+tools/setup_repo.sh    # submodules, upstream remote, pinned downloads with checksum
 uv sync
 ```
 
@@ -147,7 +147,7 @@ python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build9-fx7a   # after 
 | `docs/en/` | English versions of the reference documents, see [docs/en/README.md](docs/en/README.md) |
 | `firmware/OpenWare/` | Submodule, the firmware fork |
 | `firmware/patches/`, `firmware/builds/`, `firmware/flashlog/` | Patches, build records, flash records |
-| `owl/` | Own OWL patches for the module: `Tanh3` (triple tanh waveshaper with a mix channel), `Schliere` in `owl/schliere/` (a chain of 61 second-order allpass filters: frequency-dependent delay, phaser notches, resonator, mono in and stereo out; five variants, described in `owl/schliere/README.md`), an output limiter for FX patches and an input canceller for the block-rate lines, with host tests. `owl/test/` also holds two measurement patches that switch the LEDs on a schedule and measure the LED shift at the raw inputs themselves |
+| `owl/` | Submodule [acdc-patches](https://github.com/m9dfukc/acdc-patches), own OWL patches for the module: `Tanh3` (triple tanh waveshaper with a mix channel), `Schliere` in `owl/schliere/` (a chain of 61 second-order allpass filters: frequency-dependent delay, phaser notches, resonator, mono in and stereo out; seven variants, described in `owl/schliere/README.md`), an output limiter for FX patches and an input canceller for the block-rate lines, with host tests. `owl/test/` also holds two measurement patches that switch the LEDs on a schedule and measure the LED shift at the raw inputs themselves. `owl/builds/` records the builds that ran on the device (`BUILD_INFO.txt`) |
 | `recordings/manifest.toml` | Metadata of every recording |
 | `out/<ID>/` | Analysis report of each measurement |
 | `TODO.md`, `CLAUDE.md` | Open points and the project context used when working with Claude Code |
@@ -165,4 +165,4 @@ The working documents are written in German and stay that way, German is the sou
 
 ## License
 
-Tools MIT, firmware patches GPL-2.0, documents and measurement data CC BY 4.0. Details: [LICENSE.md](LICENSE.md).
+Tools MIT, firmware patches GPL-2.0, OWL patches (submodule `owl/`) GPL-3.0-or-later, documents and measurement data CC BY 4.0. Details: [LICENSE.md](LICENSE.md).

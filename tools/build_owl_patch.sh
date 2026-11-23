@@ -23,6 +23,9 @@
 #   SDK       OwlProgram tree (default: owl-patches/OwlProgram)
 #   SRC       folder with the patch sources (default: owl-patches/acdc-patches)
 #   OUT       output base folder (default: owl-patches/builds)
+#   INFO_OUT  extra folder for a copy of BUILD_INFO.txt (default: owl/builds when SRC lies in
+#             the submodule owl/, otherwise none). BUILD_INFO.txt of the own patches is
+#             versioned there, patch.bin and the SysEx stay local
 #   PLATFORM  OWL3 (default: Cortex-M7 code, FPU fpv5-d16) or OWL2 (Cortex-M4 code that
 #             runs on every OWL device, like the patch library)
 #   LINK      patchram (default: links to 0x2000c000 like the patch library, at most
@@ -35,7 +38,7 @@
 set -euo pipefail
 
 if [ $# -lt 3 ]; then
-  sed -n '2,34p' "$0" >&2
+  sed -n '2,37p' "$0" >&2
   exit 2
 fi
 
@@ -46,6 +49,10 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SDK="$(cd "${SDK:-$ROOT/owl-patches/OwlProgram}" && pwd)"
 SRC="$(cd "${SRC:-$ROOT/owl-patches/acdc-patches}" && pwd)"
 OUT="${OUT:-$ROOT/owl-patches/builds}"
+case "$SRC/" in
+  "$ROOT/owl/"*) INFO_OUT="${INFO_OUT-$ROOT/owl/builds}";;
+  *)             INFO_OUT="${INFO_OUT-}";;
+esac
 PLATFORM="${PLATFORM:-OWL3}"
 LINK="${LINK:-patchram}"
 LIMIT="${LIMIT:-0}"
@@ -62,6 +69,7 @@ case "$NAME" in (*/*|""|.|..) echo "Invalid name: $NAME" >&2; exit 2;; esac
 [ -f "$SDK/compile.mk" ] || { echo "OwlProgram not found: $SDK" >&2; exit 2; }
 [ -f "$SDK/Libraries/DaisySP/Source/daisysp.h" ] || { echo "DaisySP sources are missing in $SDK/Libraries/DaisySP" >&2; exit 2; }
 [ -f "$SRC/$FILE" ] || { echo "Patch file not found: $SRC/$FILE" >&2; exit 2; }
+[ "$LIMIT" != 1 ] || [ -f "$ROOT/owl/AcdcOutput.h" ] || { echo "owl/AcdcOutput.h missing: git submodule update --init owl" >&2; exit 2; }
 
 WORK="$ROOT/owl-patches/_work"
 BUILD="$WORK/$NAME-$PLATFORM-$LINK"
@@ -131,4 +139,9 @@ sha() { shasum -a 256 "$1" | cut -d' ' -f1; }
   echo "bin_sha256: $(sha "$DEST/patch.bin")"
   echo "syx_sha256: $(sha "$DEST/$NAME.syx")"
 } > "$DEST/BUILD_INFO.txt"
+if [ -n "$INFO_OUT" ]; then
+  mkdir -p "$INFO_OUT/$NAME"
+  cp "$DEST/BUILD_INFO.txt" "$INFO_OUT/$NAME/BUILD_INFO.txt"
+  echo "BUILD_INFO.txt also in $INFO_OUT/$NAME/ (commit it in the submodule)"
+fi
 echo "Built $DEST/$NAME.syx"

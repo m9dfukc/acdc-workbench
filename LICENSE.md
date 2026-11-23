@@ -11,5 +11,6 @@ This repository mixes three kinds of material. Each has its own license.
 ## Third-party material
 
 - `firmware/OpenWare/` is a git submodule (a fork of [RebelTechnology/OpenWare](https://github.com/RebelTechnology/OpenWare)) and keeps its own license, GPL-2.0.
+- `owl/` is a git submodule ([m9dfukc/acdc-patches](https://github.com/m9dfukc/acdc-patches), the own OWL patches) under GPL-3.0-or-later, the license of OwlProgram, which the patches are built against.
 - `.claude/skills/` comes from [mattpocock/skills](https://github.com/mattpocock/skills) under the MIT license: [LICENSES/MIT-mattpocock-skills.txt](LICENSES/MIT-mattpocock-skills.txt).
 - `docs/research/` paraphrases and quotes public forum posts and repositories. Each note links its sources. The quotes remain the work of their authors.
