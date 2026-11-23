@@ -1,4 +1,4 @@
-<!-- i18n source=docs/05-firmware-plan.md sha256=a8c807b75dc632e93dd367fe18f2e5456e1b97e98ba35fbca3dbbe76ed1b391b date=2026-11-23 -->
+<!-- i18n source=docs/05-firmware-plan.md sha256=2accebda18114da51f1d4aaaaee805dd3c37f1e196eb3ba98680503ca672e7d9 date=2026-11-23 -->
 > English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-23. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 05 – Firmware: Status, Forks, Build Plan
@@ -796,7 +796,7 @@ Builds of `34782dea` and `351b2071` without patches are byte-identical with fx6a
 
 **Implementation (patch `19-icache-on.patch`) [code]:**
 - `hardware.h`: `USE_ICACHE` always; `USE_DCACHE` stays behind `NDEBUG`, so it stays off.
-- `Source/mpu.c`: the MPU region for the DMA buffers only with `USE_DCACHE` instead of `USE_ICACHE || USE_DCACHE`. It only concerns data, and the symbol `_DMA_DATA` is missing in the ACDC linker script (link error otherwise).
+- `Source/mpu.c`: the MPU region for the DMA buffers only with `USE_DCACHE` instead of `USE_ICACHE || USE_DCACHE`. It only concerns data. **Correction (2026-11-23, D86):** this line originally said that `_DMA_DATA` is missing in the ACDC linker script and that `USE_ICACHE` alone would fail to link. That is wrong: the ACDC links with `Hardware/xibeca.ld`, which has `PROVIDE (_DMA_DATA = .)` at the start of `.dmadata` (0x30000000, 64 KB) [code]. The symbol was missing from the fx7a ELF only because nothing referenced it. The same wrong sentence is a comment in `hardware.h` (patch 19) and in the commit message `8a401e75` on the fork. Patch 19 stays unchanged anyway, because `BUILD_INFO.txt` records its checksum.
 - What `USE_ICACHE` switches besides: `SCB_InvalidateICache()` and `SCB_EnableICache()` in `main()` before `HAL_Init`, `device_cache_invalidate()` (invalidates the I-cache; `PatchDefinition.hpp` calls it after copying a patch and before starting it), `device_reset_to()` before the jump into the bootloader.
 - There are no wait loops counted in instructions on the ACDC path: the codec init waits with `HAL_Delay` (SysTick), `NopDelay` only exists in the CS4272 driver, which is not built.
 

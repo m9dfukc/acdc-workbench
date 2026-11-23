@@ -2932,7 +2932,7 @@ Bei Tap-CV ±1 V liegt der Ton selbst bei −7 dB, die Seitenbänder bei −0,9 
 - `ACDC/Core/Inc/hardware.h` setzt `USE_ICACHE` und `USE_DCACHE` nur `#ifdef NDEBUG`. `Hardware/owl3.mk` setzt im Release-Build nur `-O3`, nie `-DNDEBUG` [Code]. Das gilt für unseren Stand, für v22.5.0 und für den Upstream-`master`. Im fx7a-Binary fehlt der Code zum Einschalten der Caches, `MPU_Config` richtet nur die QSPI-Region ein [Code, Disassembly]. Am Gerät bestätigt (CCR = 0) [gemessen].
 - Ohne I-Cache holt der Kern jeden Befehl über den Bus aus dem AXI-SRAM (Patch-Code mit plusram) bzw. dem DTCM (patchram). Die Leseschleife braucht deshalb in allen internen Speichern gleich viel, etwa 24 Takte statt einer Handvoll: Es bremst der Befehlsabruf, nicht der Datenzugriff [Hypothese, gestützt durch ITCM ≈ AXI]. Alle Abschnitte von Plateau sind gleichmäßig etwa fünfmal zu langsam. Das SDRAM kostet pro Lesezugriff etwa 22 Takte mehr, beim Pre-Delay also rund 50 Takte pro Sample, 1 % der Last.
 - Das betrifft alle Patches auf beiden Modulen, nicht nur Plateau. Es passt zu den bisherigen Befunden: Die Lage des Codes im Flash verschob die Störlinien (D33), und erst der heiße Pfad im ITCM machte die Firmware davon unabhängig (D48). Mit Cache wäre der Busverkehr kleiner, was nach D42 auch fs/8 senken könnte [Hypothese].
-- Ein Firmware-Build mit eingeschaltetem I-Cache ist der naheliegende nächste Schritt. Der D-Cache braucht dagegen mehr: die MPU-Region für die DMA-Puffer (`_DMA_DATA` fehlt im Linker-Skript des ACDC) und Kohärenz für SAI und USB.
+- Ein Firmware-Build mit eingeschaltetem I-Cache ist der naheliegende nächste Schritt. Der D-Cache braucht dagegen mehr: die MPU-Region für die DMA-Puffer (`_DMA_DATA` fehlt im Linker-Skript des ACDC) und Kohärenz für SAI und USB. **Korrigiert in D86:** `_DMA_DATA` ist in `xibeca.ld` per `PROVIDE` definiert, USB nutzt keine DMA.
 
 **Einschränkungen:** Wenige Lesungen, Regler nicht auf festen Stellungen, keine Aufnahme. Der langsamste Block schwankt stark (einmal 10 754 Takte pro Sample, Ursache offen, etwa MIDI-Verkehr durch `owl_read.py`). Ob die Abschnitte mit Cache gleichmäßig schneller werden, ist nicht gemessen. Danach lief `PlateauProfile` aus dem RAM weiter.
 
@@ -3075,3 +3075,22 @@ In Geräte-dBFS (−6,02 dB), wie in den READMEs: Original gegen fx8a RMS −77,
 - Einschränkung: Das Original ist über den DC-Offset korrigiert. Ein Fehler darin verschiebt alle Größen des Originals um denselben Betrag. Der Kamm (gleich bei beiden) spricht dafür, dass die Korrektur stimmt.
 
 **Danach:** fx8a, Slot 1 per Program Change, gemerkt bleibt Slot 12, keine Kabel.
+
+## D86 – D-Cache vorbereiten: DMA-Puffer, MPU-Region, Korrektur zu `_DMA_DATA` (2026-11-23, am Rechner)
+
+**Anlass:** Planung von Build 11 (D-Cache an). Nur lesend, Quellbaum von fx8a (`firmware/_work/acdc1-build10-fx8a/`) und ELF von Build 10.
+
+**Befunde [Code]:**
+- **Korrektur zu D83, Build 10 und Patch 19:** `_DMA_DATA` fehlt nicht. Das ACDC linkt mit `Hardware/xibeca.ld` (`ACDC/Makefile` bindet `Hardware/xibeca.mk` ein), dort steht `.dmadata (NOLOAD) : { PROVIDE (_DMA_DATA = .); *(.dmadata) } >DMA_D2` mit `DMA_D2` bei 0x30000000, 64 KB. Im ELF von fx7a fehlte das Symbol nur, weil `PROVIDE` es erst anlegt, wenn es benutzt wird. Ob `USE_ICACHE` allein einen Link-Fehler gegeben hätte, ist damit hinfällig: eher nicht. Am Inhalt von Build 10 ändert das nichts, die Bindung der Region an `USE_DCACHE` ist trotzdem richtig.
+- **Nur drei Puffer werden per DMA beschrieben oder gelesen** (alle DMA1): `codec_txbuf` 0x30000000 (SAI1 B), `codec_rxbuf` 0x30002000 (SAI1 A), je 0x2000 B, und `adc_values` 0x30004000 (ADC1, 8 B). Alle liegen über das Makro `DMA_RAM` (`hardware.h`) in `.dmadata`, also im Fenster der Region. Dazu in `.dmadata`, aber nur von der CPU benutzt: `midi_rx_buffer`. MDMA und BDMA laufen nicht, SPI3 hat einen DMA-Kanal, wird aber nie per DMA gestartet.
+- **Ohne DMA:** USB (OTG FS, `dma_enable = DISABLE`, alle Puffer im DTCM), QSPI (indirekt, CPU-Polling, auch beim Laden und Speichern von Patches), SPI zum Codec, UART.
+- **Patches arbeiten direkt in den SAI-Puffern:** `pv->audio_input` und `pv->audio_output` zeigen in `codec_rxbuf`/`codec_txbuf`, das SDK wandelt int↔float in eigene Puffer. Die Firmware liest und schreibt dieselben Puffer (USB-Umwandlung, Pegel, LEDs).
+- **Fehler im Code hinter `USE_DCACHE`, bisher nie gebaut:**
+  - Die DMA-Region in `Source/mpu.c` setzt TEX=1, C=0, **B=1**. Diese Kodierung ist in ARMv7-M reserviert. Normal ohne Cache ist TEX=1, C=0, B=0, wie der Kommentar dort sagt.
+  - `main()` schaltet den D-Cache vor `MPU_Config()` ein.
+  - `device_cache_invalidate()` invalidiert erst den I-Cache, dann schreibt es den D-Cache zurück. Für Patch-Code im AXI ist die umgekehrte Reihenfolge richtig.
+  - Die auskommentierte SDRAM-Region ist 8 MB statt 32 MB groß und shareable (auf dem M7 praktisch ohne Cache).
+- Firmware-Daten liegen fast alle im DTCM (nie gecacht). Cachebar würden mit D-Cache: AXI (Patch-Code und -Heap bei plusram), D2 außerhalb von `.dmadata` (Tabellen, SysEx-Puffer), D3. Das SDRAM bleibt ohne eigene Region Device.
+
+**Folge:** Planung von Build 11 in einer Fragerunde mit dem Nutzer (siehe `docs/05`, „Build 11“, sobald abgestimmt). Die falsche Aussage ist in `docs/05` (de/en), D83, `CLAUDE.md`, `TODO.md` und im Fork-README korrigiert, Patch 19 bleibt unverändert (Prüfsumme in `BUILD_INFO.txt`).
+

@@ -793,7 +793,7 @@ Builds von `34782dea` und `351b2071` ohne Patches sind bytegleich mit fx6a (`fir
 
 **Umsetzung (Patch `19-icache-on.patch`) [Code]:**
 - `hardware.h`: `USE_ICACHE` immer, `USE_DCACHE` bleibt hinter `NDEBUG`, also aus.
-- `Source/mpu.c`: Die MPU-Region für die DMA-Puffer nur noch mit `USE_DCACHE` statt mit `USE_ICACHE || USE_DCACHE`. Sie betrifft nur Daten, und das Symbol `_DMA_DATA` fehlt im Linker-Skript des ACDC (sonst Link-Fehler).
+- `Source/mpu.c`: Die MPU-Region für die DMA-Puffer nur noch mit `USE_DCACHE` statt mit `USE_ICACHE || USE_DCACHE`. Sie betrifft nur Daten. **Korrektur (2026-11-23, D86):** Ursprünglich stand hier, `_DMA_DATA` fehle im Linker-Skript des ACDC und `USE_ICACHE` allein gäbe einen Link-Fehler. Das stimmt nicht: Das ACDC linkt mit `Hardware/xibeca.ld`, und dort steht `PROVIDE (_DMA_DATA = .)` am Anfang von `.dmadata` (0x30000000, 64 KB) [Code]. Im ELF von fx7a fehlte das Symbol nur, weil nichts darauf verwies. Derselbe falsche Satz steht als Kommentar in `hardware.h` (Patch 19) und in der Commit-Nachricht `8a401e75` am Fork. Patch 19 bleibt trotzdem unverändert, weil `BUILD_INFO.txt` seine Prüfsumme festhält.
 - Was `USE_ICACHE` sonst schaltet: `SCB_InvalidateICache()` und `SCB_EnableICache()` in `main()` vor `HAL_Init`, `device_cache_invalidate()` (invalidiert den I-Cache; `PatchDefinition.hpp` ruft es nach dem Kopieren eines Patches und vor seinem Start), `device_reset_to()` vor dem Sprung in den Bootloader.
 - Warteschleifen über Befehlszahl gibt es im ACDC-Pfad nicht: Der Codec-Init wartet mit `HAL_Delay` (SysTick), `NopDelay` steckt nur im nicht gebauten CS4272-Treiber.
 
