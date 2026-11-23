@@ -864,7 +864,14 @@ Ein Build von `f9f9399a` ohne Patches ist bytegleich mit fx8a (`firmware/builds/
 - Erledigt (D89): Loop-Test 10 min (0 Slips, 0 von 28,7 Mio. Samples falsch). Cache-Bits 3, PlateauProfile 2635–2651 statt 3533 Takte pro Sample, **Plateau 29 % statt 35 %**. Zwei Runden Patch-Wechsel durch alle Slots und RAM-Uploads ohne Fehler. Downloads 240/240.
 - Erledigt (D89): Statt des Store-Tests auf Slot 13 die neue Belegung auf Wunsch des Nutzers: Plateau auf Slot 5, vier Stores mit `--download-check` bytegleich, Slots 9–12 mit `--erase` gelöscht (erstmals am Gerät).
 - Erledigt (D89): Rauschen als Sandwich fx9a → fx8a → fx9a: **fs/8 −0,7 dB** in allen vier fx9a-Läufen, RMS, Rest und Kamm −0,1…−0,6 dB, keine neue Linie. Die Linien bei 2000/3000 Hz sinken.
-- **Punkt 1 ist erfüllt, die Abnahme vollständig.** Die AXI-Leseschleife bleibt bei 15 Takten: Sie misst über einen Puffer weit größer als der D-Cache immer Fehlzugriffe, das Kriterium „gegen 5 Takte“ war falsch gewählt (D89). **fx9a ist die Alltags-Firmware (Entscheidung des Nutzers, 2026-11-23).** Rückweg fx8a. Fork-Commits und Release folgen nur mit Freigabe.
+- **Punkt 1 ist erfüllt, die Abnahme vollständig.** Die AXI-Leseschleife bleibt bei 15 Takten: Sie misst über einen Puffer weit größer als der D-Cache immer Fehlzugriffe, das Kriterium „gegen 5 Takte“ war falsch gewählt (D89). **fx9a ist die Alltags-Firmware (Entscheidung des Nutzers, 2026-11-23).** Rückweg fx8a.
+
+**Fork-Branch `acdc/fx1d` (gepusht 2026-11-23, `2b6ffa1b..b6bcdc33`):**
+1. `e33f0756` Daten-Cache an (= Patch 20)
+2. `4ef038b6` Version `v22.4.r-fx9a`
+3. `b6bcdc33` README: Abschnitt „Data cache“, Tabellen, Teststand
+
+Ein Build von `4ef038b6` ohne Patches ist bytegleich mit fx9a (`firmware/builds/verify-fx1d-4ef038b6`, `fd77ec3a…`). Dazu das Release `acdc-v22.4.r-fx9a` (Tag auf `b6bcdc33`, „Latest“, 2026-11-23) mit `ACDC-v22.4.r-fx9a.bin` und `BUILD_INFO-v22.4.r-fx9a.txt` aus dem Prüf-Build.
 
 ### Fork `m9dfukc/OpenWare` (gepusht 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
 

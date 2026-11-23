@@ -1,4 +1,4 @@
-<!-- i18n source=docs/05-firmware-plan.md sha256=ffca4f1d5d0d489a526127f549985920cf7e0e14ea67d4c6bf083e00ce242a4d date=2026-11-23 -->
+<!-- i18n source=docs/05-firmware-plan.md sha256=87b368318010babb2b3adcb2c2e055c48579c25b2b2b157d1295fb4394445528 date=2026-11-23 -->
 > English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-23. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 05 – Firmware: Status, Forks, Build Plan
@@ -867,7 +867,14 @@ A build of `f9f9399a` without patches is byte-identical with fx8a (`firmware/bui
 - Done (D89): loop test 10 min (0 slips, 0 of 28.7 M samples wrong). Cache bits 3, PlateauProfile 2635–2651 instead of 3533 cycles per sample, **Plateau 29 % instead of 35 %**. Two rounds of patch switching through all slots and RAM uploads without errors. Downloads 240/240.
 - Done (D89): instead of the store test on slot 13, the new slot layout the user asked for: Plateau on slot 5, four stores with `--download-check` byte-identical, slots 9–12 erased with `--erase` (first time on the device).
 - Done (D89): noise as a sandwich fx9a → fx8a → fx9a: **fs/8 −0.7 dB** in all four fx9a runs, RMS, residual and comb −0.1…−0.6 dB, no new line. The lines at 2000/3000 Hz drop.
-- **Item 1 is met, acceptance is complete.** The AXI read loop stays at 15 cycles: it reads over a buffer far larger than the D-cache, so it always measures misses; the criterion "towards 5 cycles" was badly chosen (D89). **fx9a is the daily firmware (user's decision, 2026-11-23).** Fallback fx8a. Fork commits and release follow only with approval.
+- **Item 1 is met, acceptance is complete.** The AXI read loop stays at 15 cycles: it reads over a buffer far larger than the D-cache, so it always measures misses; the criterion "towards 5 cycles" was badly chosen (D89). **fx9a is the daily firmware (user's decision, 2026-11-23).** Fallback fx8a.
+
+**Fork branch `acdc/fx1d` (pushed 2026-11-23, `2b6ffa1b..b6bcdc33`):**
+1. `e33f0756` data cache on (= patch 20)
+2. `4ef038b6` version `v22.4.r-fx9a`
+3. `b6bcdc33` README: section "Data cache", tables, test status
+
+A build of `4ef038b6` without patches is byte-identical with fx9a (`firmware/builds/verify-fx1d-4ef038b6`, `fd77ec3a…`). Plus the release `acdc-v22.4.r-fx9a` (tag on `b6bcdc33`, "Latest", 2026-11-23) with `ACDC-v22.4.r-fx9a.bin` and `BUILD_INFO-v22.4.r-fx9a.txt` from the verification build.
 
 ### Fork `m9dfukc/OpenWare` (pushed 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
 

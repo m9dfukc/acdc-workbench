@@ -72,12 +72,12 @@ The fork has two branches:
 | Branch | Version | Content |
 |---|---|---|
 | `acdc/thru-usb-feedback` | `v22.4.r-thru1d` | The patch output reaches the jacks without a computer, plus the USB feedback fix |
-| `acdc/fx1d` | `v22.4.r-fx8a` | As above. The computer records the raw inputs, the input LEDs show the raw level while recording, the hot path runs from ITCM, a boot menu chooses the patch slot and the LED mode and remembers them, the MIDI send path is fixed, the LED PWM runs at 48 kHz, and the instruction cache is on |
+| `acdc/fx1d` | `v22.4.r-fx9a` | As above. The computer records the raw inputs, the input LEDs show the raw level while recording, the hot path runs from ITCM, a boot menu chooses the patch slot and the LED mode and remembers them, the MIDI send path is fixed, the LED PWM runs at 48 kHz, and the instruction and data caches are on |
 
 Both are based on upstream commit `db9d3dd` (v22.4.r) with the libraries at `9e8f64e`. The fork README explains why, and what each change does.
 
 - `firmware/patches/` holds the same changes as numbered patch files. `tools/build_acdc.sh` applies them to a clean tree.
-- `firmware/builds/<name>/BUILD_INFO.txt` records commit, toolchain, patch list and checksums of every build. The binaries are not in this repository, each one can be rebuilt byte for byte. Ready-made binaries of `v22.4.r-fx2d`, `v22.4.r-fx3l`, `v22.4.r-fx4b`, `v22.4.r-fx5a` and `v22.4.r-fx7a` (the latest) are attached to the [releases of the fork](https://github.com/m9dfukc/OpenWare/releases). `v22.4.r-fx6a` has no release of its own.
+- `firmware/builds/<name>/BUILD_INFO.txt` records commit, toolchain, patch list and checksums of every build. The binaries are not in this repository, each one can be rebuilt byte for byte. Ready-made binaries of `v22.4.r-fx2d`, `v22.4.r-fx3l`, `v22.4.r-fx4b`, `v22.4.r-fx5a`, `v22.4.r-fx7a`, `v22.4.r-fx8a` and `v22.4.r-fx9a` (the latest) are attached to the [releases of the fork](https://github.com/m9dfukc/OpenWare/releases). `v22.4.r-fx6a` has no release of its own.
 - `firmware/flashlog/` has one folder per flash: device report before and after, DFU logs, checksum of the readback.
 
 **Do not flash the official `ACDC.bin` v22.5.0 from the upstream release page onto an AC/DC.** It is reported to break USB ([forum thread](https://community.rebeltech.org/t/ac-dc-firmware-update/2083)).
