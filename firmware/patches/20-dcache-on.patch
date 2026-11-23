@@ -1,0 +1,122 @@
+Patch 20: Daten-Cache (D-Cache) der MCU einschalten, DMA-Puffer in einer MPU-Region ohne Cache.
+
+Anlass (messlog D83, D84, D87): Mit I-Cache, aber ohne D-Cache kostet ein Lesezugriff ins
+AXI-SRAM 15 Takte, ins TCM 5–6. Plateau liegt mit 461 KiB im AXI und braucht unter fx8a 3540
+Takte pro Sample. Plan mit dem Nutzer abgestimmt (2026-11-23, docs/05, „Build 11“).
+
+Änderung:
+- hardware.h: USE_DCACHE fest wie USE_ICACHE, der NDEBUG-Block fällt weg (kein -DNDEBUG). Der
+  falsche Kommentar aus Patch 19 („_DMA_DATA is missing in the linker script“) ist ersetzt:
+  Hardware/xibeca.ld legt _DMA_DATA per PROVIDE am Anfang von .dmadata an (D87).
+- Source/mpu.c, Region für die DMA-Puffer ab _DMA_DATA (0x30000000, 64 KB): Kodierung
+  TEX=1 C=0 B=0 S=0 (Normal ohne Cache). Bisher B=1, das ist in ARMv7-M reserviert. Darin
+  liegen alle per DMA benutzten Puffer: codec_txbuf (SAI1 B), codec_rxbuf (SAI1 A), adc_values
+  (ADC1), alle DMA1 und über DMA_RAM in .dmadata. Keine Cache-Pflege im Blocktakt.
+- main.c: SCB_InvalidateDCache() und SCB_EnableDCache() erst nach MPU_Config() (bisher vor
+  HAL_Init, also vor der Region). Der I-Cache bleibt vorne.
+- support.c, device_cache_invalidate(): erst SCB_CleanInvalidateDCache(), dann
+  SCB_InvalidateICache(). Die CPU kopiert Patch-Code über die Datenseite in den RAM, er muss
+  zurückgeschrieben sein, bevor der I-Cache neu lädt. PatchDefinition.hpp ruft das nach dem
+  Kopieren eines Patches und vor seinem Start auf.
+
+Was USE_DCACHE sonst schaltet [Code]:
+- device_reset_to(): SCB_CleanInvalidateDCache() vor dem Neustart. Bleibt unverändert: Der
+  Neustart läuft immer über NVIC_SystemReset (Adresse 0), das Magic-Wort für DFU und Bootloader
+  liegt bei 0x2000FFF0 im DTCM, also nie im Cache.
+- Mit D-Cache cachebar (Write-back, Write-allocate nach der Standard-Speicherkarte): AXI-SRAM
+  (Patch-Code und -Heap bei Link plusram), D2 ab 0x30010000 (Tabellen, SysEx-Puffer), D3.
+  DTCM und ITCM laufen am Cache vorbei. Das SDRAM bleibt Device ohne Cache (keine Region dafür,
+  die #if-0-Region in mpu.c bleibt aus), das QSPI-Fenster hat seine eigene Region ohne Cache.
+- Ohne DMA und damit ohne Kohärenzfrage: USB (OTG FS, dma_enable = DISABLE, Puffer im DTCM),
+  QSPI (CPU-Polling, auch beim Laden und Speichern von Patches), SPI zum Codec, UART.
+- Patches lesen und schreiben pv->audio_input/output direkt in den SAI-Puffern. Diese Zugriffe
+  bleiben ohne Cache (geschätzt ≈ 1 % CPU, nicht gemessen).
+
+--- a/ACDC/Core/Inc/hardware.h
++++ b/ACDC/Core/Inc/hardware.h
+@@ -17,13 +17,12 @@
+ 
+ #define USE_FAST_POW_RESOURCES
+ 
+-/* Instruction cache always on: the Release build never defines NDEBUG, so without this
+-   both caches stayed off (messlog D83). The data cache stays off for now: it needs an MPU
+-   region for the DMA buffers (_DMA_DATA is missing in the linker script). */
++/* Both caches always on: the Release build never defines NDEBUG, so without this both
++   caches stayed off (messlog D83). The DMA buffers (codec_txbuf, codec_rxbuf, adc_values,
++   all in .dmadata from _DMA_DATA, Hardware/xibeca.ld) stay uncached through an MPU region
++   in Source/mpu.c, so no cache maintenance is needed in the audio block (messlog D87). */
+ #define USE_ICACHE
+-#ifdef NDEBUG
+ #define USE_DCACHE
+-#endif
+ 
+ #define ARM_CYCLES_PER_SAMPLE       (480000000/AUDIO_SAMPLINGRATE) /* 480MHz / 48kHz */
+ 
+--- a/Source/mpu.c
++++ b/Source/mpu.c
+@@ -16,7 +16,7 @@
+   /* Configure the MPU attributes for DMA RAM */
+ #ifdef USE_DCACHE // only the data cache needs the DMA buffers uncached
+   // D2 DMA buffers: cache off
+-  // TEX=1 C=0 B=0 S=1: Normal Non-cacheable
++  // TEX=1 C=0 B=0 S=0: Normal Non-cacheable (TEX=1 C=0 B=1 is reserved in ARMv7-M)
+   extern char _DMA_DATA;
+   MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+   MPU_InitStruct.Number = 1 << region_number++; // MPU_REGION_NUMBER0
+@@ -28,7 +28,7 @@
+   MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+   MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+   MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+-  MPU_InitStruct.IsBufferable = MPU_ACCESS_BUFFERABLE;
++  MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+   HAL_MPU_ConfigRegion(&MPU_InitStruct);
+ #endif /* USE_DCACHE */
+ 
+--- a/ACDC/Core/Src/main.c
++++ b/ACDC/Core/Src/main.c
+@@ -124,12 +124,6 @@
+   /* After reset, you must invalidate each cache before enabling (SCB_EnableICache) it. */
+   SCB_InvalidateICache();
+   SCB_EnableICache();
+-#endif
+-#ifdef USE_DCACHE
+-  /* Enable D-Cache-------------------------------------------------------------*/
+-  /* Before enabling the data cache, you must invalidate the entire data cache (SCB_InvalidateDCache), because external memory might have changed from when the cache was disabled. */
+-  SCB_InvalidateDCache();
+-  SCB_EnableDCache();
+ #endif
+ 
+   /* Enable D2 domain SRAM Clocks */
+@@ -159,6 +153,12 @@
+   /* USER CODE BEGIN SysInit */
+ 
+   MPU_Config();
++#ifdef USE_DCACHE
++  /* Enable D-Cache only after MPU_Config(), so the DMA buffers are never cached (messlog D87) */
++  /* Before enabling the data cache, you must invalidate the entire data cache (SCB_InvalidateDCache), because external memory might have changed from when the cache was disabled. */
++  SCB_InvalidateDCache();
++  SCB_EnableDCache();
++#endif
+ 
+   /* USER CODE END SysInit */
+ 
+--- a/Source/support.c
++++ b/Source/support.c
+@@ -67,12 +67,14 @@
+ }
+ 
+ void device_cache_invalidate(){
+-#ifdef USE_ICACHE
+-  SCB_InvalidateICache();
+-#endif
++  // Patch code was copied by the CPU through the data side: write it back to RAM first,
++  // then drop stale instructions (messlog D87)
+ #ifdef USE_DCACHE
+   SCB_CleanInvalidateDCache();
+ #endif
++#ifdef USE_ICACHE
++  SCB_InvalidateICache();
++#endif
+ }
+ 
+ void device_watchdog(){

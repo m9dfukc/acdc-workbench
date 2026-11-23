@@ -787,13 +787,13 @@ Builds von `34782dea` und `351b2071` ohne Patches sind bytegleich mit fx6a (`fir
 
 **Rückweg:** fx6a (`6a3fc427…`), dann fx5a (`b69c25b3…`), danach wie bisher.
 
-### Build 10 – Befehls-Cache an, `v22.4.r-fx8a` (Build 2026-11-23, messlog D83–D85, **Alltags-Firmware auf acdc1 seit 2026-11-23**)
+### Build 10 – Befehls-Cache an, `v22.4.r-fx8a` (Build 2026-11-23, messlog D83–D85, Alltags-Firmware auf acdc1 am 2026-11-23, **Rückweg von fx9a**)
 
 **Anlass [Code, gemessen, D83]:** `ACDC/Core/Inc/hardware.h` setzt `USE_ICACHE` und `USE_DCACHE` nur `#ifdef NDEBUG`, `Hardware/owl3.mk` setzt im Release-Build nur `-O3`, nie `-DNDEBUG`. Das gilt auch für v22.5.0 und den Upstream-`master`. Unter fx7a meldet SCB->CCR auf acdc1 0, beide Caches sind aus. Plateau braucht dadurch 5000 Takte pro Sample bei rund 1000 Befehlen, alle Abschnitte gleichmäßig etwa fünfmal zu langsam.
 
 **Umsetzung (Patch `19-icache-on.patch`) [Code]:**
 - `hardware.h`: `USE_ICACHE` immer, `USE_DCACHE` bleibt hinter `NDEBUG`, also aus.
-- `Source/mpu.c`: Die MPU-Region für die DMA-Puffer nur noch mit `USE_DCACHE` statt mit `USE_ICACHE || USE_DCACHE`. Sie betrifft nur Daten. **Korrektur (2026-11-23, D86):** Ursprünglich stand hier, `_DMA_DATA` fehle im Linker-Skript des ACDC und `USE_ICACHE` allein gäbe einen Link-Fehler. Das stimmt nicht: Das ACDC linkt mit `Hardware/xibeca.ld`, und dort steht `PROVIDE (_DMA_DATA = .)` am Anfang von `.dmadata` (0x30000000, 64 KB) [Code]. Im ELF von fx7a fehlte das Symbol nur, weil nichts darauf verwies. Derselbe falsche Satz steht als Kommentar in `hardware.h` (Patch 19) und in der Commit-Nachricht `8a401e75` am Fork. Patch 19 bleibt trotzdem unverändert, weil `BUILD_INFO.txt` seine Prüfsumme festhält.
+- `Source/mpu.c`: Die MPU-Region für die DMA-Puffer nur noch mit `USE_DCACHE` statt mit `USE_ICACHE || USE_DCACHE`. Sie betrifft nur Daten. **Korrektur (2026-11-23, D87):** Ursprünglich stand hier, `_DMA_DATA` fehle im Linker-Skript des ACDC und `USE_ICACHE` allein gäbe einen Link-Fehler. Das stimmt nicht: Das ACDC linkt mit `Hardware/xibeca.ld`, und dort steht `PROVIDE (_DMA_DATA = .)` am Anfang von `.dmadata` (0x30000000, 64 KB) [Code]. Im ELF von fx7a fehlte das Symbol nur, weil nichts darauf verwies. Derselbe falsche Satz steht als Kommentar in `hardware.h` (Patch 19) und in der Commit-Nachricht `8a401e75` am Fork. Patch 19 bleibt trotzdem unverändert, weil `BUILD_INFO.txt` seine Prüfsumme festhält.
 - Was `USE_ICACHE` sonst schaltet: `SCB_InvalidateICache()` und `SCB_EnableICache()` in `main()` vor `HAL_Init`, `device_cache_invalidate()` (invalidiert den I-Cache; `PatchDefinition.hpp` ruft es nach dem Kopieren eines Patches und vor seinem Start), `device_reset_to()` vor dem Sprung in den Bootloader.
 - Warteschleifen über Befehlszahl gibt es im ACDC-Pfad nicht: Der Codec-Init wartet mit `HAL_Delay` (SysTick), `NopDelay` steckt nur im nicht gebauten CS4272-Treiber.
 
@@ -823,6 +823,48 @@ Builds von `34782dea` und `351b2071` ohne Patches sind bytegleich mit fx6a (`fir
 Ein Build von `f9f9399a` ohne Patches ist bytegleich mit fx8a (`firmware/builds/verify-fx1d-f9f9399a`, `e1b1097b…`). Dazu das Release `acdc-v22.4.r-fx8a` (Tag auf `21442efd`, „Latest“, 2026-11-23) mit `ACDC-v22.4.r-fx8a.bin` und `BUILD_INFO-v22.4.r-fx8a.txt` aus dem Prüf-Build.
 
 **Rückweg:** fx7a (`cac6fee0…`), dann fx6a, danach wie bisher.
+
+### Build 11 – Daten-Cache an, `v22.4.r-fx9a` (Plan, Fragerunde 2026-11-23, messlog D87, **Alltags-Firmware auf acdc1 seit 2026-11-23**)
+
+**Anlass [gemessen, D84]:** Mit I-Cache, aber ohne D-Cache kostet ein Lesezugriff ins AXI-SRAM 15 Takte, ins TCM 5–6. Plateau liegt mit 461 KiB im AXI und braucht unter fx8a 3540 Takte pro Sample.
+
+**Abgestimmt (Nutzer, 2026-11-23):**
+1. **Erfolg:** Speed-Gewinn messbar (Leseschleife AXI gegen 5 Takte, Plateau unter 30 % CPU), fs/8 höchstens +1 dB gegen fx8a, keine neue Linie, alle Stabilitätstests fehlerfrei. Hebt Build 11 fs/8 um mehr als 1 dB, wird er nicht zur Alltags-Firmware, bleibt aber als Option.
+2. **Umfang:** nur die internen SRAMs (AXI, D2, D3). Das SDRAM bleibt Device ohne Cache, ein Build mit cachebarem SDRAM folgt höchstens später.
+3. **Kohärenz:** die DMA-Puffer in einer MPU-Region ohne Cache, keine Cache-Pflege im Blocktakt. Betroffen sind nur `codec_txbuf`, `codec_rxbuf` und `adc_values`, alle schon in `.dmadata` (D87).
+4. **AXI:** Standard Write-back mit Write-allocate. Write-through nur, falls ein Test eine Kohärenzlücke zeigt.
+5. **Region:** die vorhandene ab `_DMA_DATA` (0x30000000, 64 KB), Kodierung korrigiert auf TEX=1, C=0, B=0, S=0 (bisher B=1, reserviert).
+6. **Reihenfolge beim Start:** `SCB_EnableDCache()` erst nach `MPU_Config()`, der I-Cache bleibt vorne.
+7. **`device_cache_invalidate()`:** erst `SCB_CleanInvalidateDCache()`, dann `SCB_InvalidateICache()` (Patch-Code im AXI kommt über die Datenseite).
+8. **`USE_DCACHE`** fest in `hardware.h`, kein `-DNDEBUG`. Der falsche Kommentar aus Patch 19 wird dabei ersetzt.
+9. **Patch und Version:** Patch 20 (`20-dcache-on.patch`) auf fx8a, Version `v22.4.r-fx9a`. Vor dem Flash: `check_itcm --same-itcm fx8a` (ITCM bytegleich, die Änderungen liegen nur in `main.c`, `mpu.c`, `support.c`), Disassembly von `MPU_Config` (zwei Regionen, richtige Bits) und `main()`, Offline-Prüfung von `flash_acdc.py`.
+10. **Start:** `:leave`, A1, danach ein Kaltstart von Hand mit A1 und kurzem Loop-Test, dann die Abnahme.
+11. **Abnahme:** Loop-Test 10 min (`phase_slips.py`, `stale_samples.py`), Patch-Wechsel durch alle Slots und RAM-Uploads zweimal, Download-Stresstest 240/240, Store-Test mit Plateau auf Slot 13 und `--download-check` (Plateau bleibt dort), PlateauProfile, Rauschen als Sandwich Build 11 → fx8a → Build 11. Rückweg fx8a.
+12. **Nicht Teil von Build 11:** Slots mit Link patchram (DTCM) mit plusram neu bauen, damit sie von den Caches profitieren (eigener Punkt in `TODO.md`).
+
+**Umsetzung (Patch `20-dcache-on.patch`, auf fx8a) [Code]:**
+- `hardware.h`: `USE_DCACHE` fest wie `USE_ICACHE`, der `NDEBUG`-Block fällt weg. Der falsche Kommentar aus Patch 19 zu `_DMA_DATA` ist ersetzt.
+- `Source/mpu.c`: DMA-Region `IsBufferable = MPU_ACCESS_NOT_BUFFERABLE`, sonst unverändert (TEX 1, nicht shareable, ohne Cache, 64 KB ab `_DMA_DATA`). Der Kommentar nennt jetzt S=0.
+- `main.c`: `SCB_InvalidateDCache()` und `SCB_EnableDCache()` direkt hinter `MPU_Config()` (nach `HAL_Init`, `SystemClock_Config`, `PeriphCommonClock_Config`, vor `MX_DMA_Init`). Der I-Cache bleibt vor `HAL_Init`.
+- `Source/support.c`, `device_cache_invalidate()`: erst `SCB_CleanInvalidateDCache()`, dann `SCB_InvalidateICache()`.
+- `device_reset_to()` bleibt unverändert: Alle Aufrufer (`device_dfu`, `device_bootloader`, `device_reset`) übergeben Adresse 0, es gibt also immer `NVIC_SystemReset`, und das schreibt der D-Cache vorher zurück. Das Magic-Wort für DFU und Bootloader liegt bei 0x2000FFF0 im DTCM, nie im Cache.
+- `USE_DCACHE` und `USE_ICACHE` kommen im gebauten Baum sonst nirgends vor.
+
+**Build:** `firmware/builds/acdc1-build11-fx9a/`, `v22.4.r-fx9a`, 110 520 B (+312 B gegen fx8a), SHA-256 `fd77ec3a9dd0e14276af330cac897f3e249169e4c0cf11b626725145c4f30210`. Patches wie fx8a + 20.
+
+**Prüfung ohne Gerät [gemessen am Rechner, 2026-11-23]:**
+- `tools/check_itcm.py --same-itcm fx8a`: BESTANDEN, 0 FAIL, 0 WARN. ITCM-Grenzen 0x32a0–0x6338 gleich, `.itcm_text` (12 440 B) und Vektortabelle bytegleich, alle 180 RAM-Objekte an derselben Adresse. Von 656 Flash-Funktionen liegen 178 an derselben Adresse, 429 um 0x138 verschoben, der Rest um 0x94–0x118.
+- Disassembly `MPU_Config`: zwei Regionen. Region 1: Basis 0x30000000, Größe 0x0F (64 KB), TEX 1, AP voll, ausführbar, S 0, C 0, B 0. Region 2: QSPI 0x90000000, 8 MB, TEX 0, C 0, B 1, nicht ausführbar, wie bisher (unter fx8a war sie Region 1). Danach `HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT)`. Im ELF: `_DMA_DATA` = `codec_txbuf` = 0x30000000, `codec_rxbuf` 0x30002000, `adc_values` 0x30004000, `midi_rx_buffer` 0x30004008, alle im Fenster.
+- Disassembly `main()`: ICIALLU und CCR.IC vor `HAL_Init` wie fx8a. Nach `bl MPU_Config` die DCISW-Schleife (`SCB_InvalidateDCache`), dann `SCB_EnableDCache` (prüft CCR.DC, invalidiert noch einmal, setzt CCR Bit 16, DSB/ISB).
+- Disassembly `device_cache_invalidate`: DCCISW-Schleife (Clean und Invalidate nach Set/Way), DSB/ISB, dann ICIALLU mit DSB/ISB.
+- `tools/flash_acdc.py acdc1-build11-fx9a`: Offline-Prüfung bestanden.
+
+**Stand am Gerät:**
+- Erledigt (D88): Flash mit `tools/flash_acdc.py acdc1-build11-fx9a --yes`, Readback bytegleich, `:leave`, A1 bestanden. Kaltstart von Hand mit A1 bestanden, kurzer Loop-Test (60 s) ohne Slips und ohne veraltete Samples. Punkt 10 bestanden.
+- Erledigt (D89): Loop-Test 10 min (0 Slips, 0 von 28,7 Mio. Samples falsch). Cache-Bits 3, PlateauProfile 2635–2651 statt 3533 Takte pro Sample, **Plateau 29 % statt 35 %**. Zwei Runden Patch-Wechsel durch alle Slots und RAM-Uploads ohne Fehler. Downloads 240/240.
+- Erledigt (D89): Statt des Store-Tests auf Slot 13 die neue Belegung auf Wunsch des Nutzers: Plateau auf Slot 5, vier Stores mit `--download-check` bytegleich, Slots 9–12 mit `--erase` gelöscht (erstmals am Gerät).
+- Erledigt (D89): Rauschen als Sandwich fx9a → fx8a → fx9a: **fs/8 −0,7 dB** in allen vier fx9a-Läufen, RMS, Rest und Kamm −0,1…−0,6 dB, keine neue Linie. Die Linien bei 2000/3000 Hz sinken.
+- **Punkt 1 ist erfüllt, die Abnahme vollständig.** Die AXI-Leseschleife bleibt bei 15 Takten: Sie misst über einen Puffer weit größer als der D-Cache immer Fehlzugriffe, das Kriterium „gegen 5 Takte“ war falsch gewählt (D89). **fx9a ist die Alltags-Firmware (Entscheidung des Nutzers, 2026-11-23).** Rückweg fx8a. Fork-Commits und Release folgen nur mit Freigabe.
 
 ### Fork `m9dfukc/OpenWare` (gepusht 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
 

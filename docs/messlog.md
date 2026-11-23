@@ -2932,7 +2932,7 @@ Bei Tap-CV ±1 V liegt der Ton selbst bei −7 dB, die Seitenbänder bei −0,9 
 - `ACDC/Core/Inc/hardware.h` setzt `USE_ICACHE` und `USE_DCACHE` nur `#ifdef NDEBUG`. `Hardware/owl3.mk` setzt im Release-Build nur `-O3`, nie `-DNDEBUG` [Code]. Das gilt für unseren Stand, für v22.5.0 und für den Upstream-`master`. Im fx7a-Binary fehlt der Code zum Einschalten der Caches, `MPU_Config` richtet nur die QSPI-Region ein [Code, Disassembly]. Am Gerät bestätigt (CCR = 0) [gemessen].
 - Ohne I-Cache holt der Kern jeden Befehl über den Bus aus dem AXI-SRAM (Patch-Code mit plusram) bzw. dem DTCM (patchram). Die Leseschleife braucht deshalb in allen internen Speichern gleich viel, etwa 24 Takte statt einer Handvoll: Es bremst der Befehlsabruf, nicht der Datenzugriff [Hypothese, gestützt durch ITCM ≈ AXI]. Alle Abschnitte von Plateau sind gleichmäßig etwa fünfmal zu langsam. Das SDRAM kostet pro Lesezugriff etwa 22 Takte mehr, beim Pre-Delay also rund 50 Takte pro Sample, 1 % der Last.
 - Das betrifft alle Patches auf beiden Modulen, nicht nur Plateau. Es passt zu den bisherigen Befunden: Die Lage des Codes im Flash verschob die Störlinien (D33), und erst der heiße Pfad im ITCM machte die Firmware davon unabhängig (D48). Mit Cache wäre der Busverkehr kleiner, was nach D42 auch fs/8 senken könnte [Hypothese].
-- Ein Firmware-Build mit eingeschaltetem I-Cache ist der naheliegende nächste Schritt. Der D-Cache braucht dagegen mehr: die MPU-Region für die DMA-Puffer (`_DMA_DATA` fehlt im Linker-Skript des ACDC) und Kohärenz für SAI und USB. **Korrigiert in D86:** `_DMA_DATA` ist in `xibeca.ld` per `PROVIDE` definiert, USB nutzt keine DMA.
+- Ein Firmware-Build mit eingeschaltetem I-Cache ist der naheliegende nächste Schritt. Der D-Cache braucht dagegen mehr: die MPU-Region für die DMA-Puffer (`_DMA_DATA` fehlt im Linker-Skript des ACDC) und Kohärenz für SAI und USB. **Korrigiert in D87:** `_DMA_DATA` ist in `xibeca.ld` per `PROVIDE` definiert, USB nutzt keine DMA.
 
 **Einschränkungen:** Wenige Lesungen, Regler nicht auf festen Stellungen, keine Aufnahme. Der langsamste Block schwankt stark (einmal 10 754 Takte pro Sample, Ursache offen, etwa MIDI-Verkehr durch `owl_read.py`). Ob die Abschnitte mit Cache gleichmäßig schneller werden, ist nicht gemessen. Danach lief `PlateauProfile` aus dem RAM weiter.
 
@@ -3076,7 +3076,7 @@ In Geräte-dBFS (−6,02 dB), wie in den READMEs: Original gegen fx8a RMS −77,
 
 **Danach:** fx8a, Slot 1 per Program Change, gemerkt bleibt Slot 12, keine Kabel.
 
-## D86 – D-Cache vorbereiten: DMA-Puffer, MPU-Region, Korrektur zu `_DMA_DATA` (2026-11-23, am Rechner)
+## D87 – D-Cache vorbereiten: DMA-Puffer, MPU-Region, Korrektur zu `_DMA_DATA` (2026-11-23, am Rechner)
 
 **Anlass:** Planung von Build 11 (D-Cache an). Nur lesend, Quellbaum von fx8a (`firmware/_work/acdc1-build10-fx8a/`) und ELF von Build 10.
 
@@ -3094,3 +3094,80 @@ In Geräte-dBFS (−6,02 dB), wie in den READMEs: Original gegen fx8a RMS −77,
 
 **Folge:** Planung von Build 11 in einer Fragerunde mit dem Nutzer (siehe `docs/05`, „Build 11“, sobald abgestimmt). Die falsche Aussage ist in `docs/05` (de/en), D83, `CLAUDE.md`, `TODO.md` und im Fork-README korrigiert, Patch 19 bleibt unverändert (Prüfsumme in `BUILD_INFO.txt`).
 
+
+## D88 – Build 11 `v22.4.r-fx9a` (D-Cache an) auf acdc1: Flash, A1, Kaltstart, kurzer Loop-Test (2026-11-23, ab etwa 16:25)
+
+**Anlass:** Build 11 nach Plan (`docs/05`, „Build 11“, Punkt 10), Flash mit Freigabe des Nutzers (2026-11-23). Vorher lief fx8a mit Slot 12 (SchliereL), keine Kabel. acdc1 im Case, Alltags-Kette.
+
+**Flash [gemessen]:** `tools/flash_acdc.py acdc1-build11-fx9a --yes`, Log `firmware/flashlog/20261123_build11-fx9a/`. 110 520 B geschrieben, Readback bytegleich, Rest 0xFF. Start per `:leave`, A1 bestanden: `v22.4.r-fx9a`, 48000 Hz, Blockgröße 8, Slots unverändert. Danach lief der gemerkte Slot 12 (SchliereL, CPU 71 %, wie unter fx8a: Link patchram, im DTCM ohne Cache).
+
+**Kaltstart von Hand (Nutzer: Case aus, USB ab, Case an, USB an) [gemessen]:** `flash_acdc.py --a1` bestanden (Report `owl_read_after/acdc1/20261123_163202/`), wieder Slot 12 mit 72 % CPU. Die Firmware startet also auch aus dem Kaltstart mit D-Cache. Danach `owl_read.py --program 1` (Slot 1 ACDC), erst dann die Kabel.
+
+**Kurzer Loop-Test [gemessen]:** Kabel Out 1–4 → In 1–4 (Nutzer), Gain und Regler 12 Uhr, Slot 1, `acdc_rec.py --sine 440 530 670 790 --duration 60 --owl-read`, Aufnahme `B11-fx9a-loop-cold` (`20261123_acdc1_fx9a-loop-cold_g12_usb-stream.wav`). Stream-Meldungen 0, Geräte-Meldung am Ende `tx ovf 1.0000 1.0000 32.0000` (Stream-Start), CPU 7 %.
+- `phase_slips.py`: Pegel −6,0…−6,1 dBFS, Streuung 0,00 dB, 0 Ereignisse auf allen vier Kanälen.
+- `stale_samples.py`: 0 von 96 000 Samples falsch auf allen vier Kanälen.
+
+**Fazit:** Punkt 10 des Plans bestanden. Die DMA-Puffer bleiben mit D-Cache kohärent, soweit 60 s Loop das zeigen. Offen ist die Abnahme nach Punkt 11 (Loop-Test 10 min, Patch-Wechsel, Downloads 240/240, Plateau-Store auf Slot 13, PlateauProfile, Rausch-Sandwich gegen fx8a). Cache-Bits und Takte sind noch nicht gemessen. Rückweg fx8a.
+
+## D89 – Build 11 `v22.4.r-fx9a`: Abnahme (Loop 10 min, Rechenlast, Patch-Wechsel, Downloads, Rauschen) und neue Slot-Belegung (2026-11-23, ab etwa 16:40)
+
+**Setup:** acdc1 im Case, Alltags-Kette, fx9a seit D88. Regler auf 12 Uhr (CC 68–69/55–56/72/56 von 127), bei den fx8a-Werten aus D84 standen sie auf 40/119/22/8. Abnahme nach `docs/05`, „Build 11“, Punkt 11, Freigabe des Nutzers.
+
+**Loop-Test 10 min [gemessen]:** Kabel Out 1–4 → In 1–4, Slot 1, `acdc_rec.py --sine 440 530 670 790 --duration 600 --owl-read`, Aufnahme `B11-fx9a-loop10` (`20261123_acdc1_fx9a-loop10_g12_usb-stream.wav`). Stream-Meldungen 0, CPU 7 %.
+- `phase_slips.py`: −6,0…−6,1 dBFS, Streuung 0,00 dB, 0 Ereignisse auf allen vier Kanälen.
+- `stale_samples.py`: 0 von 28 656 000 Samples falsch auf allen vier Kanälen.
+- Geräte-Meldung am Ende `tx ovf 0.3888 1.0000 32.0000`. Dieselbe Form kommt beim Öffnen oder Schließen eines Streams vor (D25, D75). In den 600 s gibt es weder Slip noch veraltetes Sample, das Ereignis lag also in den 3 s Einschwingzeit.
+
+**Rechenlast [gemessen]:** Kabel ab, `owl_write.py … --run`, danach je `owl_read.py` (`out/owl_read/20261123_fx9a_plateauprofile_*`, `…_plateau_*`).
+
+| | fx8a (D84) | fx9a |
+|---|---|---|
+| Cache-Bits (SCB->CCR) | 2 | **3 (I- und D-Cache an)** |
+| c Kontrollrate | 500 | 403 |
+| i Eingänge | 385 | 369 |
+| n Kern-Eingang | 506 | 468 |
+| t Tank-Schleife | 926 | 665 |
+| o 14 Abgriffe | 400 | 236 |
+| s Mix, Sättigung, Energie | 511 | 295 |
+| p Blockende | 301 | 207 |
+| **Summe (Takte pro Sample)** | **3528–3555** | **2635–2651** |
+| Firmware-Anzeige PlateauProfile | 38–39 % | 29–30 % |
+| Leseschleife ITCM / DTCM / AXI / SDRAM | 5 / 5–6 / 15 / 46 | 5–6 / 5 / 14–15 / 46–47 |
+| **Plateau selbst** | **35 %** | **29 %** |
+
+- Plateau braucht 25 % weniger Takte. Am meisten gewinnen die Abschnitte mit vielen Zugriffen auf Zustand und kurze Puffer: Abgriffe −41 %, Mix −42 %, Tank −28 %. Die Speichermeldung ist unverändert (`Plateau KiB 30 66 461 28`).
+- **Die Leseschleife bleibt bei 15 Takten für das AXI, das ist kein Gegenbeweis [Code].** Sie liest mit einer neuen Cache-Zeile je Zugriff über den größten Plateau-Puffer im Bereich (`latencyTest()` in `owl/test/PlateauProfilePatch.hpp`), der weit größer ist als die 16 KB D-Cache. Beide Durchgänge treffen deshalb nie den Cache, sie messen die Zeit eines Fehlzugriffs. Das Ziel „Leseschleife AXI gegen 5 Takte“ aus dem Plan war eine falsche Erwartung. Maßgeblich ist die Zeit von Plateau.
+- Einschränkung: Reglerstellungen anders als in D84. Unter fx7a lagen Messungen mit verschiedenen Reglern innerhalb von 3 % (D83).
+
+**Patch-Wechsel [gemessen]:** zwei Runden mit Program Change durch alle zwölf Slots, dann `--run` Plateau, Program Change 6, `--run` PlateauProfile, nach jedem Schritt `owl_read.py` (`out/owl_read/20261123_fx9a_switch_r*`). Jeder Patch läuft und meldet sich, PlateauProfile beide Male mit Cache-Bits 3 und 2650–2651 Takten. Kein Hänger, kein Fehler. Last der Slots bei Reglern 12 Uhr (patchram, DTCM): ACDC 5 %, TapeDelay 31 %, Grainz 13 %, RingsReverb 15 %, Tanh3 50 %, SchliereA 29–30 %, M 37 %, Z 32 %, W 32 %, O 37–39 %, S 39 %, L 70–71 %. TapeDelay, RingsReverb, Tanh3, SchliereA, S und L liegen wie unter fx8a (D84). Grainz (D84: 76 %) und SchliereM (25 %) hängen stark von den Reglern ab [Hypothese].
+
+**Download-Stresstest [gemessen]:** `tools/dump_stress.py`, je 10 Runden über alle zwölf Slots bei laufendem Slot 5 (Tanh3) und Slot 2 (TapeDelay), danach Slot 1. **240 von 240 in Ordnung**, kein Hänger (`out/D89-fx9a-slot5-session-table.md`, `out/D89-fx9a-slot2-session-table.md`).
+
+**Neue Slot-Belegung (Wunsch des Nutzers, 2026-11-23) [gemessen]:** Schliere A, M, Z, W und O entfernt, Plateau hinter RingsReverb, der Rest rückt nach. Statt des Store-Tests auf Slot 13 aus dem Plan.
+- Vorher Sicherung aller Slots mit `owl_read.py --out backup --dump` nach `backup/acdc1/20261123/owl_171118/`, alle zwölf `ok`.
+- `owl_write.py --store N --yes --backup-file <Kopie des alten Slots> --download-check`: Slot 5 Plateau (33 828 B, CRC `0x9594a7be`, aus `owl-patches/builds/Plateau/`), 6 Tanh3, 7 SchliereS, 8 SchliereL (jeweils die Bytes aus der Sicherung). Alle vier beim Rückladen bytegleich.
+- `owl_write.py --erase N --yes` für die Slots 9–12, **erstmals am Gerät** (D80). Jedes Mal ist der Slot danach weg und die anderen Slots unverändert, keine Fehlermeldung. Danach Program Change auf 1.
+- Neue Belegung: **1 ACDC, 2 TapeDelay, 3 Grainz, 4 RingsReverb, 5 Plateau, 6 Tanh3, 7 SchliereS, 8 SchliereL**, Slots 9–12 leer. Kontrolle mit `owl_read.py --out backup --dump` (`backup/acdc1/20261123/owl_171330/`), alle acht `ok`, CRC wie oben. Program Change 5–8: Plateau 29 %, Tanh3 51 %, SchliereS 39 %, SchliereL 70 %.
+- Die Kopien der alten Slots stehen in `backup/acdc1/20261123/owl_write_*/` und `owl_171118/`, die Builds in `owl-patches/builds/`.
+- **Gemerkt ist weiter Slot 12, der jetzt leer ist.** Beim Einschalten startet dann Slot 1 [Code, Patch 15b: `acdcBootSelect()` fällt auf `DEFAULT_PROGRAM` zurück]. Einen anderen Slot merkt das Boot-Menü. Wird später wieder etwas auf Slot 12 gespeichert, startet das beim Einschalten.
+
+**Rauschen fx9a gegen fx8a [gemessen]:** acdc1 im Case, Eingänge offen, keine Kabel, Regler 69/56/72/56 von 127, Slot 1 vor jedem Stream per Program Change, je 2 × 60 s `acdc_rec.py --reps 2 --owl-read`. Zustand des Oszillators im Case nicht erfragt, in der Sitzung niemand am Case. Reihenfolge: `B11-fx9a-a` (17:15) → Flash fx8a (`firmware/flashlog/20261123_build10-fx8a-sandwich11/`, Readback bytegleich, `:leave`, A1) → `B11-fx8a` → Flash fx9a (`firmware/flashlog/20261123_build11-fx9a-sandwich/`, ebenso) → `B11-fx9a-b` (bis 17:23). Alle sechs Läufe ohne Stream-Fehler. Tabelle `out/B11-session-table.md` (`family_table.py`, Datei-dBFS, Mittel über 4 Kanäle, Δ gegen fx8a):
+
+| | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
+|---|---|---|---|---|---|
+| `B11-fx9a-a-r1` | −73,14 (−0,33) | −79,27 (−0,61) | −75,02 (−0,15) | −82,97 (**−0,65**) | −110,01 (+1,89) |
+| `B11-fx9a-a-r2` | −73,18 (−0,38) | −79,22 (−0,56) | −75,09 (−0,21) | −83,18 (**−0,85**) | −114,00 (−2,11) |
+| `B11-fx8a-r1` | −72,88 (−0,07) | −78,62 (+0,03) | −75,01 (−0,14) | −82,29 (+0,03) | −112,69 (−0,80) |
+| `B11-fx8a-r2` | −72,73 (+0,07) | −78,69 (−0,03) | −74,74 (+0,14) | −82,35 (−0,03) | −111,22 (+0,68) |
+| `B11-fx9a-b-r1` | −73,02 (−0,21) | −78,78 (−0,12) | −75,02 (−0,14) | −83,03 (**−0,70**) | −116,25 (−4,36) |
+| `B11-fx9a-b-r2` | −72,99 (−0,18) | −78,87 (−0,21) | −74,93 (−0,06) | −83,06 (**−0,74**) | −113,90 (−2,01) |
+
+Einzelne Linien (`line_levels.py`, `out/B11-lines-table.md`): 2000 und 3000 Hz unter fx8a −103…−105 dBFS, unter fx9a-a −110…−115, unter fx9a-b −105…−108. 1215,19 Hz (≈ 96 000/79) und 7384,62 Hz (= 96 000/13) liegen in allen sechs Läufen auf 0,3 dB gleich, sie stehen in fx9a-a nur deshalb unter den „stärksten übrigen Linien“, weil 2000/3000 Hz dort tiefer liegen. Beide gab es schon in B3 (fx1p, fx2b, fx2c).
+
+**Deutung:**
+- **[gemessen] fx9a senkt fs/8 um 0,7 dB gegen fx8a.** Alle vier fx9a-Läufe liegen −0,65 bis −0,85 dB unter fx8a, vor und nach der Kontrolle gleich. fx8a liegt mit −82,32 dBFS wie in D85 (−82,32…−82,40). fx9a landet damit etwa beim Stand von fx7a (−82,95 in D85), der Anstieg durch den I-Cache ist ausgeglichen.
+- **RMS −0,2…−0,4 dB, Rest −0,1…−0,6 dB, Kamm −0,1…−0,2 dB:** klein, aber in allen vier Läufen in derselben Richtung. Mischprodukte streuen wie immer um mehrere dB (D79), keine Richtung.
+- **Keine neue Linie.** Die Linien bei 2000 und 3000 Hz (Vielfache des 1-kHz-Systemtakts, [Hypothese] D60) sinken mit fx9a, unterschiedlich stark zwischen Anfang und Ende.
+- [Hypothese] Mit D-Cache gehen weniger Zugriffe über die Busmatrix zu AXI und D2, der Strom im Blocktakt sinkt. Das passt zu D42 (Busverkehr im Blocktakt hebt fs/8), D85 (I-Cache machte den Puls kürzer und höher) bleibt als Erklärung für fx8a offen.
+
+**Fazit:** Alle Kriterien aus `docs/05`, „Build 11“, Punkt 1 sind erfüllt: Plateau 29 % statt 35 % (unter 30 %), fs/8 −0,7 dB (Grenze +1 dB), keine neue Linie, Loop 10 min, zwei Wechselrunden, 240/240 Downloads, vier Stores mit Rückladen, vier Löschungen. Die Leseschleife war als Kriterium falsch gewählt (siehe oben). Statt des Store-Tests auf Slot 13 lief die neue Belegung (Stores mit `--download-check`). **Die Abnahme ist vollständig. fx9a ist die Alltags-Firmware (Entscheidung des Nutzers, 2026-11-23), Rückweg fx8a.** Zustand danach: fx9a, Slot 1 läuft, gemerkt Slot 12 (leer), keine Kabel.

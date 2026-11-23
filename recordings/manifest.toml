@@ -2605,3 +2605,115 @@ files = ["20261123_acdc1_fx8a-open-inputs-orgb-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
 note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:04:35. Stream-Meldungen: 0. owl_read: out/owl_read/ORG-fx8a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Flash firmware/flashlog/20261123_build10-fx8a-nach-original, :leave, A1, danach Program Change auf Slot 1. Messlog D86."
+
+[[measurement]]
+id = "B11-fx9a-loop-cold"
+date = "2026-11-23"
+device = "acdc1"
+test = "fx9a-loop-cold"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B11-fx9a-loop-cold – acdc1 fx9a-loop-cold, 60 s"
+files = ["20261123_acdc1_fx9a-loop-cold_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:32:48. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx9a-loop-cold (rc 0). Build 11 fx9a (D-Cache an), Kurztest nach Kaltstart von Hand, Kabel Out 1-4 -> In 1-4, Slot 1 per Program Change, Regler 12 Uhr (D88)"
+
+[[measurement]]
+id = "B11-fx9a-loop10"
+date = "2026-11-23"
+device = "acdc1"
+test = "fx9a-loop10"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B11-fx9a-loop10 – acdc1 fx9a-loop10, 600 s"
+files = ["20261123_acdc1_fx9a-loop10_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:39:32. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx9a-loop10 (rc 0). Build 11 fx9a (D-Cache an), Abnahme Loop-Test 10 min, Kabel Out 1-4 -> In 1-4, Slot 1, Regler 12 Uhr (D89)"
+
+[[measurement]]
+id = "B11-fx9a-a-r1"
+date = "2026-11-23"
+device = "acdc1"
+test = "fx9a-open-inputs-11a"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B11-fx9a-a-r1 – acdc1 fx9a-open-inputs-11a, 60 s (Wiederholung 1)"
+files = ["20261123_acdc1_fx9a-open-inputs-11a-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:15:13. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx9a-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 11 v22.4.r-fx9a (D-Cache an), Sandwich Anfang. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
+
+[[measurement]]
+id = "B11-fx9a-a-r2"
+date = "2026-11-23"
+device = "acdc1"
+test = "fx9a-open-inputs-11a"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B11-fx9a-a-r2 – acdc1 fx9a-open-inputs-11a, 60 s (Wiederholung 2)"
+files = ["20261123_acdc1_fx9a-open-inputs-11a-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:16:27. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx9a-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 11 v22.4.r-fx9a (D-Cache an), Sandwich Anfang. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
+
+[[measurement]]
+id = "B11-fx8a-r1"
+date = "2026-11-23"
+device = "acdc1"
+test = "fx8a-open-inputs-11"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B11-fx8a-r1 – acdc1 fx8a-open-inputs-11, 60 s (Wiederholung 1)"
+files = ["20261123_acdc1_fx8a-open-inputs-11-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:18:12. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx8a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (Kontrolle), Sandwich Mitte. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
+
+[[measurement]]
+id = "B11-fx8a-r2"
+date = "2026-11-23"
+device = "acdc1"
+test = "fx8a-open-inputs-11"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B11-fx8a-r2 – acdc1 fx8a-open-inputs-11, 60 s (Wiederholung 2)"
+files = ["20261123_acdc1_fx8a-open-inputs-11-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:19:25. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx8a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (Kontrolle), Sandwich Mitte. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
+
+[[measurement]]
+id = "B11-fx9a-b-r1"
+date = "2026-11-23"
+device = "acdc1"
+test = "fx9a-open-inputs-11b"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B11-fx9a-b-r1 – acdc1 fx9a-open-inputs-11b, 60 s (Wiederholung 1)"
+files = ["20261123_acdc1_fx9a-open-inputs-11b-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:21:11. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx9a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 11 v22.4.r-fx9a (D-Cache an), Sandwich Ende. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
+
+[[measurement]]
+id = "B11-fx9a-b-r2"
+date = "2026-11-23"
+device = "acdc1"
+test = "fx9a-open-inputs-11b"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "B11-fx9a-b-r2 – acdc1 fx9a-open-inputs-11b, 60 s (Wiederholung 2)"
+files = ["20261123_acdc1_fx9a-open-inputs-11b-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:22:24. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx9a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 11 v22.4.r-fx9a (D-Cache an), Sandwich Ende. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."

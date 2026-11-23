@@ -1,0 +1,75 @@
+{
+  "time": "2026-11-23T16:30:50",
+  "name": "build11-fx9a",
+  "binary": {
+    "bin": "firmware/builds/acdc1-build11-fx9a/ACDC.bin",
+    "size": 110520,
+    "sha256": "fd77ec3a9dd0e14276af330cac897f3e249169e4c0cf11b626725145c4f30210",
+    "version": "AC/DC v22.4.r-fx9a",
+    "initial_sp": "0x00001000",
+    "reset_handler": "0x08003331",
+    "build_info": "sha256 matches",
+    "check_itcm": true,
+    "fails": [],
+    "notes": []
+  },
+  "device_uuid": "0039001c:31315101:39333437",
+  "dfu_serial": "200364500000",
+  "from_dfu": false,
+  "before": {
+    "version": "AC/DC v22.4.r-fx8a",
+    "report": "firmware/flashlog/20261123_build11-fx9a/owl_read_before/acdc1/20261123/device_report.json"
+  },
+  "dfu_alt": 0,
+  "download_ok": true,
+  "readback": {
+    "readback_size": 131072,
+    "identical": true,
+    "rest_ff": true,
+    "first_difference": null,
+    "sha256_readback": "a75bc64602fdeef91b3094aa05e47e55005e9a81d398b82052b0714f726efd49",
+    "sha256_readback_head": "fd77ec3a9dd0e14276af330cac897f3e249169e4c0cf11b626725145c4f30210"
+  },
+  "flash_ok": true,
+  "leave": {
+    "rc": 74,
+    "leave_sent": true,
+    "readback_identical": true,
+    "dfu_gone": true
+  },
+  "a1": {
+    "passed": true,
+    "complete": true,
+    "rows": [
+      {
+        "check": "device is acdc1",
+        "ok": true,
+        "detail": "0039001c:31315101:39333437"
+      },
+      {
+        "check": "firmware version",
+        "ok": true,
+        "detail": "AC/DC v22.4.r-fx9a (expected AC/DC v22.4.r-fx9a)"
+      },
+      {
+        "check": "sample rate",
+        "ok": true,
+        "detail": "48000"
+      },
+      {
+        "check": "block size",
+        "ok": true,
+        "detail": "8"
+      },
+      {
+        "check": "slots unchanged",
+        "ok": true,
+        "detail": "1 ACDC, 2 TapeDelay, 3 Grainz, 4 RingsReverb, 5 Tanh3, 6 SchliereA, 7 SchliereM, 8 SchliereZ, 9 SchliereW, 10 SchliereO, 11 SchliereS, 12 SchliereL"
+      }
+    ],
+    "storage": "Storage 256256/8388608",
+    "program": "CPU: 72% Memory: 2640",
+    "report": "firmware/flashlog/20261123_build11-fx9a/owl_read_after/acdc1/20261123_163202/device_report.json",
+    "time": "2026-11-23T16:32:02"
+  }
+}

@@ -46,24 +46,24 @@ Deutsche Fassung: [README.de.md](README.de.md)
 - **Mounting in the case** changed nothing measurable in the ADC data.
 - **The noise drifts within a session.** The comb rose by 2.4 dB in 26 minutes in one session and by 2 dB in another, also across a cold start. Comparisons between builds therefore need a control at the beginning and at the end.
 - **The module whines audibly**, quietly, at roughly 800 to 1000 Hz, also in DFU mode without any firmware running. Unplugging USB makes it quieter and higher. The source (a regulator on the module or in the case supply) is open.
-- **The MCU's caches were off.** `hardware.h` turns the instruction and data caches on only when `NDEBUG` is defined, and the Release build never defines it (also in v22.5.0 and upstream `master`). Every patch ran about five times slower than necessary: the Plateau port needed 5000 cycles per sample for about 1000 instructions. Build 10 (`v22.4.r-fx8a`) turns the instruction cache on: Plateau drops from 51 % to 35 % CPU, fs/8 rises by 0.6 dB, the rest of the noise is unchanged. Patches linked to DTCM (the patch library default) do not get faster, only those in AXI SRAM. The data cache stays off for now.
+- **The MCU's caches were off.** `hardware.h` turns the instruction and data caches on only when `NDEBUG` is defined, and the Release build never defines it (also in v22.5.0 and upstream `master`). Every patch ran about five times slower than necessary: the Plateau port needed 5000 cycles per sample for about 1000 instructions. Build 10 (`v22.4.r-fx8a`) turns the instruction cache on: Plateau drops from 51 % to 35 % CPU, fs/8 rises by 0.6 dB, the rest of the noise is unchanged. Patches linked to DTCM (the patch library default) do not get faster, only those in AXI SRAM. Build 11 (`v22.4.r-fx9a`) also turns the data cache on, with the DMA buffers in an MPU region without cache: Plateau drops further to 29 % CPU, fs/8 falls by 0.7 dB against `fx8a`, no new line (D87 to D89).
 - **Four bugs in the original code** were found and fixed on the way: three timing bugs in the USB audio path (a feedback loop that ran open, a race between the RX and TX DMA, a start-of-frame handler that ran twice per frame) and an unprotected MIDI send path that damaged slot downloads next to a running patch.
 - **Known and not fixed:** a Program Change while the USB audio stream is open breaks playback until the next stream start (about 10 % silence). Change the patch before opening the stream.
 
-Noise of the daily firmware `v22.4.r-fx8a` against the original firmware of the test module (the factory build labelled v22.5.0), measured in one session with `fx8a` before and after the original (D86): open inputs, gain at 12 o'clock, 2 × 60 s for the original and 4 × 60 s for `fx8a`, levels in dBFS of the USB stream. The original firmware records after the gain stage of the default patch, so its levels are corrected per channel by the gain measured through the DC offset of the open inputs. The last two columns give the two build steps that mattered most for the noise, each measured in its own session against a control (D48, D85). Between sessions the levels drift by up to about 3 dB, so only differences within one session are firm.
+Noise of the daily firmware `v22.4.r-fx8a` against the original firmware of the test module (the factory build labelled v22.5.0), measured in one session with `fx8a` before and after the original (D86): open inputs, gain at 12 o'clock, 2 × 60 s for the original and 4 × 60 s for `fx8a`, levels in dBFS of the USB stream. The original firmware records after the gain stage of the default patch, so its levels are corrected per channel by the gain measured through the DC offset of the open inputs. The last three columns give single build steps, each measured in its own session against a control (D48, D85, D89). Today's daily firmware `fx9a` is only measured against `fx8a` (last column). Between sessions the levels drift by up to about 3 dB, so only differences within one session are firm.
 
-| Measure | Original | `fx8a` | Difference | `fx2d` → `fx3l` | `fx7a` → `fx8a` |
-|---|---|---|---|---|---|
-| RMS ≥ 20 Hz | −77.0 | −78.8 | −1.8 dB | −1.1 dB | ±0.1 dB |
-| Broadband floor without lines | −81.6 | −84.9 | −3.2 dB | −1.3 dB | +0.1 dB |
-| 1 kHz comb (sum) | −81.0 | −80.8 | +0.2 dB | +0.2 … +0.4 dB | −0.6 … +0.1 dB (drift) |
-| fs/8 line at 6000 Hz | −83.1 | −88.3 | −5.2 dB | −5.1 dB | +0.6 dB |
-| Mixing products | −96.5 | −119.1 | −22.6 dB | ≈ −35 dB | +1.0 … +3.4 dB |
-| LED PWM line at 2320.5 Hz | ≈ −118 | not found | gone | | |
+| Measure | Original | `fx8a` | Difference | `fx2d` → `fx3l` | `fx7a` → `fx8a` | `fx8a` → `fx9a` |
+|---|---|---|---|---|---|---|
+| RMS ≥ 20 Hz | −77.0 | −78.8 | −1.8 dB | −1.1 dB | ±0.1 dB | −0.2 … −0.4 dB |
+| Broadband floor without lines | −81.6 | −84.9 | −3.2 dB | −1.3 dB | +0.1 dB | −0.1 … −0.6 dB |
+| 1 kHz comb (sum) | −81.0 | −80.8 | +0.2 dB | +0.2 … +0.4 dB | −0.6 … +0.1 dB (drift) | −0.1 … −0.2 dB |
+| fs/8 line at 6000 Hz | −83.1 | −88.3 | −5.2 dB | −5.1 dB | +0.6 dB | −0.7 dB |
+| Mixing products | −96.5 | −119.1 | −22.6 dB | ≈ −35 dB | +1.0 … +3.4 dB | −4.4 … +1.9 dB (scatter) |
+| LED PWM line at 2320.5 Hz | ≈ −118 | not found | gone | | | |
 
 ![Long-term spectrum of fx3l (black) against fx2d (grey), four channels](docs/img/psd_fx3l_vs_3d.png)
 
-The comb is now the strongest remaining family. The current daily firmware on the test module is `v22.4.r-fx8a` (since 2026-11-23): `fx3l` plus a boot menu that chooses the patch slot with the knobs (`fx4b`), a fix for the MIDI send path (`fx5a`), an LED mode normal / clip only / off chosen in the boot menu (`fx6a`), the LED PWM at 48 kHz, locked to the sample clock (`fx7a`), and the instruction cache switched on (`fx8a`, D83 to D85). With `fx7a` the LED PWM line at 2321 Hz is gone from inputs and outputs, and the noise is the same as with `fx6a` within 0.15 dB (D78, D79). With `fx4b`, 19 of 79 slot downloads next to a running patch arrived damaged and MIDI then hung until a power cycle; with `fx5a` 240 of 240 were intact (D62, D63). The noise of `fx4b` is the same as that of `fx3l` within ±0.4 dB (control in the same session), and `fx5a` shows no change beyond the session scatter (D64). Details and all numbers: [docs/messlog.md](docs/messlog.md) (German), entries D45 to D49, D50 to D86.
+The comb is now the strongest remaining family. The current daily firmware on the test module is `v22.4.r-fx9a` (since 2026-11-23): `fx3l` plus a boot menu that chooses the patch slot with the knobs (`fx4b`), a fix for the MIDI send path (`fx5a`), an LED mode normal / clip only / off chosen in the boot menu (`fx6a`), the LED PWM at 48 kHz, locked to the sample clock (`fx7a`), the instruction cache switched on (`fx8a`, D83 to D85), and the data cache with the DMA buffers in an MPU region without cache (`fx9a`, D87 to D89). With `fx7a` the LED PWM line at 2321 Hz is gone from inputs and outputs, and the noise is the same as with `fx6a` within 0.15 dB (D78, D79). With `fx4b`, 19 of 79 slot downloads next to a running patch arrived damaged and MIDI then hung until a power cycle; with `fx5a` 240 of 240 were intact (D62, D63). The noise of `fx4b` is the same as that of `fx3l` within ±0.4 dB (control in the same session), and `fx5a` shows no change beyond the session scatter (D64). Details and all numbers: [docs/messlog.md](docs/messlog.md) (German), entries D45 to D49, D50 to D89.
 
 ## Firmware
 
@@ -115,11 +115,11 @@ uv run --no-project --python 3.12 --with mido --with python-rtmidi \
   python tools/owl_read.py --dump --out backup
 ```
 
-Rebuild `v22.4.r-fx8a`. The result must have the SHA-256 `e1b1097b21008486acc4cda4b446a0e72fcd2e974ef0f5b97c6a707e6086f39a`:
+Rebuild `v22.4.r-fx9a`. The result must have the SHA-256 `fd77ec3a9dd0e14276af330cac897f3e249169e4c0cf11b626725145c4f30210`:
 
 ```sh
 P=firmware/patches
-FW_VERSION=v22.4.r-fx8a tools/build_acdc.sh my-fx8a db9d3dd \
+FW_VERSION=v22.4.r-fx9a tools/build_acdc.sh my-fx9a db9d3dd \
   firmware/downloads/OpenWareLibraries-9e8f64e.tar.gz \
   $P/01-gcc12-extern-uint8.patch $P/02-revert-237c63d-thru-mute.patch \
   $P/04-output-gain-125.patch $P/05-atomic-usbd-rx-count.patch \
@@ -128,16 +128,16 @@ FW_VERSION=v22.4.r-fx8a tools/build_acdc.sh my-fx8a db9d3dd \
   $P/11g-itcm-hotpath-rxcb.patch $P/12b-rx-dma-callback.patch \
   $P/14-usbd-sof-once-per-frame.patch $P/15b-boot-menu-slot-select-30s.patch \
   $P/16-midi-tx-atomic.patch $P/17-led-mode-boot-menu.patch \
-  $P/18-led-pwm-48k.patch $P/19-icache-on.patch
+  $P/18-led-pwm-48k.patch $P/19-icache-on.patch $P/20-dcache-on.patch
 ```
 
 The flash procedure (read out, restart into DFU, write, read back, compare, leave DFU) is described in [CLAUDE.md](CLAUDE.md), section "Flash-Ablauf". `tools/flash_acdc.py` runs these steps and keeps a flash log. It has been used on the module, including the `:leave` start (by hand it also gave the same noise as a cold start). It only accepts the author's test module: the MIDI device ID and the DFU serial number are constants at the top of the script.
 
 ```sh
-python3 tools/flash_acdc.py acdc1-build10-fx8a          # offline checks only
-python3 tools/flash_acdc.py acdc1-build10-fx8a --yes    # flash, leave DFU, check (A1)
-python3 tools/flash_acdc.py acdc1-build10-fx8a --yes --cold   # flash, then restart by hand
-python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build10-fx8a   # after a restart by hand
+python3 tools/flash_acdc.py acdc1-build11-fx9a          # offline checks only
+python3 tools/flash_acdc.py acdc1-build11-fx9a --yes    # flash, leave DFU, check (A1)
+python3 tools/flash_acdc.py acdc1-build11-fx9a --yes --cold   # flash, then restart by hand
+python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build11-fx9a   # after a restart by hand
 ```
 
 ## Repository layout

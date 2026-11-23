@@ -1,0 +1,75 @@
+{
+  "time": "2026-11-23T17:17:32",
+  "name": "build10-fx8a-sandwich11",
+  "binary": {
+    "bin": "firmware/builds/acdc1-build10-fx8a/ACDC.bin",
+    "size": 110208,
+    "sha256": "e1b1097b21008486acc4cda4b446a0e72fcd2e974ef0f5b97c6a707e6086f39a",
+    "version": "AC/DC v22.4.r-fx8a",
+    "initial_sp": "0x00001000",
+    "reset_handler": "0x08003331",
+    "build_info": "sha256 matches",
+    "check_itcm": true,
+    "fails": [],
+    "notes": []
+  },
+  "device_uuid": "0039001c:31315101:39333437",
+  "dfu_serial": "200364500000",
+  "from_dfu": false,
+  "before": {
+    "version": "AC/DC v22.4.r-fx9a",
+    "report": "firmware/flashlog/20261123_build10-fx8a-sandwich11/owl_read_before/acdc1/20261123/device_report.json"
+  },
+  "dfu_alt": 0,
+  "download_ok": true,
+  "readback": {
+    "readback_size": 131072,
+    "identical": true,
+    "rest_ff": true,
+    "first_difference": null,
+    "sha256_readback": "d23cab6ea06eb16b6b33bc8a087fb3f55bb20009b001a207458666a9f15c3a8d",
+    "sha256_readback_head": "e1b1097b21008486acc4cda4b446a0e72fcd2e974ef0f5b97c6a707e6086f39a"
+  },
+  "flash_ok": true,
+  "leave": {
+    "rc": 74,
+    "leave_sent": true,
+    "readback_identical": true,
+    "dfu_gone": true
+  },
+  "a1": {
+    "passed": true,
+    "complete": true,
+    "rows": [
+      {
+        "check": "device is acdc1",
+        "ok": true,
+        "detail": "0039001c:31315101:39333437"
+      },
+      {
+        "check": "firmware version",
+        "ok": true,
+        "detail": "AC/DC v22.4.r-fx8a (expected AC/DC v22.4.r-fx8a)"
+      },
+      {
+        "check": "sample rate",
+        "ok": true,
+        "detail": "48000"
+      },
+      {
+        "check": "block size",
+        "ok": true,
+        "detail": "8"
+      },
+      {
+        "check": "slots unchanged",
+        "ok": true,
+        "detail": "1 ACDC, 2 TapeDelay, 3 Grainz, 4 RingsReverb, 5 Plateau, 6 Tanh3, 7 SchliereS, 8 SchliereL"
+      }
+    ],
+    "storage": "Storage 183808/8388608",
+    "program": "CPU: 5% Memory: 368",
+    "report": "firmware/flashlog/20261123_build10-fx8a-sandwich11/owl_read_after/acdc1/20261123/device_report.json",
+    "time": "2026-11-23T17:18:03"
+  }
+}
