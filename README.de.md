@@ -71,7 +71,7 @@ Der Fork hat zwei Branches:
 | Branch | Version | Inhalt |
 |---|---|---|
 | `acdc/thru-usb-feedback` | `v22.4.r-thru1d` | Der Patch-Ausgang erreicht die Buchsen ohne Rechner, dazu der Fix des USB-Feedbacks |
-| `acdc/fx1d` | `v22.4.r-fx7a` | Wie oben. Der Rechner nimmt die rohen Eingänge auf, die Eingangs-LEDs zeigen beim Aufnehmen den rohen Pegel, der heiße Pfad läuft im ITCM, ein Boot-Menü wählt Patch-Slot und LED-Modus und merkt sie sich, der MIDI-Sendeweg ist repariert, und die LED-PWM läuft mit 48 kHz |
+| `acdc/fx1d` | `v22.4.r-fx8a` | Wie oben. Der Rechner nimmt die rohen Eingänge auf, die Eingangs-LEDs zeigen beim Aufnehmen den rohen Pegel, der heiße Pfad läuft im ITCM, ein Boot-Menü wählt Patch-Slot und LED-Modus und merkt sie sich, der MIDI-Sendeweg ist repariert, die LED-PWM läuft mit 48 kHz, und der Befehls-Cache ist an |
 
 Beide beruhen auf dem Upstream-Commit `db9d3dd` (v22.4.r) mit den Libraries bei `9e8f64e`. Das README im Fork erklärt, warum, und was jede Änderung tut.
 

@@ -820,7 +820,7 @@ Builds von `34782dea` und `351b2071` ohne Patches sind bytegleich mit fx6a (`fir
 2. `f9f9399a` Version `v22.4.r-fx8a`
 3. `21442efd` README: Abschnitt „Instruction cache“, Tabellen, Teststand, Hinweis in „Memory layout matters“
 
-Ein Build von `f9f9399a` ohne Patches ist bytegleich mit fx8a (`firmware/builds/verify-fx1d-f9f9399a`, `e1b1097b…`). Ein Release `acdc-v22.4.r-fx8a` gibt es noch nicht.
+Ein Build von `f9f9399a` ohne Patches ist bytegleich mit fx8a (`firmware/builds/verify-fx1d-f9f9399a`, `e1b1097b…`). Dazu das Release `acdc-v22.4.r-fx8a` (Tag auf `21442efd`, „Latest“, 2026-11-23) mit `ACDC-v22.4.r-fx8a.bin` und `BUILD_INFO-v22.4.r-fx8a.txt` aus dem Prüf-Build.
 
 **Rückweg:** fx7a (`cac6fee0…`), dann fx6a, danach wie bisher.
 

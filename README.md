@@ -71,7 +71,7 @@ The fork has two branches:
 | Branch | Version | Content |
 |---|---|---|
 | `acdc/thru-usb-feedback` | `v22.4.r-thru1d` | The patch output reaches the jacks without a computer, plus the USB feedback fix |
-| `acdc/fx1d` | `v22.4.r-fx7a` | As above. The computer records the raw inputs, the input LEDs show the raw level while recording, the hot path runs from ITCM, a boot menu chooses the patch slot and the LED mode and remembers them, the MIDI send path is fixed, and the LED PWM runs at 48 kHz |
+| `acdc/fx1d` | `v22.4.r-fx8a` | As above. The computer records the raw inputs, the input LEDs show the raw level while recording, the hot path runs from ITCM, a boot menu chooses the patch slot and the LED mode and remembers them, the MIDI send path is fixed, the LED PWM runs at 48 kHz, and the instruction cache is on |
 
 Both are based on upstream commit `db9d3dd` (v22.4.r) with the libraries at `9e8f64e`. The fork README explains why, and what each change does.
 
@@ -114,11 +114,11 @@ uv run --no-project --python 3.12 --with mido --with python-rtmidi \
   python tools/owl_read.py --dump --out backup
 ```
 
-Rebuild `v22.4.r-fx7a`. The result must have the SHA-256 `cac6fee0f86426aed3d9b5bfaa2ff758b69de59ed7e11971f2a2ba0d0233ff20`:
+Rebuild `v22.4.r-fx8a`. The result must have the SHA-256 `e1b1097b21008486acc4cda4b446a0e72fcd2e974ef0f5b97c6a707e6086f39a`:
 
 ```sh
 P=firmware/patches
-FW_VERSION=v22.4.r-fx7a tools/build_acdc.sh my-fx7a db9d3dd \
+FW_VERSION=v22.4.r-fx8a tools/build_acdc.sh my-fx8a db9d3dd \
   firmware/downloads/OpenWareLibraries-9e8f64e.tar.gz \
   $P/01-gcc12-extern-uint8.patch $P/02-revert-237c63d-thru-mute.patch \
   $P/04-output-gain-125.patch $P/05-atomic-usbd-rx-count.patch \
@@ -127,16 +127,16 @@ FW_VERSION=v22.4.r-fx7a tools/build_acdc.sh my-fx7a db9d3dd \
   $P/11g-itcm-hotpath-rxcb.patch $P/12b-rx-dma-callback.patch \
   $P/14-usbd-sof-once-per-frame.patch $P/15b-boot-menu-slot-select-30s.patch \
   $P/16-midi-tx-atomic.patch $P/17-led-mode-boot-menu.patch \
-  $P/18-led-pwm-48k.patch
+  $P/18-led-pwm-48k.patch $P/19-icache-on.patch
 ```
 
-The flash procedure (read out, restart into DFU, write, read back, compare, leave DFU) is described in [CLAUDE.md](CLAUDE.md), section "Flash-Ablauf". `tools/flash_acdc.py` runs these steps and keeps a flash log. It has been used on the module; the `:leave` start inside the script has so far only been tested without the module, by hand it worked twice on the module and gave the same noise as a cold start. It only accepts the author's test module: the MIDI device ID and the DFU serial number are constants at the top of the script.
+The flash procedure (read out, restart into DFU, write, read back, compare, leave DFU) is described in [CLAUDE.md](CLAUDE.md), section "Flash-Ablauf". `tools/flash_acdc.py` runs these steps and keeps a flash log. It has been used on the module, including the `:leave` start (by hand it also gave the same noise as a cold start). It only accepts the author's test module: the MIDI device ID and the DFU serial number are constants at the top of the script.
 
 ```sh
-python3 tools/flash_acdc.py acdc1-build9-fx7a          # offline checks only
-python3 tools/flash_acdc.py acdc1-build9-fx7a --yes    # flash, leave DFU, check (A1)
-python3 tools/flash_acdc.py acdc1-build9-fx7a --yes --cold   # flash, then restart by hand
-python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build9-fx7a   # after a restart by hand
+python3 tools/flash_acdc.py acdc1-build10-fx8a          # offline checks only
+python3 tools/flash_acdc.py acdc1-build10-fx8a --yes    # flash, leave DFU, check (A1)
+python3 tools/flash_acdc.py acdc1-build10-fx8a --yes --cold   # flash, then restart by hand
+python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build10-fx8a   # after a restart by hand
 ```
 
 ## Repository layout

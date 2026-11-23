@@ -1,4 +1,4 @@
-<!-- i18n source=docs/05-firmware-plan.md sha256=2226ab7539ad0d5309e61bd8299c55fbe20c85101b5389b72b32f4010f233b56 date=2026-11-23 -->
+<!-- i18n source=docs/05-firmware-plan.md sha256=a8c807b75dc632e93dd367fe18f2e5456e1b97e98ba35fbca3dbbe76ed1b391b date=2026-11-23 -->
 > English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-23. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 05 – Firmware: Status, Forks, Build Plan
@@ -823,7 +823,7 @@ Builds of `34782dea` and `351b2071` without patches are byte-identical with fx6a
 2. `f9f9399a` version `v22.4.r-fx8a`
 3. `21442efd` README: section "Instruction cache", tables, test status, note in "Memory layout matters"
 
-A build of `f9f9399a` without patches is byte-identical with fx8a (`firmware/builds/verify-fx1d-f9f9399a`, `e1b1097b…`). There is no release `acdc-v22.4.r-fx8a` yet.
+A build of `f9f9399a` without patches is byte-identical with fx8a (`firmware/builds/verify-fx1d-f9f9399a`, `e1b1097b…`). In addition the release `acdc-v22.4.r-fx8a` (tag on `21442efd`, "Latest", 2026-11-23) with `ACDC-v22.4.r-fx8a.bin` and `BUILD_INFO-v22.4.r-fx8a.txt` from the verification build.
 
 **Fallback:** fx7a (`cac6fee0…`), then fx6a, after that as before.
 
