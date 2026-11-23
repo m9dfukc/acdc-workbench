@@ -1,9 +1,9 @@
-<!-- i18n source=docs/05-firmware-plan.md sha256=397b7d8f729f0b462d8ab8888192a8a34ab7d1700889d4882c980ed3f50819f1 date=2026-11-19 -->
-> English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-19. The German original is authoritative. This file is generated from it, do not edit it by hand.
+<!-- i18n source=docs/05-firmware-plan.md sha256=6912203bc4a276ff7072a485173f3ad35a3edcb8c48767dfa189b774599f3dbb date=2026-11-23 -->
+> English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-23. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 05 – Firmware: Status, Forks, Build Plan
 
-> **Status 2026-11-19:** acdc1 runs **Build 9 `v22.4.r-fx7a`** (`cac6fee0…`, section "Build 9", lab notebook D78, D79) as its daily firmware (the user's decision). The fallback is Build 8 `v22.4.r-fx6a` (`6a3fc427…`), then Build 7 `v22.4.r-fx5a` (`b69c25b3…`), Build 6b `v22.4.r-fx4b` (`a21f35c9…`), Build 5c `v22.4.r-fx3l` (`b55b94d8…`), then Build 3d (`d212cf8d…`).
+> **Status 2026-11-23:** acdc1 runs **Build 10 `v22.4.r-fx8a`** (`e1b1097b…`, section "Build 10", lab notebook D83–D85, instruction cache on) as its daily firmware (the user's decision). The fallback is Build 9 `v22.4.r-fx7a` (`cac6fee0…`), then Build 8 `v22.4.r-fx6a` (`6a3fc427…`), then Build 7 `v22.4.r-fx5a` (`b69c25b3…`), Build 6b `v22.4.r-fx4b` (`a21f35c9…`), Build 5c `v22.4.r-fx3l` (`b55b94d8…`), then Build 3d (`d212cf8d…`).
 >
 > This document grew chronologically. "Runs on acdc1", "not agreed" and "next steps" in the sections on Build 1 to 4z describe the status of the respective section. What is open today is in `TODO.md`.
 
@@ -744,7 +744,7 @@ A build of `c222fa49` without patches is byte-identical with fx5a (`firmware/bui
 
 **Fallback:** fx5a (`b69c25b3…`), then fx4b (`a21f35c9…`), after that as before. The resource `ACDC.led` does not disturb older builds.
 
-### Build 9 – LED PWM at 48 kHz, `v22.4.r-fx7a` (agreed and built 2026-11-19, lab notebook D78, D79, **daily firmware on acdc1 since 2026-11-19**)
+### Build 9 – LED PWM at 48 kHz, `v22.4.r-fx7a` (agreed and built 2026-11-19, lab notebook D78, D79, daily firmware on acdc1 from 2026-11-19 to 23, **fallback from fx8a**)
 
 **Reason [measured, D67, D73, D74]:** A dimmed LED switches the zero point shift at the PWM rate, which is the line at 2320.54 Hz with harmonics on inputs and outputs (up to −39.8 dBFS at the UMC with dimmed green, D73). Build 8 lets the LEDs go dark, Build 9 moves the PWM itself out of the audible range. Built separately so that the effect stays measurable on its own (user's decision, 2026-11-18).
 
@@ -789,6 +789,36 @@ A build of `c222fa49` without patches is byte-identical with fx5a (`firmware/bui
 Builds of `34782dea` and `351b2071` without patches are byte-identical with fx6a (`firmware/builds/verify-fx1d-34782dea`, `6a3fc427…`) and fx7a (`verify-fx1d-351b2071`, `cac6fee0…`). In addition the release `acdc-v22.4.r-fx7a` (tag on `13b58412`, "Latest", 2026-11-19) with `ACDC-v22.4.r-fx7a.bin` and `BUILD_INFO-v22.4.r-fx7a.txt`. fx6a has no release of its own.
 
 **Fallback:** fx6a (`6a3fc427…`), then fx5a (`b69c25b3…`), after that as before.
+
+### Build 10 – Instruction cache on, `v22.4.r-fx8a` (built 2026-11-23, lab notebook D83–D85, **daily firmware on acdc1 since 2026-11-23**)
+
+**Reason [code, measured, D83]:** `ACDC/Core/Inc/hardware.h` sets `USE_ICACHE` and `USE_DCACHE` only `#ifdef NDEBUG`, and `Hardware/owl3.mk` sets only `-O3` in the Release build, never `-DNDEBUG`. This also holds for v22.5.0 and upstream `master`. Under fx7a, SCB->CCR on acdc1 reads 0: both caches are off. Plateau therefore needs 5000 cycles per sample for about 1000 instructions; every section is evenly about five times too slow.
+
+**Implementation (patch `19-icache-on.patch`) [code]:**
+- `hardware.h`: `USE_ICACHE` always; `USE_DCACHE` stays behind `NDEBUG`, so it stays off.
+- `Source/mpu.c`: the MPU region for the DMA buffers only with `USE_DCACHE` instead of `USE_ICACHE || USE_DCACHE`. It only concerns data, and the symbol `_DMA_DATA` is missing in the ACDC linker script (link error otherwise).
+- What `USE_ICACHE` switches besides: `SCB_InvalidateICache()` and `SCB_EnableICache()` in `main()` before `HAL_Init`, `device_cache_invalidate()` (invalidates the I-cache; `PatchDefinition.hpp` calls it after copying a patch and before starting it), `device_reset_to()` before the jump into the bootloader.
+- There are no wait loops counted in instructions on the ACDC path: the codec init waits with `HAL_Delay` (SysTick), `NopDelay` only exists in the CS4272 driver, which is not built.
+
+**What gets faster [hypothesis]:** firmware code in internal flash (main loop, MIDI, storage) and patches in AXI SRAM (link plusram, e.g. Plateau). ITCM and DTCM bypass the cache. So the hot path in ITCM does not change, and patches linked with patchram (0x2000c000, in DTCM, the default of the patch library and of all our own slots so far) still fetch their instructions without cache. Only the plusram link helps them.
+
+**Build:** `firmware/builds/acdc1-build10-fx8a/`, `v22.4.r-fx8a`, 110 208 B (+120 B), SHA-256 `e1b1097b21008486acc4cda4b446a0e72fcd2e974ef0f5b97c6a707e6086f39a`. Patches as fx7a + 19.
+
+**Checks without the module [measured on the computer, 2026-11-23]:**
+- `tools/check_itcm.py --same-itcm fx7a`: PASSED, 0 FAIL, 0 WARN. ITCM boundaries 0x32a0–0x6338 the same, `.itcm_text` (12 440 B) and vector table byte-identical, all 180 RAM objects at the same address. Of 656 flash functions, 178 are at the same address, 430 shifted by 0x78, the rest by 0x48–0x5c.
+- Disassembly: `main()` begins with ICIALLU and setting CCR.IC (CMSIS `SCB_EnableICache`), `device_cache_invalidate()` invalidates the I-cache (empty under fx7a). `MPU_Config` the same as in fx7a apart from addresses, only the QSPI region.
+- `tools/flash_acdc.py acdc1-build10-fx8a`: offline checks passed.
+
+**Risks [hypothesis]:** since the ITCM build, the flash layout has shown no influence on the lines any more (D48), but the cache changes the bus traffic of the remaining firmware code. The lines can therefore move in either direction, fs/8 rather downwards (D42). A patch switch without invalidation would leave old code running: the call is there; it is checked on the module by repeated switches between slots and RAM patches.
+
+**Acceptance (every flash only after approval, only acdc1):**
+1. Done (D84): flash with `tools/flash_acdc.py acdc1-build10-fx8a --yes`, readback byte-identical, `:leave` (first time from the script on the module), A1 passed.
+2. Done (D84): cache bits 2. PlateauProfile 3540 instead of 5050 cycles per sample, Plateau 35 % instead of 51 %. Read loop TCM 5–6, AXI 15, SDRAM 46 cycles. Slots (patchram) as before, with knob positions that were not the same.
+3. Done (D84): program change through all twelve slots, `--run` of Plateau and PlateauProfile alternately, everything runs and reports.
+4. Done (D84): download stress test 240 of 240 fine.
+5. Done (D85): noise against fx7a (fx8a at the beginning and end, fx7a in the middle): **fs/8 +0.6 dB** in all four fx8a runs, mixing products +1…+3.4 dB, RMS, residual and comb the same. No new line. Loop test passed (0 slips, 0 stale samples). **Acceptance complete. fx8a is the daily firmware (user's decision, 2026-11-23).**
+
+**Fallback:** fx7a (`cac6fee0…`), then fx6a, after that as before.
 
 ### Fork `m9dfukc/OpenWare` (pushed 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
 
