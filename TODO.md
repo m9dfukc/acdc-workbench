@@ -128,6 +128,9 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [x] Fork `acdc/fx1d` gepusht (2026-11-19, `b4b95e43..13b58412`)
 - [x] Release `acdc-v22.4.r-fx7a` (2026-11-19, Tag auf `13b58412`, „Latest“)
 - [x] Englische Fassung von `docs/05` für Build 8 und 9 aufgefrischt (2026-11-19)
+- [x] Build 10: fx8a ist die Alltags-Firmware (Entscheidung des Nutzers, 2026-11-23), Rückweg fx7a. Englische Fassung von `docs/05` und READMEs nachgezogen
+- [x] Fork-Commits für fx8a auf `acdc/fx1d` (`8a401e75` I-Cache, `f9f9399a` Version, `21442efd` README), Prüf-Build von `f9f9399a` bytegleich, gepusht 2026-11-23 (`13b58412..21442efd`)
+- [ ] Release `acdc-v22.4.r-fx8a` am Fork (Tag auf `21442efd`), nur nach Freigabe
 - [ ] Hörbares Fiepen des Moduls (D79, auch im DFU-Modus, ≈ 800–1000 Hz, leise): Quelle eingrenzen (Modul oder Netzteil, Ohr oder Mikrofon), hören, ob es mit Last, Slot oder Reglern wandert. USB abziehen macht es leiser und höher (Nutzer). [Hypothese] Schaltregler im Pulsbetrieb
 - [ ] Idee (D74): Die Verschiebung ist auf allen Eingängen gleich. Ein offener Eingang als Bezug, den ein Patch abzieht? Kostet Rauschen, träfe aber auch Kamm und Blockrate, soweit sie auf allen Kanälen gleich sind
 - [x] Schliere Fassung 4 (D80, am Rechner): Tap- und Feedback-CV bandbegrenzt, weiche Totzone und weiches Knie, gefaltete Linien bei Audio-Rate um 30–50 dB kleiner. Rastpunkt-LEDs nur noch nach Regler 3, mit Hysterese (D73). Dazu Schliere M (Tap ändert die Länge der Kette stufenlos)

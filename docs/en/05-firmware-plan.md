@@ -1,4 +1,4 @@
-<!-- i18n source=docs/05-firmware-plan.md sha256=6912203bc4a276ff7072a485173f3ad35a3edcb8c48767dfa189b774599f3dbb date=2026-11-23 -->
+<!-- i18n source=docs/05-firmware-plan.md sha256=2226ab7539ad0d5309e61bd8299c55fbe20c85101b5389b72b32f4010f233b56 date=2026-11-23 -->
 > English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-23. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 05 – Firmware: Status, Forks, Build Plan
@@ -817,6 +817,13 @@ Builds of `34782dea` and `351b2071` without patches are byte-identical with fx6a
 3. Done (D84): program change through all twelve slots, `--run` of Plateau and PlateauProfile alternately, everything runs and reports.
 4. Done (D84): download stress test 240 of 240 fine.
 5. Done (D85): noise against fx7a (fx8a at the beginning and end, fx7a in the middle): **fs/8 +0.6 dB** in all four fx8a runs, mixing products +1…+3.4 dB, RMS, residual and comb the same. No new line. Loop test passed (0 slips, 0 stale samples). **Acceptance complete. fx8a is the daily firmware (user's decision, 2026-11-23).**
+
+**Fork branch `acdc/fx1d` (pushed 2026-11-23, `13b58412..21442efd`):**
+1. `8a401e75` instruction cache on (= patch 19)
+2. `f9f9399a` version `v22.4.r-fx8a`
+3. `21442efd` README: section "Instruction cache", tables, test status, note in "Memory layout matters"
+
+A build of `f9f9399a` without patches is byte-identical with fx8a (`firmware/builds/verify-fx1d-f9f9399a`, `e1b1097b…`). There is no release `acdc-v22.4.r-fx8a` yet.
 
 **Fallback:** fx7a (`cac6fee0…`), then fx6a, after that as before.
 

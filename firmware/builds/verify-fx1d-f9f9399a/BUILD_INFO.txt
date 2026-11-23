@@ -1,0 +1,10 @@
+# Build verify-fx1d-f9f9399a
+datum:      2026-11-23T14:21:26Z
+commit:     f9f9399ac6b8ab4a0376c786598d1a469c6f2a9d
+libraries:  OpenWareLibraries-9e8f64e.tar.gz sha256 c56a465cf59086b2a1f742b7cb9848e17af4b3957108cc1289540b180ad69d88
+toolchain:  arm-none-eabi-gcc (Arm GNU Toolchain 12.2 (Build arm-12.24)) 12.2.1 20221205
+make:       CONFIG=Release GIT_REVISION="f9f9399 Release"
+fw_version: (unverändert)
+bin_size:   110208
+bin_sha256: e1b1097b21008486acc4cda4b446a0e72fcd2e974ef0f5b97c6a707e6086f39a
+version:    AC/DC v22.4.r-fx8a

@@ -815,6 +815,13 @@ Builds von `34782dea` und `351b2071` ohne Patches sind bytegleich mit fx6a (`fir
 4. Erledigt (D84): Download-Stresstest 240 von 240 in Ordnung.
 5. Erledigt (D85): Rauschen gegen fx7a (fx8a am Anfang und Ende, fx7a in der Mitte): **fs/8 +0,6 dB** in allen vier fx8a-Läufen, Mischprodukte +1…+3,4 dB, RMS, Rest und Kamm gleich. Keine neue Linie. Loop-Test bestanden (0 Slips, 0 veraltete Samples). **Abnahme vollständig. fx8a ist die Alltags-Firmware (Entscheidung des Nutzers, 2026-11-23).**
 
+**Fork-Branch `acdc/fx1d` (gepusht 2026-11-23, `13b58412..21442efd`):**
+1. `8a401e75` Befehls-Cache an (= Patch 19)
+2. `f9f9399a` Version `v22.4.r-fx8a`
+3. `21442efd` README: Abschnitt „Instruction cache“, Tabellen, Teststand, Hinweis in „Memory layout matters“
+
+Ein Build von `f9f9399a` ohne Patches ist bytegleich mit fx8a (`firmware/builds/verify-fx1d-f9f9399a`, `e1b1097b…`). Ein Release `acdc-v22.4.r-fx8a` gibt es noch nicht.
+
 **Rückweg:** fx7a (`cac6fee0…`), dann fx6a, danach wie bisher.
 
 ### Fork `m9dfukc/OpenWare` (gepusht 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
