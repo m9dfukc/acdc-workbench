@@ -15,7 +15,7 @@
 #   tools/build_owl_patch.sh TapeDelay TapeDelayPatch TapeDelayPatch.hpp
 #   tools/build_owl_patch.sh Grainz GrainzPatch GrainzPatch.hpp SmoothValue.h
 #   LIMIT=1 tools/build_owl_patch.sh Grainz GrainzPatch GrainzPatch.hpp SmoothValue.h
-#   SRC=owl tools/build_owl_patch.sh Tanh3 Tanh3Patch Tanh3Patch.hpp
+#   SRC=owl/tanh3 tools/build_owl_patch.sh Tanh3 Tanh3Patch Tanh3Patch.hpp
 # Extra headers are included before the patch file. That repairs a source with a
 # missing include without touching it.
 #

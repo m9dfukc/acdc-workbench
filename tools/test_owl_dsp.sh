@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Host test of the project's own OWL patch code. The code and the test runner live in the
-# submodule owl/ (m9dfukc/acdc-patches): Tanh3Patch.hpp, AcdcOutput.h, AcdcInput.h, schliere/
+# submodule owl/ (m9dfukc/acdc-patches): tanh3/Tanh3Patch.hpp, AcdcOutput.h, AcdcInput.h, schliere/
 # (all Schliere variants) and the two LED measurement patches in owl/test/. This script only
 # calls owl/test/run.sh, see there for the test cases.
 #
