@@ -67,7 +67,7 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [ ] `flash_acdc.py` mit `:leave` beim nächsten Flash am Gerät erproben (bisher nur gegen Attrappen)
 - [ ] Abhängigkeiten von `tools/owl_read.py` festhalten: Python 3.12, `mido`, `python-rtmidi`. `pyproject.toml` verlangt Python ≥ 3.14 und nennt beide Pakete nicht
 - [ ] Werkzeuge in einem Doc beschreiben. Heute stehen sie nur in `CLAUDE.md` und in `--help`, `docs/03` beschreibt nur `analysis/`
-- [x] Englische Hilfe- und Konsolentexte für `tools/` und `analysis/` (2026-11-16). Kommentare im Code und Reports bleiben deutsch
+- [x] Englische Hilfe- und Konsolentexte für `tools/` und `analysis/` (2026-11-16). Kommentare im Code und Reports bleiben deutsch (außer `owl/`, dort seit 2026-11-23 englisch)
 - [ ] Sprachschalter `--lang en|de` für die Reports der Analyse, Standard deutsch
 - [ ] Analyse-Tool: Clipping-Hinweis bei Float-Dateien nur bei flachen Kuppen melden (Fehlalarm in D15)
 - [ ] **acdc2 nur lesend sichern**, mit eigener Freigabe: `tools/owl_read.py` (Slots, Settings, Report) und DFU-Readback des internen Flash. Der Readback schreibt nichts, braucht aber einen Neustart von acdc2 in den DFU-Modus. Bisher gibt es von v22.4.q kein Abbild
