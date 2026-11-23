@@ -50,19 +50,20 @@ Deutsche Fassung: [README.de.md](README.de.md)
 - **Four bugs in the original code** were found and fixed on the way: three timing bugs in the USB audio path (a feedback loop that ran open, a race between the RX and TX DMA, a start-of-frame handler that ran twice per frame) and an unprotected MIDI send path that damaged slot downloads next to a running patch.
 - **Known and not fixed:** a Program Change while the USB audio stream is open breaks playback until the next stream start (about 10 % silence). Change the patch before opening the stream.
 
-Firmware `v22.4.r-fx3l` against the previous build `v22.4.r-fx2d`, open inputs, gain at 12 o'clock, 2 × 60 s each, levels in dBFS of the USB stream:
+Noise of the daily firmware `v22.4.r-fx8a` against the original firmware of the test module (the factory build labelled v22.5.0), measured in one session with `fx8a` before and after the original (D86): open inputs, gain at 12 o'clock, 2 × 60 s for the original and 4 × 60 s for `fx8a`, levels in dBFS of the USB stream. The original firmware records after the gain stage of the default patch, so its levels are corrected per channel by the gain measured through the DC offset of the open inputs. The last two columns give the two build steps that mattered most for the noise, each measured in its own session against a control (D48, D85). Between sessions the levels drift by up to about 3 dB, so only differences within one session are firm.
 
-| Measure | `fx2d` | `fx3l` | Difference |
-|---|---|---|---|
-| RMS ≥ 20 Hz | −77.6 | −78.7 | −1.1 dB |
-| Broadband floor without lines | −83.2 | −84.5 | −1.3 dB |
-| 1 kHz comb (sum) | −80.9 | −80.6 | +0.2 … +0.4 dB |
-| fs/8 line at 6000 Hz | −84.3 | −89.4 | −5.1 dB |
-| Mixing products | −90.8 | ≈ −125 | ≈ −35 dB |
+| Measure | Original | `fx8a` | Difference | `fx2d` → `fx3l` | `fx7a` → `fx8a` |
+|---|---|---|---|---|---|
+| RMS ≥ 20 Hz | −77.0 | −78.8 | −1.8 dB | −1.1 dB | ±0.1 dB |
+| Broadband floor without lines | −81.6 | −84.9 | −3.2 dB | −1.3 dB | +0.1 dB |
+| 1 kHz comb (sum) | −81.0 | −80.8 | +0.2 dB | +0.2 … +0.4 dB | −0.6 … +0.1 dB (drift) |
+| fs/8 line at 6000 Hz | −83.1 | −88.3 | −5.2 dB | −5.1 dB | +0.6 dB |
+| Mixing products | −96.5 | −119.1 | −22.6 dB | ≈ −35 dB | +1.0 … +3.4 dB |
+| LED PWM line at 2320.5 Hz | ≈ −118 | not found | gone | | |
 
 ![Long-term spectrum of fx3l (black) against fx2d (grey), four channels](docs/img/psd_fx3l_vs_3d.png)
 
-The comb is now the strongest remaining family. The current daily firmware on the test module is `v22.4.r-fx8a` (since 2026-11-23): `fx3l` plus a boot menu that chooses the patch slot with the knobs (`fx4b`), a fix for the MIDI send path (`fx5a`), an LED mode normal / clip only / off chosen in the boot menu (`fx6a`), the LED PWM at 48 kHz, locked to the sample clock (`fx7a`), and the instruction cache switched on (`fx8a`, D83 to D85). With `fx7a` the LED PWM line at 2321 Hz is gone from inputs and outputs, and the noise is the same as with `fx6a` within 0.15 dB (D78, D79). With `fx4b`, 19 of 79 slot downloads next to a running patch arrived damaged and MIDI then hung until a power cycle; with `fx5a` 240 of 240 were intact (D62, D63). The noise of `fx4b` is the same as that of `fx3l` within ±0.4 dB (control in the same session), and `fx5a` shows no change beyond the session scatter (D64). Details and all numbers: [docs/messlog.md](docs/messlog.md) (German), entries D45 to D49, D50 to D85.
+The comb is now the strongest remaining family. The current daily firmware on the test module is `v22.4.r-fx8a` (since 2026-11-23): `fx3l` plus a boot menu that chooses the patch slot with the knobs (`fx4b`), a fix for the MIDI send path (`fx5a`), an LED mode normal / clip only / off chosen in the boot menu (`fx6a`), the LED PWM at 48 kHz, locked to the sample clock (`fx7a`), and the instruction cache switched on (`fx8a`, D83 to D85). With `fx7a` the LED PWM line at 2321 Hz is gone from inputs and outputs, and the noise is the same as with `fx6a` within 0.15 dB (D78, D79). With `fx4b`, 19 of 79 slot downloads next to a running patch arrived damaged and MIDI then hung until a power cycle; with `fx5a` 240 of 240 were intact (D62, D63). The noise of `fx4b` is the same as that of `fx3l` within ±0.4 dB (control in the same session), and `fx5a` shows no change beyond the session scatter (D64). Details and all numbers: [docs/messlog.md](docs/messlog.md) (German), entries D45 to D49, D50 to D86.
 
 ## Firmware
 

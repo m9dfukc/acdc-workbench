@@ -3030,3 +3030,48 @@ Kabel Out 1–4 → In 1–4 (Nutzer), Regler etwa 12 Uhr, Slot 1, `acdc_rec.py 
 Danach: Kabel stecken noch, fx8a, Slot 1 läuft.
 
 **Entscheidung (Nutzer, 2026-11-23):** fx8a ist die Alltags-Firmware auf acdc1. Rückweg fx7a, dann fx6a.
+
+## D86 – Original-Sitzung: Werks-Firmware gegen fx8a, offene Eingänge (2026-11-23, abends)
+
+**Anlass:** Für die Rauschtabelle der READMEs fehlte ein Vergleich mit der Original-Firmware in derselben Sitzung. Bisher gab es nur S2-4 (2026-11-13, früherer Aufnahmeweg, TB-Hub direkt, neben dem Case). Freigabe der beiden Flashes durch den Nutzer im Chat.
+
+**Setup:** acdc1 im Case, Alltags-Kette, Eingänge offen, keine Kabel, Regler 69/56/72/56 von 127 in allen sechs Geräte-Reports (nicht bewegt), Slot 1 ACDC vor jedem Stream per Program Change, je 2 × 60 s `acdc_rec.py --reps 2 --owl-read --analyze`. Reihenfolge:
+1. `ORG-fx8a-a` (fx8a, Stand nach D85)
+2. Flash Werks-Firmware: Readback `backup/acdc1/20261114/flash/acdc1_internal_flash.bin` (`433b3fd3…`, D3, D5) mit `flash_acdc.py`, Log `firmware/flashlog/20261123_original-orga/`. Readback bytegleich, `:leave`, A1 bestanden („AC/DC v22.5.0“, 48000 / 8, alle zwölf Slots unverändert). Die Werks-Firmware liest die Slots und Ressourcen der eigenen Builds ohne Probleme. Erstmals mit `:leave` gestartet statt Kaltstart.
+3. `ORG-orig` (Werks-Firmware, Audiogerät „OWL-ACDC“, CPU 13 % statt 6 % bei Slot 1)
+4. Flash fx8a zurück, Log `firmware/flashlog/20261123_build10-fx8a-nach-original/`. Readback bytegleich, `:leave`, A1 bestanden. Gestartet ist der gemerkte Slot 12, danach Program Change auf Slot 1.
+5. `ORG-fx8a-b`
+
+Alle sechs Aufnahmen ohne Stream-Meldungen und ohne Klicks.
+
+**Gain-Korrektur:** Die Werks-Firmware nimmt nach dem VCA des Default-Patches auf, fx8a roh (`TX_PRE_FX`). Den Gain je Kanal misst das DC-Verhältnis der offenen Eingänge gegen das Mittel der vier fx8a-Läufe (Verfahren aus D26, dafür neu `family_table.py --dc-ref/--dc-correct`, gegen D26 nachgerechnet auf ≤ 0,05 dB gleich): **+0,85 / −2,73 / +1,63 / −2,64 dB** (Kanal 1–4), in r1 und r2 auf 0,01 dB gleich. Aus den CC-Werten vorhergesagt wären (2·CC/127)² = +1,44 / −2,18 / +2,18 / −2,18 dB, also je Kanal 0,5–0,6 dB mehr. [Hypothese] Die 7-Bit-CC-Werte bilden die Regler-Parameter nicht genau ab (wie die kleineren Abweichungen in D26). Der DC von fx8a driftet zwischen Anfang und Ende um 0,1 dB.
+
+### Rauschen
+
+Tabelle `out/ORG-session-table.md` (Datei-dBFS, Mittel über 4 Kanäle, Δ gegen das Mittel der vier fx8a-Läufe, Original gain-korrigiert):
+
+| | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
+|---|---|---|---|---|---|
+| `ORG-fx8a-a-r1` | −72,75 (+0,02) | −79,14 (−0,30) | −74,63 (+0,13) | −82,27 (+0,02) | −112,82 (+0,27) |
+| `ORG-fx8a-a-r2` | −72,72 (+0,05) | −78,99 (−0,15) | −74,64 (+0,12) | −82,17 (+0,12) | −114,23 (−1,15) |
+| `ORG-orig-r1` | −70,99 (**+1,78**) | −75,64 (**+3,20**) | −75,00 (−0,24) | −77,12 (**+5,17**) | −90,45 (**+22,64**) |
+| `ORG-orig-r2` | −70,97 (**+1,80**) | −75,60 (**+3,24**) | −74,98 (−0,22) | −77,11 (**+5,18**) | −90,44 (**+22,65**) |
+| `ORG-fx8a-b-r1` | −72,71 (+0,06) | −78,63 (+0,21) | −74,73 (+0,03) | −82,34 (−0,05) | −113,21 (−0,12) |
+| `ORG-fx8a-b-r2` | −72,91 (−0,14) | −78,62 (+0,22) | −75,04 (−0,29) | −82,38 (−0,09) | −112,31 (+0,77) |
+
+Ohne Gain-Korrektur liegt das Original bei RMS +1,28, Rest +2,58, Kamm −0,79, fs/8 +4,89, Mischprodukte +22,37 dB.
+
+In Geräte-dBFS (−6,02 dB), wie in den READMEs: Original gegen fx8a RMS −77,0 / −78,8, Rest −81,6 / −84,9, Kamm −81,0 / −80,8, fs/8 −83,1 / −88,3, Mischprodukte −96,5 / −119,1.
+
+**Weitere Linien:**
+- **LED-PWM nur beim Original:** 2320,545 Hz mit 10 Harmonischen auf allen Kanälen, −110…−115 dB (Datei-dBFS, unkorrigiert). Unter fx8a nicht gefunden (die LED-PWM läuft seit fx7a mit 48 kHz, D78).
+- **Neu beim Original:** eine Familie bei 75,72 Hz (k = 1 bei −91…−98 dB, Summe −94…−101 dB) auf allen Kanälen, unter fx8a nicht vorhanden. Quelle offen.
+- Der Rest steigt beim Original gleichmäßig über das ganze Band (Median-PSD je Band, gain-korrigiert): 100 Hz–20 kHz +2,8…+3,5 dB auf Kanal 1, 2, 4, auf Kanal 3 von +3,3 dB (unter 1 kHz) auf +2,1 dB (über 15 kHz) fallend, 20–100 Hz +4…+5 dB.
+
+**Deutung:**
+- **[gemessen] fx8a ist gegen die Original-Firmware leiser:** RMS −1,8 dB, Breitbandrauschen ohne Linien −3,2 dB, fs/8 −5,2 dB, Mischprodukte −22,6 dB. Die LED-PWM-Linie und die 75,72-Hz-Familie fehlen. Der SOF-Kamm ist gleich (+0,2 dB). Beide Enden der Kontrolle liegen auf ≤ 0,3 dB zusammen (Rest, Kamm), also keine Drift von Bedeutung.
+- Die Richtung passt zur Kette der Vergleiche in einzelnen Sitzungen: Original ≈ 1b (D19), 1b → 1d Kamm −1,7, fs/8 −1,5, Mischprodukte +4,8 dB (D24), Build 2 ≈ 1d (D26), 3d ≈ Build 2 (D34), 3d → fx3l fs/8 −5,1, Mischprodukte −35, Rest −1,25 dB (D48), danach bis fx8a gleich bis auf fs/8 +0,6 dB (D85).
+- Der Rest ist um 3,2 dB besser, mehr als die Kette erwarten lässt (etwa 2,5 dB). [Hypothese] Ein breitbandiger Anteil der Werks-Firmware, etwa aus der CPU-Last ohne ITCM (13 % statt 6 % bei Slot 1) oder aus den Pegel-LEDs, die beim Original dem Signal nach dem Patch folgen (D73, D74). Nicht weiter untersucht.
+- Einschränkung: Das Original ist über den DC-Offset korrigiert. Ein Fehler darin verschiebt alle Größen des Originals um denselben Betrag. Der Kamm (gleich bei beiden) spricht dafür, dass die Korrektur stimmt.
+
+**Danach:** fx8a, Slot 1 per Program Change, gemerkt bleibt Slot 12, keine Kabel.

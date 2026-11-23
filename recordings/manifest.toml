@@ -2521,3 +2521,87 @@ files = ["20261123_acdc1_fx8a-loop_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
 note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:03:41. Stream-Meldungen: 0. owl_read: out/owl_read/B10-fx8a-loop (rc 0). Firmware Build 10 v22.4.r-fx8a (I-Cache an). Kabel Out 1–4 → In 1–4 (Nutzer), Regler etwa 12 Uhr. messlog D85."
+
+[[measurement]]
+id = "ORG-fx8a-a-r1"
+date = "2026-11-23"
+device = "acdc1, Build 10 v22.4.r-fx8a"
+test = "Original-Sitzung: fx8a am Anfang, Eingänge offen, Regler 12 Uhr (69/56/72/56, nicht bewegt), rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "ORG-fx8a-a-r1 – acdc1 fx8a-open-inputs-orga, 60 s (Wiederholung 1)"
+files = ["20261123_acdc1_fx8a-open-inputs-orga-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:56:32. Stream-Meldungen: 0. owl_read: out/owl_read/ORG-fx8a-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Messlog D86."
+
+[[measurement]]
+id = "ORG-fx8a-a-r2"
+date = "2026-11-23"
+device = "acdc1, Build 10 v22.4.r-fx8a"
+test = "Original-Sitzung: fx8a am Anfang, Eingänge offen, Regler 12 Uhr (69/56/72/56, nicht bewegt), rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "ORG-fx8a-a-r2 – acdc1 fx8a-open-inputs-orga, 60 s (Wiederholung 2)"
+files = ["20261123_acdc1_fx8a-open-inputs-orga-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:57:45. Stream-Meldungen: 0. owl_read: out/owl_read/ORG-fx8a-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Messlog D86."
+
+[[measurement]]
+id = "ORG-orig-r1"
+date = "2026-11-23"
+device = "acdc1, Werks-Firmware AC/DC v22.5.0 (Hack-Branch, Readback 433b3fd3)"
+test = "Original-Sitzung: Werks-Firmware in der Mitte, Eingänge offen, Regler 12 Uhr (69/56/72/56, nicht bewegt), Aufnahme nach dem VCA des Default-Patches"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), VCA wirkt auf die USB-Aufnahme, Gain-Korrektur über den DC-Offset (D26)"
+title = "ORG-orig-r1 – acdc1 original-open-inputs-orga, 60 s (Wiederholung 1)"
+files = ["20261123_acdc1_original-open-inputs-orga-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:00:05. Stream-Meldungen: 0. owl_read: out/owl_read/ORG-orig-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Flash firmware/flashlog/20261123_original-orga, :leave, A1. Messlog D86."
+
+[[measurement]]
+id = "ORG-orig-r2"
+date = "2026-11-23"
+device = "acdc1, Werks-Firmware AC/DC v22.5.0 (Hack-Branch, Readback 433b3fd3)"
+test = "Original-Sitzung: Werks-Firmware in der Mitte, Eingänge offen, Regler 12 Uhr (69/56/72/56, nicht bewegt), Aufnahme nach dem VCA des Default-Patches"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), VCA wirkt auf die USB-Aufnahme, Gain-Korrektur über den DC-Offset (D26)"
+title = "ORG-orig-r2 – acdc1 original-open-inputs-orga, 60 s (Wiederholung 2)"
+files = ["20261123_acdc1_original-open-inputs-orga-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:01:18. Stream-Meldungen: 0. owl_read: out/owl_read/ORG-orig-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Flash firmware/flashlog/20261123_original-orga, :leave, A1. Messlog D86."
+
+[[measurement]]
+id = "ORG-fx8a-b-r1"
+date = "2026-11-23"
+device = "acdc1, Build 10 v22.4.r-fx8a"
+test = "Original-Sitzung: fx8a am Ende, Eingänge offen, Regler 12 Uhr (69/56/72/56, nicht bewegt), rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "ORG-fx8a-b-r1 – acdc1 fx8a-open-inputs-orgb, 60 s (Wiederholung 1)"
+files = ["20261123_acdc1_fx8a-open-inputs-orgb-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:03:21. Stream-Meldungen: 0. owl_read: out/owl_read/ORG-fx8a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Flash firmware/flashlog/20261123_build10-fx8a-nach-original, :leave, A1, danach Program Change auf Slot 1. Messlog D86."
+
+[[measurement]]
+id = "ORG-fx8a-b-r2"
+date = "2026-11-23"
+device = "acdc1, Build 10 v22.4.r-fx8a"
+test = "Original-Sitzung: fx8a am Ende, Eingänge offen, Regler 12 Uhr (69/56/72/56, nicht bewegt), rohe ADC-Daten"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "ORG-fx8a-b-r2 – acdc1 fx8a-open-inputs-orgb, 60 s (Wiederholung 2)"
+files = ["20261123_acdc1_fx8a-open-inputs-orgb-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:04:35. Stream-Meldungen: 0. owl_read: out/owl_read/ORG-fx8a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Flash firmware/flashlog/20261123_build10-fx8a-nach-original, :leave, A1, danach Program Change auf Slot 1. Messlog D86."

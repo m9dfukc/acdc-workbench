@@ -1,0 +1,3 @@
+433b3fd32401a8f1289d01db4663303d1fd982a4ddc1c7c97be66d38f6a1e5b1  backup/acdc1/20261114/flash/acdc1_internal_flash.bin
+433b3fd32401a8f1289d01db4663303d1fd982a4ddc1c7c97be66d38f6a1e5b1  firmware/flashlog/20261123_original-orga/readback_after.bin
+433b3fd32401a8f1289d01db4663303d1fd982a4ddc1c7c97be66d38f6a1e5b1  readback_after.bin[0:131072]

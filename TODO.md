@@ -81,6 +81,8 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
   - [ ] Kleines Plugin (VST/AU, z. B. aus FAUST), das sich mit dem Fingerabdruck des aktuellen Moduls bestücken lässt
   - Entwurf offen: Dateiformat, Plugin-Technik, Nachführen von f0 (f0 hängt am SOF des USB-Anschlusses, S2-6). Vor dem Bauen eine Grill-Runde
   - Stand heute: Der SOF-Kamm ist mit fx3l die stärkste Familie, eine ideale Notch-Bank brächte ≈ 5,8 dB (`docs/02`, D48)
+- [x] **Original-Sitzung: Werks-Firmware gegen fx8a in einer Sitzung** (Nutzer 2026-11-23, für die Rauschtabelle der READMEs): erledigt am 2026-11-23 (D86). fx8a → Readback `433b3fd3…` → fx8a, je Flash Readback bytegleich, `:leave`, A1. Original gain-korrigiert über den DC-Offset (`family_table.py --dc-ref/--dc-correct`): fx8a hat RMS −1,8, Rest −3,2, fs/8 −5,2, Mischprodukte −22,6 dB, Kamm gleich. LED-PWM-Linie und eine Familie bei 75,72 Hz gibt es nur beim Original. Tabelle in beiden READMEs
+  - [ ] Offen aus D86: Woher kommt der um 3,2 dB höhere Rest des Originals (mehr als die Kette der Einzelvergleiche erwarten lässt), und woher die 75,72-Hz-Familie?
 - [ ] LED-aus-Patch (Messplan Schritt 7) → H3 ja/nein
 - [ ] Rausch-Experimente je Build + A/B (E3): Blockgröße 16, LED-PWM-Prescaler → 0, Codec-HPF
 - [ ] ITCM-Folgeideen (Q4 der Grill-Runde 2026-11-16): Jitter 0–2 µs (Daisy), WFI im Idle, gleichmäßige Last im Idle. Je eigener Build mit A/B

@@ -50,19 +50,20 @@ English version: [README.md](README.md)
 - **Vier Fehler im ursprünglichen Code** wurden dabei gefunden und behoben: drei Timing-Fehler im USB-Audio-Pfad (ein Feedback in offener Schleife, ein Wettlauf zwischen RX- und TX-DMA, ein Start-of-Frame-Handler, der zweimal je Frame lief) und ein ungeschützter MIDI-Sendeweg, der Slot-Downloads neben einem laufenden Patch beschädigte.
 - **Bekannt und nicht behoben:** Ein Program Change bei offenem USB-Audio-Stream bricht die Wiedergabe bis zum nächsten Stream-Start (rund 10 % Stille). Den Patch vor dem Öffnen des Streams wechseln.
 
-Firmware `v22.4.r-fx3l` gegen den Vorgänger `v22.4.r-fx2d`, offene Eingänge, Gain auf 12 Uhr, je 2 × 60 s, Pegel in dBFS des USB-Stroms:
+Rauschen der Alltags-Firmware `v22.4.r-fx8a` gegen die Original-Firmware des Testmoduls (der Werks-Build mit dem Etikett v22.5.0), gemessen in einer Sitzung mit `fx8a` vor und nach dem Original (D86): offene Eingänge, Gain auf 12 Uhr, 2 × 60 s für das Original und 4 × 60 s für `fx8a`, Pegel in dBFS des USB-Stroms. Die Original-Firmware nimmt nach der Verstärkung des Default-Patches auf, ihre Pegel sind deshalb je Kanal um den Gain korrigiert, gemessen über den DC-Offset der offenen Eingänge. Die letzten beiden Spalten zeigen die zwei Build-Schritte, die für das Rauschen am meisten ausmachten, je in einer eigenen Sitzung gegen eine Kontrolle gemessen (D48, D85). Zwischen Sitzungen driften die Pegel um bis zu etwa 3 dB, belastbar sind deshalb nur Differenzen innerhalb einer Sitzung.
 
-| Größe | `fx2d` | `fx3l` | Differenz |
-|---|---|---|---|
-| RMS ≥ 20 Hz | −77,6 | −78,7 | −1,1 dB |
-| Breitbandrauschen ohne Linien | −83,2 | −84,5 | −1,3 dB |
-| 1-kHz-Kamm (Summe) | −80,9 | −80,6 | +0,2 … +0,4 dB |
-| fs/8-Linie bei 6000 Hz | −84,3 | −89,4 | −5,1 dB |
-| Mischprodukte | −90,8 | ≈ −125 | ≈ −35 dB |
+| Größe | Original | `fx8a` | Differenz | `fx2d` → `fx3l` | `fx7a` → `fx8a` |
+|---|---|---|---|---|---|
+| RMS ≥ 20 Hz | −77,0 | −78,8 | −1,8 dB | −1,1 dB | ±0,1 dB |
+| Breitbandrauschen ohne Linien | −81,6 | −84,9 | −3,2 dB | −1,3 dB | +0,1 dB |
+| 1-kHz-Kamm (Summe) | −81,0 | −80,8 | +0,2 dB | +0,2 … +0,4 dB | −0,6 … +0,1 dB (Drift) |
+| fs/8-Linie bei 6000 Hz | −83,1 | −88,3 | −5,2 dB | −5,1 dB | +0,6 dB |
+| Mischprodukte | −96,5 | −119,1 | −22,6 dB | ≈ −35 dB | +1,0 … +3,4 dB |
+| LED-PWM-Linie bei 2320,5 Hz | ≈ −118 | nicht gefunden | weg | | |
 
 ![Langzeit-Spektrum von fx3l (schwarz) gegen fx2d (grau), vier Kanäle](docs/img/psd_fx3l_vs_3d.png)
 
-Der Kamm ist damit die stärkste verbleibende Familie. Die Alltags-Firmware auf dem Testmodul ist seit 2026-11-23 `v22.4.r-fx8a`: `fx3l` plus ein Boot-Menü, das den Patch-Slot mit den Reglern wählt (`fx4b`), ein Fix für den MIDI-Sendeweg (`fx5a`), ein LED-Modus normal / nur Clip / aus, im Boot-Menü gewählt (`fx6a`), die LED-PWM mit 48 kHz im Takt der Abtastung (`fx7a`) und der eingeschaltete Befehls-Cache (`fx8a`, D83 bis D85). Mit `fx7a` ist die LED-PWM-Linie bei 2321 Hz an Ein- und Ausgängen weg, das Rauschen ist innerhalb von 0,15 dB gleich dem von `fx6a` (D78, D79). Mit `fx4b` kamen 19 von 79 Slot-Downloads neben einem laufenden Patch beschädigt an, danach hing MIDI bis zum Neustart. Mit `fx5a` waren 240 von 240 in Ordnung (D62, D63). Das Rauschen von `fx4b` ist innerhalb von ±0,4 dB gleich dem von `fx3l` (Kontrolle in derselben Sitzung), `fx5a` zeigt keine Änderung über die Streuung der Sitzung hinaus (D64). Einzelheiten und alle Zahlen: [docs/messlog.md](docs/messlog.md), Einträge D45 bis D49 und D50 bis D85.
+Der Kamm ist damit die stärkste verbleibende Familie. Die Alltags-Firmware auf dem Testmodul ist seit 2026-11-23 `v22.4.r-fx8a`: `fx3l` plus ein Boot-Menü, das den Patch-Slot mit den Reglern wählt (`fx4b`), ein Fix für den MIDI-Sendeweg (`fx5a`), ein LED-Modus normal / nur Clip / aus, im Boot-Menü gewählt (`fx6a`), die LED-PWM mit 48 kHz im Takt der Abtastung (`fx7a`) und der eingeschaltete Befehls-Cache (`fx8a`, D83 bis D85). Mit `fx7a` ist die LED-PWM-Linie bei 2321 Hz an Ein- und Ausgängen weg, das Rauschen ist innerhalb von 0,15 dB gleich dem von `fx6a` (D78, D79). Mit `fx4b` kamen 19 von 79 Slot-Downloads neben einem laufenden Patch beschädigt an, danach hing MIDI bis zum Neustart. Mit `fx5a` waren 240 von 240 in Ordnung (D62, D63). Das Rauschen von `fx4b` ist innerhalb von ±0,4 dB gleich dem von `fx3l` (Kontrolle in derselben Sitzung), `fx5a` zeigt keine Änderung über die Streuung der Sitzung hinaus (D64). Einzelheiten und alle Zahlen: [docs/messlog.md](docs/messlog.md), Einträge D45 bis D49 und D50 bis D86.
 
 ## Firmware
 

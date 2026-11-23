@@ -1,0 +1,3 @@
+e1b1097b21008486acc4cda4b446a0e72fcd2e974ef0f5b97c6a707e6086f39a  firmware/builds/acdc1-build10-fx8a/ACDC.bin
+d23cab6ea06eb16b6b33bc8a087fb3f55bb20009b001a207458666a9f15c3a8d  firmware/flashlog/20261123_build10-fx8a-nach-original/readback_after.bin
+e1b1097b21008486acc4cda4b446a0e72fcd2e974ef0f5b97c6a707e6086f39a  readback_after.bin[0:110208]

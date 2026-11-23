@@ -1,0 +1,76 @@
+{
+  "time": "2026-11-23T15:59:15",
+  "name": "original-orga",
+  "binary": {
+    "bin": "backup/acdc1/20261114/flash/acdc1_internal_flash.bin",
+    "size": 131072,
+    "sha256": "433b3fd32401a8f1289d01db4663303d1fd982a4ddc1c7c97be66d38f6a1e5b1",
+    "version": "AC/DC v22.5.0",
+    "initial_sp": "0x00001000",
+    "reset_handler": "0x08018ca9",
+    "fails": [],
+    "notes": [
+      "no BUILD_INFO.txt next to the binary, SHA-256 not cross-checked",
+      "no check_itcm.json: fine for builds without ITCM (3d and older), an ITCM build needs tools/check_itcm.py first"
+    ]
+  },
+  "device_uuid": "0039001c:31315101:39333437",
+  "dfu_serial": "200364500000",
+  "from_dfu": false,
+  "before": {
+    "version": "AC/DC v22.4.r-fx8a",
+    "report": "firmware/flashlog/20261123_original-orga/owl_read_before/acdc1/20261123/device_report.json"
+  },
+  "dfu_alt": 0,
+  "download_ok": true,
+  "readback": {
+    "readback_size": 131072,
+    "identical": true,
+    "rest_ff": true,
+    "first_difference": null,
+    "sha256_readback": "433b3fd32401a8f1289d01db4663303d1fd982a4ddc1c7c97be66d38f6a1e5b1",
+    "sha256_readback_head": "433b3fd32401a8f1289d01db4663303d1fd982a4ddc1c7c97be66d38f6a1e5b1"
+  },
+  "flash_ok": true,
+  "leave": {
+    "rc": 74,
+    "leave_sent": true,
+    "readback_identical": true,
+    "dfu_gone": true
+  },
+  "a1": {
+    "passed": true,
+    "complete": true,
+    "rows": [
+      {
+        "check": "device is acdc1",
+        "ok": true,
+        "detail": "0039001c:31315101:39333437"
+      },
+      {
+        "check": "firmware version",
+        "ok": true,
+        "detail": "AC/DC v22.5.0 (expected AC/DC v22.5.0)"
+      },
+      {
+        "check": "sample rate",
+        "ok": true,
+        "detail": "48000"
+      },
+      {
+        "check": "block size",
+        "ok": true,
+        "detail": "8"
+      },
+      {
+        "check": "slots unchanged",
+        "ok": true,
+        "detail": "1 ACDC, 2 TapeDelay, 3 Grainz, 4 RingsReverb, 5 Tanh3, 6 SchliereA, 7 SchliereM, 8 SchliereZ, 9 SchliereW, 10 SchliereO, 11 SchliereS, 12 SchliereL"
+      }
+    ],
+    "storage": "Storage 256256/8388608",
+    "program": "CPU: 9% Memory: 368",
+    "report": "firmware/flashlog/20261123_original-orga/owl_read_after/acdc1/20261123/device_report.json",
+    "time": "2026-11-23T15:59:48"
+  }
+}
