@@ -1,5 +1,5 @@
-<!-- i18n source=docs/01-hardware-und-firmware.md sha256=aa60528402345c91ab4ff302119b9c9d90edb35c7e987cd150cf1c705cf0298b date=2026-11-18 -->
-> English translation of [`docs/01-hardware-und-firmware.md`](../../docs/01-hardware-und-firmware.md), as of 2026-11-18. The German original is authoritative. This file is generated from it, do not edit it by hand.
+<!-- i18n source=docs/01-hardware-und-firmware.md sha256=84847fda36d706d7b3b378022850143687046fa6a41f870dc94dc00f328b8d1f date=2026-11-24 -->
+> English translation of [`docs/01-hardware-und-firmware.md`](../../docs/01-hardware-und-firmware.md), as of 2026-11-24. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 01 – Hardware & firmware of the AC/DC
 
@@ -21,6 +21,8 @@ Basis: OpenWare source `RebelTechnology/OpenWare` @ `62a0187` (v22.5.0, 2023-03-
 | Controls | 4 knobs (input gain **and** patch parameters A–D), 8 LEDs (parameters AA–AD, BA–BD). No buttons, no gate/CV input, no serial MIDI in the firmware. On the back there is a 3-pin header "MIDI" (raw UART), the MIDI expander planned for it never appeared (thread #2077). See "MIDI header on the back" | [sourced] |
 | LEDs | PWM via TIM2/3/4/8, prescaler 100, period 1023 → **≈ 2.32 kHz** (in the audio band). The duty cycle follows the level | [code] |
 | Power | Eurorack bus (+12 V, approx. 200 mA). Not powered via USB | [sourced] |
+| Construction | Carrier board by Befaco (jacks, NE5532 op amps, knobs, LEDs, power supply) with the plug-on processor module **Xibeca** by Rebel Technology (red board, Rev02 on acdc1: MCU, SDRAM, QSPI, codec). Two headers of 2 × 24 pins each. Noctua2 is a predecessor with the same pinout | [sourced: schematics, photo thread 2083 #4] |
+| Ground | On the module AGND (codec) and GND (MCU, memory, USB), joined by the ferrite bead L1 (0603). L2/L3 filter +A3V3 and +A5V. The carrier ties all AGND pins (33, 47–50, 67, 71, 72) directly to its ground, GND pins 15, 16, 85, 86. **A wire pin 15 ↔ pin 33 on the module clearly lowers the noise of the inputs**, see `06-hardware-mod-ground.md` | [code: schematic], [measured] messlog D90 |
 | Default gains | Input 104, output 114 (v22.5.0). In the hack branch (v22.4.q, v22.4.r): input 88. My own builds from 1c on: output 125 (patch 04). These are all defaults: settings stored in flash take precedence | [code] |
 | Firmware acdc1 | Today **`v22.4.r-fx4b`** (my own build, since 2026-11-17, before that `v22.4.r-fx3l` since 2026-11-16). From the factory the module reported "v22.5.0", but it was a build from `hack/acdc-output-levels` with this label, not a published commit. Hence block size 8, the 6 kHz line and the clocking of v22.4.r | [measured] lab notebook D3, D3a, D10, D49, D59 |
 | Firmware acdc2 | **v22.4.q** = commit `e81cfc3` (2022-06-27) from `hack/acdc-output-levels`, never merged. `AUDIO_BLOCK_SIZE 8` (v22.5.0: 16), `AUDIO_INPUT_GAIN 88`, HPF off, PLL/LED timers as in v22.5.0. Our code analysis otherwise refers to v22.5.0 | [code], device status 2026-11-13 |

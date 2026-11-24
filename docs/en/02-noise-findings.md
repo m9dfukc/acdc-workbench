@@ -1,5 +1,5 @@
-<!-- i18n source=docs/02-noise-befunde.md sha256=cb6872a008887f094a4dd83d0af5e8714ce36871ab1369595bdb9b723314ab98 date=2026-11-16 -->
-> English translation of [`docs/02-noise-befunde.md`](../../docs/02-noise-befunde.md), as of 2026-11-16. The German original is authoritative. This file is generated from it, do not edit it by hand.
+<!-- i18n source=docs/02-noise-befunde.md sha256=799724b8c22e0d3cf70fd78dc99e1768abf602603ae5066cdec1ce4fcf0624d5 date=2026-11-24 -->
+> English translation of [`docs/02-noise-befunde.md`](../../docs/02-noise-befunde.md), as of 2026-11-24. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 02 – Noise: findings, hypotheses, the isolator question
 
@@ -135,3 +135,11 @@ All values on acdc1, raw inputs (`TX_PRE_FX`), open, daily-use chain, file dBFS,
 
 - **Consequence:** The SOF comb is now by far the strongest line family and lies ≈ 4 dB above the broadband residual. The firmware has not lowered it. An ideal notch bank would gain ≈ 5.8 dB with fx3l (RMS −72.7 against residual −78.5 dBFS). Because the computer records the raw inputs, it would have to run in the computer. Whether that is worth it is open (optional, see `04-software-filter.md`).
 - **Open:** Listening test with a compressor, second noise session with a 3d control at the start (D48 had none), lines at k·fs/48 (2000/3000 Hz), which fx3j, noD and fx3k showed (D42, D44) and which have not been evaluated for fx3l. Everything is in `TODO.md`.
+
+## Status 2026-11-24: ground wire on the module (messlog D90)
+
+- **Wire pin 15 (GND) ↔ pin 33 (AGND) on the back of the Xibeca module [measured, D90]:** acdc1, fx9a, open inputs, 2 × 60 s each on the same day. RMS −5.7 dB, residual −2.9 dB, comb −7.2 dB, fs/8 −18.3 dB, mixing products below detection, LED shift of the inputs down to 20–25 %. Gain unchanged (loop test +0.02 dB). Guide and background: `06-hardware-mod-ground.md`.
+- **Mechanism [hypothesis]:** Return current of the module flowed through L1 and the AGND area to the carrier. The voltage across that path sat between the reference of the codec (AGND) and that of the input stage (carrier GND). All families that come from current pulses of the module drop together. This supports the hypotheses from D42 (current pulse at the block rate) and D74 (LED current shifts the zero point): the coupling path is largely the ground between module and carrier.
+- **Did not move:** 7384.62 and 1215.19 Hz, the knob line at 4401.90 Hz. The scan line of the knob ADC (9633.80 Hz) rises by 3.7 dB but stays at −120 file dBFS.
+- **Consequence:** The comb now carries 30–50 % of the noise power, fs/8 less than 1.5 %. An ideal notch bank would bring only 1.6–3.0 dB. The canceller `owl/AcdcInput.h` stays usable without changes, its benefit is smaller.
+- **Open:** A-B-A, outputs, listening test, whether further ground pins (16 ↔ 47/48) or shorting L1 directly bring more.
