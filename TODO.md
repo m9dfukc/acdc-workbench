@@ -74,6 +74,14 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 - [ ] Optional: Build aus dem Fork-Branch `acdc/thru-usb-feedback`, SHA mit Build 1d vergleichen (Freigabe). Für `acdc/fx1d` ist das erledigt (`verify-fx1d-5cb2c17c`)
 
 ### 3. Störlinien
+- [x] **Masse-Brücke auf dem Modul** (Forum-Hinweis modwiggler, Nutzer 2026-11-23/24): Draht Pin 15 (GND) ↔ Pin 33 (AGND) auf acdc1, seit 2026-11-24. RMS −5,7, Rest −2,9, Kamm −7,2, fs/8 −18,3 dB, LED-Verschiebung auf ein Viertel, Verstärkung gleich (D90). Anleitung `docs/06-hardware-mod-masse.md`
+  - [ ] A-B-A: Draht ab, gleiche Messung, Draht wieder an (schließt den Wiedereinbau als Ursache aus)
+  - [ ] Ausgänge am UMC mit und ohne Draht (Schliere oder Default-Patch, Messaufbau S3/G)
+  - [ ] Hörprobe mit Kompressor
+  - [ ] Weitere Massepins (16 ↔ 47/48) oder L1 direkt überbrücken, je mit A/B
+  - [ ] DC-Verschiebung 65–90 mV erklären (zu groß für L1 und Steckerleiste allein)
+  - [ ] Antwort im Forum (modwiggler und eigener Thread #2244), nur nach Freigabe
+  - [ ] acdc2 bleibt unverändert (Referenz). Ob es dort genauso wirkt, nur wenn der Nutzer das will
 - [ ] **Optional: Störbänder im Rechner entfernen, Fingerabdruck + Plugin** (Nutzer 2026-11-16). Ob sich das lohnt, hängt davon ab, wie viel Störgeräusch am Ende bleibt. Entscheiden nach Alltagstest, Hörprobe und zweiter Rauschsitzung von fx3l. Hintergrund: Mit `TX_PRE_FX` nimmt der Rechner die rohen Eingänge auf, ein Filter-Patch im Gerät erreicht die Aufnahme nicht mehr. Falls ja:
   - [ ] Das Analyse-Tool schreibt je Modul und USB-Anschluss einen „Fingerabdruck“: die genauen Störbänder (Kamm-f0 und Harmonische, fs/8, LED-PWM, stärkste übrige Linien, je mit Breite)
   - [ ] `analysis/notch.py`: Notch-Bank (SOS) aus dem Fingerabdruck, Vorher/Nachher-PSD, RMS-Reduktion

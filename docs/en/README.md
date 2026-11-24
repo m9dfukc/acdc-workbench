@@ -9,6 +9,7 @@ The working language of this project is German, and the German files are the sou
 | [03-measurement-plan-python.md](03-measurement-plan-python.md) | `docs/03-messplan-python.md` | Measurement protocol and specification of the Python analysis |
 | [04-software-filter.md](04-software-filter.md) | `docs/04-software-filter.md` | Notch bank: filter shape, Python prototype, plugin, FAUST patch |
 | [05-firmware-plan.md](05-firmware-plan.md) | `docs/05-firmware-plan.md` | State of OpenWare, forks, plan and result of every build, flashing |
+| [06-hardware-mod-ground.md](06-hardware-mod-ground.md) | `docs/06-hardware-mod-masse.md` | Hardware mod: ground wire pin 15 ↔ pin 33 on the processor module, effect, background, step-by-step guide |
 | [99-sources.md](99-sources.md) | `docs/99-quellen.md` | All links |
 
 Check which translations are out of date:

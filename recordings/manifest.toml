@@ -2717,3 +2717,101 @@ files = ["20261123_acdc1_fx9a-open-inputs-11b-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
 note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:22:24. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx9a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 11 v22.4.r-fx9a (D-Cache an), Sandwich Ende. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
+
+[[measurement]]
+id = "D90-vor-r1"
+date = "2026-11-23"
+device = "acdc1"
+test = "gnd-vor-open-inputs"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "D90-vor-r1 – acdc1 gnd-vor-open-inputs, 60 s (Wiederholung 1)"
+files = ["20261123_acdc1_gnd-vor-open-inputs-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 22:41:04. Stream-Meldungen: 0. owl_read: out/owl_read/D90-vor-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+
+[[measurement]]
+id = "D90-vor-r2"
+date = "2026-11-23"
+device = "acdc1"
+test = "gnd-vor-open-inputs"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "D90-vor-r2 – acdc1 gnd-vor-open-inputs, 60 s (Wiederholung 2)"
+files = ["20261123_acdc1_gnd-vor-open-inputs-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 22:42:18. Stream-Meldungen: 0. owl_read: out/owl_read/D90-vor-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+
+[[measurement]]
+id = "D90b-vor-r1"
+date = "2026-11-24"
+device = "acdc1"
+test = "gnd-vor-open-inputs"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "D90b-vor-r1 – acdc1 gnd-vor-open-inputs, 60 s (Wiederholung 1)"
+files = ["20261124_acdc1_gnd-vor-open-inputs-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:34:48. Stream-Meldungen: 0. owl_read: out/owl_read/D90b-vor-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. D90b vorher: vor der Masse-Brücke Pin 15 ↔ Pin 33, acdc1 im Case, Regler 63/64/71/50, keine Kabel, Slot 1"
+
+[[measurement]]
+id = "D90b-vor-r2"
+date = "2026-11-24"
+device = "acdc1"
+test = "gnd-vor-open-inputs"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "D90b-vor-r2 – acdc1 gnd-vor-open-inputs, 60 s (Wiederholung 2)"
+files = ["20261124_acdc1_gnd-vor-open-inputs-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:36:01. Stream-Meldungen: 0. owl_read: out/owl_read/D90b-vor-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. D90b vorher: vor der Masse-Brücke Pin 15 ↔ Pin 33, acdc1 im Case, Regler 63/64/71/50, keine Kabel, Slot 1"
+
+[[measurement]]
+id = "D90b-nach-r1"
+date = "2026-11-24"
+device = "acdc1"
+test = "gnd-nach-open-inputs"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "D90b-nach-r1 – acdc1 gnd-nach-open-inputs, 60 s (Wiederholung 1)"
+files = ["20261124_acdc1_gnd-nach-open-inputs-r1_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:09:51. Stream-Meldungen: 0. owl_read: out/owl_read/D90b-nach-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. D90b nachher: Draht Pin 15 (GND) ↔ Pin 33 (AGND) auf der Rückseite des Xibeca-Moduls, acdc1 im Case, Regler 63/64/71/50, keine Kabel, Slot 1"
+
+[[measurement]]
+id = "D90b-nach-r2"
+date = "2026-11-24"
+device = "acdc1"
+test = "gnd-nach-open-inputs"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Nullen"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "D90b-nach-r2 – acdc1 gnd-nach-open-inputs, 60 s (Wiederholung 2)"
+files = ["20261124_acdc1_gnd-nach-open-inputs-r2_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:11:04. Stream-Meldungen: 0. owl_read: out/owl_read/D90b-nach-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. D90b nachher: Draht Pin 15 (GND) ↔ Pin 33 (AGND) auf der Rückseite des Xibeca-Moduls, acdc1 im Case, Regler 63/64/71/50, keine Kabel, Slot 1"
+
+[[measurement]]
+id = "D90b-nach-loop"
+date = "2026-11-24"
+device = "acdc1"
+test = "gnd-nach-loop"
+gain = "g12"
+usb = "usb-stream, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), tools/acdc_rec.py duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS"
+patch = "Slot 1: ACDC (Default-Patch), wirkt nicht auf die USB-Aufnahme"
+title = "D90b-nach-loop – acdc1 gnd-nach-loop, 60 s"
+files = ["20261124_acdc1_gnd-nach-loop_g12_usb-stream.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:18:10. Stream-Meldungen: 0. owl_read: out/owl_read/D90b-nach-loop (rc 0). D90b nachher: Loop-Test Out n → In n, Draht Pin 15 ↔ Pin 33, Pegelvergleich gegen B11-fx9a-loop-cold"

@@ -43,6 +43,7 @@ Deutsche Fassung: [README.de.md](README.de.md)
 - **Small lines from the MCU's own clocks.** The free-running knob ADC scans at 105.634 kHz and shows up folded at 9633.8 Hz, about −118 dBFS. A further set of lines (2200.95 Hz and its harmonics) rises when the four knobs are set differently: one knob at an end stop brings it to about −100 dBFS, alternating stops to −94 dBFS, still 19 dB below the comb. With all four knobs alike, at whatever position, it stays near −116 dBFS. Where its frequency comes from is open.
 - **LED current shifts the zero point of all inputs.** Each lit input LED moves the raw ADC data of every channel by about −2.9 mV (−71 dBFS). A steadily lit LED is silent, every change is a click, and a dimmed LED repeats the step 2321 times a second: that is the LED PWM line. A patch that passes its input on carries all of it to the outputs. Build 9 (`v22.4.r-fx7a`) runs the LED PWM at 48 kHz, locked to the sample clock: the 2321 Hz line is gone from inputs and outputs, the slow shift stays. Against that, the LED modes clip only and off (Build 8, `v22.4.r-fx6a`) keep the LEDs dark; in mode off the shift drops by about 37 dB.
 - **What a patch does reaches the outputs.** An FX patch passes the lines of its input on, and its own CPU load raises the block-rate line: an allpass chain at 29 % CPU lifted fs/8 by 3.8 dB and the mixing products by 13.4 dB against the default patch at 6 %. A patch that dims an LED put the 2321 Hz line on the output at up to −44 dBFS. Knobs set far apart bring their own lines to the output (−66 to −73 dBFS at an interface input with one knob at its stop). A canceller that learns the block-rate lines in silence and subtracts them at the input (`owl/AcdcInput.h`) lowered them at the output by 22 to 25 dB.
+- **A wire between two ground pins on the processor module is the strongest single fix so far.** On the module, the codec ground (AGND) and the digital ground (GND) meet only through a ferrite bead, while the carrier board ties all AGND pins straight to its own ground. A short wire from pin 15 (GND) to pin 33 (AGND) on the back of the module lowered the comb by 7 dB, fs/8 by 18 dB and the broadband floor by 3 dB, and cut the LED shift of the inputs to a quarter. Gain and USB are unchanged. See the section below and [docs/en/06-hardware-mod-ground.md](docs/en/06-hardware-mod-ground.md).
 - **Mounting in the case** changed nothing measurable in the ADC data.
 - **The noise drifts within a session.** The comb rose by 2.4 dB in 26 minutes in one session and by 2 dB in another, also across a cold start. Comparisons between builds therefore need a control at the beginning and at the end.
 - **The module whines audibly**, quietly, at roughly 800 to 1000 Hz, also in DFU mode without any firmware running. Unplugging USB makes it quieter and higher. The source (a regulator on the module or in the case supply) is open.
@@ -64,6 +65,23 @@ Noise of the daily firmware `v22.4.r-fx8a` against the original firmware of the 
 ![Long-term spectrum of fx3l (black) against fx2d (grey), four channels](docs/img/psd_fx3l_vs_3d.png)
 
 The comb is now the strongest remaining family. The current daily firmware on the test module is `v22.4.r-fx9a` (since 2026-11-23): `fx3l` plus a boot menu that chooses the patch slot with the knobs (`fx4b`), a fix for the MIDI send path (`fx5a`), an LED mode normal / clip only / off chosen in the boot menu (`fx6a`), the LED PWM at 48 kHz, locked to the sample clock (`fx7a`), the instruction cache switched on (`fx8a`, D83 to D85), and the data cache with the DMA buffers in an MPU region without cache (`fx9a`, D87 to D89). With `fx7a` the LED PWM line at 2321 Hz is gone from inputs and outputs, and the noise is the same as with `fx6a` within 0.15 dB (D78, D79). With `fx4b`, 19 of 79 slot downloads next to a running patch arrived damaged and MIDI then hung until a power cycle; with `fx5a` 240 of 240 were intact (D62, D63). The noise of `fx4b` is the same as that of `fx3l` within ±0.4 dB (control in the same session), and `fx5a` shows no change beyond the session scatter (D64). Details and all numbers: [docs/messlog.md](docs/messlog.md) (German), entries D45 to D49, D50 to D89.
+
+### Hardware mod: ground wire on the module
+
+The test module carries a hardware mod since 2026-11-24: an insulated wire from pin 15 (GND) to pin 33 (AGND) on the back of the Xibeca processor module, in parallel with the ferrite bead L1 that joins the two grounds on the module. Measured on the same day with `fx9a` before and after soldering (D90): open inputs, gain at 12 o'clock, 2 × 60 s each, dBFS of the USB stream, mean of the four channels. All numbers in the table above were taken without the wire.
+
+| Measure | Without wire | With wire | Difference |
+|---|---|---|---|
+| RMS ≥ 20 Hz | −78.7 | −84.4 | −5.7 dB |
+| Broadband floor without lines | −84.1 | −87.0 | −2.9 dB |
+| 1 kHz comb (sum) | −80.9 | −88.0 | −7.2 dB |
+| fs/8 line at 6000 Hz | −88.9 | −107.1 | −18.3 dB |
+| Mixing products | −122.4 | not found | gone |
+| LED shift of the inputs (4 LEDs lit) | 100 % | 20 to 25 % | −12 to −14 dB |
+
+![Long-term spectrum without (grey) and with the ground wire (black), mean of four channels](docs/img/psd_gnd_mod.png)
+
+The broadband floor drops by about 4 dB in the bass and 2 dB in the treble. A loop-back test (out → in) shows the same gain within 0.02 dB and no lost samples. Lines at 7384.6, 1215.2 and 4401.9 Hz stay where they were; the scan line of the knob ADC at 9633.8 Hz rises by 3.7 dB but stays at about −126 dBFS. The comb now carries 30 to 50 % of the noise power. Not yet measured: the outputs, and a second removal of the wire to rule out the remounting itself. Background, pin table and a step-by-step guide: [docs/en/06-hardware-mod-ground.md](docs/en/06-hardware-mod-ground.md) (German original: [docs/06-hardware-mod-masse.md](docs/06-hardware-mod-masse.md)). Soldering on the module is at your own risk.
 
 ## Firmware
 
@@ -145,7 +163,7 @@ python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build11-fx9a   # after
 | Path | Content |
 |---|---|
 | `tools/`, `analysis/` | The workbench |
-| `docs/` | Reference documents `01` to `05` (German), the lab notebook `messlog.md`, research notes in `docs/research/` |
+| `docs/` | Reference documents `01` to `06` (German, `06` is the ground wire mod), the lab notebook `messlog.md`, research notes in `docs/research/` |
 | `docs/en/` | English versions of the reference documents, see [docs/en/README.md](docs/en/README.md) |
 | `firmware/OpenWare/` | Submodule, the firmware fork |
 | `firmware/patches/`, `firmware/builds/`, `firmware/flashlog/` | Patches, build records, flash records |

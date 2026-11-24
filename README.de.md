@@ -43,6 +43,7 @@ English version: [README.md](README.md)
 - **Kleine Linien aus den Takten der MCU.** Der frei laufende Regler-ADC scannt mit 105,634 kHz und erscheint gefaltet bei 9633,8 Hz, etwa −118 dBFS. Eine weitere Gruppe von Linien (2200,95 Hz und Harmonische) steigt, wenn die vier Regler verschieden stehen: Ein Regler am Anschlag bringt sie auf etwa −100 dBFS, abwechselnde Anschläge auf −94 dBFS, immer noch 19 dB unter dem Kamm. Stehen alle vier Regler gleich, egal wo, bleibt sie bei etwa −116 dBFS. Woher ihre Frequenz kommt, ist offen.
 - **Der LED-Strom verschiebt den Nullpunkt aller Eingänge.** Jede leuchtende Eingangs-LED verschiebt die rohen ADC-Daten aller Kanäle um etwa −2,9 mV (−71 dBFS). Eine dauerhaft leuchtende LED ist still, jeder Wechsel ist ein Knack, und eine gedimmte LED wiederholt den Sprung 2321-mal pro Sekunde: Das ist die LED-PWM-Linie. Ein Patch, der seinen Eingang durchreicht, bringt all das an die Ausgänge. Build 9 (`v22.4.r-fx7a`) lässt die LED-PWM mit 48 kHz im Takt der Abtastung laufen: Die Linie bei 2321 Hz ist an Ein- und Ausgängen weg, die langsame Verschiebung bleibt. Dagegen halten die LED-Modi nur Clip und aus (Build 8, `v22.4.r-fx6a`) die LEDs dunkel, im Modus aus sinkt die Verschiebung um etwa 37 dB.
 - **Was ein Patch tut, kommt an die Ausgänge.** Ein FX-Patch reicht die Linien seines Eingangs weiter, und seine Rechenlast hebt die Blockraten-Linie: Eine Allpass-Kette mit 29 % CPU hob fs/8 um 3,8 dB und die Mischprodukte um 13,4 dB gegen den Default-Patch mit 6 %. Ein Patch, der eine LED dimmt, brachte die Linie bei 2321 Hz mit bis zu −44 dBFS an den Ausgang. Weit auseinander stehende Regler bringen ihre eigenen Linien an den Ausgang (−66 bis −73 dBFS am Eingang eines Interfaces, ein Regler am Anschlag). Eine Sperre, die die Blockraten-Linien in der Stille lernt und am Eingang abzieht (`owl/AcdcInput.h`), senkte sie am Ausgang um 22 bis 25 dB.
+- **Ein Draht zwischen zwei Massepins auf dem Prozessor-Modul ist bisher die wirksamste Einzelmaßnahme.** Auf dem Modul treffen sich die Masse des Codecs (AGND) und die digitale Masse (GND) nur über eine Ferritperle, der Träger legt alle AGND-Pins direkt auf seine Masse. Ein kurzer Draht von Pin 15 (GND) zu Pin 33 (AGND) auf der Rückseite des Moduls senkte den Kamm um 7 dB, fs/8 um 18 dB und den breitbandigen Boden um 3 dB und die LED-Verschiebung der Eingänge auf ein Viertel. Verstärkung und USB bleiben gleich. Siehe den Abschnitt unten und [docs/06-hardware-mod-masse.md](docs/06-hardware-mod-masse.md).
 - **Der Einbau ins Case** änderte in den ADC-Daten nichts Messbares.
 - **Das Rauschen driftet innerhalb einer Sitzung.** Der Kamm stieg in einer Sitzung um 2,4 dB in 26 Minuten, in einer anderen um 2 dB, auch über einen Kaltstart hinweg. Vergleiche zwischen Builds brauchen deshalb eine Kontrolle am Anfang und am Ende.
 - **Das Modul fiept hörbar**, leise, bei etwa 800 bis 1000 Hz, auch im DFU-Modus ohne laufende Firmware. Ohne USB wird es leiser und höher. Die Quelle (ein Regler auf dem Modul oder im Netzteil des Cases) ist offen.
@@ -64,6 +65,23 @@ Rauschen der Alltags-Firmware `v22.4.r-fx8a` gegen die Original-Firmware des Tes
 ![Langzeit-Spektrum von fx3l (schwarz) gegen fx2d (grau), vier Kanäle](docs/img/psd_fx3l_vs_3d.png)
 
 Der Kamm ist damit die stärkste verbleibende Familie. Die Alltags-Firmware auf dem Testmodul ist seit 2026-11-23 `v22.4.r-fx9a`: `fx3l` plus ein Boot-Menü, das den Patch-Slot mit den Reglern wählt (`fx4b`), ein Fix für den MIDI-Sendeweg (`fx5a`), ein LED-Modus normal / nur Clip / aus, im Boot-Menü gewählt (`fx6a`), die LED-PWM mit 48 kHz im Takt der Abtastung (`fx7a`) der eingeschaltete Befehls-Cache (`fx8a`, D83 bis D85) und der Daten-Cache mit den DMA-Puffern in einer MPU-Region ohne Cache (`fx9a`, D87 bis D89). Mit `fx7a` ist die LED-PWM-Linie bei 2321 Hz an Ein- und Ausgängen weg, das Rauschen ist innerhalb von 0,15 dB gleich dem von `fx6a` (D78, D79). Mit `fx4b` kamen 19 von 79 Slot-Downloads neben einem laufenden Patch beschädigt an, danach hing MIDI bis zum Neustart. Mit `fx5a` waren 240 von 240 in Ordnung (D62, D63). Das Rauschen von `fx4b` ist innerhalb von ±0,4 dB gleich dem von `fx3l` (Kontrolle in derselben Sitzung), `fx5a` zeigt keine Änderung über die Streuung der Sitzung hinaus (D64). Einzelheiten und alle Zahlen: [docs/messlog.md](docs/messlog.md), Einträge D45 bis D49 und D50 bis D89.
+
+### Hardware-Mod: Masse-Draht auf dem Modul
+
+Das Testmodul trägt seit 2026-11-24 einen Hardware-Mod: einen isolierten Draht von Pin 15 (GND) zu Pin 33 (AGND) auf der Rückseite des Prozessor-Moduls Xibeca, parallel zur Ferritperle L1, die auf dem Modul die beiden Massen verbindet. Gemessen am selben Tag mit `fx9a` vor und nach dem Löten (D90): offene Eingänge, Gain auf 12 Uhr, je 2 × 60 s, dBFS des USB-Stroms, Mittel der vier Kanäle. Alle Zahlen der Tabelle oben sind ohne Draht gemessen.
+
+| Größe | ohne Draht | mit Draht | Differenz |
+|---|---|---|---|
+| RMS ≥ 20 Hz | −78,7 | −84,4 | −5,7 dB |
+| Breitbandrauschen ohne Linien | −84,1 | −87,0 | −2,9 dB |
+| 1-kHz-Kamm (Summe) | −80,9 | −88,0 | −7,2 dB |
+| fs/8-Linie bei 6000 Hz | −88,9 | −107,1 | −18,3 dB |
+| Mischprodukte | −122,4 | nicht gefunden | weg |
+| LED-Verschiebung der Eingänge (4 LEDs an) | 100 % | 20 bis 25 % | −12 bis −14 dB |
+
+![Langzeit-Spektrum ohne (grau) und mit Masse-Draht (schwarz), Mittel der vier Kanäle](docs/img/psd_gnd_mod.png)
+
+Der breitbandige Boden sinkt um etwa 4 dB im Bass und 2 dB in den Höhen. Ein Loop-Test (Ausgang → Eingang) zeigt dieselbe Verstärkung auf 0,02 dB und keine verlorenen Samples. Die Linien bei 7384,6, 1215,2 und 4401,9 Hz bleiben, die Scan-Linie des Regler-ADC bei 9633,8 Hz steigt um 3,7 dB, liegt aber bei etwa −126 dBFS. Der Kamm trägt jetzt 30 bis 50 % der Rauschleistung. Noch nicht gemessen: die Ausgänge und ein erneutes Entfernen des Drahts, das den Wiedereinbau als Ursache ausschließt. Hintergrund, Pin-Tabelle und Schritt-für-Schritt-Anleitung: [docs/06-hardware-mod-masse.md](docs/06-hardware-mod-masse.md). Löten am Modul auf eigenes Risiko.
 
 ## Firmware
 
@@ -100,7 +118,7 @@ Die Aufrufe für Aufnahme, Loop-Prüfung, Auslesen und Nachbau stehen im englisc
 | Pfad | Inhalt |
 |---|---|
 | `tools/`, `analysis/` | Die Werkbank |
-| `docs/` | Referenz-Docs `01` bis `05`, das Laborbuch `messlog.md`, Recherche-Notizen in `docs/research/` |
+| `docs/` | Referenz-Docs `01` bis `06` (`06` ist der Masse-Mod), das Laborbuch `messlog.md`, Recherche-Notizen in `docs/research/` |
 | `docs/en/` | Englische Fassungen der Referenz-Docs, siehe [docs/en/README.md](docs/en/README.md) |
 | `firmware/OpenWare/` | Submodul, der Firmware-Fork |
 | `firmware/patches/`, `firmware/builds/`, `firmware/flashlog/` | Patches, Build-Protokolle, Flash-Protokolle |

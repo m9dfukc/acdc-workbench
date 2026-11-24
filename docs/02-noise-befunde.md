@@ -132,3 +132,11 @@ Alle Werte an acdc1, rohe Eingänge (`TX_PRE_FX`), offen, Alltags-Kette, Datei-d
 
 - **Folge:** Der SOF-Kamm ist jetzt mit Abstand die stärkste Störfamilie und liegt ≈ 4 dB über dem breitbandigen Rest. Die Firmware hat ihn nicht gesenkt. Eine ideale Notch-Bank brächte bei fx3l ≈ 5,8 dB (RMS −72,7 gegen Rest −78,5 dBFS). Weil der Rechner die rohen Eingänge aufnimmt, müsste sie im Rechner laufen. Ob sich das lohnt, ist offen (optional, siehe `04-software-filter.md`).
 - **Offen:** Hörprobe mit Kompressor, zweite Rauschsitzung mit 3d-Startkontrolle (D48 hatte keine), Linien bei k·fs/48 (2000/3000 Hz), die fx3j, noD und fx3k zeigten (D42, D44) und für fx3l nicht ausgewertet sind. Alles in `TODO.md`.
+
+## Stand 2026-11-24: Masse-Brücke auf dem Modul (messlog D90)
+
+- **Draht Pin 15 (GND) ↔ Pin 33 (AGND) auf der Rückseite des Xibeca-Moduls [gemessen, D90]:** acdc1, fx9a, offene Eingänge, je 2 × 60 s am selben Tag. RMS −5,7 dB, Rest −2,9 dB, Kamm −7,2 dB, fs/8 −18,3 dB, Mischprodukte unter der Erkennung, LED-Verschiebung der Eingänge auf 20–25 %. Verstärkung unverändert (Loop-Test +0,02 dB). Anleitung und Hintergrund: `06-hardware-mod-masse.md`.
+- **Mechanismus [Hypothese]:** Rückstrom des Moduls floss über L1 und die AGND-Fläche zum Träger. Die Spannung darüber lag zwischen dem Bezug des Codecs (AGND) und dem der Eingangsstufe (Träger-GND). Alle Familien, die aus Strompulsen des Moduls stammen, sinken gemeinsam. Das stützt die Hypothesen aus D42 (Strompuls im Blocktakt) und D74 (LED-Strom verschiebt den Nullpunkt): Der Kopplungsweg ist zum großen Teil die Masse zwischen Modul und Träger.
+- **Nicht bewegt:** 7384,62 und 1215,19 Hz, die Regler-Linie 4401,90 Hz. Die Scan-Linie des Regler-ADC (9633,80 Hz) steigt um 3,7 dB, bleibt aber bei −120 Datei-dBFS.
+- **Folge:** Der Kamm trägt jetzt 30–50 % der Rauschleistung, fs/8 unter 1,5 %. Eine ideale Notch-Bank brächte nur noch 1,6–3,0 dB. Die Sperre `owl/AcdcInput.h` bleibt ohne Änderung brauchbar, ihr Nutzen ist kleiner.
+- **Offen:** A-B-A, Ausgänge, Hörprobe, ob weitere Massepins (16 ↔ 47/48) oder ein direkter Kurzschluss von L1 noch mehr bringen.

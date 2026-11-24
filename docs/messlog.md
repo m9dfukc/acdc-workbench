@@ -3171,3 +3171,63 @@ Einzelne Linien (`line_levels.py`, `out/B11-lines-table.md`): 2000 und 3000 Hz u
 - [Hypothese] Mit D-Cache gehen weniger Zugriffe über die Busmatrix zu AXI und D2, der Strom im Blocktakt sinkt. Das passt zu D42 (Busverkehr im Blocktakt hebt fs/8), D85 (I-Cache machte den Puls kürzer und höher) bleibt als Erklärung für fx8a offen.
 
 **Fazit:** Alle Kriterien aus `docs/05`, „Build 11“, Punkt 1 sind erfüllt: Plateau 29 % statt 35 % (unter 30 %), fs/8 −0,7 dB (Grenze +1 dB), keine neue Linie, Loop 10 min, zwei Wechselrunden, 240/240 Downloads, vier Stores mit Rückladen, vier Löschungen. Die Leseschleife war als Kriterium falsch gewählt (siehe oben). Statt des Store-Tests auf Slot 13 lief die neue Belegung (Stores mit `--download-check`). **Die Abnahme ist vollständig. fx9a ist die Alltags-Firmware (Entscheidung des Nutzers, 2026-11-23), Rückweg fx8a.** Zustand danach: fx9a, Slot 1 läuft, gemerkt Slot 12 (leer), keine Kabel.
+
+## D90 – Masse-Brücke auf dem Xibeca-Modul: Draht Pin 15 (GND) ↔ Pin 33 (AGND) (2026-11-23 und 2026-11-24)
+
+**Anlass:** Antwort im Forum (modwiggler) auf den eigenen Beitrag: Die Ferritperle zwischen AGND und GND auf dem Prozessor-Modul überbrücken, die Spannung über ihr koppele in die Messung. Der Beitrag stützte sich auf den Plan von Noctua2. Schaltplan-Befund dazu in `docs/06-hardware-mod-masse.md` und `docs/01`, „Masse“: Im AC/DC steckt das Modul Xibeca (gleiche Pinbelegung, gleiche drei Ferrite L1–L3 wie Noctua2). L1 (0603) verbindet AGND und GND auf dem Modul. Die Trägerplatine von Befaco verbindet alle AGND-Pins des Moduls direkt mit GND [Code: Schaltplan]. L1 liegt also schon parallel zu einem Weg über die Steckerleiste. Erwartet war deshalb ein kleiner Effekt [Hypothese], das hat sich nicht bestätigt.
+
+**Eingriff (2026-11-24, etwa 10:50–11:05, Nutzer):** acdc1 ausgebaut, isolierter Draht von Pin 15 zu Pin 33 auf der Rückseite des Moduls (Lötseite der Stiftleiste, Nummern laut Aufdruck), mit Kapton fixiert. Vorher Durchgang beider Pins zur Hülse einer Klinkenbuchse geprüft. Widerstand stromlos, schwarz (COM) auf Pin 15: Pin 1 (+3V3) 2,293 → 2,281 kΩ, Pin 95 (+5V) 9,04 → 8,9 kΩ, also kein Kurzschluss. Werte vom 2026-11-23 (2,26 und 8,5 kΩ) ohne Beachtung der Polung, nicht verwendet.
+
+**Setup:** acdc1 im Case, fx9a, Slot 1, Regler 63/64/71/50 von 127 (vor und nach dem Umbau gleich), keine Kabel, Alltags-Kette, Eingänge offen, je 2 × 60 s `acdc_rec.py --reps 2 --owl-read`. Vorher-Kontrolle am Vortag `D90-vor-r1/r2` (2026-11-23, 22:41, Regler 66/56/73/56). Am Messtag `D90b-vor-r1/r2` (10:34), Umbau, `D90b-nach-r1/r2` (11:09). Alle Läufe ohne Stream-Meldungen. Kamm-f0 999,864 Hz in allen Läufen (gleicher Anschluss).
+
+**Familien (`family_table.py`, `out/D90-session-table.md`, Datei-dBFS, Mittel über 4 Kanäle, Δ gegen D90b-vor):**
+
+| Messung | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
+|---|---|---|---|---|---|
+| `D90-vor-r1` (Vortag) | −72,54 | −78,23 | −74,55 | −82,70 | −115,30 |
+| `D90-vor-r2` (Vortag) | −72,52 | −78,36 | −74,48 | −82,60 | −113,14 |
+| `D90b-vor-r1` | −72,83 (−0,14) | −78,09 (±0) | −75,06 (−0,23) | −82,87 (−0,02) | −116,67 |
+| `D90b-vor-r2` | −72,56 (+0,13) | −78,09 (±0) | −74,62 (+0,21) | −82,83 (+0,02) | −116,17 |
+| `D90b-nach-r1` | −78,37 (**−5,68**) | −80,79 (**−2,70**) | −82,15 (**−7,32**) | −101,01 (**−18,16**) | nicht erkannt |
+| `D90b-nach-r2` | −78,42 (**−5,73**) | −81,12 (**−3,03**) | −81,85 (**−7,02**) | −101,23 (**−18,38**) | nicht erkannt |
+
+Breitbandiger Boden (Median der PSD-Differenz, ohne Linien): 20–200 Hz −4,0 dB, 200–2000 Hz −3,3 dB, 2–8 kHz −2,4 dB, 8–20 kHz −1,9 dB. Plot `docs/img/psd_gnd_mod.png`.
+
+**Einzelne Linien (`line_levels.py`, Tabelle `out/D90b-lines-table.md`, Datei-dBFS, Leistungsmittel über vier Kanäle und zwei Läufe):**
+
+| Linie | vorher | nachher | Δ |
+|---|---|---|---|
+| Kamm k = 1 (999,864 Hz) | −79,8 | −86,9 | −7,1 dB |
+| Kamm k = 2 / k = 5 | −87,0 / −94,9 | −91,9 / −100,3 | −4,9 / −5,3 dB |
+| fs/8 6000 / 12 000 / 18 000 Hz | −90,2 / −89,8 / −92,4 | −108,8 / −107,8 / −110,7 | −18,6 / −18,0 / −18,3 dB |
+| 2000,0002 / 3000,0003 Hz | −106,1 / −107,0 | −118,1 / −120,4 | −12,0 / −13,4 dB |
+| 50 Hz | −113,8 | −122,8 | −9,0 dB |
+| 7384,62 Hz (96 000/13) / 1215,19 Hz (≈ 96 000/79) | −111,9 / −110,1 | −111,3 / −111,6 | +0,6 / −1,5 dB |
+| 4401,90 Hz (Regler) | −120,4 | −119,8 | +0,6 dB |
+| 9633,80 Hz (Scan des Regler-ADC) | −124,1 | −120,3 | **+3,7 dB** (Kanal 1 und 3 +9…+11 dB) |
+| 19 267,6 Hz (zweite Faltung des Scans) | −117,5 | −123,4 | −5,8 dB |
+
+**DC der offenen Eingänge (Datei, Kanal 1–4):** vorher −0,057/−0,065/−0,047/−0,057, nachher −0,043/−0,047/−0,032/−0,038. In Geräte-Vollausschlag rückt der Offset um +0,007…+0,009 näher an null, bei ≈ 9,5 V Vollausschlag (D29) etwa 65–90 mV. Im Loop-Test ebenso (−0,036/−0,038/−0,028/−0,034 → −0,023/−0,024/−0,015/−0,020).
+
+**LED-Verschiebung (`SchliereLedPath` per `--run`, In 1–3, 1e-7 Vollausschlag):**
+
+| | LEDstat (4 LEDs dauerhaft) | LEDblink (3 LEDs, 40 Hz) |
+|---|---|---|
+| 2026-11-23, 22:45–22:48 (Vortag) | −16 330 / −15 380 / −15 350 (4 Werte) | −11 360 / −10 700 / −10 950 |
+| D90b-vor, 10:44–10:47 | −16 585 / −15 681 / −15 769 (4 Werte, Streuung ≈ 1 %) | −11 630 / −11 069 / −11 366 |
+| D90b-nach, 11:14–11:16 | **−4 225 / −3 139 / −3 989** (3 Werte, Streuung ≈ 2 %) | −2 759 / −2 048 / −2 840 |
+| Verhältnis nach/vor | **0,25 / 0,20 / 0,25** (−12…−14 dB) | 0,24 / 0,19 / 0,25 |
+
+Je LED heißt das ≈ −1,0e-4 statt ≈ −4,0e-4 Vollausschlag (D74 maß −2,9e-4 vor dem Einbau ins Case). Der Lauf nachher wurde vom Nutzer nach drei LEDstat-Werten abgebrochen, der Mess-Patch lief danach noch etwa 2 min weiter (mit gesteckten Loop-Kabeln, D75), um 11:17:56 von Hand auf Slot 1.
+
+**Verstärkung und Loop (`D90b-nach-loop`, 60 s, Sinus 440/530/670/790 Hz, −6 dBFS):** Pegel je Kanal −9,084/−9,034/−9,050/−9,056 dB gegen −9,106/−9,057/−9,069/−9,078 in `B11-fx9a-loop-cold` (2026-11-23), also +0,02 dB: Die Verstärkung der Kette Ausgang → Eingang ist unverändert, der Rückgang im Rauschen ist kein Pegelfehler. `phase_slips.py` 0 Ereignisse, `stale_samples.py` 0 von 96 000, 0 Stream-Meldungen.
+
+**Deutung:**
+- **[gemessen] Der Draht Pin 15 ↔ Pin 33 senkt das Rauschen der rohen Eingänge deutlich:** RMS −5,7 dB, Rest −2,9 dB, Kamm −7,2 dB, fs/8 −18,3 dB, Mischprodukte unter der Erkennung, LED-Verschiebung auf ein Viertel. Die zwei Läufe je Seite liegen auf 0,3 dB beieinander, vorher stimmt mit dem Vortag auf 0,5 dB überein. Das ist weit mehr als die Drift zwischen Sitzungen.
+- **Der Kamm ist damit noch stärker die führende Familie:** Er trägt 30–50 % der Rauschleistung, fs/8 nur noch 0,5–1,3 %. Die ideale Notch-Bank brächte nur noch 1,6–3,0 dB (vorher 6–8 dB).
+- [Hypothese] Ein Teil des Rückstroms des Moduls (MCU, SDRAM, LEDs, USB) floss über L1, die AGND-Fläche und die AGND-Pins zum Träger. Die Spannung über L1 und den AGND-Weg stand zwischen dem Bezug des Codecs (AGND) und dem der Eingangsstufe (Träger-GND) und landete in jeder Aufnahme. Der Draht schließt diesen Weg direkt an der Steckerleiste kurz. Dazu passt, dass alle Familien sinken, die aus Strompulsen des Moduls stammen (fs/8, Kamm, 2000/3000 Hz, LED-Strom), und der DC-Offset sich um 65–90 mV verschiebt. Ein DC-Abfall von dieser Größe braucht allerdings mehr Strom oder Widerstand, als L1 und die Steckerleiste allein erklären. Woher der DC-Anteil kommt, ist offen.
+- **Nicht gesunken:** 7384,62 und 1215,19 Hz (+0,6 und −1,5 dB), 4401,90 Hz (Regler). **Gestiegen:** 9633,80 Hz (Scan des Regler-ADC) um 3,7 dB im Mittel, liegt aber bei −121 dBFS und damit 35 dB unter dem Kamm. [Hypothese] Diese Linien koppeln über einen anderen Weg (Regler-ADC und seine Referenz am Modul), den der Draht nicht oder umgekehrt berührt.
+- **Nicht geprüft:** Ausgänge (am UMC), Ein- und Ausbau als Ursache (A-B-A: Draht ab, erneut messen), Hörprobe. Wegen der Größe des Effekts und der Linien, die sich nicht bewegen, ist ein Effekt des Wiedereinbaus unwahrscheinlich [Hypothese].
+- **`owl/AcdcInput.h` (Sperre für fs/8 am Eingang) muss nicht angepasst werden:** Der Canceller lernt die Linien in der Stille selbst, die Schwellen (Lernen unter 20 mV Änderung, Korrektur höchstens 10 mV) hängen nicht vom Pegel der Linien ab. fs/8 liegt jetzt bei ≈ 20 µV, weit unter der Grenze der Korrektur. Der Nutzen sinkt mit dem Mod, schaden kann die Sperre nicht.
+
+**Fazit:** Die Masse-Brücke ist die bisher wirksamste Einzelmaßnahme gegen das Rauschen der Eingänge, stärker als alle Firmware-Schritte zusammen (fx2d → fx9a: fs/8 ≈ −5 dB). acdc1 behält den Draht. acdc2 bleibt unverändert (Referenz). Anleitung: `docs/06-hardware-mod-masse.md`. Offen: A-B-A, Ausgänge, Hörprobe, Rückmeldung ins Forum.

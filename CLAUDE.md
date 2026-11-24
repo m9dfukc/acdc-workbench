@@ -15,6 +15,7 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 | acdc1 | `0039001c:31315101:39333437` | **Seit 2026-11-23, etwa 16:25 geflasht: v22.4.r-fx9a** (Build 11, `fd77ec3a…` = fx8a + Patch 20, D-Cache an, Abnahme vollständig, D88, D89, **Alltags-Firmware seit 2026-11-23**, Rückweg fx8a). Davor **v22.4.r-fx8a** (Build 10, `e1b1097b…` = fx7a + Patch 19, I-Cache an, Abnahme vollständig, D84, D85, **Alltags-Firmware seit 2026-11-23**, Rückweg fx7a). Davor **v22.4.r-fx7a** (Build 9, `cac6fee0…` = fx6a + Patch 18, LED-PWM 48 kHz, Abnahme vollständig, D78, D79, Alltags-Firmware 2026-11-19 bis 23). Davor und Rückweg: **v22.4.r-fx6a** (Build 8, `6a3fc427…` = fx5a + Patch 17, LED-Modus, **Abnahme vollständig, Entscheidung offen**, D75–D77). Davor und Rückweg: **v22.4.r-fx5a** (eigener Build 7, `b69c25b3…` = fx4b + Patch 16, Alltags-Firmware seit 2026-11-18, D63–D65). Erster Rückweg fx4b `v22.4.r-fx4b` (Build 6b, `a21f35c9…`, Alltags-Firmware 2026-11-17 bis 18, D55–D59). Danach fx3l `v22.4.r-fx3l` (Build 5c, `b55b94d8…`), danach Build 3d `v22.4.r-fx2d` (`d212cf8d…`) | ACDC, 9,93 KB. Slots 2–8 (seit 2026-11-23, D89): TapeDelay, Grainz, RingsReverb, Plateau, Tanh3, SchliereS, SchliereL. Slots 9–12 leer, gemerkt ist noch Slot 12 (leer, also startet Slot 1) | owl_read 2026-11-23 |
 | acdc2 (DIY) | `00250049:31315102:39333437` | v22.4.q (`e81cfc3`, Hack-Branch, nie veröffentlicht) | ACDC, 9,32 KB | Device-Status 2026-11-13 |
 
+- **acdc1 trägt seit 2026-11-24 einen Hardware-Mod:** Draht Pin 15 ↔ Pin 33 auf dem Modul (D90, `docs/06`). acdc2 ist unverändert.
 - **acdc2** = die **DIY-Variante** (M1–M3 wurden damit aufgenommen). „Gerät 1“ in älteren Docs = acdc1, „Gerät 2“ = acdc2.
 - acdc1 trug ab Werk einen Hack-Branch-Build mit dem Etikett „v22.5.0“, nicht das offizielle Release (D3/D3a). Das Abbild davon liegt in `backup/acdc1/20261114/flash/acdc1_internal_flash.bin` (`433b3fd3…`) und ist der letzte Rückweg.
 - Die offizielle GitHub-`ACDC.bin` v22.5.0 ist **kein** Rückweg: Laut antisvin (Thread 2083 #4) macht sie USB kaputt.
@@ -30,8 +31,9 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 - **Einbau:** Bis 2026-11-18 lag acdc1 bei allen Messungen und beim Hören neben dem Case. Seit dem 2026-11-18 (abends) ist es ins Case geschraubt (Nutzer, D66 Nachtrag). Bei neuen Messungen den Einbau notieren.
 - Forum-Handle: `m9dfukc` (community.rebeltech.org), eigener Thread: #2244.
 
-## Aktueller Stand (2026-11-23)
+## Aktueller Stand (2026-11-24)
 
+- **Hardware-Mod auf acdc1 seit 2026-11-24 (D90):** isolierter Draht Pin 15 (GND) ↔ Pin 33 (AGND) auf der Rückseite des Xibeca-Moduls, parallel zur Ferritperle L1. Offene Eingänge gegen vorher am selben Tag: RMS −5,7 dB, Rest −2,9 dB, Kamm −7,2 dB, fs/8 −18,3 dB, Mischprodukte unter der Erkennung, LED-Verschiebung der Eingänge auf 20–25 %. Verstärkung und Loop unverändert. Stromlose Referenz, schwarz (COM) auf Pin 15: Pin 1 2,281 kΩ, Pin 95 8,9 kΩ (vor dem Löten 2,293 / 9,04 kΩ). Anleitung und Hintergrund: `docs/06-hardware-mod-masse.md`. **Rauschwerte vor dem 2026-11-24 gelten ohne Draht und sind mit neuen nicht direkt vergleichbar.** acdc2 ist unverändert. Offen: A-B-A, Ausgänge, Hörprobe.
 - **Auf acdc1 läuft seit 2026-11-23, etwa 16:25 Build 11 `v22.4.r-fx9a` (fx8a + Patch 20, D-Cache an, `fd77ec3a…`), D88:** Flash mit Readback, `:leave`, A1, Kaltstart mit A1 und Loop-Test 60 s (0 Slips, 0 veraltete Samples) bestanden. **Abnahme vollständig (D89):** Loop 10 min, Cache-Bits 3, Plateau 29 % statt 35 %, Patch-Wechsel, Downloads 240/240, Rauschen gegen fx8a fs/8 −0,7 dB, keine neue Linie. **fx9a ist die Alltags-Firmware (Entscheidung des Nutzers, 2026-11-23), Rückweg fx8a.** Fork-Commits und Release `acdc-v22.4.r-fx9a` erledigt (2026-11-23).
 - **Davor lief am 2026-11-23 Build 10 `v22.4.r-fx8a` (fx7a + Patch 19, I-Cache an), Abnahme vollständig (D84, D85). fx8a war am 2026-11-23 bis zur Abnahme von fx9a die Alltags-Firmware, heute Rückweg von fx9a (dahinter fx7a).** Anlass D83: Der Release-Build setzt `NDEBUG` nie, deshalb waren I- und D-Cache aus. Bestanden: Flash mit Readback, `:leave`, A1, Cache-Bits 2, Patch-Wechsel durch alle Slots und RAM-Patches, Downloads 240/240. Plateau (plusram) 35 % statt 51 %, Slots mit patchram (DTCM) unverändert. Rauschen gegen fx7a (D85): fs/8 +0,6 dB, Mischprodukte +1…+3 dB, sonst gleich, keine neue Linie. Loop-Test bestanden. Der D-Cache bleibt in fx8a aus. **Build 11 `v22.4.r-fx9a` (fx8a + Patch 20, D-Cache an, `fd77ec3a…`) ist gebaut und am Rechner geprüft, nicht geflasht** (Plan `docs/05`, „Build 11“, D87).
 
@@ -78,10 +80,11 @@ Ich habe **zwei AC/DC-Module**. **acdc1 = Testgerät**, **acdc2 = Referenz** (ni
 | `docs/03-messplan-python.md` | Messprotokoll + Spezifikation der Python-Analyse (uv) |
 | `docs/04-software-filter.md` | Notch-Bank: Filterform, Python-Prototyp, Plugin, FAUST-Patch |
 | `docs/05-firmware-plan.md` | OpenWare-Stand, Forks, Build-Plan und Ergebnis jedes Builds (chronologisch), Fork, Flashen |
+| `docs/06-hardware-mod-masse.md` | Hardware-Mod Masse-Brücke Pin 15 ↔ Pin 33: Wirkung (D90), Hintergrund aus den Schaltplänen, Schritt-für-Schritt-Anleitung mit Messung vorher und nachher |
 | `docs/messlog.md` | **Alle eigenen Messungen** (M1 … D77): Setup, Dateien, Linien-Tabelle, Deutung, Einschränkungen |
 | `docs/uebergaben/` | Falls es Übergaben zwischen Sitzungen gibt, liegen sie hier. **Nur lokal, nicht im Repo** (Nutzer-Entscheidung 2026-11-18): Arbeitszettel, die schnell überholt sind. Die Datei mit dem jüngsten Datum ist die aktuelle. Nie löschen, nicht committen. `CLAUDE.md` und die anderen Docs verweisen nicht auf einzelne Übergaben, Dauerhaftes gehört nach `TODO.md`, `CLAUDE.md` oder in den Messlog |
 | `docs/99-quellen.md` | Alle Links |
-| `docs/en/` | Englische Fassungen von `01`–`05` und `99`, aus dem Deutschen erzeugt. Nie von Hand ändern. Übersicht, Marker-Legende und Glossar in `docs/en/README.md` |
+| `docs/en/` | Englische Fassungen von `01`–`06` und `99`, aus dem Deutschen erzeugt. Nie von Hand ändern. Übersicht, Marker-Legende und Glossar in `docs/en/README.md` |
 | `analysis/` | Analyse-Tool: `uv run python -m analysis <ID\|wav…> [--ref …]`, Selbsttest `python -m analysis.selftest`. Module und Grenzen: `docs/03-messplan-python.md` |
 | `recordings/manifest.toml` | Metadaten jeder Messung (ID, Gerät, Gain, USB, Patch, Dateien, Notiz). **Neue Aufnahmen hier eintragen** |
 | `recordings/*.wav` | Rohaufnahmen nach Namenskonvention (M1–M3 in `_legacy/`: 96 kHz / 16 Bit, mono pro Kanal) |
@@ -156,6 +159,7 @@ Bei Detailfragen zuerst `docs/research/notes/` durchsuchen, bevor neu recherchie
 
 ## Befunde zum Rauschen (Kurzform, Details in `docs/02` und `docs/messlog.md`)
 
+- **Masse zwischen Modul und Träger ist ein Hauptweg der Störungen [gemessen, D90]:** Auf dem Xibeca-Modul verbindet nur die Ferritperle L1 AGND (Codec) und GND, der Träger legt alle AGND-Pins direkt auf seine Masse [Code: Schaltplan]. Der Draht Pin 15 ↔ Pin 33 senkt fs/8 um 18 dB, den Kamm um 7 dB, den Rest um 3 dB und die LED-Verschiebung auf ein Viertel. Nicht bewegt: 7384,62 / 1215,19 / 4401,90 Hz. Die Scan-Linie 9633,80 Hz steigt um 3,7 dB (−120 Datei-dBFS). Der Kamm trägt danach 30–50 % der Rauschleistung, eine ideale Notch-Bank brächte nur noch 1,6–3 dB
 - **Vier Störfamilien** in den ADC-Daten, auf allen Kanälen stark korreliert:
   - **SOF-Kamm** bei k·≈1 kHz
   - **fs/8** = 6000,00 Hz (Audio-Blockrate bei Blockgröße 8, sample-synchron)
