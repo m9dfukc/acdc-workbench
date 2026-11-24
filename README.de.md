@@ -28,6 +28,7 @@ English version: [README.md](README.md)
 | `tools/phase_slips.py`, `tools/stale_samples.py` | Prüfen eine Loop-Aufnahme (Out → In) auf verlorene oder doppelte Samples und auf einzelne veraltete Samples |
 | `tools/line_levels.py` | Pegel einzelner Linien je Kanal, direkt bei der Linienfrequenz gemessen, über mehrere Aufnahmen, mit Abstand zum Grundrauschen |
 | `tools/crosstalk_lines.py`, `tools/click_sensitivity.py` | Übersprechen von Testtönen der Ausgänge auf die Eingänge; Empfindlichkeit des Klick-Detektors für eingebaute USB-Fehler |
+| `tools/ledpath_phases.py` | Pegel je Phase einer Aufnahme mit dem Mess-Patch für den LED-Pfad, an einem zweiten Interface aufgenommen und über einen eingebauten Eichton auf den Ausgang des Moduls umgerechnet |
 | `tools/knob_series.py` | Geführte Aufnahmeserie mit den Reglern in vorgegebenen Stellungen: liest die Regler per MIDI, wartet auf die Stellung, nimmt auf und schreibt am Ende eine Tabelle der Linienpegel |
 
 ## Befunde bisher
@@ -81,7 +82,7 @@ Das Testmodul trägt seit 2026-11-24 einen Hardware-Mod: einen isolierten Draht 
 
 ![Langzeit-Spektrum ohne (grau) und mit Masse-Draht (schwarz), Mittel der vier Kanäle](docs/img/psd_gnd_mod.png)
 
-Der breitbandige Boden sinkt um etwa 4 dB im Bass und 2 dB in den Höhen. Ein Loop-Test (Ausgang → Eingang) zeigt dieselbe Verstärkung auf 0,02 dB und keine verlorenen Samples. Die Linien bei 7384,6, 1215,2 und 4401,9 Hz bleiben, die Scan-Linie des Regler-ADC bei 9633,8 Hz steigt um 3,7 dB, liegt aber bei etwa −126 dBFS. Der Kamm trägt jetzt 30 bis 50 % der Rauschleistung. Noch nicht gemessen: die Ausgänge und ein erneutes Entfernen des Drahts, das den Wiedereinbau als Ursache ausschließt. Hintergrund, Pin-Tabelle und Schritt-für-Schritt-Anleitung: [docs/06-hardware-mod-masse.md](docs/06-hardware-mod-masse.md). Löten am Modul auf eigenes Risiko.
+Der breitbandige Boden sinkt um etwa 4 dB im Bass und 2 dB in den Höhen. Ein Loop-Test (Ausgang → Eingang) zeigt dieselbe Verstärkung auf 0,02 dB und keine verlorenen Samples. Die Linien bei 7384,6, 1215,2 und 4401,9 Hz bleiben, die Scan-Linie des Regler-ADC bei 9633,8 Hz steigt um 3,7 dB, liegt aber bei etwa −126 dBFS. Der Kamm trägt jetzt 30 bis 50 % der Rauschleistung. Am Ausgang, über das zweite Interface gegen eine ältere Messung ohne Draht (D91), sinken der Kamm um 11 dB, fs/8 um 12 dB und die LED-Verschiebung um 12,6 dB. Nicht gemessen: ein erneutes Entfernen des Drahts, das den Wiedereinbau als Ursache ausschließt. Hintergrund, Pin-Tabelle und Schritt-für-Schritt-Anleitung: [docs/06-hardware-mod-masse.md](docs/06-hardware-mod-masse.md). Löten am Modul auf eigenes Risiko.
 
 ## Firmware
 

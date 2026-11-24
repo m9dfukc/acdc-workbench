@@ -17,7 +17,7 @@ acdc1 mit fx9a, Eingänge offen, Gain 12 Uhr, je 2 × 60 s am selben Tag vor und
 | Mischprodukte | −122,4 | nicht erkannt | weg |
 | Verschiebung der Eingänge durch die LEDs | 100 % | 20–25 % | −12…−14 dB |
 
-Dazu: breitbandiger Boden −4 dB im Bass, −2 dB in den Höhen. Verstärkung, Takt und USB unverändert (Loop-Test ohne Slips, Pegel auf 0,02 dB gleich).
+Dazu: breitbandiger Boden −4 dB im Bass, −2 dB in den Höhen. Verstärkung, Takt und USB unverändert (Loop-Test ohne Slips, Pegel auf 0,02 dB gleich). Am Ausgang (D91, über einen UMC gemessen) sinken Kamm, fs/8 und LED-Verschiebung um 9–19 dB.
 
 ![Langzeitspektrum ohne (grau) und mit Draht (schwarz)](img/psd_gnd_mod.png)
 
@@ -101,7 +101,7 @@ Pegel der vier Töne mit einem früheren Loop-Test vergleichen, Slips mit `tools
 ## Grenzen und offene Punkte
 
 - Ein Modul, ein Rechner. Ob andere Revisionen des Moduls oder der Trägerplatine gleich reagieren, ist offen.
-- Nicht gemessen: die Ausgänge, eine Messung nach erneutem Entfernen des Drahts (A-B-A), eine Hörprobe.
+- Am Ausgang gemessen (D91, gegen D74 ohne Draht): Kamm −11 dB, fs/8 −12 dB, LED-Blinken −12,6 dB, bei digital stummem Ausgang LED-Anteil −9 dB. Nicht gemessen: eine Messung nach erneutem Entfernen des Drahts (A-B-A), eine Hörprobe.
 - Nicht gesunken sind die Linien bei 7384,62 und 1215,19 Hz und die Regler-Linie bei 4401,90 Hz. Die Scan-Linie des Regler-ADC bei 9633,80 Hz ist um 3,7 dB gestiegen (−126 dBFS, weit unter dem Kamm). Der DC-Offset der Eingänge rückt um 65–90 mV näher an null.
 - Der Kamm bleibt die stärkste Störfamilie.
 - **Nicht** L2 oder L3 überbrücken: Sie filtern die Versorgung des Codecs und der Analog-Referenz der MCU.

@@ -3231,3 +3231,42 @@ Je LED heißt das ≈ −1,0e-4 statt ≈ −4,0e-4 Vollausschlag (D74 maß −2
 - **`owl/AcdcInput.h` (Sperre für fs/8 am Eingang) muss nicht angepasst werden:** Der Canceller lernt die Linien in der Stille selbst, die Schwellen (Lernen unter 20 mV Änderung, Korrektur höchstens 10 mV) hängen nicht vom Pegel der Linien ab. fs/8 liegt jetzt bei ≈ 20 µV, weit unter der Grenze der Korrektur. Der Nutzen sinkt mit dem Mod, schaden kann die Sperre nicht.
 
 **Fazit:** Die Masse-Brücke ist die bisher wirksamste Einzelmaßnahme gegen das Rauschen der Eingänge, stärker als alle Firmware-Schritte zusammen (fx2d → fx9a: fs/8 ≈ −5 dB). acdc1 behält den Draht. acdc2 bleibt unverändert (Referenz). Anleitung: `docs/06-hardware-mod-masse.md`. Offen: A-B-A, Ausgänge, Hörprobe, Rückmeldung ins Forum.
+
+## D91 – Masse-Draht: Ausgang am UMC (2026-11-24, 11:38–11:45)
+
+**Anlass:** D90 hat nur die rohen Eingänge gemessen. Wirkt der Draht Pin 15 ↔ Pin 33 auch am Ausgang? Kein Rückbau des Drahts (Nutzer: zu viel Aufwand). Vergleich deshalb mit D74 (2026-11-18, ohne Draht, fx5a, gleicher Mess-Patch, gleiche Kette).
+
+**Setup:** acdc1 fx9a mit Draht, im Case, USB gesteckt, kein Stream, AC/DC-Eingänge offen, keine weiteren Kabel. Out 1 → UMC202HD In 1 **und** In 2 (beide am selben Ausgang). UMC-Gain wie in D74 (Eichton auf 0,04 dB gleich). Regler 63 / 64 / 71 / 50 von 127.
+
+1. `D91-ledpath-umc`: Mess-Patch `SchliereLedPath` aus D74 (`owl_write.py --run`, 11:38:52, nur RAM), 110 s, `acdc_rec.py --device UMC202HD --input-only --channels 2 --format pcm24`.
+2. Program Change auf Slot 1, dann `D91-slot1-umc-r1/r2`: Default-Patch (Durchleitung In 1 → Out 1), 2 × 60 s.
+
+**Auswertung je Phase:** neues Werkzeug `tools/ledpath_phases.py`. Es legt das Raster der Phasen über den Eichton (Phase 7, 300 Hz, 0,001 Vollausschlag an Out 1), rechnet mit seinem Pegel auf den Ausgang von acdc1 um und misst je Phase 1,0–4,5 s nach Beginn, gemittelt über die Durchläufe. Tabellen `out/D74-ledpath-phases.txt` und `out/D91-ledpath-phases.txt`. Eichton: D74 −22,69 dBFS am UMC, D91 −22,65 dBFS (UMC In 1).
+
+Pegel in dB bezogen auf Vollausschlag am Ausgang von acdc1, UMC In 1 (In 2 auf ±2 dB gleich):
+
+| Phase | Größe | D74 ohne Draht (fx5a) | D91 mit Draht (fx9a) | Δ |
+|---|---|---|---|---|
+| 8: alle Ausgänge = 4 × In 1, LEDs aus | RMS ≥ 20 Hz | −71,9 | −76,4 | **−4,5 dB** |
+| | Kamm (1 kHz) | −92,6 | −104,0 | **−11,4 dB** |
+| | 6000 Hz | −108,6 | −120,8 | **−12,2 dB** |
+| | 12 000 Hz | −112,7 | −131,6 | **−18,9 dB** |
+| 9: 4 × In 1, LED 1–3 blinken 40 Hz | 40 Hz | −53,7 | −66,3 | **−12,6 dB** |
+| 0: Schliere, LEDs aus | RMS ≥ 20 Hz | −83,3 | −88,0 | −4,7 dB |
+| | Kamm (1 kHz) | −101,7 | −130,9 | −29 dB |
+| 1: Schliere, LED 1–3 blinken | 40 Hz | −61,9 | −85,0 | −23 dB |
+| 3: Ausgänge null, LEDs blinken | 40 Hz | −90,1 | −99,3 | **−9,2 dB** |
+| 2/4/6: Ausgänge null, LEDs aus | RMS ≥ 20 Hz | −97,8…−97,9 | −98,1 | ±0,3 dB (Boden des UMC) |
+| | Kamm (1 kHz) | −128…−131 | −134…−137 | −4…−6 dB |
+
+**Slot 1 (Default-Patch) am UMC, `D91-slot1-umc-r1/r2`:** RMS −43,6 / −43,7 dBFS am UMC, auf den Ausgang bezogen etwa −81 dB. Kamm −65,5 / −65,7 dBFS am UMC (f0 1000,053 Hz im Takt des UMC), fs/8 nicht erkannt. Dazu eine Linie bei 75,73 Hz (6 % der Leistung) wie die 75,72-Hz-Familie, die D86 nur bei der Original-Firmware fand. Eine Vorher-Messung mit Slot 1 am UMC gibt es nicht, die Aufnahme ist die Basislinie für spätere Vergleiche (acdc2).
+
+**Deutung:**
+- **[gemessen] Der Draht wirkt auch am Ausgang.** Alles, was über die Eingänge kommt, sinkt am Ausgang ähnlich wie in D90: Kamm −11 dB, fs/8 −12 dB, 12 kHz −19 dB, RMS −4,5 dB (bei Verstärkung 4). Die Verschiebung durch blinkende LEDs sinkt um 12,6 dB, das passt zu LEDstat in D90 (auf ein Viertel, −12…−14 dB).
+- **Auch der Anteil direkt am Ausgang sinkt:** Bei digital stummem Ausgang fällt die 40-Hz-Linie der blinkenden LEDs um 9 dB (D74: 0,29 mV Grundton, jetzt etwa 0,1 mV). [Hypothese] Der Ausgangspfad (DAC des Codecs gegen Träger-GND) hängt an derselben Masseverbindung.
+- **Bei stummem Ausgang begrenzt der UMC:** RMS −98 dB in beiden Messungen ist der Boden des UMC bei dieser Verstärkung, nicht der des AC/DC.
+- Die Schliere-Phasen fallen stärker (Kamm −29 dB, Blinken −23 dB). Sie hängen zusätzlich von Reglern und Patch-Zustand ab (D74: 61/68/62/58, jetzt 63/64/71/50, Feedback anders), dort ist nur die Richtung belastbar.
+
+**Einschränkungen:** Vergleich über sechs Tage und zwei Firmware-Stände (fx5a → fx9a). fx9a allein senkt fs/8 gegen fx5a um höchstens ≈ 1 dB (D79, D85, D89), die LED-PWM-Frequenz (fx7a) spielt beim Blinken mit 40 Hz keine Rolle. Die Phasen 0, 2 und 8 tragen nach D74 noch den Ausschwinger des UMC nach dem Wechsel der Ausgangsart, die Auswertung beginnt deshalb erst 1 s nach Phasenbeginn. Kein A-B-A.
+
+**Fazit:** Der Masse-Draht senkt Kamm, fs/8 und LED-Verschiebung auch am Ausgang um 9–19 dB. Nach der Messung läuft Slot 1, kein Stream, nichts gespeichert.

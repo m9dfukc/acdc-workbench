@@ -76,12 +76,13 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
 ### 3. Störlinien
 - [x] **Masse-Brücke auf dem Modul** (Forum-Hinweis modwiggler, Nutzer 2026-11-23/24): Draht Pin 15 (GND) ↔ Pin 33 (AGND) auf acdc1, seit 2026-11-24. RMS −5,7, Rest −2,9, Kamm −7,2, fs/8 −18,3 dB, LED-Verschiebung auf ein Viertel, Verstärkung gleich (D90). Anleitung `docs/06-hardware-mod-masse.md`
   - [ ] A-B-A: Draht ab, gleiche Messung, Draht wieder an (schließt den Wiedereinbau als Ursache aus)
-  - [ ] Ausgänge am UMC mit und ohne Draht (Schliere oder Default-Patch, Messaufbau S3/G)
+  - [x] Ausgänge am UMC (D91, 2026-11-24): Mess-Patch aus D74 gegen D74 ohne Draht, Kamm −11 dB, fs/8 −12 dB, LED-Blinken −12,6 dB am Ausgang. Basislinie Slot 1 am UMC aufgenommen. Werkzeug `tools/ledpath_phases.py`
   - [ ] Hörprobe mit Kompressor
   - [ ] Weitere Massepins (16 ↔ 47/48) oder L1 direkt überbrücken, je mit A/B
   - [ ] DC-Verschiebung 65–90 mV erklären (zu groß für L1 und Steckerleiste allein)
   - [ ] Antwort im Forum (modwiggler und eigener Thread #2244), nur nach Freigabe
-  - [ ] acdc2 bleibt unverändert (Referenz). Ob es dort genauso wirkt, nur wenn der Nutzer das will
+  - [ ] A-B-A auf acdc1 entfällt vorerst (Nutzer 2026-11-24: Ablöten zu aufwendig)
+  - [ ] **Später acdc2:** neue Firmware und Masse-Draht, dabei alle Messungen vorher und nachher wiederholen (Eingänge, LEDstat, Loop, UMC). Das ersetzt das A-B-A an acdc1 (Nutzer 2026-11-24). Bis dahin bleibt acdc2 Referenz und unverändert, v22.4.q vorher sichern (TODO „Werkzeuge“)
 - [ ] **Optional: Störbänder im Rechner entfernen, Fingerabdruck + Plugin** (Nutzer 2026-11-16). Ob sich das lohnt, hängt davon ab, wie viel Störgeräusch am Ende bleibt. Entscheiden nach Alltagstest, Hörprobe und zweiter Rauschsitzung von fx3l. Hintergrund: Mit `TX_PRE_FX` nimmt der Rechner die rohen Eingänge auf, ein Filter-Patch im Gerät erreicht die Aufnahme nicht mehr. Falls ja:
   - [ ] Das Analyse-Tool schreibt je Modul und USB-Anschluss einen „Fingerabdruck“: die genauen Störbänder (Kamm-f0 und Harmonische, fs/8, LED-PWM, stärkste übrige Linien, je mit Breite)
   - [ ] `analysis/notch.py`: Notch-Bank (SOS) aus dem Fingerabdruck, Vorher/Nachher-PSD, RMS-Reduktion

@@ -28,6 +28,7 @@ Deutsche Fassung: [README.de.md](README.de.md)
 | `tools/phase_slips.py`, `tools/stale_samples.py` | Check a loop-back recording (out → in) for lost or repeated samples and for single stale samples |
 | `tools/line_levels.py` | Level of single lines per channel, measured right at the line frequency, across several recordings, with the distance to the noise floor |
 | `tools/crosstalk_lines.py`, `tools/click_sensitivity.py` | Crosstalk of test tones from the outputs to the inputs; sensitivity of the click detector to injected USB faults |
+| `tools/ledpath_phases.py` | Levels per phase of a recording with the LED path measurement patch, taken at a second interface and referred to the module's output through a built-in calibration tone |
 | `tools/knob_series.py` | Guided series of recordings with the knobs in given positions: reads the knobs over MIDI, waits until they are in place, records, and writes a table of the line levels at the end |
 
 ## Findings so far
@@ -81,7 +82,7 @@ The test module carries a hardware mod since 2026-11-24: an insulated wire from 
 
 ![Long-term spectrum without (grey) and with the ground wire (black), mean of four channels](docs/img/psd_gnd_mod.png)
 
-The broadband floor drops by about 4 dB in the bass and 2 dB in the treble. A loop-back test (out → in) shows the same gain within 0.02 dB and no lost samples. Lines at 7384.6, 1215.2 and 4401.9 Hz stay where they were; the scan line of the knob ADC at 9633.8 Hz rises by 3.7 dB but stays at about −126 dBFS. The comb now carries 30 to 50 % of the noise power. Not yet measured: the outputs, and a second removal of the wire to rule out the remounting itself. Background, pin table and a step-by-step guide: [docs/en/06-hardware-mod-ground.md](docs/en/06-hardware-mod-ground.md) (German original: [docs/06-hardware-mod-masse.md](docs/06-hardware-mod-masse.md)). Soldering on the module is at your own risk.
+The broadband floor drops by about 4 dB in the bass and 2 dB in the treble. A loop-back test (out → in) shows the same gain within 0.02 dB and no lost samples. Lines at 7384.6, 1215.2 and 4401.9 Hz stay where they were; the scan line of the knob ADC at 9633.8 Hz rises by 3.7 dB but stays at about −126 dBFS. The comb now carries 30 to 50 % of the noise power. At the output, measured through the second interface against an older run without the wire (D91), the comb drops by 11 dB, fs/8 by 12 dB and the LED shift by 12.6 dB. Not measured: a second removal of the wire to rule out the remounting itself. Background, pin table and a step-by-step guide: [docs/en/06-hardware-mod-ground.md](docs/en/06-hardware-mod-ground.md) (German original: [docs/06-hardware-mod-masse.md](docs/06-hardware-mod-masse.md)). Soldering on the module is at your own risk.
 
 ## Firmware
 

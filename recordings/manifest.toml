@@ -2815,3 +2815,45 @@ files = ["20261124_acdc1_gnd-nach-loop_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
 note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:18:10. Stream-Meldungen: 0. owl_read: out/owl_read/D90b-nach-loop (rc 0). D90b nachher: Loop-Test Out n → In n, Draht Pin 15 ↔ Pin 33, Pegelvergleich gegen B11-fx9a-loop-cold"
+
+[[measurement]]
+id = "D91-ledpath-umc"
+date = "2026-11-24"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht Pin 15 ↔ Pin 33, ins Case geschraubt"
+test = "LED-Pfad-Test wie D74, jetzt mit Masse-Draht (D90), Regler 63/64/71/50, AC/DC-Eingänge offen"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: SchliereLedPath (CRC 0xb0fa2194)"
+title = "D91-ledpath-umc – acdc1 gnd-ledpath-out1-via-umc, 110 s"
+files = ["20261124_acdc1_gnd-ledpath-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:39:08. Stream-Meldungen: 0. messlog D91, Vergleich mit D74-schliere-ledpath-umc (ohne Draht, fx5a)"
+
+[[measurement]]
+id = "D91-slot1-umc-r1"
+date = "2026-11-24"
+device = "UMC202HD In 1+2 ← acdc1 Out 1, acdc1 fx9a mit Masse-Draht Pin 15 ↔ Pin 33, ins Case geschraubt"
+test = "Basislinie Ausgang mit Masse-Draht, AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "Slot 1: ACDC (Default-Patch, Durchleitung In 1 → Out 1)"
+title = "D91-slot1-umc-r1 – acdc1 gnd-slot1-out1-via-umc, 60 s (Wiederholung 1)"
+files = ["20261124_acdc1_gnd-slot1-out1-via-umc-r1_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:41:10. Stream-Meldungen: 0. Stream zwischen den Wiederholungen geschlossen und neu geöffnet. messlog D91"
+
+[[measurement]]
+id = "D91-slot1-umc-r2"
+date = "2026-11-24"
+device = "UMC202HD In 1+2 ← acdc1 Out 1, acdc1 fx9a mit Masse-Draht Pin 15 ↔ Pin 33, ins Case geschraubt"
+test = "Basislinie Ausgang mit Masse-Draht, AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "Slot 1: ACDC (Default-Patch, Durchleitung In 1 → Out 1)"
+title = "D91-slot1-umc-r2 – acdc1 gnd-slot1-out1-via-umc, 60 s (Wiederholung 2)"
+files = ["20261124_acdc1_gnd-slot1-out1-via-umc-r2_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:42:19. Stream-Meldungen: 0. Stream zwischen den Wiederholungen geschlossen und neu geöffnet. messlog D91"

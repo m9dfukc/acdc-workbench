@@ -1,4 +1,4 @@
-<!-- i18n source=docs/06-hardware-mod-masse.md sha256=f1c9c115e4b7ab0d1a08991d1fcc4600d4631bfe3d53946dbe3c9e3aa37bed91 date=2026-11-24 -->
+<!-- i18n source=docs/06-hardware-mod-masse.md sha256=b87245630311e651a00067589d7d11d041439b49a0f842b879c344d9e30a7a7f date=2026-11-24 -->
 > English translation of [`docs/06-hardware-mod-masse.md`](../../docs/06-hardware-mod-masse.md), as of 2026-11-24. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 06 – Hardware mod: ground wire on the processor module
@@ -20,7 +20,7 @@ acdc1 with fx9a, inputs open, gain at 12 o'clock, 2 × 60 s each on the same day
 | Mixing products | −122.4 | not detected | gone |
 | Shift of the inputs caused by the LEDs | 100 % | 20–25 % | −12…−14 dB |
 
-In addition: broadband floor −4 dB in the bass, −2 dB in the treble. Gain, clock and USB unchanged (loop test without slips, levels equal within 0.02 dB).
+In addition: broadband floor −4 dB in the bass, −2 dB in the treble. Gain, clock and USB unchanged (loop test without slips, levels equal within 0.02 dB). At the output (D91, measured through a UMC) the comb, fs/8 and the LED shift drop by 9–19 dB.
 
 ![Long-term spectrum without (grey) and with the wire (black)](../img/psd_gnd_mod.png)
 
@@ -104,7 +104,7 @@ Compare the levels of the four tones with an earlier loop test, check for slips 
 ## Limits and open points
 
 - One module, one computer. Whether other revisions of the module or the carrier board react the same way is open.
-- Not measured: the outputs, a measurement after removing the wire again (A-B-A), a listening test.
+- Measured at the output (D91, against D74 without the wire): comb −11 dB, fs/8 −12 dB, LED blinking −12.6 dB, with the output digitally silent the LED share −9 dB. Not measured: a measurement after removing the wire again (A-B-A), a listening test.
 - The lines at 7384.62 and 1215.19 Hz and the knob line at 4401.90 Hz did not drop. The scan line of the knob ADC at 9633.80 Hz rose by 3.7 dB (−126 dBFS, far below the comb). The DC offset of the inputs moves 65–90 mV closer to zero.
 - The comb remains the strongest interference family.
 - Do **not** bridge L2 or L3: they filter the supply of the codec and the analog reference of the MCU.
