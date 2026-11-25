@@ -1,5 +1,5 @@
-<!-- i18n source=docs/05-firmware-plan.md sha256=87b368318010babb2b3adcb2c2e055c48579c25b2b2b157d1295fb4394445528 date=2026-11-23 -->
-> English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-23. The German original is authoritative. This file is generated from it, do not edit it by hand.
+<!-- i18n source=docs/05-firmware-plan.md sha256=dbc4a903bce88e60d63e580cc16ce0787491018b0e7ab28ddfd19ace6dc01276 date=2026-11-25 -->
+> English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-25. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 05 – Firmware: Status, Forks, Build Plan
 
@@ -792,7 +792,7 @@ Builds of `34782dea` and `351b2071` without patches are byte-identical with fx6a
 
 ### Build 10 – Instruction cache on, `v22.4.r-fx8a` (built 2026-11-23, lab notebook D83–D85, daily firmware on acdc1 on 2026-11-23, **fallback from fx9a**)
 
-**Reason [code, measured, D83]:** `ACDC/Core/Inc/hardware.h` sets `USE_ICACHE` and `USE_DCACHE` only `#ifdef NDEBUG`, and `Hardware/owl3.mk` sets only `-O3` in the Release build, never `-DNDEBUG`. This also holds for v22.5.0 and upstream `master`. Under fx7a, SCB->CCR on acdc1 reads 0: both caches are off. Plateau therefore needs 5000 cycles per sample for about 1000 instructions; every section is evenly about five times too slow.
+**Reason [code, measured, D83]:** `ACDC/Core/Inc/hardware.h` sets `USE_ICACHE` and `USE_DCACHE` only `#ifdef NDEBUG`, and `Hardware/xibeca.mk` sets only `-O3` in the Release build, never `-DNDEBUG` (until 2026-11-25 this said `owl3.mk` here and in patch 19 by mistake; the block is the same there). This also holds for v22.5.0 and upstream `master`. Under fx7a, SCB->CCR on acdc1 reads 0: both caches are off. Plateau therefore needs 5000 cycles per sample for about 1000 instructions; every section is evenly about five times too slow.
 
 **Implementation (patch `19-icache-on.patch`) [code]:**
 - `hardware.h`: `USE_ICACHE` always; `USE_DCACHE` stays behind `NDEBUG`, so it stays off.
@@ -875,6 +875,8 @@ A build of `f9f9399a` without patches is byte-identical with fx8a (`firmware/bui
 3. `b6bcdc33` README: section "Data cache", tables, test status
 
 A build of `4ef038b6` without patches is byte-identical with fx9a (`firmware/builds/verify-fx1d-4ef038b6`, `fd77ec3a…`). Plus the release `acdc-v22.4.r-fx9a` (tag on `b6bcdc33`, "Latest", 2026-11-23) with `ACDC-v22.4.r-fx9a.bin` and `BUILD_INFO-v22.4.r-fx9a.txt` from the verification build.
+
+**Addendum 2026-11-25, feedback from Rebel Technology on the forum:** The intent was "cache off only in Debug builds". `Hardware/xibeca.mk` sets `-DDEBUG` in the Debug build and neither `DEBUG` nor `NDEBUG` in the Release build [code]. Instead of switching the caches on unconditionally, `hardware.h` therefore now checks `#ifndef DEBUG` (patch 21, `21-cache-ifndef-debug.patch`). Setting `NDEBUG` in `xibeca.mk` would have been the other option, but it would also have affected all Xibeca targets and `assert()` in third-party code. A build of `4ef038b6` + patch 21 is byte-identical with fx9a (`firmware/builds/check-fx9a-ifndef-debug`, `fd77ec3a…`) [measured: build]. No flash needed, the version stays `v22.4.r-fx9a`. In the fork this is `54228769` on `acdc/fx1d`; a build of it is byte-identical as well (`firmware/builds/verify-fx1d-54228769`). Release `acdc-v22.4.r-fx9a.1` (tag on `54228769`, "Latest", 2026-11-25) with the same `ACDC-v22.4.r-fx9a.bin` and `BUILD_INFO-v22.4.r-fx9a.1.txt` from this verification build. The second remark (`_DMA_DATA` is defined in `xibeca.ld`) referred to `8a401e75` and had already been corrected with `2b6ffa1b` and `e33f0756`.
 
 ### Fork `m9dfukc/OpenWare` (pushed 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
 

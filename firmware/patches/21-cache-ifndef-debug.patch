@@ -1,0 +1,22 @@
+--- a/ACDC/Core/Inc/hardware.h
++++ b/ACDC/Core/Inc/hardware.h
+@@ -17,12 +17,15 @@
+ 
+ #define USE_FAST_POW_RESOURCES
+ 
+-/* Both caches always on: the Release build never defines NDEBUG, so without this both
+-   caches stayed off (messlog D83). The DMA buffers (codec_txbuf, codec_rxbuf, adc_values,
+-   all in .dmadata from _DMA_DATA, Hardware/xibeca.ld) stay uncached through an MPU region
+-   in Source/mpu.c, so no cache maintenance is needed in the audio block (messlog D87). */
++/* Both caches on, except in Debug builds (Hardware/xibeca.mk defines DEBUG there). The
++   guard used to be #ifdef NDEBUG, which no build defines, so both caches stayed off in
++   Release (messlog D83). The DMA buffers (codec_txbuf, codec_rxbuf, adc_values, all in
++   .dmadata from _DMA_DATA, Hardware/xibeca.ld) stay uncached through an MPU region in
++   Source/mpu.c, so no cache maintenance is needed in the audio block (messlog D87). */
++#ifndef DEBUG
+ #define USE_ICACHE
+ #define USE_DCACHE
++#endif
+ 
+ #define ARM_CYCLES_PER_SAMPLE       (480000000/AUDIO_SAMPLINGRATE) /* 480MHz / 48kHz */
+ 

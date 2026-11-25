@@ -789,7 +789,7 @@ Builds von `34782dea` und `351b2071` ohne Patches sind bytegleich mit fx6a (`fir
 
 ### Build 10 – Befehls-Cache an, `v22.4.r-fx8a` (Build 2026-11-23, messlog D83–D85, Alltags-Firmware auf acdc1 am 2026-11-23, **Rückweg von fx9a**)
 
-**Anlass [Code, gemessen, D83]:** `ACDC/Core/Inc/hardware.h` setzt `USE_ICACHE` und `USE_DCACHE` nur `#ifdef NDEBUG`, `Hardware/owl3.mk` setzt im Release-Build nur `-O3`, nie `-DNDEBUG`. Das gilt auch für v22.5.0 und den Upstream-`master`. Unter fx7a meldet SCB->CCR auf acdc1 0, beide Caches sind aus. Plateau braucht dadurch 5000 Takte pro Sample bei rund 1000 Befehlen, alle Abschnitte gleichmäßig etwa fünfmal zu langsam.
+**Anlass [Code, gemessen, D83]:** `ACDC/Core/Inc/hardware.h` setzt `USE_ICACHE` und `USE_DCACHE` nur `#ifdef NDEBUG`, `Hardware/xibeca.mk` setzt im Release-Build nur `-O3`, nie `-DNDEBUG` (bis 2026-11-25 stand hier und in Patch 19 fälschlich `owl3.mk`, der Block ist dort gleich). Das gilt auch für v22.5.0 und den Upstream-`master`. Unter fx7a meldet SCB->CCR auf acdc1 0, beide Caches sind aus. Plateau braucht dadurch 5000 Takte pro Sample bei rund 1000 Befehlen, alle Abschnitte gleichmäßig etwa fünfmal zu langsam.
 
 **Umsetzung (Patch `19-icache-on.patch`) [Code]:**
 - `hardware.h`: `USE_ICACHE` immer, `USE_DCACHE` bleibt hinter `NDEBUG`, also aus.
@@ -872,6 +872,8 @@ Ein Build von `f9f9399a` ohne Patches ist bytegleich mit fx8a (`firmware/builds/
 3. `b6bcdc33` README: Abschnitt „Data cache“, Tabellen, Teststand
 
 Ein Build von `4ef038b6` ohne Patches ist bytegleich mit fx9a (`firmware/builds/verify-fx1d-4ef038b6`, `fd77ec3a…`). Dazu das Release `acdc-v22.4.r-fx9a` (Tag auf `b6bcdc33`, „Latest“, 2026-11-23) mit `ACDC-v22.4.r-fx9a.bin` und `BUILD_INFO-v22.4.r-fx9a.txt` aus dem Prüf-Build.
+
+**Nachtrag 2026-11-25, Rückmeldung von Rebel Technology im Forum:** Gedacht war „Cache aus nur im Debug-Build“. `Hardware/xibeca.mk` setzt im Debug-Build `-DDEBUG` und im Release-Build weder `DEBUG` noch `NDEBUG` [Code]. Statt die Caches fest einzuschalten, prüft `hardware.h` deshalb jetzt `#ifndef DEBUG` (Patch 21, `21-cache-ifndef-debug.patch`). `NDEBUG` in `xibeca.mk` zu setzen, wäre die andere Möglichkeit gewesen, hätte aber alle Xibeca-Ziele und `assert()` in fremdem Code mit betroffen. Ein Build von `4ef038b6` + Patch 21 ist bytegleich mit fx9a (`firmware/builds/check-fx9a-ifndef-debug`, `fd77ec3a…`) [gemessen: Build]. Kein Flash nötig, die Version bleibt `v22.4.r-fx9a`. Im Fork ist das `54228769` auf `acdc/fx1d`, ein Build davon ist ebenfalls bytegleich (`firmware/builds/verify-fx1d-54228769`). Release `acdc-v22.4.r-fx9a.1` (Tag auf `54228769`, „Latest“, 2026-11-25) mit derselben `ACDC-v22.4.r-fx9a.bin` und `BUILD_INFO-v22.4.r-fx9a.1.txt` aus diesem Prüf-Build. Der zweite Hinweis (`_DMA_DATA` ist in `xibeca.ld` definiert) bezog sich auf `8a401e75` und war mit `2b6ffa1b` und `e33f0756` schon berichtigt.
 
 ### Fork `m9dfukc/OpenWare` (gepusht 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
 
