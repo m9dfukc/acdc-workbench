@@ -1,5 +1,5 @@
-<!-- i18n source=docs/01-hardware-und-firmware.md sha256=84847fda36d706d7b3b378022850143687046fa6a41f870dc94dc00f328b8d1f date=2026-11-24 -->
-> English translation of [`docs/01-hardware-und-firmware.md`](../../docs/01-hardware-und-firmware.md), as of 2026-11-24. The German original is authoritative. This file is generated from it, do not edit it by hand.
+<!-- i18n source=docs/01-hardware-und-firmware.md sha256=9cbd364cac6f60e1e87367815f432f4c18ff9f3c1164b545b40b833d4fad1b67 date=2026-11-27 -->
+> English translation of [`docs/01-hardware-und-firmware.md`](../../docs/01-hardware-und-firmware.md), as of 2026-11-27. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 01 – Hardware & firmware of the AC/DC
 
@@ -66,7 +66,7 @@ TX and RX routing can be switched **independently** of each other (checked in th
 - **Without a host:** `bootstrap()` starts the patch from slot `program_index` and then the codec. There is no USB or VBUS dependency, the clock comes from the codec (8 MHz crystal) [code]. antisvin confirms that the default patch runs without USB (thread #2083) [sourced].
 - **With my own firmware build 1d (acdc1), pass-through works without a computer [measured, lab notebook D11/D17].** The following item describes the old firmwares.
 - **Old firmware: without computer playback nothing arrives at the jacks [measured, acdc1 cold start, see `messlog.md`].** So the patch runs but is not audible. On acdc2 (v22.4.q) this is explained by the hack `237c63d`, which writes zeros to the DAC without USB playback [code]. On acdc1 it was the same hack: the factory firmware was a hack-branch build with the label "v22.5.0", `237c63d` is proven in it by disassembly [measured, lab notebook D3/D3a].
-- **Default patch "ACDC"** (Martin Klang, source in `owl-patches/library/`): 4-channel VCA, output = input × (knob·2)², LEDs = level/clip. So it passes the signal through [code].
+- **Default patch "ACDC"** (Martin Klang, source in `owl/patches-private/library/`): 4-channel VCA, output = input × (knob·2)², LEDs = level/clip. So it passes the signal through [code].
 - **Without a stored patch** the module stays in configure mode: output silent, no USB audio. The USB transfer runs in the per-block hook of the patch [code].
 
 | Build | Without host | Host streaming |

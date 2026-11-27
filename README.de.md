@@ -129,7 +129,7 @@ Die Aufrufe für Aufnahme, Loop-Prüfung, Auslesen und Nachbau stehen im englisc
 | `out/<ID>/` | Analyse-Report je Messung |
 | `TODO.md`, `CLAUDE.md` | Offene Punkte und der Projektkontext für die Arbeit mit Claude Code |
 
-Nicht im Repo: die Aufnahmen selbst (8 GB WAV), Plots und JSON-Ergebnisse in `out/`, Firmware-Binaries, die Geräte-Backups sowie fremde OWL-Patch-Quellen ohne Lizenz samt ihren Builds (`owl-patches/`). Plots und Ergebnisse erzeugt `python -m analysis` aus den Aufnahmen neu.
+Nicht im Repo: die Aufnahmen selbst (8 GB WAV), Plots und JSON-Ergebnisse in `out/`, Firmware-Binaries, die Geräte-Backups sowie fremde OWL-Patch-Quellen ohne Lizenz samt SDK und Builds (`owl/patches-private/`, `owl/vendor/`). Plots und Ergebnisse erzeugt `python -m analysis` aus den Aufnahmen neu.
 
 ## Sprache
 

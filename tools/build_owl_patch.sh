@@ -20,11 +20,11 @@
 # missing include without touching it.
 #
 # Environment:
-#   SDK       OwlProgram tree (default: owl-patches/OwlProgram). Its compile.mk should use the
+#   SDK       OwlProgram tree (default: owl/vendor/OwlProgram). Its compile.mk should use the
 #             flags of OwlProgram develop (no -fno-builtin/-ffreestanding/-mtune, D92), the
 #             script warns otherwise and writes the compile.mk checksum to BUILD_INFO.txt
-#   SRC       folder with the patch sources (default: owl-patches/acdc-patches)
-#   OUT       output base folder (default: owl-patches/builds)
+#   SRC       folder with the patch sources (default: owl/patches-private)
+#   OUT       output base folder (default: owl/vendor/builds)
 #   PLATFORM  OWL3 (default: Cortex-M7 code, FPU fpv5-d16) or OWL2 (Cortex-M4 code that
 #             runs on every OWL device, like the patch library)
 #   LINK      patchram (default: links to 0x2000c000 like the patch library, at most
@@ -34,7 +34,7 @@
 #   TOOLROOT  toolchain bin directory with a trailing slash
 #             (default: /Applications/ArmGNUToolchain/12.2.rel1/arm-none-eabi/bin/)
 #   JOBS      parallel make jobs for the libraries (default: 8)
-#   WORK      folder for the throwaway build trees (default: owl-patches/_work). A separate
+#   WORK      folder for the throwaway build trees (default: owl/vendor/_work). A separate
 #             one keeps test builds (other SDK or flags) from replacing the regular trees
 set -euo pipefail
 
@@ -47,9 +47,9 @@ NAME="$1"; CLASS="$2"; FILE="$3"; shift 3
 PRELUDE=("$@")
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SDK="$(cd "${SDK:-$ROOT/owl-patches/OwlProgram}" && pwd)"
-SRC="$(cd "${SRC:-$ROOT/owl-patches/acdc-patches}" && pwd)"
-OUT="${OUT:-$ROOT/owl-patches/builds}"
+SDK="$(cd "${SDK:-$ROOT/owl/vendor/OwlProgram}" && pwd)"
+SRC="$(cd "${SRC:-$ROOT/owl/patches-private}" && pwd)"
+OUT="${OUT:-$ROOT/owl/vendor/builds}"
 PLATFORM="${PLATFORM:-OWL3}"
 LINK="${LINK:-patchram}"
 LIMIT="${LIMIT:-0}"
@@ -68,7 +68,7 @@ case "$NAME" in (*/*|""|.|..) echo "Invalid name: $NAME" >&2; exit 2;; esac
 [ -f "$SRC/$FILE" ] || { echo "Patch file not found: $SRC/$FILE" >&2; exit 2; }
 [ "$LIMIT" != 1 ] || [ -f "$ROOT/owl/include/AcdcOutput.h" ] || { echo "owl/include/AcdcOutput.h missing: git submodule update --init owl" >&2; exit 2; }
 
-WORK="${WORK:-$ROOT/owl-patches/_work}"
+WORK="${WORK:-$ROOT/owl/vendor/_work}"
 BUILD="$WORK/$NAME-$PLATFORM-$LINK"
 LIBBUILD="$WORK/_libs-$PLATFORM"
 STAMP="$SDK/Libraries/.platform"

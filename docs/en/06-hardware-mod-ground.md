@@ -1,5 +1,5 @@
-<!-- i18n source=docs/06-hardware-mod-masse.md sha256=b87245630311e651a00067589d7d11d041439b49a0f842b879c344d9e30a7a7f date=2026-11-24 -->
-> English translation of [`docs/06-hardware-mod-masse.md`](../../docs/06-hardware-mod-masse.md), as of 2026-11-24. The German original is authoritative. This file is generated from it, do not edit it by hand.
+<!-- i18n source=docs/06-hardware-mod-masse.md sha256=f2c415a84d7b8fc10fc2385b2d0440f03b46add15662c14e613cb3ff4dfb6641 date=2026-11-27 -->
+> English translation of [`docs/06-hardware-mod-masse.md`](../../docs/06-hardware-mod-masse.md), as of 2026-11-27. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 06 – Hardware mod: ground wire on the processor module
 
@@ -62,7 +62,7 @@ UV_CACHE_DIR=.uv-cache uv run python tools/acdc_rec.py --id GND-vor --test gnd-v
 Then the LED shift with the measurement patch `owl/test/SchliereLedPathPatch.hpp` (built with `tools/build_owl_patch.sh`, runs from RAM only, nothing is stored): let it run for about 2 min, read it out several times and note the lines `LEDstat In1-3 …`, then go back to slot 1:
 
 ```bash
-uv run --no-project --python 3.12 --with mido --with python-rtmidi python tools/owl_write.py owl-patches/builds/SchliereLedPath/SchliereLedPath.syx --run
+uv run --no-project --python 3.12 --with mido --with python-rtmidi python tools/owl_write.py owl/vendor/builds/SchliereLedPath/SchliereLedPath.syx --run
 ```
 
 ```bash

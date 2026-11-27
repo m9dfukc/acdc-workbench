@@ -174,7 +174,7 @@ python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build11-fx9a   # after
 | `out/<ID>/` | Analysis report of each measurement |
 | `TODO.md`, `CLAUDE.md` | Open points and the project context used when working with Claude Code |
 
-Not in the repository: the recordings themselves (8 GB of WAV files), plots and JSON results in `out/`, firmware binaries, the device backups, and third-party OWL patch sources without a license together with their builds (`owl-patches/`). Plots and results can be regenerated from recordings with `python -m analysis`.
+Not in the repository: the recordings themselves (8 GB of WAV files), plots and JSON results in `out/`, firmware binaries, the device backups, and third-party OWL patch sources without a license together with the SDK and their builds (`owl/patches-private/`, `owl/vendor/`). Plots and results can be regenerated from recordings with `python -m analysis`.
 
 ## Language
 

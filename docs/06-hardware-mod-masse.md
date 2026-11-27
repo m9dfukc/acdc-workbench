@@ -59,7 +59,7 @@ UV_CACHE_DIR=.uv-cache uv run python tools/acdc_rec.py --id GND-vor --test gnd-v
 Dazu die LED-Verschiebung mit dem Mess-Patch `owl/test/SchliereLedPathPatch.hpp` (gebaut mit `tools/build_owl_patch.sh`, läuft nur im RAM, nichts wird gespeichert), etwa 2 min laufen lassen, mehrmals auslesen und die Zeilen `LEDstat In1-3 …` notieren, danach zurück auf Slot 1:
 
 ```bash
-uv run --no-project --python 3.12 --with mido --with python-rtmidi python tools/owl_write.py owl-patches/builds/SchliereLedPath/SchliereLedPath.syx --run
+uv run --no-project --python 3.12 --with mido --with python-rtmidi python tools/owl_write.py owl/vendor/builds/SchliereLedPath/SchliereLedPath.syx --run
 ```
 
 ```bash

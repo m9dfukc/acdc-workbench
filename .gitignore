@@ -37,7 +37,6 @@ __pycache__/
 # Geräte-Backups und fremde Dateien bleiben lokal
 /backup/
 /docs/uebergaben/
-/owl-patches/
 /vcv-patches/
 /docs/img/20261114_d8_vcv-patch.webp
 /docs/research/img/forum2083-4_xibeca-boot-pads.jpeg

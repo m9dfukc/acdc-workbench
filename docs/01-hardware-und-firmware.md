@@ -63,7 +63,7 @@ TX- und RX-Routing sind **unabhängig** voneinander schaltbar (im Quelltext gepr
 - **Ohne Host:** `bootstrap()` startet den Patch aus Slot `program_index` und danach den Codec. Es gibt keine USB- oder VBUS-Abhängigkeit, der Takt kommt vom Codec (8-MHz-Quarz) [Code]. antisvin bestätigt, dass der Default-Patch ohne USB läuft (Thread #2083) [belegt].
 - **Mit eigener Firmware Build 1d (acdc1) geht die Durchleitung ohne Rechner [gemessen, messlog D11/D17].** Der folgende Punkt beschreibt die alten Firmwares.
 - **Alte Firmware: An den Buchsen kommt ohne Rechner-Playback nichts an [gemessen, acdc1 Kaltstart, siehe `messlog.md`].** Der Patch läuft also, ist aber nicht hörbar. Bei acdc2 (v22.4.q) erklärt das der Hack `237c63d`, der ohne USB-Playback Nullen an den DAC schreibt [Code]. Bei acdc1 war es derselbe Hack: Die Werks-Firmware war ein Hack-Branch-Build mit dem Etikett „v22.5.0“, `237c63d` ist darin per Disassembly belegt [gemessen, messlog D3/D3a].
-- **Default-Patch „ACDC“** (Martin Klang, Quelle in `owl-patches/library/`): 4-Kanal-VCA, Ausgang = Eingang × (Knob·2)², LEDs = Pegel/Clip. Er leitet also durch [Code].
+- **Default-Patch „ACDC“** (Martin Klang, Quelle in `owl/patches-private/library/`): 4-Kanal-VCA, Ausgang = Eingang × (Knob·2)², LEDs = Pegel/Clip. Er leitet also durch [Code].
 - **Ohne gespeicherten Patch** bleibt das Gerät im Configure-Modus: Ausgang still, kein USB-Audio. Der USB-Transfer läuft im Per-Block-Hook des Patches [Code].
 
 | Build | Ohne Host | Host streamt |
