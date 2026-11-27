@@ -11,7 +11,7 @@ Alles zur eigenen AC/DC-Firmware. Plan, Begründungen und Ergebnis jedes Builds:
 | `builds/` | Fertige Builds, je Ordner `ACDC.bin`, `ACDC.elf` (beide nur lokal, nicht im Repo), `build.log`, `BUILD_INFO.txt`, bei ITCM-Builds dazu `check_itcm.md`/`.json`. Siehe Liste unten | Geflashte Builds nie überschreiben |
 | `builds/archive/` | Überholte Builds: Reproduktions-Builds `repro-*` (E5), Build 1 (`v22.4.s-thru1`, geflasht, kein Audio, D10), Build 2 alt (`v22.4.s-fx1`, nie geflasht) | Nur zum Nachschlagen |
 | `flashlog/` | Je Flash ein Ordner: Geräte-Report vorher/nachher, dfu-util-Logs, Readback (nur lokal, nicht im Repo), SHA-Summen. Ab 2026-11-18 von `tools/flash_acdc.py` angelegt, dann mit `flash_report.json` | Unverändert lassen |
-| `downloads/` | Externe Abhängigkeiten mit festem Stand: `OpenWareLibraries-9e8f64e.tar.gz` (Quelle und Aufruf in `docs/05-firmware-plan.md`, E5). Nicht im Repo, `tools/setup_repo.sh` lädt die Datei und prüft die SHA-256 | |
+| `downloads/` | Externe Abhängigkeiten mit festem Stand: `OpenWareLibraries-9e8f64e.tar.gz` (Quelle und Aufruf in `docs/05-firmware-plan.md`, E5). Nicht im Repo, `tools/setup_repo.sh` lädt die Datei und prüft die SHA-256. Dazu `toolchains/` (seit 2026-11-27): Tarballs von Arm GNU 14.3.Rel1 und 15.2.Rel1 für macOS arm64 samt `.sha256asc`, entpackt in `toolchains/<version>/arm-none-eabi/` (Aufbau wie unter `/Applications/ArmGNUToolchain/12.2.rel1/`) | |
 | `releases/` | Offizielle Release-Binaries zum Vergleich (`v22.5.0/ACDC.bin`). Kein sicherer Rückweg für acdc1 (USB-Bruch). Nicht im Repo, `tools/setup_repo.sh` lädt die Datei | |
 | `itcm-prep/` | Hilfsskripte und Rohliste aus der Vorbereitung von Build 4 (Übergabe vom 2026-11-16, nicht im Repo). Abgelöst durch `tools/check_itcm.py` | Nur zum Nachschlagen |
 | `sim/` | Host-Test der Boot-Menü-Logik (`boot_menu_sim.cpp`), Aufruf `tools/sim_boot_menu.sh` | |
@@ -94,3 +94,7 @@ fx9a = fx8a + **20**. fx8a = fx7a + **19**. fx7a = fx6a + **18**. fx6a = fx5a + 
 | `verify-fx1d-351b2071` | `v22.4.r-fx7a` | nein | Build aus dem Fork-Branch, bytegleich mit fx7a (2026-11-19) |
 | `verify-fx1d-f9f9399a` | `v22.4.r-fx8a` | nein | Build aus dem Fork-Branch, bytegleich mit fx8a (2026-11-23) |
 | `verify-fx1d-4ef038b6` | `v22.4.r-fx9a` | nein | Build aus dem Fork-Branch, bytegleich mit fx9a (2026-11-23) |
+| `verify-fx1d-54228769` | `v22.4.r-fx9a` | nein | Build aus dem Fork-Branch (`#ifndef DEBUG`, Patch 21), bytegleich mit fx9a (2026-11-25). Referenz für den Compilervergleich |
+| `check-fx9a-ifndef-debug` | `v22.4.r-fx9a` | nein | `4ef038b6` + Patch 21, bytegleich mit fx9a (2026-11-25) |
+| `cand-fx9a-gcc14` | `v22.4.r-fx9a` | nein | `54228769` ohne Patches, gebaut mit **Arm GNU 14.3.Rel1**. 110 168 B (−352 B), `d3817345…`, deterministisch. `check_itcm` bestanden, Audio-Pfad nur umsortiert, `HAL_DMA_IRQHandler` −644 B. Probebuild, Vergleich in `docs/05`, „Probebuild GCC 14.3 und 15.2“ |
+| `cand-fx9a-gcc15` | `v22.4.r-fx9a` | nein | wie `cand-fx9a-gcc14`, gebaut mit **Arm GNU 15.2.Rel1**. 112 568 B (+2048 B), `7cb63e7c…`, deterministisch. `check_itcm` bestanden, fast alle heißen Funktionen neu übersetzt, `codec_ndtr` 20 → 200 B |

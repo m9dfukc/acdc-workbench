@@ -67,6 +67,7 @@ Keine Quelle adressiert das analoge Rauschen, den PCM3168A-Treiber oder die LED-
 
 - Upstream-CI (`.github/workflows/c-cpp.yml`, v22.5.0): `carlosperate/arm-none-eabi-gcc-action`, Arm GNU **12.2.Rel1** [belegt: Repo]. Installiert seit 2026-11-14 unter `/Applications/ArmGNUToolchain/12.2.rel1/`.
 - Größen: acdc1-Readback 106 608 B, Release 109 080 B, Grenze 131 072 B (128 KB internes Flash laut Build-Config).
+- Seit 2026-11-15 baut die Upstream-CI mit **14.3.Rel1** (`d3df5264`). Probebuilds von fx9a mit 14.3.Rel1 und 15.2.Rel1 liegen vor (2026-11-27, nicht geflasht), Abschnitt „Probebuild GCC 14.3 und 15.2“. Der Standard bleibt 12.2.
 
 ## Abgestimmter Plan (Grill-Runde 2026-11-14)
 
@@ -874,6 +875,70 @@ Ein Build von `f9f9399a` ohne Patches ist bytegleich mit fx8a (`firmware/builds/
 Ein Build von `4ef038b6` ohne Patches ist bytegleich mit fx9a (`firmware/builds/verify-fx1d-4ef038b6`, `fd77ec3a…`). Dazu das Release `acdc-v22.4.r-fx9a` (Tag auf `b6bcdc33`, „Latest“, 2026-11-23) mit `ACDC-v22.4.r-fx9a.bin` und `BUILD_INFO-v22.4.r-fx9a.txt` aus dem Prüf-Build.
 
 **Nachtrag 2026-11-25, Rückmeldung von Rebel Technology im Forum:** Gedacht war „Cache aus nur im Debug-Build“. `Hardware/xibeca.mk` setzt im Debug-Build `-DDEBUG` und im Release-Build weder `DEBUG` noch `NDEBUG` [Code]. Statt die Caches fest einzuschalten, prüft `hardware.h` deshalb jetzt `#ifndef DEBUG` (Patch 21, `21-cache-ifndef-debug.patch`). `NDEBUG` in `xibeca.mk` zu setzen, wäre die andere Möglichkeit gewesen, hätte aber alle Xibeca-Ziele und `assert()` in fremdem Code mit betroffen. Ein Build von `4ef038b6` + Patch 21 ist bytegleich mit fx9a (`firmware/builds/check-fx9a-ifndef-debug`, `fd77ec3a…`) [gemessen: Build]. Kein Flash nötig, die Version bleibt `v22.4.r-fx9a`. Im Fork ist das `54228769` auf `acdc/fx1d`, ein Build davon ist ebenfalls bytegleich (`firmware/builds/verify-fx1d-54228769`). Der Tag des Release `acdc-v22.4.r-fx9a` zeigt seit 2026-11-25 auf `54228769` (vorher `b6bcdc33`), die `.bin` bleibt, `BUILD_INFO-v22.4.r-fx9a.txt` stammt jetzt aus diesem Prüf-Build, der Text nennt die Änderung. Ein Release `acdc-v22.4.r-fx9a.1` gab es am 2026-11-25 kurz, es ist samt Tag wieder gelöscht (Nutzer). Der zweite Hinweis (`_DMA_DATA` ist in `xibeca.ld` definiert) bezog sich auf `8a401e75` und war mit `2b6ffa1b` und `e33f0756` schon berichtigt.
+
+### Probebuild GCC 14.3 und 15.2 (2026-11-27, nicht geflasht)
+
+**Anlass:** Upstream hat am 2026-11-15 `feature/gcc15-update` in `master` gemergt (PR #89, `36eaf1c4`). Die Build-Flags daraus haben wir seit Build 4 (Patch 08, Fork `151bd8bc`), den Compiler nicht. Die Upstream-CI baut mit **Arm GNU 14.3.Rel1**, trotz des Branch-Namens nicht mit 15 [belegt: Repo, `upstream_master_2026-11-16.md`]. Frage: Was ändert ein neuer Compiler am fx9a-Binary?
+
+**Toolchains (Nutzer: beide, 2026-11-27):** von developer.arm.com, macOS arm64, `arm-none-eabi`, SHA-256 gegen die `.sha256asc` von Arm geprüft. Abgelegt sind sie in `firmware/downloads/toolchains/` und entpackt nach `firmware/downloads/toolchains/<version>/arm-none-eabi/` (gleicher Aufbau wie 12.2). Nach `/Applications/ArmGNUToolchain/` kann nur der Nutzer verschieben (gehört root). Die Binaries enthalten keine Pfade, der Ort ändert sie also nicht.
+
+| Version | Datei | Größe | SHA-256 |
+|---|---|---|---|
+| 14.3.Rel1 (Build arm-14.174, GCC 14.3.1 20250623) | `arm-gnu-toolchain-14.3.rel1-darwin-arm64-arm-none-eabi.tar.xz` | 137 816 224 B | `30f4d08b219190a37cded6aa796f4549504902c53cfc3c7e044a8490b6eba1f7` |
+| 15.2.Rel1 (Build arm-15.86, GCC 15.2.1 20251203) | `arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi.tar.xz` | 141 961 944 B | `1938a84b7105c192e3fb4fa5e893ba25f425f7ddab40515ae608cd40f68669a8` |
+
+15.1 gibt es für macOS nicht, 15.2 ist die neueste 15.x (Stand 2026-11-27).
+
+**Builds:** Fork `54228769` (= fx9a), Libraries `9e8f64e`, keine Patches, nur `TOOLROOT` anders:
+`TOOLROOT=$PWD/firmware/downloads/toolchains/14.3.rel1/arm-none-eabi/bin/ tools/build_acdc.sh cand-fx9a-gcc14 54228769 firmware/downloads/OpenWareLibraries-9e8f64e.tar.gz` (15.2 entsprechend `cand-fx9a-gcc15`).
+
+**Vergleich am Rechner [gemessen am Rechner, 2026-11-27]**, Referenz `verify-fx1d-54228769` (12.2, bytegleich mit fx9a):
+
+| | 12.2.Rel1 (fx9a) | 14.3.Rel1 | 15.2.Rel1 |
+|---|---|---|---|
+| `ACDC.bin` | 110 520 B | 110 168 B (−352) | 112 568 B (+2048) |
+| SHA-256 | `fd77ec3a…` | `d3817345…` | `7cb63e7c…` |
+| deterministisch (zweiter Build) | ja | ja | ja |
+| `.itcm_text` | 12 440 B | 11 888 B (−552) | 12 880 B (+440) |
+| ITCM-Ende `_eitcm_text` | 0x6338 | 0x6110 | 0x64f0 |
+| Patch-Heap im CCM (bis 0x10000) | 40 136 B | 40 688 B (+552) | 39 696 B (−440) |
+| `.text` (Flash) | 92 552 B | 92 736 B (+184) | 94 144 B (+1592) |
+| `.rodata` | 4 272 B | 4 280 B | 4 280 B |
+| `.data`, `.bss`, `.dmadata`, `.heapd2`, `.late_bss` | 544 / 28 876 / 16 656 / 73 728 / 48 | gleich | gleich |
+| Warnungen im Build-Log | 1 (RWX-LOAD-Segment) | dieselbe | dieselbe |
+| `tools/check_itcm.py --ref acdc1-build11-fx9a` | BESTANDEN | BESTANDEN (0 FAIL, 0 WARN) | BESTANDEN (0 FAIL, 0 WARN) |
+| Veneers ITCM → Flash | 27, alle in COLD | 27, dieselben | 27, dieselben |
+| ITCM-Funktionen mit anderer Größe | – | 18 von 126 | 40 von 126 |
+| Version im Binary | `AC/DC v22.4.r-fx9a` | gleich | gleich |
+
+Heißer Pfad im Disassembly (Befehle normiert, Adressen entfernt):
+
+| Funktion (ITCM) | 12.2 | 14.3 | 15.2 |
+|---|---|---|---|
+| `audioCallback` | 148 B | 148 B, zwei Befehle getauscht | 152 B |
+| `SAI_DMARxCplt`, `SAI_DMATxCplt` | je 92 B | je 92 B, Register anders | je 96 B |
+| `usbd_rx_convert` | 188 B | 188 B, ein Vergleich mit getauschten Operanden | 160 B |
+| `usbd_tx_convert` | 128 B | 128 B, **identisch** | 116 B |
+| `usbd_audio_sof_callback` | 296 B | 312 B, umsortiert | 308 B |
+| `HAL_DMA_IRQHandler` | 1704 B | **1060 B** | 1726 B |
+| `codec_ndtr` | 20 B | 24 B | **200 B** |
+| `setLed` | 204 B | 220 B | 216 B |
+| `acdcOnLoopLate` / `acdcOnLoopDark` | 484 / 292 B | 548 / 264 B | 552 / 264 B |
+| `HAL_PCD_IRQHandler` | 1624 B | 1660 B | 1720 B |
+| `USBD_AUDIO_DataOut` / `DataIn` | 572 / 480 B | 584 / 464 B | 588 / 500 B |
+| `vTaskSwitchContext` | 164 B | 164 B, identisch | 184 B |
+| Summe Funktionen im ITCM | 12 298 B | 11 752 B | 12 742 B |
+
+- **`HAL_DMA_IRQHandler`** prüft in jedem Zweig per `IS_DMA_STREAM_INSTANCE`, ob ein DMA- oder BDMA-Stream vorliegt (Ketten aus 16 Adressvergleichen). GCC 14.3 legt diese Ketten zusammen: 56 statt 99 `cmp`, 437 statt 641 Befehle. GCC 15.2 liegt wieder bei 103 `cmp` [Code]. Der Handler läuft für jeden Halb- und Ganzblock der beiden SAI-DMAs. Wie viele Takte das im Lauf spart, ist nicht gemessen.
+- **`codec_ndtr`** (`__HAL_DMA_GET_COUNTER`, aufgerufen über `Codec::getSampleCounter()` aus `USBD_AUDIO_DataOut`/`DataIn` und `usbd_audio_sof_callback`, also einige Male je USB-Frame): Unter 12.2 und 14.3 ein Load des NDTR-Registers. Unter 15.2 rechnet GCC die DMA/BDMA-Prüfung mit 16 Vergleichen in Registern aus und verwirft das Ergebnis, weil beide Zweige dasselbe Register lesen [Code]. Es bleibt ein einziger Peripherie-Zugriff, zusätzlicher Busverkehr entsteht nicht. Es kostet nur Takte aus dem ITCM, etwa 70 Befehle je Aufruf.
+- `device_cache_invalidate`, `SVC_Handler`, `Reset_Handler`: identisch. `MPU_Config` unter 15.2 und `PendSV_Handler` unter beiden neuen nur mit anderen Schreibweisen desselben Befehls (`push` statt `stmdb sp!`, `pop {pc}` statt `ldr.w pc, [sp], #4`) [Code].
+- Eine Map-Datei schreibt der Release-Build nicht (`build_acdc.sh` kopiert sie nur, wenn es sie gibt). Den Vergleich der Lage liefert deshalb der nm-Vergleich in `check_itcm.md` (Abschnitt 8): Von 734 gemeinsamen Funktionen liegen bei 14.3 nur 4 an derselben Adresse, 143 haben eine andere Größe. Bei 15.2 sind es 6 und 259. Die ITCM-Funktionen ab `SAI_DMATxCplt` sind bei 14.3 um 0x284 nach vorne gerückt.
+- Ergebnisse: `firmware/builds/cand-fx9a-gcc14/` und `cand-fx9a-gcc15/`, je mit `BUILD_INFO.txt`, `build.log`, `check_itcm.md`/`.json`.
+
+**Einschätzung:**
+- **15.2 nicht weiter verfolgen.** Mehr Code (+2 KB Flash, +440 B ITCM, weniger Patch-Heap), schlechtere Faltung in `codec_ndtr` und `HAL_DMA_IRQHandler`, und die Upstream-CI prüft 15 nicht.
+- **14.3 ist der Kandidat, ein Flash allein für den Compiler lohnt sich derzeit nicht.** Der Nutzen ist klein: 552 B mehr Patch-Heap im CCM, ein kürzerer DMA-Interrupt, gleiche Toolchain wie Upstream. Die volle Abnahme (Loop-Test 10 min, Downloads 240/240, Patch-Wechsel, Rausch-Sandwich gegen fx9a) kostet dagegen eine ganze Sitzung. Fast alle Adressen ändern sich, auch im ITCM. Der Audio-Pfad (`audioCallback`, SAI-Callbacks, `usbd_rx/tx_convert`) ist fast unverändert, deshalb ist ein Unterschied im Rauschen unwahrscheinlich [Hypothese]. Nach D33/D48 ist er aber nur messbar auszuschließen.
+- **Vorschlag:** Den Compiler zusammen mit dem nächsten Build wechseln, der ohnehin eine volle Abnahme braucht (nächster Funktionsbuild oder der Port auf Upstream-`master`). Eine Abnahme deckt dann beides. Bis dahin bleibt 12.2 der Standard in `tools/build_acdc.sh`.
 
 ### Fork `m9dfukc/OpenWare` (gepusht 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
 

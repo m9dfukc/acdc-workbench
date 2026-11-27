@@ -187,6 +187,9 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
   - Vorarbeit: Patches 09 und 10, Kandidaten `cand-r-merge2250-fx2d` und `cand-master-oldhal-fx` (gebaut, nicht geflasht)
   - Der früher genannte „Rückbau `3237e7ca`“ entfällt: Der Commit betrifft `owl3.mk`, das AC/DC baut mit `xibeca.mk` [Code]
 - [ ] Optional: alte Firmware (Readback) disassemblieren, ob ihr Feedback eine Pufferstand-Korrektur hat (D16)
+- [ ] **Compiler auf Arm GNU 14.3.Rel1 umstellen, zusammen mit dem nächsten Build, der ohnehin eine volle Abnahme braucht** (Probebuild 2026-11-27, `docs/05`, „Probebuild GCC 14.3 und 15.2“). `cand-fx9a-gcc14` baut ohne neue Warnung, `check_itcm` bestanden, Audio-Pfad fast unverändert, `HAL_DMA_IRQHandler` −644 B, Patch-Heap +552 B. Ein Flash nur für den Compiler lohnt den Aufwand der Abnahme nicht. 15.2.Rel1 nicht weiter verfolgen (mehr Code, `codec_ndtr` 20 → 200 B)
+  - [ ] Toolchains nach `/Applications/ArmGNUToolchain/` verschieben (Nutzer, braucht sudo). Sie liegen entpackt in `firmware/downloads/toolchains/<version>/arm-none-eabi/`
+  - [ ] Beim Umstieg den Standard-`TOOLROOT` in `tools/build_acdc.sh` und `tools/check_itcm.py` ändern, CLAUDE.md (Toolchain-Zeile) nachziehen
 
 ### 6. Veröffentlichung
 - [x] Repo `acdc-workbench` lokal angelegt (2026-11-16): `.gitignore`, Lizenzen, `README.md`/`README.de.md`, `firmware/OpenWare` als Submodul, englische Fassung der Docs 01–05 und 99 in `docs/en/`
@@ -335,6 +338,7 @@ Jeder Flash nur nach ausdrücklicher Freigabe. acdc2 nicht anfassen. Settings nu
   - [x] Kamm: USB-Code ins ITCM ohne Playback-Fehler. Diagnose (Patches 13/13b, D45/D46): kein Paketverlust, aber die SOF-Kette läuft mit USB im ITCM doppelt → falsches Feedback. Fix Patch 14. **fx3l** (11g + 12b + 14): Loop sauber (D47), fs/8 −5,1, Mischprodukte −35, RMS −1,1, Kamm +0,2…+0,4 dB gegen 3d (D48)
   - [x] Füllvariante gemessen (Q2 b): fx3lp ≤ 0,25 dB bei fx3l, lagenunabhängig (D48)
   - [x] fx3l für den Alltagstest auf acdc1 geflasht (D49)
+- [x] Arm GNU 14.3.Rel1 und 15.2.Rel1 geladen (SHA-256 geprüft), Probebuilds `cand-fx9a-gcc14` und `cand-fx9a-gcc15` von `54228769`, am Rechner gegen fx9a verglichen (2026-11-27, `docs/05`, „Probebuild GCC 14.3 und 15.2“). Nicht geflasht
 
 ### Phase 6 – Fork und Veröffentlichung
 - [x] Fork-Branch `acdc/thru-usb-feedback` (= Build 1d: Durchleitung + USB-Feedback-Fix) vorbereitet und gepusht 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback

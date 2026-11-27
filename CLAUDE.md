@@ -192,7 +192,7 @@ Bei Detailfragen zuerst `docs/research/notes/` durchsuchen, bevor neu recherchie
 
 ## Firmware (Kurzform, Details in `docs/05-firmware-plan.md`)
 
-Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`) + Libraries `9e8f64e` (altes H7-HAL), gebaut mit `tools/build_acdc.sh` und Arm GNU 12.2.Rel1 (`/Applications/ArmGNUToolchain/12.2.rel1/`), deterministisch. v22.4.s (`7f3cc41`) gibt auf acdc1 kein Audio (D10).
+Alle eigenen Builds: Basis `db9d3dd` (v22.4.r, Branch `hack/acdc-output-levels`) + Libraries `9e8f64e` (altes H7-HAL), gebaut mit `tools/build_acdc.sh` und Arm GNU 12.2.Rel1 (`/Applications/ArmGNUToolchain/12.2.rel1/`), deterministisch. Probebuilds von fx9a mit 14.3.Rel1 und 15.2.Rel1 (2026-11-27, nicht geflasht, Toolchains in `firmware/downloads/toolchains/`): 14.3 ist Kandidat für den nächsten abgenommenen Build, 15.2 nicht (`docs/05`, „Probebuild GCC 14.3 und 15.2“). v22.4.s (`7f3cc41`) gibt auf acdc1 kein Audio (D10).
 
 | Build | Version, SHA | Inhalt | Ergebnis |
 |---|---|---|---|

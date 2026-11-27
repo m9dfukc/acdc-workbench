@@ -1,0 +1,10 @@
+# Build cand-fx9a-gcc14
+datum:      2026-11-27T09:41:08Z
+commit:     542287697123b6ec34483ff41eee6587de56d726
+libraries:  OpenWareLibraries-9e8f64e.tar.gz sha256 c56a465cf59086b2a1f742b7cb9848e17af4b3957108cc1289540b180ad69d88
+toolchain:  arm-none-eabi-gcc (Arm GNU Toolchain 14.3.Rel1 (Build arm-14.174)) 14.3.1 20250623
+make:       CONFIG=Release GIT_REVISION="5422876 Release"
+fw_version: (unverändert)
+bin_size:   110168
+bin_sha256: d381734538004c440984fb567f447b26d6f747bf631ca1823590b3ef50e0cea4
+version:    AC/DC v22.4.r-fx9a
