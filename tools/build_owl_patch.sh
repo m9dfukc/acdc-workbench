@@ -15,7 +15,7 @@
 #   tools/build_owl_patch.sh TapeDelay TapeDelayPatch TapeDelayPatch.hpp
 #   tools/build_owl_patch.sh Grainz GrainzPatch GrainzPatch.hpp SmoothValue.h
 #   LIMIT=1 tools/build_owl_patch.sh Grainz GrainzPatch GrainzPatch.hpp SmoothValue.h
-#   SRC=owl/tanh3 tools/build_owl_patch.sh Tanh3 Tanh3Patch Tanh3Patch.hpp
+#   SRC=owl/patches/tanh3 tools/build_owl_patch.sh Tanh3 Tanh3Patch Tanh3Patch.hpp
 # Extra headers are included before the patch file. That repairs a source with a
 # missing include without touching it.
 #
@@ -29,7 +29,7 @@
 #             runs on every OWL device, like the patch library)
 #   LINK      patchram (default: links to 0x2000c000 like the patch library, at most
 #             80 KB on the AC/DC) or plusram (0x24000000, up to 512 KB, needs PLATFORM=OWL3)
-#   LIMIT     1 = wrap the patch in AcdcLimited<> (owl/AcdcOutput.h): limiter on the
+#   LIMIT     1 = wrap the patch in AcdcLimited<> (owl/include/AcdcOutput.h): limiter on the
 #             audio outputs 1/2. The patch source stays untouched.
 #   TOOLROOT  toolchain bin directory with a trailing slash
 #             (default: /Applications/ArmGNUToolchain/12.2.rel1/arm-none-eabi/bin/)
@@ -66,7 +66,7 @@ case "$NAME" in (*/*|""|.|..) echo "Invalid name: $NAME" >&2; exit 2;; esac
 [ -f "$SDK/compile.mk" ] || { echo "OwlProgram not found: $SDK" >&2; exit 2; }
 [ -f "$SDK/Libraries/DaisySP/Source/daisysp.h" ] || { echo "DaisySP sources are missing in $SDK/Libraries/DaisySP" >&2; exit 2; }
 [ -f "$SRC/$FILE" ] || { echo "Patch file not found: $SRC/$FILE" >&2; exit 2; }
-[ "$LIMIT" != 1 ] || [ -f "$ROOT/owl/AcdcOutput.h" ] || { echo "owl/AcdcOutput.h missing: git submodule update --init owl" >&2; exit 2; }
+[ "$LIMIT" != 1 ] || [ -f "$ROOT/owl/include/AcdcOutput.h" ] || { echo "owl/include/AcdcOutput.h missing: git submodule update --init owl" >&2; exit 2; }
 
 WORK="${WORK:-$ROOT/owl-patches/_work}"
 BUILD="$WORK/$NAME-$PLATFORM-$LINK"
@@ -107,7 +107,7 @@ if [ ${#PRELUDE[@]} -gt 0 ] || [ "$LIMIT" = 1 ]; then
     echo "#include \"$FILE\""
     if [ "$LIMIT" = 1 ]; then
       PATCHCLASS="${NAME}AcdcPatch"
-      echo "#include \"$ROOT/owl/AcdcOutput.h\""
+      echo "#include \"$ROOT/owl/include/AcdcOutput.h\""
       echo "class $PATCHCLASS : public AcdcLimited<$CLASS> {};"
     fi
   } > "$BUILD/Source/$PATCHFILE"
@@ -139,7 +139,7 @@ sha() { shasum -a 256 "$1" | cut -d' ' -f1; }
   echo "sdk:        $SDK"
   echo "sdk_flags:  compile.mk sha256 $MKSHA, builtins $BUILTINS"
   echo "platform:   $PLATFORM, link $LINK ($(basename "$LDSCRIPT"))"
-  [ "$LIMIT" = 1 ] && echo "limiter:    owl/AcdcOutput.h sha256 $(sha "$ROOT/owl/AcdcOutput.h")"
+  [ "$LIMIT" = 1 ] && echo "limiter:    owl/include/AcdcOutput.h sha256 $(sha "$ROOT/owl/include/AcdcOutput.h")"
   echo "toolchain:  $("${TOOLROOT}arm-none-eabi-gcc" --version | head -1)"
   echo "size:       $("${TOOLROOT}arm-none-eabi-size" "$BUILD/patch.elf" | tail -1 | awk '{print "text " $1 " data " $2 " bss " $3}')"
   echo "bin_size:   $(wc -c < "$DEST/patch.bin" | tr -d ' ')"

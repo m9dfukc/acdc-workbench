@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Host test of the project's own OWL patch code. The code and the test runner live in the
-# submodule owl/ (m9dfukc/acdc-patches): tanh3/Tanh3Patch.hpp, AcdcOutput.h, AcdcInput.h, schliere/
-# (all Schliere variants) and the two LED measurement patches in owl/test/. This script only
-# calls owl/test/run.sh, see there for the test cases.
+# submodule owl/ (m9dfukc/acdc-patches): patches/tanh3/, patches/schliere/ (all Schliere variants),
+# patches/plateau/, include/AcdcOutput.h, include/AcdcInput.h and the measurement patches in
+# owl/test/. This script only calls owl/test/run.sh, see there for the test cases.
 #
 # Usage: tools/test_owl_dsp.sh        Exit code 0 = all cases ok.
 set -euo pipefail
