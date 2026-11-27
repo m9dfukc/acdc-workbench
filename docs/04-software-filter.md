@@ -1,5 +1,7 @@
 # 04 – Software-Filter (Notch-Bank)
 
+> **Stand 2026-11-27: nicht gebaut und gestrichen** (Entscheidung des Nutzers). Mit dem Masse-Draht auf dem Modul trägt der Kamm noch 30–50 % der Rauschleistung, eine ideale Notch-Bank brächte nur noch 1,6–3 dB [gemessen, messlog D90]. Das Dokument bleibt zum Nachschlagen: Filterform, Parameter aus den Messungen und Entwurf. Zeigt die Hörprobe mit Kompressor doch einen störenden Kamm, lässt sich der Plan wieder aufnehmen.
+
 Voraussetzung: Messplan Schritt 1–2 zeigt einen **stabilen, schmalbandigen** Kamm, und f0 ist gemessen.
 
 **Stand 2026-11-16:** Noch nichts davon ist gebaut. Der Plan hat sich verschoben:
@@ -36,11 +38,11 @@ Gewinn laut M1/M2: ≈ 4–5 dB Rauschleistung bei Gain 12, ≈ 10 dB bei vollem
 
 ## 1. Python-Prototyp (offline, zum Abstimmen)
 
-Im Analyse-Projekt unter `analysis/notch.py`. Ziel: Parameter (f0, Breite, Anzahl) an echten Aufnahmen tunen, bevor der FAUST-Patch geschrieben wird.
+Geplant als Modul `notch.py` im Analyse-Paket (nicht geschrieben). Ziel: Parameter (f0, Breite, Anzahl) an echten Aufnahmen tunen, bevor der FAUST-Patch geschrieben wird.
 
 Spezifikation:
 - Ein `scipy.signal.iirnotch(w0=k*f0, Q=k*f0/bw_k, fs=fs)` pro Harmonischer, mit `bw_k = bw * (1 + 0.1*k)`. Als SOS kaskadieren (`sosfilt`, numerisch stabil). Zusätzlich `sosfiltfilt` für die nullphasige Offline-Variante.
-- CLI: `uv run analysis/notch.py in.wav --f0 1000.13 --bw 3 --harmonics 23 -o out/in_notched.wav`
+- CLI: `uv run analysis/notch.py in.wav --f0 1000.13 --bw 3 --harmonics 23 -o reports/in_notched.wav`
 - Vorher/Nachher-PSD überlagert plotten. RMS-Reduktion und Restlinien ausgeben.
 - Testsignal: Aufnahme eines echten Audiosignals (Sinus-Sweep, Musik) **mit** Rauschen. Hörtest auf Färbung machen und die Phasenantwort der Bank plotten.
 - Die Parameter, die gut funktionieren, in `docs/messlog.md` übernehmen. Sie fließen in den FAUST-Patch.

@@ -1,4 +1,4 @@
-<!-- i18n source=docs/01-hardware-und-firmware.md sha256=9cbd364cac6f60e1e87367815f432f4c18ff9f3c1164b545b40b833d4fad1b67 date=2026-11-27 -->
+<!-- i18n source=docs/01-hardware-und-firmware.md sha256=ebecb2b541e5100c6f714036d5b76a5aaec06de929a88a6ed3e048cfb8e5c50c date=2026-11-27 -->
 > English translation of [`docs/01-hardware-und-firmware.md`](../../docs/01-hardware-und-firmware.md), as of 2026-11-27. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 01 – Hardware & firmware of the AC/DC
@@ -19,12 +19,12 @@ Basis: OpenWare source `RebelTechnology/OpenWare` @ `62a0187` (v22.5.0, 2023-03-
 | Sample rate | nominally 48 kHz. PLL3 98.2857 MHz, MCKDIV rounded to 8 → **≈ 47 991 Hz (−186 ppm)**. This applies to v22.5.0 and v22.4.q (acdc2). From v22.4.r in the hack branch (PLL3 P/Q 8, FRACN 262) it is exactly 48 kHz, this is how acdc1 runs | [code], [measured] lab notebook D10 |
 | I/O | 4 inputs, 4 outputs, ±10 V, DC-coupled | [sourced] |
 | Controls | 4 knobs (input gain **and** patch parameters A–D), 8 LEDs (parameters AA–AD, BA–BD). No buttons, no gate/CV input, no serial MIDI in the firmware. On the back there is a 3-pin header "MIDI" (raw UART), the MIDI expander planned for it never appeared (thread #2077). See "MIDI header on the back" | [sourced] |
-| LEDs | PWM via TIM2/3/4/8, prescaler 100, period 1023 → **≈ 2.32 kHz** (in the audio band). The duty cycle follows the level | [code] |
+| LEDs | PWM via TIM2/3/4/8, prescaler 100, period 1023 → **≈ 2.32 kHz** (in the audio band). The duty cycle follows the level. Own builds from fx7a on: 48 kHz, see "My own firmware on acdc1" | [code] |
 | Power | Eurorack bus (+12 V, approx. 200 mA). Not powered via USB | [sourced] |
 | Construction | Carrier board by Befaco (jacks, NE5532 op amps, knobs, LEDs, power supply) with the plug-on processor module **Xibeca** by Rebel Technology (red board, Rev02 on acdc1: MCU, SDRAM, QSPI, codec). Two headers of 2 × 24 pins each. Noctua2 is a predecessor with the same pinout | [sourced: schematics, photo thread 2083 #4] |
 | Ground | On the module AGND (codec) and GND (MCU, memory, USB), joined by the ferrite bead L1 (0603). L2/L3 filter +A3V3 and +A5V. The carrier ties all AGND pins (33, 47–50, 67, 71, 72) directly to its ground, GND pins 15, 16, 85, 86. **A wire pin 15 ↔ pin 33 on the module clearly lowers the noise of the inputs**, see `06-hardware-mod-ground.md` | [code: schematic], [measured] messlog D90 |
 | Default gains | Input 104, output 114 (v22.5.0). In the hack branch (v22.4.q, v22.4.r): input 88. My own builds from 1c on: output 125 (patch 04). These are all defaults: settings stored in flash take precedence | [code] |
-| Firmware acdc1 | Today **`v22.4.r-fx4b`** (my own build, since 2026-11-17, before that `v22.4.r-fx3l` since 2026-11-16). From the factory the module reported "v22.5.0", but it was a build from `hack/acdc-output-levels` with this label, not a published commit. Hence block size 8, the 6 kHz line and the clocking of v22.4.r | [measured] lab notebook D3, D3a, D10, D49, D59 |
+| Firmware acdc1 | Today **`v22.4.r-fx9a`** (my own build, since 2026-11-23, predecessors in `05-firmware-plan.md`). From the factory the module reported "v22.5.0", but it was a build from `hack/acdc-output-levels` with this label, not a published commit. Hence block size 8, the 6 kHz line and the clocking of v22.4.r | [measured] lab notebook D3, D3a, D10, D88 |
 | Firmware acdc2 | **v22.4.q** = commit `e81cfc3` (2022-06-27) from `hack/acdc-output-levels`, never merged. `AUDIO_BLOCK_SIZE 8` (v22.5.0: 16), `AUDIO_INPUT_GAIN 88`, HPF off, PLL/LED timers as in v22.5.0. Our code analysis otherwise refers to v22.5.0 | [code], device status 2026-11-13 |
 
 ## USB
@@ -75,7 +75,7 @@ TX and RX routing can be switched **independently** of each other (checked in th
 | `TX_PRE_FX` + `RX_PRE_FX` (antisvin, burstMembrane fork) | Inputs → patch → DAC | The computer gets the raw inputs, DAW playback goes **into the patch** |
 | **only `TX_PRE_FX`** | Inputs → patch → DAC | The computer gets the raw inputs, DAC = DAW playback ✅ **target behavior** |
 
-- **Limitation of "only `TX_PRE_FX`" (build 2 `v22.4.r-fx1d`, likewise 3d and fx3l):** When an app records from the AC/DC, macOS also starts the playback stream [measured, D20]. Then the right column applies, and the host silence overwrites the patch output. So the FX is at the jacks only without a computer stream [code]. Accepted as is for build 2 (`docs/05`, "Build 2 neu").
+- **Limitation of "only `TX_PRE_FX`" (build 2 `v22.4.r-fx1d`, likewise all later builds up to fx9a):** When an app records from the AC/DC, macOS also starts the playback stream [measured, D20]. Then the right column applies, and the host silence overwrites the patch output. So the FX is at the jacks only without a computer stream [code]. Accepted as is for build 2 (`docs/05`, "Build 2 neu").
 
 Consequence for the noise: with stock routing (acdc2, build 1d) a **filter patch in slot 1 ends up directly in the USB recording**. With `TX_PRE_FX` (acdc1 from build 2 on) the computer records the raw inputs, a patch in the module no longer reaches the recording [measured, lab notebook D25, B2]. Filtering then happens in the computer. See `04-software-filter.md`.
 
@@ -135,10 +135,28 @@ GND ─────────────────────────�
 To clarify before building:
 
 - Which MCU pin is on header pin 1 (PB5 or PB7). Test: a firmware build with UART MIDI and a wire from pin 3 to pin 1.
-- Measurable without risk, with fx4b: between pin 3 and pin 2 there should be ≈ 3.3 V (TX idle) [code]. That confirms TX and the orientation of the header.
-- UART and DMA are new work for the MCU. A build with serial MIDI needs the noise comparison against fx4b (D33, D42).
+- Measurable without risk: between pin 3 and pin 2 there should be ≈ 3.3 V (TX idle) [code]. That confirms TX and the orientation of the header.
+- UART and DMA are new work for the MCU. A build with serial MIDI needs the noise comparison against the daily firmware (D33, D42).
 
-## My own firmware on acdc1 (as of `v22.4.r-fx4b`, 2026-11-17)
+### Steps, should it come to that
+
+Status 2026-11-18: none of this has been started (user: not important at the moment, could become interesting later). Goal: MIDI controllers control patch parameters in standalone operation (E–H and the extended ones, A–D belong to the knobs). Every firmware step with `check_itcm`, loop test and noise A/B against the daily firmware.
+
+Serial MIDI:
+
+1. Measure on the module: header pin 3 against pin 2 ≈ 3.3 V? That confirms TX and the orientation.
+2. Firmware patch for UART MIDI: 31250 baud, `USE_UART_MIDI_RX` (TX optional), `UART_MIDI_HANDLE`, DMA channel and interrupts. Template `XibecaDevKit`.
+3. Find out which MCU pin is on header pin 1 (PB5 = UART5 or PB7 = USART1): test build and a wire bridge pin 3 → pin 1.
+4. Build the adapter board on perfboard: MIDI in first (H11L1, 78L33), MIDI out (74HC14) only if needed.
+5. Check type A or B at the MIDI sockets of the controllers. Controllers with USB only stay out.
+
+Alternative I2C instead of MIDI (the user's question, 2026-11-18): e.g. as a follower on the ii bus of a monome crow. For control this is the shorter route: no optocoupler, no supply. MIDI and I2C share the pins, only one of the two is possible. Details in the note, section 6.
+
+1. Before connecting, cross the pin order (ii = GND, SCL, SDA, AC/DC = SDA, GND, SCL) and clarify the bus voltage. According to monome the ii pull-ups go to 5 V, so check the 5 V tolerance of PB6/PB7 in the datasheet or build a level shifter.
+2. Firmware patch: I2C1 as a follower with its own address, map commands to patch parameters (format like TELEXo, `0x11 Port High Low`).
+3. Extending inputs and outputs only works for control voltages and knobs (the AC/DC leads the bus, e.g. TELEXi), with a noise A/B because of the regular polling (D42). Audio does not go over I2C.
+
+## My own firmware on acdc1 (as of `v22.4.r-fx9a`, 2026-11-27)
 
 Short version. Reasons and measurements are in `05-firmware-plan.md` and `messlog.md`.
 
@@ -153,5 +171,11 @@ Short version. Reasons and measurements are in `05-firmware-plan.md` and `messlo
 | Input LEDs | With a TX stream raw level (mean square × 4096, τ 40 ms), red for 300 ms from −0.1 dBFS. Measured every 2 ms in `onLoop` on the codec DMA buffer (patch 07d) | [measured] D34, D36 |
 | Memory | Hot path (104 functions, 12 392 B) and vector table in ITCM from 0x3000 (patch 11g). Patch heap in CCM 39.2 KB instead of 52 KB | [code: `check_itcm.py`], [measured] D47–D49, D50 |
 | Patch selection | Boot menu (patch 15b): power on with knobs 1, 2, 3 at the left stop and knob 4 at the right stop. Knob 1 selects among the occupied slots 1–15, knob 4 confirms, knob 3 or 30 s cancel. The input LEDs show the slot in binary. The slot is remembered as the resource `ACDC.slot` in the patch flash and starts at the next power-on. The settings stay untouched | [measured] D52, D53, D55, D57, D58 |
+| MIDI send path | Atomic (patch 16): audio task, main loop and USB interrupt shared the send buffer and the endpoint without protection. The patch briefly disables the interrupts, releases the data only after the transfer has completed and throttles slot downloads (flow control). Downloads next to a running patch: 240 of 240 fine, before that 60 of 79 followed by a hang | [measured] D62, D63 |
+| LED mode | In the boot menu knob 2 chooses normal (left third), clip only (middle) or off (right), remembered in the resource `ACDC.led` (patch 17). In the off mode the LED shift of the inputs drops to 1.7 % | [measured] D75 |
+| LED PWM | 48 000 Hz instead of 2320.54 Hz, locked to the sample clock (TIM2/3/4/8: prescaler 4, period 999, patch 18). The PWM line is gone at inputs and outputs, LED values below 2.4 % stay dark | [measured] D78, D79 |
+| Caches | Instruction cache (patch 19) and data cache (patch 20) are on, the DMA buffers lie in an MPU region without cache. The original switches both on only with `NDEBUG`, and the release build never sets it. Plateau (link plusram) 29 % instead of 51 % CPU, patches in the DTCM unchanged | [measured] D83–D85, D87–D89 |
+| Known bug | A Program Change with an open stream breaks USB playback until the next stream start (about 10 % silence, `fb clamp`). Older than the own builds from fx5a on. Change the patch only without an open stream | [measured] D76, D77 |
+| Hardware | acdc1 has carried the ground wire pin 15 ↔ pin 33 since 2026-11-24, see `06-hardware-mod-ground.md` | [measured] D90 |
 | ADC format | SAI1 delivers 24 bits right-aligned **without sign extension** (`SAI_DATASIZE_24`). Sign-extend before any level calculation | [code], noticed in D28 |
 | Input range | Full scale ≈ ±9.5 V, offset ≈ −0.2…−0.4 V per channel | [measured] D29 (indirect), D36 |

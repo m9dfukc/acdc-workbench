@@ -36,7 +36,7 @@ def load_files(paths, name=None, meta=None, labels=None, channels=None, scale=1.
     Kanäle wegzulassen. Im Manifest als `channels = [1]`.
     scale: Faktor auf die Samples. Im Manifest als `scale = 2.0` bei Aufnahmen von
     `tools/acdc_rec.py`, damit sie in denselben Datei-dBFS stehen wie die frühen Aufnahmen über eine Host-Software
-    (Host-Faktor 2, CLAUDE.md „Pegel-Offset der frühen Aufnahmen“).
+    (Host-Faktor 2, docs/07-werkzeuge-und-ablaeufe.md, „Aufnehmen“).
     """
     paths = [Path(p) for p in paths]
     cols, fs = [], None

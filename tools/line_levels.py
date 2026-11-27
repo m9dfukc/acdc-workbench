@@ -11,7 +11,7 @@ or <name>=<wav> to set the name in the table.
 
 Usage:
   UV_CACHE_DIR=.uv-cache uv run python tools/line_levels.py B6b-osc-detuned B6b-knobs-12 \\
-      --freqs 2200.95 4401.90 6602.85 6000 [--out out/K1-session-table.md] [--json …]
+      --freqs 2200.95 4401.90 6602.85 6000 [--out reports/K1-session-table.md] [--json …]
 """
 from __future__ import annotations
 
@@ -77,7 +77,7 @@ def measure(path: Path, freqs: list[float], search: float, start: float, dur: fl
 
 
 def table(results: dict[str, dict], freqs: list[float], above: bool) -> str:
-    """Markdown-Tabelle (deutsch, wie die anderen Tabellen in out/)."""
+    """Markdown-Tabelle (deutsch, wie die anderen Tabellen in reports/)."""
     nch = len(next(iter(results.values()))["lines"][0]["level_db"])
     head = "| Aufnahme | Kanal | " + " | ".join(f"{f:g} Hz".replace(".", ",") for f in freqs) + " |"
     rows = [head, "|---|---|" + "---|" * len(freqs)]

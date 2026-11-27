@@ -6,7 +6,7 @@ This repository mixes three kinds of material. Each has its own license.
 |---|---|---|
 | `tools/`, `analysis/`, `firmware/itcm-prep/` | MIT | [LICENSES/MIT.txt](LICENSES/MIT.txt) |
 | `firmware/patches/`, patch files in `firmware/builds/` | GPL-2.0, the license of OpenWare, because the patches are derived from its source | [LICENSES/GPL-2.0.txt](LICENSES/GPL-2.0.txt) |
-| `docs/`, `README*.md`, `TODO.md`, `CLAUDE.md`, `recordings/manifest.toml`, `out/`, logs and reports in `firmware/builds/` and `firmware/flashlog/` | CC BY 4.0 | [LICENSES/CC-BY-4.0.txt](LICENSES/CC-BY-4.0.txt) |
+| `docs/`, `README*.md`, `TODO.md`, `CLAUDE.md`, `recordings/manifest.toml`, `reports/`, logs and reports in `firmware/builds/` and `firmware/flashlog/` | CC BY 4.0 | [LICENSES/CC-BY-4.0.txt](LICENSES/CC-BY-4.0.txt) |
 
 ## Third-party material
 

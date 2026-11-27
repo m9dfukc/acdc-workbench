@@ -15,7 +15,7 @@ because it goes into the project reports (docs/messlog.md).
 
 Usage:
   uv run python tools/ab_bands.py --name TapeDelay A1.wav B.wav A2.wav [--name … A1 B A2 …]
-                                  [--out out/D93-ab-bands.md] [--channels 1 2]
+                                  [--out reports/D93-ab-bands.md] [--channels 1 2]
 """
 from __future__ import annotations
 

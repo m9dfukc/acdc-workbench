@@ -31,6 +31,7 @@ English version: [README.md](README.md)
 | `tools/ledpath_phases.py` | Pegel je Phase einer Aufnahme mit dem Mess-Patch für den LED-Pfad, an einem zweiten Interface aufgenommen und über einen eingebauten Eichton auf den Ausgang des Moduls umgerechnet |
 | `tools/ab_bands.py` | A/B/A-Vergleich dreier Aufnahmen, etwa alter Build, neuer Build, alter Build: Pegel, Terzbänder gegen die Streuung der A-Läufe, neue Linien, Knackser |
 | `tools/knob_series.py` | Geführte Aufnahmeserie mit den Reglern in vorgegebenen Stellungen: liest die Regler per MIDI, wartet auf die Stellung, nimmt auf und schreibt am Ende eine Tabelle der Linienpegel |
+| `tools/doc_check.py` | Prüft die Doku vor einem Push: Länge von `CLAUDE.md`, tote Links, tote Pfade in den aktuellen Docs, veraltete englische Fassungen, Index des Laborbuchs |
 
 ## Befunde bisher
 
@@ -53,7 +54,7 @@ English version: [README.md](README.md)
 - **Vier Fehler im ursprünglichen Code** wurden dabei gefunden und behoben: drei Timing-Fehler im USB-Audio-Pfad (ein Feedback in offener Schleife, ein Wettlauf zwischen RX- und TX-DMA, ein Start-of-Frame-Handler, der zweimal je Frame lief) und ein ungeschützter MIDI-Sendeweg, der Slot-Downloads neben einem laufenden Patch beschädigte.
 - **Bekannt und nicht behoben:** Ein Program Change bei offenem USB-Audio-Stream bricht die Wiedergabe bis zum nächsten Stream-Start (rund 10 % Stille). Den Patch vor dem Öffnen des Streams wechseln.
 
-Rauschen der Alltags-Firmware `v22.4.r-fx8a` gegen die Original-Firmware des Testmoduls (der Werks-Build mit dem Etikett v22.5.0), gemessen in einer Sitzung mit `fx8a` vor und nach dem Original (D86): offene Eingänge, Gain auf 12 Uhr, 2 × 60 s für das Original und 4 × 60 s für `fx8a`, Pegel in dBFS des USB-Stroms. Die Original-Firmware nimmt nach der Verstärkung des Default-Patches auf, ihre Pegel sind deshalb je Kanal um den Gain korrigiert, gemessen über den DC-Offset der offenen Eingänge. Die letzten drei Spalten zeigen einzelne Build-Schritte, je in einer eigenen Sitzung gegen eine Kontrolle gemessen (D48, D85, D89). Die heutige Alltags-Firmware `fx9a` ist nur gegen `fx8a` gemessen (letzte Spalte). Zwischen Sitzungen driften die Pegel um bis zu etwa 3 dB, belastbar sind deshalb nur Differenzen innerhalb einer Sitzung.
+Rauschen von `v22.4.r-fx8a` gegen die Original-Firmware des Testmoduls (der Werks-Build mit dem Etikett v22.5.0), gemessen in einer Sitzung mit `fx8a` vor und nach dem Original (D86): offene Eingänge, Gain auf 12 Uhr, 2 × 60 s für das Original und 4 × 60 s für `fx8a`, Pegel in dBFS des USB-Stroms. Die Original-Firmware nimmt nach der Verstärkung des Default-Patches auf, ihre Pegel sind deshalb je Kanal um den Gain korrigiert, gemessen über den DC-Offset der offenen Eingänge. Die letzten drei Spalten zeigen einzelne Build-Schritte, je in einer eigenen Sitzung gegen eine Kontrolle gemessen (D48, D85, D89). Die heutige Alltags-Firmware `fx9a` ist nur gegen `fx8a` gemessen (letzte Spalte). Zwischen Sitzungen driften die Pegel um bis zu etwa 3 dB, belastbar sind deshalb nur Differenzen innerhalb einer Sitzung.
 
 | Größe | Original | `fx8a` | Differenz | `fx2d` → `fx3l` | `fx7a` → `fx8a` | `fx8a` → `fx9a` |
 |---|---|---|---|---|---|---|
@@ -113,30 +114,30 @@ tools/setup_repo.sh    # Submodule, Upstream-Remote, feste Downloads mit Prüfsu
 uv sync
 ```
 
-Die Aufrufe für Aufnahme, Loop-Prüfung, Auslesen und Nachbau stehen im englischen [README.md](README.md#getting-started). Der Flash-Ablauf steht in [CLAUDE.md](CLAUDE.md), Abschnitt „Flash-Ablauf“, als Skript in `tools/flash_acdc.py` (am Modul erprobt; der Start per `:leave` im Skript bisher nur ohne Modul, von Hand am Modul zweimal erfolgreich).
+Die Aufrufe für Aufnahme, Loop-Prüfung, Auslesen und Nachbau stehen im englischen [README.md](README.md#getting-started). Alle Abläufe (aufnehmen, auslesen, Patch aufspielen, bauen, flashen, Loop-Test) stehen in [docs/07-werkzeuge-und-ablaeufe.md](docs/07-werkzeuge-und-ablaeufe.md). Der Flash-Ablauf läuft als Skript in `tools/flash_acdc.py`, am Modul erprobt samt Start per `:leave`.
 
 ## Aufbau des Repos
 
 | Pfad | Inhalt |
 |---|---|
 | `tools/`, `analysis/` | Die Werkbank |
-| `docs/` | Referenz-Docs `01` bis `06` (`06` ist der Masse-Mod), das Laborbuch `messlog.md`, Recherche-Notizen in `docs/research/` |
+| `docs/` | Referenz-Docs `01` bis `07` (`06` ist der Masse-Mod, `07` beschreibt Werkzeuge und Abläufe), das Laborbuch `messlog.md`, die Chronik `chronik.md`, Recherche-Notizen in `docs/research/` |
 | `docs/en/` | Englische Fassungen der Referenz-Docs, siehe [docs/en/README.md](docs/en/README.md) |
 | `firmware/OpenWare/` | Submodul, der Firmware-Fork |
 | `firmware/patches/`, `firmware/builds/`, `firmware/flashlog/` | Patches, Build-Protokolle, Flash-Protokolle |
 | `owl/` | Submodul [acdc-patches](https://github.com/m9dfukc/acdc-patches), eigene OWL-Patches für das Modul: `Tanh3` in `owl/patches/tanh3/` (dreifacher tanh-Waveshaper mit Mix-Kanal), `Schliere` in `owl/patches/schliere/` (Kette aus 61 Allpässen 2. Ordnung: Laufzeit je Frequenz, Phaser-Kerben, Resonator, mono hinein und stereo heraus; sieben Varianten, beschrieben in `owl/patches/schliere/README.md`), ein Ausgangs-Limiter für FX-Patches und eine Sperre für die Blockraten-Linien am Eingang, mit Tests am Rechner. In `owl/test/` liegen dazu zwei Mess-Patches, die die LEDs nach Zeitplan schalten und die LED-Verschiebung selbst an den rohen Eingängen messen. |
 | `recordings/manifest.toml` | Metadaten jeder Aufnahme |
-| `out/<ID>/` | Analyse-Report je Messung |
+| `reports/<ID>/` | Analyse-Report je Messung |
 | `TODO.md`, `CLAUDE.md` | Offene Punkte und der Projektkontext für die Arbeit mit Claude Code |
 
-Nicht im Repo: die Aufnahmen selbst (8 GB WAV), Plots und JSON-Ergebnisse in `out/`, Firmware-Binaries, die Geräte-Backups sowie fremde OWL-Patch-Quellen ohne Lizenz samt SDK und Builds (`owl/patches-private/`, `owl/vendor/`). Plots und Ergebnisse erzeugt `python -m analysis` aus den Aufnahmen neu.
+Nicht im Repo: die Aufnahmen selbst (11 GB WAV), Plots und JSON-Ergebnisse in `reports/`, Firmware-Binaries, die Geräte-Backups sowie fremde OWL-Patch-Quellen ohne Lizenz samt SDK und Builds (`owl/patches-private/`, `owl/vendor/`). Plots und Ergebnisse erzeugt `python -m analysis` aus den Aufnahmen neu.
 
 ## Sprache
 
 Die Arbeitsdokumente sind deutsch und bleiben es, Deutsch ist die Quelle.
 
-- Englische Fassungen der Referenz-Docs `01` bis `05` und `99` liegen in [docs/en/](docs/en/README.md). Sie werden aus dem Deutschen erzeugt und zu Meilensteinen aufgefrischt. `python tools/i18n_check.py` listet veraltete Fassungen auf.
-- Das Laborbuch `docs/messlog.md`, `TODO.md` und `CLAUDE.md` gibt es nur auf Deutsch.
+- Englische Fassungen der Referenz-Docs `01` bis `07` und `99` liegen in [docs/en/](docs/en/README.md). Sie werden aus dem Deutschen erzeugt und zu Meilensteinen aufgefrischt. `python tools/i18n_check.py` listet veraltete Fassungen auf.
+- Das Laborbuch `docs/messlog.md`, die Chronik `docs/chronik.md`, `TODO.md` und `CLAUDE.md` gibt es nur auf Deutsch.
 - Die Werkzeuge geben Hilfe und Meldungen auf Englisch aus. Die Reports der Analyse sind deutsch.
 - Die Recherche-Notizen in `docs/research/notes/` sind englisch.
 

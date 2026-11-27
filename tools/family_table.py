@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Family levels of several measurements as a Markdown table (evaluation as in D34/D35).
 
-Reads out/<ID>/<ID>.json (python -m analysis) and averages each quantity over the 4 channels
+Reads reports/<ID>/<ID>.json (python -m analysis) and averages each quantity over the 4 channels
 in power: RMS >= 20 Hz, residual without interference lines ("Rest"), comb ("Kamm", usb1k),
 fs/8, intermodulation products ("Mischprod.", imd). Values in file dBFS (like the analysis).
 Optional --ref: Δ in parentheses against the mean of the reference IDs (e.g. the control
@@ -38,7 +38,7 @@ DC_GAIN: dict[str, list[float]] = {}
 
 
 def load(mid: str) -> dict:
-    return json.loads((ROOT / "out" / mid / f"{mid}.json").read_text())
+    return json.loads((ROOT / "reports" / mid / f"{mid}.json").read_text())
 
 
 def dc_gain_db(mid: str, ref_dc: list[float]) -> list[float]:
@@ -80,7 +80,7 @@ def mean_of(ids: list[str]) -> dict[str, float]:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("ids", nargs="+", help="manifest IDs (out/<ID>/<ID>.json)")
+    ap.add_argument("ids", nargs="+", help="manifest IDs (reports/<ID>/<ID>.json)")
     ap.add_argument("--ref", nargs="+", help="reference IDs for Δ (mean in power)")
     ap.add_argument("--group", action="append", default=[], help="NAME=ID1,ID2: additional row with the mean")
     ap.add_argument("--out", help="also write the Markdown to this file")

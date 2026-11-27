@@ -1,8 +1,8 @@
 # 05 – Firmware: Stand, Forks, Build-Plan
 
-> **Stand 2026-11-23:** Auf acdc1 läuft **Build 10 `v22.4.r-fx8a`** (`e1b1097b…`, Abschnitt „Build 10“, messlog D83–D85, I-Cache an) als Alltags-Firmware (Entscheidung des Nutzers). Rückweg ist Build 9 `v22.4.r-fx7a` (`cac6fee0…`), dann Build 8 `v22.4.r-fx6a` (`6a3fc427…`), dann Build 7 `v22.4.r-fx5a` (`b69c25b3…`), Build 6b `v22.4.r-fx4b` (`a21f35c9…`), Build 5c `v22.4.r-fx3l` (`b55b94d8…`), danach Build 3d (`d212cf8d…`).
+> **Stand 2026-11-27:** Auf acdc1 läuft **Build 11 `v22.4.r-fx9a`** (`fd77ec3a…`, Abschnitt „Build 11“, messlog D87–D89, I- und D-Cache an) als Alltags-Firmware (Entscheidung des Nutzers, 2026-11-23). Rückweg ist Build 10 `v22.4.r-fx8a` (`e1b1097b…`), dann Build 9 `v22.4.r-fx7a` (`cac6fee0…`), Build 8 `v22.4.r-fx6a` (`6a3fc427…`), Build 7 `v22.4.r-fx5a` (`b69c25b3…`), Build 6b `v22.4.r-fx4b` (`a21f35c9…`), Build 5c `v22.4.r-fx3l` (`b55b94d8…`), danach Build 3d (`d212cf8d…`). Der nächste Build soll mit Arm GNU 14.3.Rel1 entstehen (Abschnitt „Probebuild GCC 14.3 und 15.2“).
 >
-> Dieses Dokument ist chronologisch gewachsen. „Läuft auf acdc1“, „nicht abgestimmt“ und „nächste Schritte“ in den Abschnitten zu Build 1 bis 4z beschreiben den Stand des jeweiligen Abschnitts. Was heute offen ist, steht in `TODO.md`.
+> Dieses Dokument ist die Chronik der Firmware und chronologisch gewachsen. „Läuft auf acdc1“, „nicht abgestimmt“, „nächste Schritte“ und „Reihenfolge“ beschreiben den Stand des jeweiligen Abschnitts. Was heute gilt, steht woanders: offene Punkte in `TODO.md`, der Flash-Ablauf und die Regeln für neue Builds in `07-werkzeuge-und-ablaeufe.md`, das Register der Patches, Builds und Releases in `firmware/README.md`, die Eigenschaften der laufenden Firmware in `01-hardware-und-firmware.md`.
 
 ## Upstream-Stand [belegt]
 
@@ -942,6 +942,8 @@ Heißer Pfad im Disassembly (Befehle normiert, Adressen entfernt):
 
 ### Fork `m9dfukc/OpenWare` (gepusht 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
 
+> Dieser Abschnitt beschreibt die Entstehung des Branches `acdc/thru-usb-feedback` (Stand 2026-11-15). Die Commits von `acdc/fx1d` stehen in den Abschnitten der Builds, der heutige Stand der Branches und Releases in `firmware/README.md`.
+
 - **Lokaler Klon:** `firmware/OpenWare`. Vorbereitet wurde der Branch in einem separaten Klon `firmware/fork/OpenWare`. Beim Aufräumen (2026-11-14) wurden beide zusammengelegt: `upstream` geholt, geprüft, dass alle 55 Refs, 27 Branches, 27 Tags und alle Commits des alten Spiegels enthalten sind, dann den Spiegel gelöscht und den Fork-Klon nach `firmware/OpenWare` verschoben. Remotes:
   - `fork` = `git@github.com:m9dfukc/OpenWare.git`
   - `upstream` = RebelTechnology (alle Branches als `upstream/*`)
@@ -961,6 +963,8 @@ Heißer Pfad im Disassembly (Befehle normiert, Adressen entfernt):
 
 ### Reihenfolge
 
+> Plan vom 2026-11-14 mit Nachträgen bis 2026-11-16, seither nicht fortgeschrieben. Die Builds danach stehen in ihren eigenen Abschnitten.
+
 1. Toolchain installieren (Nutzer), `tools/build_acdc.sh` schreiben, Reproduktions-Build + Vergleich mit dem Readback.
 2. Build 1 und Build 2 bauen (noch kein Flash).
 3. Vorbedingungen E7: Boot-Pad-Probe, Referenzaufnahme, Generalprobe. Generalprobe nur nach Freigabe.
@@ -978,6 +982,8 @@ Heißer Pfad im Disassembly (Befehle normiert, Adressen entfernt):
 
 ## Flashen – allgemeine Hinweise
 
+Der Flash-Ablauf, wie er heute gilt (Skript, Start per `:leave`, Rückwege), steht in `07-werkzeuge-und-ablaeufe.md`, „Flashen“. Hier stehen die Wege ins Gerät.
+
 - Weg 1: OpenOCD über ST-Link (`program ACDC.bin 0x08000000 verify reset exit`, Konfiguration stlink + stm32h7x, Thread #2083 #15/#28). Im Projekt nie benutzt. Mit einem ST-Link lässt sich die Firmware über SWD auch debuggen (Anschluss J1 auf dem Xibeca-Board, 2×5 Pins im 1,27-mm-Raster, beim SWD-Flashen das Geräte-USB abziehen, Thread 2083 #19). Programmer: [STLINK-V3MINIE](https://www.st.com/en/development-tools/stlink-v3minie.html), Software: [OpenOCD](https://openocd.org/).
 - Weg 2: ST-ROM-DFU, entweder per SysEx `0x7E` (`owl_read.py --reset-to-dfu`, entspricht „Reset to bootloader“ auf openwarelab.org/Tools/firmware.html) oder über die Boot-Pads beim Einschalten. Das AC/DC (Xibeca) hat **keinen** OWL-MIDI-Bootloader, nur den ROM-DFU.
 - Der ROM-DFU ist nicht überschreibbar, echtes Bricking ist damit praktisch ausgeschlossen. Riskant ist ein Build mit kaputtem USB: Dann geht nur noch Boot-Pad/DFU oder SWD.
@@ -989,7 +995,11 @@ Ein sauberer, öffentlicher ACDC-Branch mit TX_PRE_FX, USB-Fixes, dokumentiertem
 
 **Stand 2026-11-16:** Der Branch `acdc/fx1d` im Fork hat das bis auf die LED-PWM (README mit Messwerten, Spitze `b7062ef2`). Die Forum-Posts in Thread #2072 und #2244 entfallen (Nutzer 2026-11-16). Eventuell kommen die Ergebnisse stattdessen als GitHub-Issue (`TODO.md`).
 
+**Stand 2026-11-27:** Seit fx7a läuft auch die LED-PWM außerhalb des Audiobands (48 kHz). Der Branch `acdc/fx1d` hat damit alles Genannte (Spitze `54228769`, Release `acdc-v22.4.r-fx9a`). Ein Merge mit dem Upstream (Option A) bleibt eine Idee ohne Termin (`TODO.md`), heute kämen die Patches 15b bis 21 dazu.
+
 ## DFU-Readback acdc1 (vorbereitet 2026-11-14)
+
+> Historisch: Vorbereitung des ersten Readbacks der Werks-Firmware (D3). „Kein `:leave`“ galt für diesen rein lesenden Zugriff. Heute startet der Flash-Ablauf die Firmware per `:leave` (`07-werkzeuge-und-ablaeufe.md`, „Flashen“).
 
 Ziel: Die Firmware von acdc1 rein lesend sichern. Sie ist vermutlich ein nicht öffentlicher Build mit funktionierendem USB (siehe `messlog.md` D2, `docs/research/notes/firmware_update_threads_2026-11-14.md`). Danach Vergleich mit der Release-`ACDC.bin` (`firmware/releases/v22.5.0/ACDC.bin`, 109 080 B, SHA-256 `5f44a811…892c2b`).
 

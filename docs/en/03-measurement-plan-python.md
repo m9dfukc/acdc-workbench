@@ -1,9 +1,11 @@
-<!-- i18n source=docs/03-messplan-python.md sha256=6451967c6b475d9233c0e2bac769a21363cf7f9eb334c0c86d1b1494b0a8759f date=2026-11-16 -->
-> English translation of [`docs/03-messplan-python.md`](../../docs/03-messplan-python.md), as of 2026-11-16. The German original is authoritative. This file is generated from it, do not edit it by hand.
+<!-- i18n source=docs/03-messplan-python.md sha256=83b490f678c461598975bfc92ef9d23f4633333f334e52a2f8cd5cc4019e84c5 date=2026-11-27 -->
+> English translation of [`docs/03-messplan-python.md`](../../docs/03-messplan-python.md), as of 2026-11-27. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 03 – Measurement plan & Python analysis (uv)
 
 Goal: find out **whether I have the same 1 kHz comb as atau**, and which hypothesis from `02-noise-befunde.md` applies. Each step cuts off one branch of the hypotheses.
+
+> **Status 2026-11-27: the measurement plan is finished.** All steps are done, answered or dropped (table "Status of the steps"). The sections on the plan show the state of their date. What stays current is the description of the analysis package (section "Analysis tool") and the recording rules. How recording and measuring is done today is in `07-tools-and-procedures.md`, what came out of it in `02-noise-findings.md`, "Status today".
 
 ## Setup
 
@@ -13,11 +15,11 @@ uv add numpy scipy soundfile matplotlib
 # optional: uv add rich typer   (CLI convenience)
 ```
 
-Folders: `recordings/`, `analysis/`, `out/`, `docs/messlog.md`.
+Folders: `recordings/`, `analysis/`, `reports/`, `docs/messlog.md`.
 
 ## Recording rules
 
-- **Tool from 2026-11-16 on:** `tools/acdc_rec.py` (see `CLAUDE.md` "Conventions", `--help`). For plain recordings it replaces the earlier chain of host software and multichannel recorder: duplex with zeros, 48 kHz, block 256, 4-channel WAV 16 bit, manifest entry with `scale = 2.0` (file dBFS as in the early recordings).
+- **Tool from 2026-11-16 on:** `tools/acdc_rec.py` (see `07-tools-and-procedures.md`, "Recording", and `--help`). For plain recordings it replaces the earlier chain of host software and multichannel recorder: duplex with zeros, 48 kHz, block 256, 4-channel WAV 16 bit, manifest entry with `scale = 2.0` (file dBFS as in the early recordings).
 - **60 s** per measurement, WAV, **native 48 kHz**. `acdc_rec.py` writes 16 bit PCM, which is the USB format of the module. For recordings from a host software: 24 or 32 bit float. The first series (M1–M3) came as 96 kHz / 16 bit, so the recording software had upsampled it. Set the project sample rate in the recording software to 48 kHz, otherwise the conversion distorts frequencies and noise floor.
 - Note for each measurement: module (acdc1/acdc2), which patch runs in slot 1, gain setting, USB state.
 - Reference for the frequency axis: the 6 kHz line (= fs/8) is sample-synchronous. If it sits at exactly 6000.00 Hz in the file, the file is in the sample clock of the AC/DC and not resampled (M1–M3: yes).
@@ -46,7 +48,7 @@ Folders: `recordings/`, `analysis/`, `out/`, `docs/messlog.md`.
 
 Record each step in `docs/messlog.md`: date, module, file, level of the top lines, conclusion.
 
-**Status of the steps (2026-11-16):**
+**Status of the steps (2026-11-27):**
 
 | # | Status | Evidence |
 |---|---|---|
@@ -57,7 +59,7 @@ Record each step in `docs/messlog.md`: date, module, file, level of the top line
 | 4 | dropped | Mobile use does not occur (user 2026-11-15). Ground loop resolved (D21) |
 | 5 | dropped | D21: ground loop only with the AC/DC on the Mac port and the UMC on the hub. In daily use there is no AC/DC out → UMC |
 | 6 | done | S3 with Build 1d (D20): comb at the output gone without USB, already there without a stream |
-| 7 | **open** | LED-off patch for H3 |
+| 7 | answered | A patch with dimmed LEDs puts the PWM line on the output (D67), the LED current shifts the zero point of the inputs (D74), in the LED mode off the shift drops to 1.7 % (D75). Since fx7a the PWM runs at 48 kHz (D78) |
 | 8 | dropped | No isolator needed (D21–D23) |
 
 ## Series 2 (next recordings, as of 2026-11-13)
@@ -97,7 +99,7 @@ UV_CACHE_DIR=.uv-cache uv run python -m analysis aufnahme.wav  # a file directly
 UV_CACHE_DIR=.uv-cache uv run python -m analysis.selftest      # self-test with a synthetic signal
 ```
 
-Output in `out/<name>/`: `_report.md`, `.json`, `_spectrogram.png`, `_psd.png`, `_combs.png`, `_timeline.png`.
+Output in `reports/<name>/`: `_report.md`, `.json`, `_spectrogram.png`, `_psd.png`, `_combs.png`, `_timeline.png`.
 
 | Module | Contents |
 |---|---|
@@ -108,25 +110,25 @@ Output in `out/<name>/`: `_report.md`, `.json`, `_spectrogram.png`, `_psd.png`, 
 | `plots.py`, `report.py` | Figures, Markdown, JSON |
 | `selftest.py` | Synthetic signal with known lines, mixing products, clicks. Checks f0 < 5 mHz, level ± 0.5 dB |
 
-More analysis and module tools are in `tools/` (recording, loop check, family tables across several measurements, module report). The overview is in `CLAUDE.md`, section "Tools in `tools/`".
+More analysis and module tools are in `tools/` (recording, loop check, family tables across several measurements, module report). The overview is in `07-tools-and-procedures.md`.
 
 Limits: two lines can only be separated from a spacing of ≈ 4 bins (bin = 1 / duration). At 10 s that is 0.4 Hz, and the mixing products spaced 0.316 Hz apart then merge. Therefore record ≥ 60 s.
 
 ## Specification for the analysis tool (`analysis/`)
 
-Original specification of 2026-11-13, implemented except for the item "RMS after notch bank" (comes with `analysis/notch.py`, see `04`). Invocation and file names are in the section "Implementation" above.
+Original specification of 2026-11-13, implemented except for the item "RMS after notch bank" (was planned as a module `notch.py`, dropped, see `04`). Invocation and file names are in the section "Implementation" above.
 
 A CLI script, e.g. `uv run analysis/noise.py recordings/<file>.wav --channel all`. It should deliver the following:
 
 1. **Spectrogram** (I already have that). Recommendation: STFT with Hann window, nperseg 8192–16384, log frequency axis 20 Hz to 24 kHz, dBFS scale. This makes patterns in time visible (clicks, 0.8 s period, drift).
-2. **Long-term PSD** (Welch, `nperseg=65536` or larger, Hann) → `out/<name>_psd.png`, log x, dBFS/√Hz or dBFS per bin. Optionally overlay a reference file (`--ref`) on the same axis, for A/B comparisons.
+2. **Long-term PSD** (Welch, `nperseg=65536` or larger, Hann) → `reports/<name>_psd.png`, log x, dBFS/√Hz or dBFS per bin. Optionally overlay a reference file (`--ref`) on the same axis, for A/B comparisons.
 3. **Peak list**: the top N lines above the median noise floor (e.g. +10 dB), with **parabolic or quadratic interpolation** on the log magnitude spectrum, so that the frequency is accurate to <0.05 Hz. Output as JSON and Markdown table: frequency, level in dBFS, distance to the floor.
 4. **Harmonic detection**: tests the candidate fundamentals 50, 60, 1000 and 2320 Hz and the fundamental of the strongest line. For each one the "comb profile" is determined: level at k·f0 (k = 1…⌊24000/f0⌋) and the share of the energy in the comb in the total noise. Result: which family dominates?
 5. **f0 fit**: least squares over all harmonics found (f_k ≈ k·f0) → precise f0 + residuals. Important for the notch filter, because otherwise the upper harmonics are missed.
 6. **Stability over time**: f0 and level in 5 s windows. Does f0 drift? Does the level fluctuate periodically (LED, 0.8 s)?
 7. **Click detection** (for H5): high-pass at about 5 kHz, envelope, threshold, intervals between events. Regular intervals of a few seconds (e.g. ≈3.9 s) point to the USB TX rate error.
 8. **Key figures per channel**: total RMS (dBFS), RMS after notch bank (see `04`), A-weighted optional. This tells how much of the noise the comb accounts for.
-9. **Report** `out/<name>_report.md` with the plots and tables, for pasting into the lab notebook.
+9. **Report** `reports/<name>_report.md` with the plots and tables, for pasting into the lab notebook.
 
 Notes:
 - The AC/DC recording via USB is 16 bit, the floor is at about −96 dBFS. Lines at −30 dB are therefore far above it.

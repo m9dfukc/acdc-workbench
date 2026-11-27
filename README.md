@@ -31,6 +31,7 @@ Deutsche Fassung: [README.de.md](README.de.md)
 | `tools/ledpath_phases.py` | Levels per phase of a recording with the LED path measurement patch, taken at a second interface and referred to the module's output through a built-in calibration tone |
 | `tools/ab_bands.py` | A/B/A comparison of three recordings, e.g. old build, new build, old build: levels, third-octave bands against the spread of the A runs, new lines, clicks |
 | `tools/knob_series.py` | Guided series of recordings with the knobs in given positions: reads the knobs over MIDI, waits until they are in place, records, and writes a table of the line levels at the end |
+| `tools/doc_check.py` | Checks the documentation before a push: length of `CLAUDE.md`, dead links, dead paths in the current documents, outdated English versions, index of the lab notebook |
 
 ## Findings so far
 
@@ -53,7 +54,7 @@ Deutsche Fassung: [README.de.md](README.de.md)
 - **Four bugs in the original code** were found and fixed on the way: three timing bugs in the USB audio path (a feedback loop that ran open, a race between the RX and TX DMA, a start-of-frame handler that ran twice per frame) and an unprotected MIDI send path that damaged slot downloads next to a running patch.
 - **Known and not fixed:** a Program Change while the USB audio stream is open breaks playback until the next stream start (about 10 % silence). Change the patch before opening the stream.
 
-Noise of the daily firmware `v22.4.r-fx8a` against the original firmware of the test module (the factory build labelled v22.5.0), measured in one session with `fx8a` before and after the original (D86): open inputs, gain at 12 o'clock, 2 × 60 s for the original and 4 × 60 s for `fx8a`, levels in dBFS of the USB stream. The original firmware records after the gain stage of the default patch, so its levels are corrected per channel by the gain measured through the DC offset of the open inputs. The last three columns give single build steps, each measured in its own session against a control (D48, D85, D89). Today's daily firmware `fx9a` is only measured against `fx8a` (last column). Between sessions the levels drift by up to about 3 dB, so only differences within one session are firm.
+Noise of `v22.4.r-fx8a` against the original firmware of the test module (the factory build labelled v22.5.0), measured in one session with `fx8a` before and after the original (D86): open inputs, gain at 12 o'clock, 2 × 60 s for the original and 4 × 60 s for `fx8a`, levels in dBFS of the USB stream. The original firmware records after the gain stage of the default patch, so its levels are corrected per channel by the gain measured through the DC offset of the open inputs. The last three columns give single build steps, each measured in its own session against a control (D48, D85, D89). Today's daily firmware `fx9a` is only measured against `fx8a` (last column). Between sessions the levels drift by up to about 3 dB, so only differences within one session are firm.
 
 | Measure | Original | `fx8a` | Difference | `fx2d` → `fx3l` | `fx7a` → `fx8a` | `fx8a` → `fx9a` |
 |---|---|---|---|---|---|---|
@@ -151,7 +152,7 @@ FW_VERSION=v22.4.r-fx9a tools/build_acdc.sh my-fx9a db9d3dd \
   $P/18-led-pwm-48k.patch $P/19-icache-on.patch $P/20-dcache-on.patch
 ```
 
-The flash procedure (read out, restart into DFU, write, read back, compare, leave DFU) is described in [CLAUDE.md](CLAUDE.md), section "Flash-Ablauf". `tools/flash_acdc.py` runs these steps and keeps a flash log. It has been used on the module, including the `:leave` start (by hand it also gave the same noise as a cold start). It only accepts the author's test module: the MIDI device ID and the DFU serial number are constants at the top of the script.
+The flash procedure (read out, restart into DFU, write, read back, compare, leave DFU) is described in [docs/en/07-tools-and-procedures.md](docs/en/07-tools-and-procedures.md), section "Flashing", together with the other procedures (recording, reading out, uploading a patch, building, loop test). `tools/flash_acdc.py` runs these steps and keeps a flash log. It has been used on the module, including the `:leave` start (by hand it also gave the same noise as a cold start). It only accepts the author's test module: the MIDI device ID and the DFU serial number are constants at the top of the script.
 
 ```sh
 python3 tools/flash_acdc.py acdc1-build11-fx9a          # offline checks only
@@ -165,23 +166,23 @@ python3 tools/flash_acdc.py --a1 firmware/flashlog/<date>_build11-fx9a   # after
 | Path | Content |
 |---|---|
 | `tools/`, `analysis/` | The workbench |
-| `docs/` | Reference documents `01` to `06` (German, `06` is the ground wire mod), the lab notebook `messlog.md`, research notes in `docs/research/` |
+| `docs/` | Reference documents `01` to `07` (German, `06` is the ground wire mod, `07` describes tools and procedures), the lab notebook `messlog.md`, the chronicle `chronik.md`, research notes in `docs/research/` |
 | `docs/en/` | English versions of the reference documents, see [docs/en/README.md](docs/en/README.md) |
 | `firmware/OpenWare/` | Submodule, the firmware fork |
 | `firmware/patches/`, `firmware/builds/`, `firmware/flashlog/` | Patches, build records, flash records |
 | `owl/` | Submodule [acdc-patches](https://github.com/m9dfukc/acdc-patches), own OWL patches for the module: `Tanh3` in `owl/patches/tanh3/` (triple tanh waveshaper with a mix channel), `Schliere` in `owl/patches/schliere/` (a chain of 61 second-order allpass filters: frequency-dependent delay, phaser notches, resonator, mono in and stereo out; seven variants, described in `owl/patches/schliere/README.md`), an output limiter for FX patches and an input canceller for the block-rate lines, with host tests. `owl/test/` also holds two measurement patches that switch the LEDs on a schedule and measure the LED shift at the raw inputs themselves. |
 | `recordings/manifest.toml` | Metadata of every recording |
-| `out/<ID>/` | Analysis report of each measurement |
+| `reports/<ID>/` | Analysis report of each measurement |
 | `TODO.md`, `CLAUDE.md` | Open points and the project context used when working with Claude Code |
 
-Not in the repository: the recordings themselves (8 GB of WAV files), plots and JSON results in `out/`, firmware binaries, the device backups, and third-party OWL patch sources without a license together with the SDK and their builds (`owl/patches-private/`, `owl/vendor/`). Plots and results can be regenerated from recordings with `python -m analysis`.
+Not in the repository: the recordings themselves (11 GB of WAV files), plots and JSON results in `reports/`, firmware binaries, the device backups, and third-party OWL patch sources without a license together with the SDK and their builds (`owl/patches-private/`, `owl/vendor/`). Plots and results can be regenerated from recordings with `python -m analysis`.
 
 ## Language
 
 The working documents are written in German and stay that way, German is the source.
 
-- English versions of the reference documents `01` to `05` and `99` are in [docs/en/](docs/en/README.md). They are generated from the German originals and refreshed at milestones. `python tools/i18n_check.py` lists the ones that are out of date.
-- The lab notebook `docs/messlog.md`, `TODO.md` and `CLAUDE.md` are German only.
+- English versions of the reference documents `01` to `07` and `99` are in [docs/en/](docs/en/README.md). They are generated from the German originals and refreshed at milestones. `python tools/i18n_check.py` lists the ones that are out of date.
+- The lab notebook `docs/messlog.md`, the chronicle `docs/chronik.md`, `TODO.md` and `CLAUDE.md` are German only.
 - The tools print English help and messages. Reports generated by the analysis are German.
 - The research notes in `docs/research/notes/` are English.
 

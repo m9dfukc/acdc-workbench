@@ -19,7 +19,7 @@ Usage (outside the sandbox, CoreMIDI):
       --with mido --with python-rtmidi python tools/dump_stress.py \
       --name D62-fx4b-slot2 --run-slot 2 --restore-slot 1 --rounds 20
 
-Output: out/<name>-session-table.md and out/dump_stress/<name>.json
+Output: reports/<name>-session-table.md and reports/dump_stress/<name>.json
 (nothing is overwritten, an existing name gets the time of day appended).
 """
 
@@ -93,7 +93,7 @@ def main(argv=None) -> int:
     ap.add_argument("--run-slot", type=int, help="Program Change to this slot before the test (RAM only)")
     ap.add_argument("--restore-slot", type=int, help="Program Change to this slot after the test")
     ap.add_argument("--quiet", type=float, default=0.6, help="seconds of silence that end one download (default 0.6)")
-    ap.add_argument("--out", type=Path, default=Path("out"), help="base folder (default out)")
+    ap.add_argument("--out", type=Path, default=Path("reports"), help="base folder (default reports)")
     args = ap.parse_args(argv)
 
     mido = owl_read.mido

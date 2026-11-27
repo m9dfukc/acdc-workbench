@@ -2,6 +2,8 @@
 
 Ziel: Herausfinden, **ob ich denselben 1-kHz-Kamm habe wie atau**, und welche Hypothese aus `02-noise-befunde.md` zutrifft. Jeder Schritt schneidet einen Hypothesenzweig ab.
 
+> **Stand 2026-11-27: Der Messplan ist abgeschlossen.** Alle Schritte sind erledigt, beantwortet oder entfallen (Tabelle „Stand der Schritte“). Die Abschnitte zum Plan zeigen den Stand ihres Datums. Aktuell bleiben die Beschreibung des Analyse-Pakets (Abschnitt „Analyse-Tool“) und die Aufnahmeregeln. Wie heute aufgenommen und gemessen wird, steht in `07-werkzeuge-und-ablaeufe.md`, was dabei herauskam, in `02-noise-befunde.md`, „Stand heute“.
+
 ## Setup
 
 ```sh
@@ -10,11 +12,11 @@ uv add numpy scipy soundfile matplotlib
 # optional: uv add rich typer   (CLI-Komfort)
 ```
 
-Ordner: `recordings/`, `analysis/`, `out/`, `docs/messlog.md`.
+Ordner: `recordings/`, `analysis/`, `reports/`, `docs/messlog.md`.
 
 ## Aufnahmeregeln
 
-- **Werkzeug ab 2026-11-16:** `tools/acdc_rec.py` (siehe `CLAUDE.md` „Konventionen“, `--help`). Es ersetzt für reine Aufnahmen die frühere Kette aus Host-Software und Mehrkanal-Recorder: duplex mit Nullen, 48 kHz, Block 256, 4-Kanal-WAV 16 Bit, Manifest-Eintrag mit `scale = 2.0` (Datei-dBFS wie die frühen Aufnahmen).
+- **Werkzeug ab 2026-11-16:** `tools/acdc_rec.py` (siehe `07-werkzeuge-und-ablaeufe.md`, „Aufnehmen“, und `--help`). Es ersetzt für reine Aufnahmen die frühere Kette aus Host-Software und Mehrkanal-Recorder: duplex mit Nullen, 48 kHz, Block 256, 4-Kanal-WAV 16 Bit, Manifest-Eintrag mit `scale = 2.0` (Datei-dBFS wie die frühen Aufnahmen).
 - **60 s** pro Messung, WAV, **nativ 48 kHz**. `acdc_rec.py` schreibt 16 Bit PCM, das ist das USB-Format des Geräts. Für Aufnahmen aus einer Host-Software gilt: 24 oder 32 Bit float. Die erste Serie (M1–M3) lag als 96 kHz / 16 Bit vor, also von der Aufnahme-Software hochgerechnet. Projekt-Samplerate in der Aufnahme-Software auf 48 kHz stellen, sonst verfälscht die Umrechnung Frequenzen und Rauschboden.
 - Pro Messung notieren: Gerät (acdc1/acdc2), welcher Patch in Slot 1 läuft, Gain-Stellung, USB-Zustand.
 - Referenz für die Frequenzachse: Die 6-kHz-Linie (= fs/8) ist sample-synchron. Liegt sie im File exakt auf 6000,00 Hz, ist das File im Sample-Takt des AC/DC und nicht umgetaktet (M1–M3: ja).
@@ -43,7 +45,7 @@ Ordner: `recordings/`, `analysis/`, `out/`, `docs/messlog.md`.
 
 Jeden Schritt in `docs/messlog.md` festhalten: Datum, Gerät, Datei, Pegel der Top-Linien, Fazit.
 
-**Stand der Schritte (2026-11-16):**
+**Stand der Schritte (2026-11-27):**
 
 | # | Stand | Beleg |
 |---|---|---|
@@ -54,7 +56,7 @@ Jeden Schritt in `docs/messlog.md` festhalten: Datum, Gerät, Datei, Pegel der T
 | 4 | entfallen | Mobiler Betrieb kommt nicht vor (Nutzer 2026-11-15). Masseschleife geklärt (D21) |
 | 5 | entfallen | D21: Masseschleife nur mit AC/DC am Mac-Port und UMC am Hub. Im Alltag gibt es AC/DC-Out → UMC nicht |
 | 6 | erledigt | S3 mit Build 1d (D20): Kamm am Ausgang ohne USB weg, schon ohne Stream da |
-| 7 | **offen** | LED-aus-Patch für H3 |
+| 7 | beantwortet | Ein Patch mit gedimmten LEDs bringt die PWM-Linie an den Ausgang (D67), der LED-Strom verschiebt den Nullpunkt der Eingänge (D74), im LED-Modus aus sinkt die Verschiebung auf 1,7 % (D75). Seit fx7a läuft die PWM mit 48 kHz (D78) |
 | 8 | entfallen | Kein Isolator nötig (D21–D23) |
 
 ## Serie 2 (nächste Aufnahmen, Stand 2026-11-13)
@@ -94,7 +96,7 @@ UV_CACHE_DIR=.uv-cache uv run python -m analysis aufnahme.wav  # direkt eine Dat
 UV_CACHE_DIR=.uv-cache uv run python -m analysis.selftest      # Selbsttest mit synthetischem Signal
 ```
 
-Ausgabe in `out/<name>/`: `_report.md`, `.json`, `_spectrogram.png`, `_psd.png`, `_combs.png`, `_timeline.png`.
+Ausgabe in `reports/<name>/`: `_report.md`, `.json`, `_spectrogram.png`, `_psd.png`, `_combs.png`, `_timeline.png`.
 
 | Modul | Inhalt |
 |---|---|
@@ -105,25 +107,25 @@ Ausgabe in `out/<name>/`: `_report.md`, `.json`, `_spectrogram.png`, `_psd.png`,
 | `plots.py`, `report.py` | Abbildungen, Markdown, JSON |
 | `selftest.py` | synthetisches Signal mit bekannten Linien, Mischprodukten, Klicks. Prüft f0 < 5 mHz, Pegel ± 0,5 dB |
 
-Weitere Auswerte- und Gerätewerkzeuge liegen in `tools/` (Aufnahme, Loop-Prüfung, Familientabellen über mehrere Messungen, Geräte-Report). Die Übersicht steht in `CLAUDE.md`, Abschnitt „Werkzeuge in `tools/`“.
+Weitere Auswerte- und Gerätewerkzeuge liegen in `tools/` (Aufnahme, Loop-Prüfung, Familientabellen über mehrere Messungen, Geräte-Report). Die Übersicht steht in `07-werkzeuge-und-ablaeufe.md`.
 
 Grenzen: Zwei Linien lassen sich erst ab ≈ 4 Bins Abstand trennen (Bin = 1 / Dauer). Bei 10 s sind das 0,4 Hz, die Mischprodukte im Abstand 0,316 Hz verschmelzen dann. Deshalb ≥ 60 s aufnehmen.
 
 ## Spezifikation für das Analyse-Tool (`analysis/`)
 
-Ursprüngliche Vorgabe vom 2026-11-13, umgesetzt bis auf den Punkt „RMS nach Notch-Bank“ (kommt mit `analysis/notch.py`, siehe `04`). Aufruf und Dateinamen stehen im Abschnitt „Umsetzung“ oben.
+Ursprüngliche Vorgabe vom 2026-11-13, umgesetzt bis auf den Punkt „RMS nach Notch-Bank“ (war mit einem Modul `notch.py` geplant, gestrichen, siehe `04`). Aufruf und Dateinamen stehen im Abschnitt „Umsetzung“ oben.
 
 Ein CLI-Skript, z. B. `uv run analysis/noise.py recordings/<file>.wav --channel all`. Es soll Folgendes liefern:
 
 1. **Spektrogramm** (habe ich schon). Empfehlung: STFT mit Hann-Fenster, nperseg 8192–16384, log-Frequenzachse 20 Hz bis 24 kHz, dBFS-Skala. Damit werden zeitliche Muster sichtbar (Klicks, 0,8-s-Periode, Drift).
-2. **Langzeit-PSD** (Welch, `nperseg=65536` oder größer, Hann) → `out/<name>_psd.png`, log-x, dBFS/√Hz bzw. dBFS pro Bin. Auf derselben Achse optional eine Referenzdatei (`--ref`) überlagern, für A/B-Vergleiche.
+2. **Langzeit-PSD** (Welch, `nperseg=65536` oder größer, Hann) → `reports/<name>_psd.png`, log-x, dBFS/√Hz bzw. dBFS pro Bin. Auf derselben Achse optional eine Referenzdatei (`--ref`) überlagern, für A/B-Vergleiche.
 3. **Peak-Liste**: die Top-N-Linien über dem Median-Noise-Floor (z. B. +10 dB), mit **parabolischer oder quadratischer Interpolation** auf dem log-Magnitudenspektrum, damit die Frequenz auf <0,05 Hz genau ist. Ausgabe als JSON und Markdown-Tabelle: Frequenz, Pegel dBFS, Abstand zum Floor.
 4. **Harmonik-Erkennung**: Testet die Kandidaten-Grundfrequenzen 50, 60, 1000 und 2320 Hz sowie die Grundfrequenz der stärksten Linie. Für jede wird das „Kammprofil“ ermittelt: Pegel bei k·f0 (k = 1…⌊24000/f0⌋) und der Anteil der Energie im Kamm am Gesamtrauschen. Ergebnis: Welche Familie dominiert?
 5. **f0-Fit**: Least-Squares über alle gefundenen Harmonischen (f_k ≈ k·f0) → präzises f0 + Residuen. Wichtig für den Notch-Filter, weil die oberen Harmonischen sonst verfehlt werden.
 6. **Stabilität über die Zeit**: f0 und Pegel in 5-s-Fenstern. Driftet f0? Schwankt der Pegel periodisch (LED, 0,8 s)?
 7. **Klick-Detektion** (für H5): Hochpass bei ca. 5 kHz, Hüllkurve, Schwelle, Abstände zwischen Ereignissen. Regelmäßige Abstände von wenigen Sekunden (z. B. ≈3,9 s) deuten auf den USB-TX-Ratenfehler hin.
 8. **Kennzahlen pro Kanal**: RMS gesamt (dBFS), RMS nach Notch-Bank (siehe `04`), A-gewichtet optional. Damit lässt sich sagen, wie viel des Rauschens der Kamm ausmacht.
-9. **Report** `out/<name>_report.md` mit den Plots und Tabellen, zum Einfügen in den Messlog.
+9. **Report** `reports/<name>_report.md` mit den Plots und Tabellen, zum Einfügen in den Messlog.
 
 Hinweise:
 - Die AC/DC-Aufnahme über USB ist 16 Bit, der Boden liegt bei ca. −96 dBFS. Linien bei −30 dB sind also weit darüber.

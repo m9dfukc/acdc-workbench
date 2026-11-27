@@ -714,7 +714,7 @@ title = "X1-rec – acdc1 x1-rec-open-inputs, 60 s"
 files = ["20261116_acdc1_x1-rec-open-inputs_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:31:18. Stream-Meldungen: 0. owl_read: out/owl_read/X1-rec (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:31:18. Stream-Meldungen: 0. owl_read: reports/owl_read/X1-rec (rc 0)."
 
 [[measurement]]
 id = "B4-clip3d"
@@ -728,7 +728,7 @@ title = "B4-clip3d – acdc1 clip3d-hot-input, 90 s"
 files = ["20261116_acdc1_clip3d-hot-input_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:06:39. Stream-Meldungen: 0. owl_read: out/owl_read/B4-clip3d (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:06:39. Stream-Meldungen: 0. owl_read: reports/owl_read/B4-clip3d (rc 0)."
 
 [[measurement]]
 id = "B4-3d-r1"
@@ -742,7 +742,7 @@ title = "B4-3d-r1 – acdc1 3d-ctrl-open-inputs, 60 s (Wiederholung 1)"
 files = ["20261116_acdc1_3d-ctrl-open-inputs-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:09:22. Stream-Meldungen: 0. owl_read: out/owl_read/B4-3d-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:09:22. Stream-Meldungen: 0. owl_read: reports/owl_read/B4-3d-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4-3d-r2"
@@ -756,7 +756,7 @@ title = "B4-3d-r2 – acdc1 3d-ctrl-open-inputs, 60 s (Wiederholung 2)"
 files = ["20261116_acdc1_3d-ctrl-open-inputs-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:10:36. Stream-Meldungen: 0. owl_read: out/owl_read/B4-3d-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:10:36. Stream-Meldungen: 0. owl_read: reports/owl_read/B4-3d-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4-clip3d-sine"
@@ -770,7 +770,7 @@ title = "B4-clip3d-sine – acdc1 clip3d-loop-sine, 30 s"
 files = ["20261116_acdc1_clip3d-loop-sine_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -3.0 dBFS, Out 2 Sinus 440 Hz @ -1.0 dBFS, Out 3 Sinus 440 Hz @ -0.3 dBFS, Out 4 Sinus 440 Hz @ 0.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:13:06. Stream-Meldungen: 0. owl_read: out/owl_read/B4-clip3d-sine (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -3.0 dBFS, Out 2 Sinus 440 Hz @ -1.0 dBFS, Out 3 Sinus 440 Hz @ -0.3 dBFS, Out 4 Sinus 440 Hz @ 0.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:13:06. Stream-Meldungen: 0. owl_read: reports/owl_read/B4-clip3d-sine (rc 0)."
 
 [[measurement]]
 id = "B4-clip3d-dc"
@@ -784,7 +784,7 @@ title = "B4-clip3d-dc – acdc1 clip3d-loop-dc, 40 s"
 files = ["20261116_acdc1_clip3d-loop-dc_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 DC +1.000 FS (Rampe 20 s), Out 2 DC -0.940 FS (Rampe 20 s), Out 3 DC -0.970 FS (Rampe 20 s), Out 4 DC -1.000 FS (Rampe 20 s), Block 256, 0 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:14:09. Stream-Meldungen: 0. owl_read: out/owl_read/B4-clip3d-dc (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 DC +1.000 FS (Rampe 20 s), Out 2 DC -0.940 FS (Rampe 20 s), Out 3 DC -0.970 FS (Rampe 20 s), Out 4 DC -1.000 FS (Rampe 20 s), Block 256, 0 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:14:09. Stream-Meldungen: 0. owl_read: reports/owl_read/B4-clip3d-dc (rc 0)."
 
 [[measurement]]
 id = "B4-fx3i-r1"
@@ -798,7 +798,7 @@ title = "B4-fx3i-r1 – acdc1 fx3i-open-inputs, 60 s (Wiederholung 1)"
 files = ["20261116_acdc1_fx3i-open-inputs-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:17:48. Stream-Meldungen: 0. owl_read: out/owl_read/B4-fx3i-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:17:48. Stream-Meldungen: 0. owl_read: reports/owl_read/B4-fx3i-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4-fx3i-r2"
@@ -812,7 +812,7 @@ title = "B4-fx3i-r2 – acdc1 fx3i-open-inputs, 60 s (Wiederholung 2)"
 files = ["20261116_acdc1_fx3i-open-inputs-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:19:02. Stream-Meldungen: 0. owl_read: out/owl_read/B4-fx3i-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:19:02. Stream-Meldungen: 0. owl_read: reports/owl_read/B4-fx3i-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4-fx3i-loop"
@@ -826,7 +826,7 @@ title = "B4-fx3i-loop – acdc1 fx3i-loop-sine, 60 s"
 files = ["20261116_acdc1_fx3i-loop-sine_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:22:12. Stream-Meldungen: 0. owl_read: out/owl_read/B4-fx3i-loop (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:22:12. Stream-Meldungen: 0. owl_read: reports/owl_read/B4-fx3i-loop (rc 0)."
 
 [[measurement]]
 id = "B4-3d-loop"
@@ -840,7 +840,7 @@ title = "B4-3d-loop – acdc1 3d-loop-sine, 60 s"
 files = ["20261116_acdc1_3d-loop-sine_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:27:00. Stream-Meldungen: 0. owl_read: out/owl_read/B4-3d-loop (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:27:00. Stream-Meldungen: 0. owl_read: reports/owl_read/B4-3d-loop (rc 0)."
 
 [[measurement]]
 id = "B4-3d-end-r1"
@@ -854,7 +854,7 @@ title = "B4-3d-end-r1 – acdc1 3d-end-open-inputs, 60 s (Wiederholung 1)"
 files = ["20261116_acdc1_3d-end-open-inputs-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:28:59. Stream-Meldungen: 0. owl_read: out/owl_read/B4-3d-end-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:28:59. Stream-Meldungen: 0. owl_read: reports/owl_read/B4-3d-end-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4-3d-end-r2"
@@ -868,7 +868,7 @@ title = "B4-3d-end-r2 – acdc1 3d-end-open-inputs, 60 s (Wiederholung 2)"
 files = ["20261116_acdc1_3d-end-open-inputs-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:30:12. Stream-Meldungen: 0. owl_read: out/owl_read/B4-3d-end-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:30:12. Stream-Meldungen: 0. owl_read: reports/owl_read/B4-3d-end-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4x-3d-loop"
@@ -882,7 +882,7 @@ title = "B4x-3d-loop – acdc1 3d-loop-sine-4x, 60 s"
 files = ["20261116_acdc1_3d-loop-sine-4x_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:48:03. Stream-Meldungen: 0. owl_read: out/owl_read/B4x-3d-loop (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:48:03. Stream-Meldungen: 0. owl_read: reports/owl_read/B4x-3d-loop (rc 0)."
 
 [[measurement]]
 id = "B4x-noD-loop"
@@ -896,7 +896,7 @@ title = "B4x-noD-loop – acdc1 fx3i-noD-loop-sine, 60 s"
 files = ["20261116_acdc1_fx3i-noD-loop-sine_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:50:45. Stream-Meldungen: 0. owl_read: out/owl_read/B4x-noD-loop (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:50:45. Stream-Meldungen: 0. owl_read: reports/owl_read/B4x-noD-loop (rc 0)."
 
 [[measurement]]
 id = "B4x-noC-loop"
@@ -910,7 +910,7 @@ title = "B4x-noC-loop – acdc1 fx3i-noC-loop-sine, 60 s"
 files = ["20261116_acdc1_fx3i-noC-loop-sine_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:56:09. Stream-Meldungen: 0. owl_read: out/owl_read/B4x-noC-loop (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:56:09. Stream-Meldungen: 0. owl_read: reports/owl_read/B4x-noC-loop (rc 0)."
 
 [[measurement]]
 id = "B4x-onlyD-loop"
@@ -924,7 +924,7 @@ title = "B4x-onlyD-loop – acdc1 fx3i-onlyD-loop-sine, 60 s"
 files = ["20261116_acdc1_fx3i-onlyD-loop-sine_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:59:05. Stream-Meldungen: 0. owl_read: out/owl_read/B4x-onlyD-loop (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:59:05. Stream-Meldungen: 0. owl_read: reports/owl_read/B4x-onlyD-loop (rc 0)."
 
 [[measurement]]
 id = "B4x-3d-end-loop"
@@ -938,7 +938,7 @@ title = "B4x-3d-end-loop – acdc1 3d-end-loop-sine-4x, 60 s"
 files = ["20261116_acdc1_3d-end-loop-sine-4x_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:01:25. Stream-Meldungen: 0. owl_read: out/owl_read/B4x-3d-end-loop (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:01:25. Stream-Meldungen: 0. owl_read: reports/owl_read/B4x-3d-end-loop (rc 0)."
 
 [[measurement]]
 id = "B4y-3d-r1"
@@ -952,7 +952,7 @@ title = "B4y-3d-r1 – acdc1 3d-open-inputs-4y, 60 s (Wiederholung 1)"
 files = ["20261116_acdc1_3d-open-inputs-4y-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:11:23. Stream-Meldungen: 0. owl_read: out/owl_read/B4y-3d-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:11:23. Stream-Meldungen: 0. owl_read: reports/owl_read/B4y-3d-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4y-3d-r2"
@@ -966,7 +966,7 @@ title = "B4y-3d-r2 – acdc1 3d-open-inputs-4y, 60 s (Wiederholung 2)"
 files = ["20261116_acdc1_3d-open-inputs-4y-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:12:36. Stream-Meldungen: 0. owl_read: out/owl_read/B4y-3d-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:12:36. Stream-Meldungen: 0. owl_read: reports/owl_read/B4y-3d-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4y-fx3j-loop"
@@ -980,7 +980,7 @@ title = "B4y-fx3j-loop – acdc1 fx3j-loop-sine, 60 s"
 files = ["20261116_acdc1_fx3j-loop-sine_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:15:34. Stream-Meldungen: 0. owl_read: out/owl_read/B4y-fx3j-loop (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:15:34. Stream-Meldungen: 0. owl_read: reports/owl_read/B4y-fx3j-loop (rc 0)."
 
 [[measurement]]
 id = "B4y-fx3j-r1"
@@ -994,7 +994,7 @@ title = "B4y-fx3j-r1 – acdc1 fx3j-open-inputs, 60 s (Wiederholung 1)"
 files = ["20261116_acdc1_fx3j-open-inputs-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:17:27. Stream-Meldungen: 0. owl_read: out/owl_read/B4y-fx3j-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:17:27. Stream-Meldungen: 0. owl_read: reports/owl_read/B4y-fx3j-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4y-fx3j-r2"
@@ -1008,7 +1008,7 @@ title = "B4y-fx3j-r2 – acdc1 fx3j-open-inputs, 60 s (Wiederholung 2)"
 files = ["20261116_acdc1_fx3j-open-inputs-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:18:41. Stream-Meldungen: 0. owl_read: out/owl_read/B4y-fx3j-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:18:41. Stream-Meldungen: 0. owl_read: reports/owl_read/B4y-fx3j-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4y-noD-r1"
@@ -1022,7 +1022,7 @@ title = "B4y-noD-r1 – acdc1 fx3i-noD-open-inputs, 60 s (Wiederholung 1)"
 files = ["20261116_acdc1_fx3i-noD-open-inputs-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:23:59. Stream-Meldungen: 0. owl_read: out/owl_read/B4y-noD-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:23:59. Stream-Meldungen: 0. owl_read: reports/owl_read/B4y-noD-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4y-noD-r2"
@@ -1036,7 +1036,7 @@ title = "B4y-noD-r2 – acdc1 fx3i-noD-open-inputs, 60 s (Wiederholung 2)"
 files = ["20261116_acdc1_fx3i-noD-open-inputs-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:25:13. Stream-Meldungen: 0. owl_read: out/owl_read/B4y-noD-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:25:13. Stream-Meldungen: 0. owl_read: reports/owl_read/B4y-noD-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4y-3d-end-r1"
@@ -1050,7 +1050,7 @@ title = "B4y-3d-end-r1 – acdc1 3d-end-open-inputs-4y, 60 s (Wiederholung 1)"
 files = ["20261116_acdc1_3d-end-open-inputs-4y-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:27:58. Stream-Meldungen: 0. owl_read: out/owl_read/B4y-3d-end-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:27:58. Stream-Meldungen: 0. owl_read: reports/owl_read/B4y-3d-end-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4y-3d-end-r2"
@@ -1064,7 +1064,7 @@ title = "B4y-3d-end-r2 – acdc1 3d-end-open-inputs-4y, 60 s (Wiederholung 2)"
 files = ["20261116_acdc1_3d-end-open-inputs-4y-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:29:11. Stream-Meldungen: 0. owl_read: out/owl_read/B4y-3d-end-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:29:11. Stream-Meldungen: 0. owl_read: reports/owl_read/B4y-3d-end-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4z-3d-r1"
@@ -1078,7 +1078,7 @@ title = "B4z-3d-r1 – acdc1 3d-open-inputs-4z, 60 s (Wiederholung 1)"
 files = ["20261116_acdc1_3d-open-inputs-4z-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 19:03:47. Stream-Meldungen: 0. owl_read: out/owl_read/B4z-3d-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 19:03:47. Stream-Meldungen: 0. owl_read: reports/owl_read/B4z-3d-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4z-3d-r2"
@@ -1092,7 +1092,7 @@ title = "B4z-3d-r2 – acdc1 3d-open-inputs-4z, 60 s (Wiederholung 2)"
 files = ["20261116_acdc1_3d-open-inputs-4z-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 19:05:00. Stream-Meldungen: 0. owl_read: out/owl_read/B4z-3d-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 19:05:00. Stream-Meldungen: 0. owl_read: reports/owl_read/B4z-3d-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4z-fx3k-loop"
@@ -1106,7 +1106,7 @@ title = "B4z-fx3k-loop – acdc1 fx3k-loop-sine, 60 s"
 files = ["20261116_acdc1_fx3k-loop-sine_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 19:08:14. Stream-Meldungen: 0. owl_read: out/owl_read/B4z-fx3k-loop (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 19:08:14. Stream-Meldungen: 0. owl_read: reports/owl_read/B4z-fx3k-loop (rc 0)."
 
 [[measurement]]
 id = "B4z-fx3k-r1"
@@ -1120,7 +1120,7 @@ title = "B4z-fx3k-r1 – acdc1 fx3k-open-inputs-4z, 60 s (Wiederholung 1)"
 files = ["20261116_acdc1_fx3k-open-inputs-4z-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 19:13:30. Stream-Meldungen: 0. owl_read: out/owl_read/B4z-fx3k-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 19:13:30. Stream-Meldungen: 0. owl_read: reports/owl_read/B4z-fx3k-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4z-fx3k-r2"
@@ -1134,7 +1134,7 @@ title = "B4z-fx3k-r2 – acdc1 fx3k-open-inputs-4z, 60 s (Wiederholung 2)"
 files = ["20261116_acdc1_fx3k-open-inputs-4z-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 19:14:44. Stream-Meldungen: 0. owl_read: out/owl_read/B4z-fx3k-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 19:14:44. Stream-Meldungen: 0. owl_read: reports/owl_read/B4z-fx3k-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4z-3d-end-r1"
@@ -1148,7 +1148,7 @@ title = "B4z-3d-end-r1 – acdc1 3d-end-open-inputs-4z, 60 s (Wiederholung 1)"
 files = ["20261116_acdc1_3d-end-open-inputs-4z-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 19:17:39. Stream-Meldungen: 0. owl_read: out/owl_read/B4z-3d-end-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 19:17:39. Stream-Meldungen: 0. owl_read: reports/owl_read/B4z-3d-end-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B4z-3d-end-r2"
@@ -1162,7 +1162,7 @@ title = "B4z-3d-end-r2 – acdc1 3d-end-open-inputs-4z, 60 s (Wiederholung 2)"
 files = ["20261116_acdc1_3d-end-open-inputs-4z-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 19:18:52. Stream-Meldungen: 0. owl_read: out/owl_read/B4z-3d-end-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 19:18:52. Stream-Meldungen: 0. owl_read: reports/owl_read/B4z-3d-end-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B5-dg5i-loop"
@@ -1176,7 +1176,7 @@ title = "B5-dg5i-loop – acdc1 dg5i-loop-sine, 60 s"
 files = ["20261116_acdc1_dg5i-loop-sine_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 21:40:31. Stream-Meldungen: 0. owl_read: out/owl_read/B5-dg5i-loop (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 21:40:31. Stream-Meldungen: 0. owl_read: reports/owl_read/B5-dg5i-loop (rc 0)."
 
 [[measurement]]
 id = "B5-dg5f-loop"
@@ -1190,7 +1190,7 @@ title = "B5-dg5f-loop – acdc1 dg5f-loop-sine, 60 s"
 files = ["20261116_acdc1_dg5f-loop-sine_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 21:43:19. Stream-Meldungen: 0. owl_read: out/owl_read/B5-dg5f-loop (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 21:43:19. Stream-Meldungen: 0. owl_read: reports/owl_read/B5-dg5f-loop (rc 0)."
 
 [[measurement]]
 id = "B5b-dg5i2-loop"
@@ -1204,7 +1204,7 @@ title = "B5b-dg5i2-loop – acdc1 dg5i2-loop-sine, 60 s"
 files = ["20261116_acdc1_dg5i2-loop-sine_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 21:49:04. Stream-Meldungen: 0. owl_read: out/owl_read/B5b-dg5i2-loop (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 21:49:04. Stream-Meldungen: 0. owl_read: reports/owl_read/B5b-dg5i2-loop (rc 0)."
 
 [[measurement]]
 id = "B5c-fx3l-loop"
@@ -1218,7 +1218,7 @@ title = "B5c-fx3l-loop – acdc1 fx3l-loop-sine, 60 s"
 files = ["20261116_acdc1_fx3l-loop-sine_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 21:52:44. Stream-Meldungen: 0. owl_read: out/owl_read/B5c-fx3l-loop (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 21:52:44. Stream-Meldungen: 0. owl_read: reports/owl_read/B5c-fx3l-loop (rc 0)."
 
 [[measurement]]
 id = "B5c-fx3l-r1"
@@ -1232,7 +1232,7 @@ title = "B5c-fx3l-r1 – acdc1 fx3l-open-inputs-5, 60 s (Wiederholung 1)"
 files = ["20261116_acdc1_fx3l-open-inputs-5-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 21:55:23. Stream-Meldungen: 0. owl_read: out/owl_read/B5c-fx3l-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 21:55:23. Stream-Meldungen: 0. owl_read: reports/owl_read/B5c-fx3l-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B5c-fx3l-r2"
@@ -1246,7 +1246,7 @@ title = "B5c-fx3l-r2 – acdc1 fx3l-open-inputs-5, 60 s (Wiederholung 2)"
 files = ["20261116_acdc1_fx3l-open-inputs-5-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 21:56:36. Stream-Meldungen: 0. owl_read: out/owl_read/B5c-fx3l-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 21:56:36. Stream-Meldungen: 0. owl_read: reports/owl_read/B5c-fx3l-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B5c-fx3lp-r1"
@@ -1260,7 +1260,7 @@ title = "B5c-fx3lp-r1 – acdc1 fx3lp-open-inputs-5, 60 s (Wiederholung 1)"
 files = ["20261116_acdc1_fx3lp-open-inputs-5-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 22:00:25. Stream-Meldungen: 0. owl_read: out/owl_read/B5c-fx3lp-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 22:00:25. Stream-Meldungen: 0. owl_read: reports/owl_read/B5c-fx3lp-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B5c-fx3lp-r2"
@@ -1274,7 +1274,7 @@ title = "B5c-fx3lp-r2 – acdc1 fx3lp-open-inputs-5, 60 s (Wiederholung 2)"
 files = ["20261116_acdc1_fx3lp-open-inputs-5-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 22:01:38. Stream-Meldungen: 0. owl_read: out/owl_read/B5c-fx3lp-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 22:01:38. Stream-Meldungen: 0. owl_read: reports/owl_read/B5c-fx3lp-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B5-3d-end-r1"
@@ -1288,7 +1288,7 @@ title = "B5-3d-end-r1 – acdc1 3d-end-open-inputs-5, 60 s (Wiederholung 1)"
 files = ["20261116_acdc1_3d-end-open-inputs-5-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 22:03:57. Stream-Meldungen: 0. owl_read: out/owl_read/B5-3d-end-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 22:03:57. Stream-Meldungen: 0. owl_read: reports/owl_read/B5-3d-end-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B5-3d-end-r2"
@@ -1302,7 +1302,7 @@ title = "B5-3d-end-r2 – acdc1 3d-end-open-inputs-5, 60 s (Wiederholung 2)"
 files = ["20261116_acdc1_3d-end-open-inputs-5-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 22:05:10. Stream-Meldungen: 0. owl_read: out/owl_read/B5-3d-end-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 22:05:10. Stream-Meldungen: 0. owl_read: reports/owl_read/B5-3d-end-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B6b-fx4b-loop"
@@ -1316,7 +1316,7 @@ title = "B6b-fx4b-loop – acdc1 fx4b-loop-sine, 60 s"
 files = ["20261117_acdc1_fx4b-loop-sine_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:02:12. Stream-Meldungen: 0. owl_read: out/owl_read/B6b-fx4b-loop (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:02:12. Stream-Meldungen: 0. owl_read: reports/owl_read/B6b-fx4b-loop (rc 0)."
 
 [[measurement]]
 id = "B6b-fx4b-loop-tanh3"
@@ -1330,7 +1330,7 @@ title = "B6b-fx4b-loop-tanh3 – acdc1 fx4b-loop-sine-tanh3, 60 s"
 files = ["20261117_acdc1_fx4b-loop-sine-tanh3_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:04:01. Stream-Meldungen: 0. owl_read: out/owl_read/B6b-fx4b-loop-tanh3 (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:04:01. Stream-Meldungen: 0. owl_read: reports/owl_read/B6b-fx4b-loop-tanh3 (rc 0)."
 
 [[measurement]]
 id = "B6b-fx4b-r1"
@@ -1344,7 +1344,7 @@ title = "B6b-fx4b-r1 – acdc1 fx4b-open-inputs-6, 60 s (Wiederholung 1)"
 files = ["20261117_acdc1_fx4b-open-inputs-6-r1_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:07:35. Stream-Meldungen: 0. owl_read: out/owl_read/B6b-fx4b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:07:35. Stream-Meldungen: 0. owl_read: reports/owl_read/B6b-fx4b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B6b-fx4b-r2"
@@ -1358,7 +1358,7 @@ title = "B6b-fx4b-r2 – acdc1 fx4b-open-inputs-6, 60 s (Wiederholung 2)"
 files = ["20261117_acdc1_fx4b-open-inputs-6-r2_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:08:48. Stream-Meldungen: 0. owl_read: out/owl_read/B6b-fx4b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:08:48. Stream-Meldungen: 0. owl_read: reports/owl_read/B6b-fx4b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B6b-fx3l-r1"
@@ -1372,7 +1372,7 @@ title = "B6b-fx3l-r1 – acdc1 fx3l-open-inputs-6, 60 s (Wiederholung 1)"
 files = ["20261117_acdc1_fx3l-open-inputs-6-r1_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:12:22. Stream-Meldungen: 0. owl_read: out/owl_read/B6b-fx3l-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:12:22. Stream-Meldungen: 0. owl_read: reports/owl_read/B6b-fx3l-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B6b-fx3l-r2"
@@ -1386,7 +1386,7 @@ title = "B6b-fx3l-r2 – acdc1 fx3l-open-inputs-6, 60 s (Wiederholung 2)"
 files = ["20261117_acdc1_fx3l-open-inputs-6-r2_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:13:36. Stream-Meldungen: 0. owl_read: out/owl_read/B6b-fx3l-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:13:36. Stream-Meldungen: 0. owl_read: reports/owl_read/B6b-fx3l-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B6b-fx4b-end-r1"
@@ -1400,7 +1400,7 @@ title = "B6b-fx4b-end-r1 – acdc1 fx4b-open-inputs-6-end, 60 s (Wiederholung 1)
 files = ["20261117_acdc1_fx4b-open-inputs-6-end-r1_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:16:48. Stream-Meldungen: 0. owl_read: out/owl_read/B6b-fx4b-end-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:16:48. Stream-Meldungen: 0. owl_read: reports/owl_read/B6b-fx4b-end-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B6b-fx4b-end-r2"
@@ -1414,7 +1414,7 @@ title = "B6b-fx4b-end-r2 – acdc1 fx4b-open-inputs-6-end, 60 s (Wiederholung 2)
 files = ["20261117_acdc1_fx4b-open-inputs-6-end-r2_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:18:01. Stream-Meldungen: 0. owl_read: out/owl_read/B6b-fx4b-end-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:18:01. Stream-Meldungen: 0. owl_read: reports/owl_read/B6b-fx4b-end-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B6b-osc-detuned"
@@ -1428,7 +1428,7 @@ title = "B6b-osc-detuned – acdc1 fx4b-open-inputs-osc-detuned, 30 s"
 files = ["20261117_acdc1_fx4b-open-inputs-osc-detuned_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:21:31. Stream-Meldungen: 0. owl_read: out/owl_read/B6b-osc-detuned (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:21:31. Stream-Meldungen: 0. owl_read: reports/owl_read/B6b-osc-detuned (rc 0)."
 
 [[measurement]]
 id = "B6b-knobs-12"
@@ -1442,7 +1442,7 @@ title = "B6b-knobs-12 – acdc1 fx4b-open-inputs-knobs-12, 30 s"
 files = ["20261117_acdc1_fx4b-open-inputs-knobs-12_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:24:36. Stream-Meldungen: 0. owl_read: out/owl_read/B6b-knobs-12 (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:24:36. Stream-Meldungen: 0. owl_read: reports/owl_read/B6b-knobs-12 (rc 0)."
 
 [[measurement]]
 id = "K1-01-MMMM"
@@ -1456,7 +1456,7 @@ title = "K1-01-MMMM – acdc1 fx4b-open-inputs-K1-01-MMMM, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K1-01-MMMM_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:27:25. Stream-Meldungen: 0. owl_read: out/owl_read/K1-01-MMMM (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:27:25. Stream-Meldungen: 0. owl_read: reports/owl_read/K1-01-MMMM (rc 0)."
 
 [[measurement]]
 id = "K1-02-LMMM"
@@ -1470,7 +1470,7 @@ title = "K1-02-LMMM – acdc1 fx4b-open-inputs-K1-02-LMMM, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K1-02-LMMM_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:28:19. Stream-Meldungen: 0. owl_read: out/owl_read/K1-02-LMMM (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:28:19. Stream-Meldungen: 0. owl_read: reports/owl_read/K1-02-LMMM (rc 0)."
 
 [[measurement]]
 id = "K1-03-RMMM"
@@ -1484,7 +1484,7 @@ title = "K1-03-RMMM – acdc1 fx4b-open-inputs-K1-03-RMMM, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K1-03-RMMM_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:34:24. Stream-Meldungen: 0. owl_read: out/owl_read/K1-03-RMMM (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:34:24. Stream-Meldungen: 0. owl_read: reports/owl_read/K1-03-RMMM (rc 0)."
 
 [[measurement]]
 id = "K1-04-MLMM"
@@ -1498,7 +1498,7 @@ title = "K1-04-MLMM – acdc1 fx4b-open-inputs-K1-04-MLMM, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K1-04-MLMM_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:35:21. Stream-Meldungen: 0. owl_read: out/owl_read/K1-04-MLMM (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:35:21. Stream-Meldungen: 0. owl_read: reports/owl_read/K1-04-MLMM (rc 0)."
 
 [[measurement]]
 id = "K1-05-MRMM"
@@ -1512,7 +1512,7 @@ title = "K1-05-MRMM – acdc1 fx4b-open-inputs-K1-05-MRMM, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K1-05-MRMM_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:36:09. Stream-Meldungen: 0. owl_read: out/owl_read/K1-05-MRMM (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:36:09. Stream-Meldungen: 0. owl_read: reports/owl_read/K1-05-MRMM (rc 0)."
 
 [[measurement]]
 id = "K1-06-MMLM"
@@ -1526,7 +1526,7 @@ title = "K1-06-MMLM – acdc1 fx4b-open-inputs-K1-06-MMLM, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K1-06-MMLM_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:37:01. Stream-Meldungen: 0. owl_read: out/owl_read/K1-06-MMLM (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:37:01. Stream-Meldungen: 0. owl_read: reports/owl_read/K1-06-MMLM (rc 0)."
 
 [[measurement]]
 id = "K1-07-MMRM"
@@ -1540,7 +1540,7 @@ title = "K1-07-MMRM – acdc1 fx4b-open-inputs-K1-07-MMRM, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K1-07-MMRM_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:37:48. Stream-Meldungen: 0. owl_read: out/owl_read/K1-07-MMRM (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:37:48. Stream-Meldungen: 0. owl_read: reports/owl_read/K1-07-MMRM (rc 0)."
 
 [[measurement]]
 id = "K1-08-MMML"
@@ -1554,7 +1554,7 @@ title = "K1-08-MMML – acdc1 fx4b-open-inputs-K1-08-MMML, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K1-08-MMML_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:38:42. Stream-Meldungen: 0. owl_read: out/owl_read/K1-08-MMML (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:38:42. Stream-Meldungen: 0. owl_read: reports/owl_read/K1-08-MMML (rc 0)."
 
 [[measurement]]
 id = "K1-09-MMMR"
@@ -1568,7 +1568,7 @@ title = "K1-09-MMMR – acdc1 fx4b-open-inputs-K1-09-MMMR, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K1-09-MMMR_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:39:27. Stream-Meldungen: 0. owl_read: out/owl_read/K1-09-MMMR (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:39:27. Stream-Meldungen: 0. owl_read: reports/owl_read/K1-09-MMMR (rc 0)."
 
 [[measurement]]
 id = "K1-10-MMMM"
@@ -1582,7 +1582,7 @@ title = "K1-10-MMMM – acdc1 fx4b-open-inputs-K1-10-MMMM, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K1-10-MMMM_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:41:28. Stream-Meldungen: 0. owl_read: out/owl_read/K1-10-MMMM (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:41:28. Stream-Meldungen: 0. owl_read: reports/owl_read/K1-10-MMMM (rc 0)."
 
 [[measurement]]
 id = "K2-01-MMMM"
@@ -1596,7 +1596,7 @@ title = "K2-01-MMMM – acdc1 fx4b-open-inputs-K2-01-MMMM, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K2-01-MMMM_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:53:03. Stream-Meldungen: 0. owl_read: out/owl_read/K2-01-MMMM (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:53:03. Stream-Meldungen: 0. owl_read: reports/owl_read/K2-01-MMMM (rc 0)."
 
 [[measurement]]
 id = "K2-02-LLLL"
@@ -1610,7 +1610,7 @@ title = "K2-02-LLLL – acdc1 fx4b-open-inputs-K2-02-LLLL, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K2-02-LLLL_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:53:56. Stream-Meldungen: 0. owl_read: out/owl_read/K2-02-LLLL (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:53:56. Stream-Meldungen: 0. owl_read: reports/owl_read/K2-02-LLLL (rc 0)."
 
 [[measurement]]
 id = "K2-03-RRRR"
@@ -1624,7 +1624,7 @@ title = "K2-03-RRRR – acdc1 fx4b-open-inputs-K2-03-RRRR, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K2-03-RRRR_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:54:54. Stream-Meldungen: 0. owl_read: out/owl_read/K2-03-RRRR (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:54:54. Stream-Meldungen: 0. owl_read: reports/owl_read/K2-03-RRRR (rc 0)."
 
 [[measurement]]
 id = "K2-04-LRLR"
@@ -1638,7 +1638,7 @@ title = "K2-04-LRLR – acdc1 fx4b-open-inputs-K2-04-LRLR, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K2-04-LRLR_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:57:00. Stream-Meldungen: 0. owl_read: out/owl_read/K2-04-LRLR (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:57:00. Stream-Meldungen: 0. owl_read: reports/owl_read/K2-04-LRLR (rc 0)."
 
 [[measurement]]
 id = "K2-05-LLRR"
@@ -1652,7 +1652,7 @@ title = "K2-05-LLRR – acdc1 fx4b-open-inputs-K2-05-LLRR, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K2-05-LLRR_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:57:52. Stream-Meldungen: 0. owl_read: out/owl_read/K2-05-LLRR (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:57:52. Stream-Meldungen: 0. owl_read: reports/owl_read/K2-05-LLRR (rc 0)."
 
 [[measurement]]
 id = "K2-06-8MMM"
@@ -1666,7 +1666,7 @@ title = "K2-06-8MMM – acdc1 fx4b-open-inputs-K2-06-8MMM, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K2-06-8MMM_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:59:02. Stream-Meldungen: 0. owl_read: out/owl_read/K2-06-8MMM (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:59:02. Stream-Meldungen: 0. owl_read: reports/owl_read/K2-06-8MMM (rc 0)."
 
 [[measurement]]
 id = "K2-07-24-M-M-M"
@@ -1680,7 +1680,7 @@ title = "K2-07-24-M-M-M – acdc1 fx4b-open-inputs-K2-07-24-M-M-M, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K2-07-24-M-M-M_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:59:52. Stream-Meldungen: 0. owl_read: out/owl_read/K2-07-24-M-M-M (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 13:59:52. Stream-Meldungen: 0. owl_read: reports/owl_read/K2-07-24-M-M-M (rc 0)."
 
 [[measurement]]
 id = "K2-08-44-M-M-M"
@@ -1694,7 +1694,7 @@ title = "K2-08-44-M-M-M – acdc1 fx4b-open-inputs-K2-08-44-M-M-M, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K2-08-44-M-M-M_gvar_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:00:42. Stream-Meldungen: 0. owl_read: out/owl_read/K2-08-44-M-M-M (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:00:42. Stream-Meldungen: 0. owl_read: reports/owl_read/K2-08-44-M-M-M (rc 0)."
 
 [[measurement]]
 id = "K2-09-MMMM"
@@ -1708,7 +1708,7 @@ title = "K2-09-MMMM – acdc1 fx4b-open-inputs-K2-09-MMMM, 30 s"
 files = ["20261118_acdc1_fx4b-open-inputs-K2-09-MMMM_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:01:28. Stream-Meldungen: 0. owl_read: out/owl_read/K2-09-MMMM (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:01:28. Stream-Meldungen: 0. owl_read: reports/owl_read/K2-09-MMMM (rc 0)."
 
 [[measurement]]
 id = "B7-fx4b-a-r1"
@@ -1722,7 +1722,7 @@ title = "B7-fx4b-a-r1 – acdc1 fx4b-open-inputs-7a, 60 s (Wiederholung 1)"
 files = ["20261118_acdc1_fx4b-open-inputs-7a-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:45:48. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx4b-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:45:48. Stream-Meldungen: 0. owl_read: reports/owl_read/B7-fx4b-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B7-fx4b-a-r2"
@@ -1736,7 +1736,7 @@ title = "B7-fx4b-a-r2 – acdc1 fx4b-open-inputs-7a, 60 s (Wiederholung 2)"
 files = ["20261118_acdc1_fx4b-open-inputs-7a-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:47:02. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx4b-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:47:02. Stream-Meldungen: 0. owl_read: reports/owl_read/B7-fx4b-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B7-fx5a-r1"
@@ -1750,7 +1750,7 @@ title = "B7-fx5a-r1 – acdc1 fx5a-open-inputs-7, 60 s (Wiederholung 1)"
 files = ["20261118_acdc1_fx5a-open-inputs-7-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:53:32. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx5a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:53:32. Stream-Meldungen: 0. owl_read: reports/owl_read/B7-fx5a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B7-fx5a-r2"
@@ -1764,7 +1764,7 @@ title = "B7-fx5a-r2 – acdc1 fx5a-open-inputs-7, 60 s (Wiederholung 2)"
 files = ["20261118_acdc1_fx5a-open-inputs-7-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:54:45. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx5a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:54:45. Stream-Meldungen: 0. owl_read: reports/owl_read/B7-fx5a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B7-fx5a-loop"
@@ -1778,7 +1778,7 @@ title = "B7-fx5a-loop – acdc1 fx5a-loop-sine, 60 s"
 files = ["20261118_acdc1_fx5a-loop-sine_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:58:41. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx5a-loop (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:58:41. Stream-Meldungen: 0. owl_read: reports/owl_read/B7-fx5a-loop (rc 0)."
 
 [[measurement]]
 id = "B7-fx5a-loop-tanh3"
@@ -1792,7 +1792,7 @@ title = "B7-fx5a-loop-tanh3 – acdc1 fx5a-loop-sine-tanh3, 60 s"
 files = ["20261118_acdc1_fx5a-loop-sine-tanh3_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:59:53. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx5a-loop-tanh3 (rc 0)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:59:53. Stream-Meldungen: 0. owl_read: reports/owl_read/B7-fx5a-loop-tanh3 (rc 0)."
 
 [[measurement]]
 id = "B7-fx5a-loop-tanh3-dl"
@@ -1820,7 +1820,7 @@ title = "B7-fx4b-b-r1 – acdc1 fx4b-open-inputs-7b, 60 s (Wiederholung 1)"
 files = ["20261118_acdc1_fx4b-open-inputs-7b-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:07:19. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx4b-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:07:19. Stream-Meldungen: 0. owl_read: reports/owl_read/B7-fx4b-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B7-fx4b-b-r2"
@@ -1834,7 +1834,7 @@ title = "B7-fx4b-b-r2 – acdc1 fx4b-open-inputs-7b, 60 s (Wiederholung 2)"
 files = ["20261118_acdc1_fx4b-open-inputs-7b-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:08:33. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx4b-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:08:33. Stream-Meldungen: 0. owl_read: reports/owl_read/B7-fx4b-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B7-fx5a-b-r1"
@@ -1848,7 +1848,7 @@ title = "B7-fx5a-b-r1 – acdc1 fx5a-open-inputs-7b, 60 s (Wiederholung 1)"
 files = ["20261118_acdc1_fx5a-open-inputs-7b-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:22:50. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx5a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:22:50. Stream-Meldungen: 0. owl_read: reports/owl_read/B7-fx5a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "B7-fx5a-b-r2"
@@ -1862,7 +1862,7 @@ title = "B7-fx5a-b-r2 – acdc1 fx5a-open-inputs-7b, 60 s (Wiederholung 2)"
 files = ["20261118_acdc1_fx5a-open-inputs-7b-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:24:03. Stream-Meldungen: 0. owl_read: out/owl_read/B7-fx5a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:24:03. Stream-Meldungen: 0. owl_read: reports/owl_read/B7-fx5a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "D67-schliere-out1-umc"
@@ -1904,7 +1904,7 @@ title = "C1-schliere-r1 – acdc1 case-schliere-open-inputs, 60 s (Wiederholung 
 files = ["20261118_acdc1_case-schliere-open-inputs-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:27:41. Stream-Meldungen: 0. owl_read: out/owl_read/C1-schliere-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Out 1 steckt am zweiten Interface. messlog D69"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:27:41. Stream-Meldungen: 0. owl_read: reports/owl_read/C1-schliere-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Out 1 steckt am zweiten Interface. messlog D69"
 
 [[measurement]]
 id = "C1-schliere-r2"
@@ -1918,7 +1918,7 @@ title = "C1-schliere-r2 – acdc1 case-schliere-open-inputs, 60 s (Wiederholung 
 files = ["20261118_acdc1_case-schliere-open-inputs-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:28:54. Stream-Meldungen: 0. owl_read: out/owl_read/C1-schliere-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Out 1 steckt am zweiten Interface. messlog D69"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:28:54. Stream-Meldungen: 0. owl_read: reports/owl_read/C1-schliere-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Out 1 steckt am zweiten Interface. messlog D69"
 
 [[measurement]]
 id = "C1-acdc-r1"
@@ -1932,7 +1932,7 @@ title = "C1-acdc-r1 – acdc1 case-acdc-open-inputs, 60 s (Wiederholung 1)"
 files = ["20261118_acdc1_case-acdc-open-inputs-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:30:19. Stream-Meldungen: 0. owl_read: out/owl_read/C1-acdc-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Out 1 steckt am zweiten Interface. messlog D69"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:30:19. Stream-Meldungen: 0. owl_read: reports/owl_read/C1-acdc-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Out 1 steckt am zweiten Interface. messlog D69"
 
 [[measurement]]
 id = "C1-acdc-r2"
@@ -1946,7 +1946,7 @@ title = "C1-acdc-r2 – acdc1 case-acdc-open-inputs, 60 s (Wiederholung 2)"
 files = ["20261118_acdc1_case-acdc-open-inputs-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:31:32. Stream-Meldungen: 0. owl_read: out/owl_read/C1-acdc-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Out 1 steckt am zweiten Interface. messlog D69"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 18:31:32. Stream-Meldungen: 0. owl_read: reports/owl_read/C1-acdc-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Out 1 steckt am zweiten Interface. messlog D69"
 
 [[measurement]]
 id = "D71-schliere-f2-a"
@@ -2058,7 +2058,7 @@ title = "D75-fx6a-clip-ramp – acdc1 fx6a-ledclip-dc-ramp-out2-in1, 30 s"
 files = ["20261118_acdc1_fx6a-ledclip-dc-ramp-out2-in1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 2 DC +1.000 FS (Rampe 20 s), Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:32:47. Stream-Meldungen: 0. owl_read: out/owl_read/D75-fx6a-clip-ramp (rc 0). Regler 127 / 52 / 2 / 74 von 127 (nicht auf 12 Uhr). In 1 erreicht nur +0,9635 (Eingangsoffset negativ, wie D36), kein Clip, keine LED erwartet. Bezug für die negative Rampe. messlog D75"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 2 DC +1.000 FS (Rampe 20 s), Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:32:47. Stream-Meldungen: 0. owl_read: reports/owl_read/D75-fx6a-clip-ramp (rc 0). Regler 127 / 52 / 2 / 74 von 127 (nicht auf 12 Uhr). In 1 erreicht nur +0,9635 (Eingangsoffset negativ, wie D36), kein Clip, keine LED erwartet. Bezug für die negative Rampe. messlog D75"
 
 [[measurement]]
 id = "D75-fx6a-clip-ramp-neg"
@@ -2072,7 +2072,7 @@ title = "D75-fx6a-clip-ramp-neg – acdc1 fx6a-ledclip-dc-ramp-neg-out2-in1, 30 
 files = ["20261118_acdc1_fx6a-ledclip-dc-ramp-neg-out2-in1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 2 DC -1.000 FS (Rampe 20 s), Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:34:17. Stream-Meldungen: 0. owl_read: out/owl_read/D75-fx6a-clip-ramp-neg (rc 0). Regler 127 / 52 / 2 / 74 von 127 (nicht auf 12 Uhr). In 1 ab 18,44 s an der Clip-Schwelle, danach am Anschlag. messlog D75"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 2 DC -1.000 FS (Rampe 20 s), Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 23:34:17. Stream-Meldungen: 0. owl_read: reports/owl_read/D75-fx6a-clip-ramp-neg (rc 0). Regler 127 / 52 / 2 / 74 von 127 (nicht auf 12 Uhr). In 1 ab 18,44 s an der Clip-Schwelle, danach am Anschlag. messlog D75"
 
 [[measurement]]
 id = "D75-fx6a-clip-ramp-neg-b"
@@ -2086,7 +2086,7 @@ title = "D75-fx6a-clip-ramp-neg-b – acdc1 fx6a-ledkept-dc-ramp-neg-out2-in1, 3
 files = ["20261119_acdc1_fx6a-ledkept-dc-ramp-neg-out2-in1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 2 DC -1.000 FS (Rampe 20 s), Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:21:22. Stream-Meldungen: 0. owl_read: out/owl_read/D75-fx6a-clip-ramp-neg-b (rc 0). Regler 66 / 61 / 64 / 62 von 127. 16-Bit-Datei = Gerätewerte. In 1 erreicht die Clip-Schwelle 0,9886 bei 18,415 s und den Anschlag bei 18,639 s. In 2–4 springen 1,7 ms nach der Schwelle um im Mittel −2,0e-4 Vollausschlag: Die Firmware schaltet LED 1 rot, gemerkt ist also nur Clip (messlog D75, zweiter Nachtrag)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 2 DC -1.000 FS (Rampe 20 s), Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:21:22. Stream-Meldungen: 0. owl_read: reports/owl_read/D75-fx6a-clip-ramp-neg-b (rc 0). Regler 66 / 61 / 64 / 62 von 127. 16-Bit-Datei = Gerätewerte. In 1 erreicht die Clip-Schwelle 0,9886 bei 18,415 s und den Anschlag bei 18,639 s. In 2–4 springen 1,7 ms nach der Schwelle um im Mittel −2,0e-4 Vollausschlag: Die Firmware schaltet LED 1 rot, gemerkt ist also nur Clip (messlog D75, zweiter Nachtrag)."
 
 [[measurement]]
 id = "D75-fx6a-clip-ramp-neg-c"
@@ -2100,7 +2100,7 @@ title = "D75-fx6a-clip-ramp-neg-c – acdc1 fx6a-ledkept-dc-ramp-neg-out2-in1-c,
 files = ["20261119_acdc1_fx6a-ledkept-dc-ramp-neg-out2-in1-c_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 2 DC -1.000 FS (Rampe 20 s), Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:32:43. Stream-Meldungen: 0. owl_read: out/owl_read/D75-fx6a-clip-ramp-neg-c (rc 0). Regler 66 / 61 / 65 / 61 von 127. 16-Bit-Datei = Gerätewerte. In 1 erreicht die Clip-Schwelle bei 18,379 s und den Anschlag bei 18,601 s. In 2–4 springen 0,2 ms nach der Schwelle um −2,1e-4…−2,2e-4 Vollausschlag (messlog D75, zweiter Nachtrag)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 2 DC -1.000 FS (Rampe 20 s), Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:32:43. Stream-Meldungen: 0. owl_read: reports/owl_read/D75-fx6a-clip-ramp-neg-c (rc 0). Regler 66 / 61 / 65 / 61 von 127. 16-Bit-Datei = Gerätewerte. In 1 erreicht die Clip-Schwelle bei 18,379 s und den Anschlag bei 18,601 s. In 2–4 springen 0,2 ms nach der Schwelle um −2,1e-4…−2,2e-4 Vollausschlag (messlog D75, zweiter Nachtrag)."
 
 [[measurement]]
 id = "B8-fx6a-loop"
@@ -2114,7 +2114,7 @@ title = "B8-fx6a-loop – acdc1 fx6a-loop, 60 s"
 files = ["20261119_acdc1_fx6a-loop_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:45:00. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-loop (rc 0). 0 Slips, 0 veraltete Samples, Meldung tx ovf 0.3819 0.9513 4, CPU 8 % (messlog D76)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:45:00. Stream-Meldungen: 0. owl_read: reports/owl_read/B8-fx6a-loop (rc 0). 0 Slips, 0 veraltete Samples, Meldung tx ovf 0.3819 0.9513 4, CPU 8 % (messlog D76)."
 
 [[measurement]]
 id = "B8-fx6a-loop-tanh3"
@@ -2128,7 +2128,7 @@ title = "B8-fx6a-loop-tanh3 – acdc1 fx6a-loop-tanh3, 60 s"
 files = ["20261119_acdc1_fx6a-loop-tanh3_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 8 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:47:09. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-loop-tanh3 (rc 0). Abweichend von test: Der Program Change auf Slot 5 kam erst bei offenem Stream. Die Wiedergabe setzt danach periodisch aus (10,3 % Stille, alle 4223 Frames), Meldung fb 48.0088 46.3203. Kein gültiger Loop-Test, Beleg für den Fehler in messlog D76."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 8 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:47:09. Stream-Meldungen: 0. owl_read: reports/owl_read/B8-fx6a-loop-tanh3 (rc 0). Abweichend von test: Der Program Change auf Slot 5 kam erst bei offenem Stream. Die Wiedergabe setzt danach periodisch aus (10,3 % Stille, alle 4223 Frames), Meldung fb 48.0088 46.3203. Kein gültiger Loop-Test, Beleg für den Fehler in messlog D76."
 
 [[measurement]]
 id = "B8-fx6a-loop-tanh3-b"
@@ -2142,7 +2142,7 @@ title = "B8-fx6a-loop-tanh3-b – acdc1 fx6a-loop-tanh3-b, 60 s"
 files = ["20261119_acdc1_fx6a-loop-tanh3-b_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:49:56. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-loop-tanh3-b (rc 0). 0 Slips, 0 veraltete Samples, Meldung tx ovf 1.0000 1.0000 32, CPU 52 % (messlog D76)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:49:56. Stream-Meldungen: 0. owl_read: reports/owl_read/B8-fx6a-loop-tanh3-b (rc 0). 0 Slips, 0 veraltete Samples, Meldung tx ovf 1.0000 1.0000 32, CPU 52 % (messlog D76)."
 
 [[measurement]]
 id = "B8-fx6a-loop-tanh3-dl"
@@ -2170,7 +2170,7 @@ title = "B8-fx6a-pc2-stream – acdc1 fx6a-loop-pc2-stream, 25 s"
 files = ["20261119_acdc1_fx6a-loop-pc2-stream_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:53:03. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-pc2-stream (rc 0). Nach dem Program Change 10,0–10,7 % Stille an allen Ausgängen (alle 4223 Frames etwa 400 Frames), Meldung fb clamp -72 32 (messlog D76)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:53:03. Stream-Meldungen: 0. owl_read: reports/owl_read/B8-fx6a-pc2-stream (rc 0). Nach dem Program Change 10,0–10,7 % Stille an allen Ausgängen (alle 4223 Frames etwa 400 Frames), Meldung fb clamp -72 32 (messlog D76)."
 
 [[measurement]]
 id = "B8-fx6a-pc1-stream"
@@ -2184,7 +2184,7 @@ title = "B8-fx6a-pc1-stream – acdc1 fx6a-loop-pc1-stream, 25 s"
 files = ["20261119_acdc1_fx6a-loop-pc1-stream_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:53:41. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-pc1-stream (rc 0). Nach dem Program Change 9,8–11,3 % Stille an allen Ausgängen, Meldung fb clamp -57 32, CPU 6 % (messlog D76)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:53:41. Stream-Meldungen: 0. owl_read: reports/owl_read/B8-fx6a-pc1-stream (rc 0). Nach dem Program Change 9,8–11,3 % Stille an allen Ausgängen, Meldung fb clamp -57 32, CPU 6 % (messlog D76)."
 
 [[measurement]]
 id = "B8-fx6a-a-r1"
@@ -2198,7 +2198,7 @@ title = "B8-fx6a-a-r1 – acdc1 fx6a-open-inputs-8a, 60 s (Wiederholung 1)"
 files = ["20261119_acdc1_fx6a-open-inputs-8a-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:00:05. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Oszillator im Case am Strom (Nutzer). messlog D77."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:00:05. Stream-Meldungen: 0. owl_read: reports/owl_read/B8-fx6a-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Oszillator im Case am Strom (Nutzer). messlog D77."
 
 [[measurement]]
 id = "B8-fx6a-a-r2"
@@ -2212,7 +2212,7 @@ title = "B8-fx6a-a-r2 – acdc1 fx6a-open-inputs-8a, 60 s (Wiederholung 2)"
 files = ["20261119_acdc1_fx6a-open-inputs-8a-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:01:18. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Oszillator im Case am Strom (Nutzer). messlog D77."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:01:18. Stream-Meldungen: 0. owl_read: reports/owl_read/B8-fx6a-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Oszillator im Case am Strom (Nutzer). messlog D77."
 
 [[measurement]]
 id = "B8-fx5a-r1"
@@ -2226,7 +2226,7 @@ title = "B8-fx5a-r1 – acdc1 fx5a-open-inputs-8, 60 s (Wiederholung 1)"
 files = ["20261119_acdc1_fx5a-open-inputs-8-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:09:30. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx5a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. messlog D77."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:09:30. Stream-Meldungen: 0. owl_read: reports/owl_read/B8-fx5a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. messlog D77."
 
 [[measurement]]
 id = "B8-fx5a-r2"
@@ -2240,7 +2240,7 @@ title = "B8-fx5a-r2 – acdc1 fx5a-open-inputs-8, 60 s (Wiederholung 2)"
 files = ["20261119_acdc1_fx5a-open-inputs-8-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:10:43. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx5a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. messlog D77."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:10:43. Stream-Meldungen: 0. owl_read: reports/owl_read/B8-fx5a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. messlog D77."
 
 [[measurement]]
 id = "B8-fx5a-pc1-stream"
@@ -2254,7 +2254,7 @@ title = "B8-fx5a-pc1-stream – acdc1 fx5a-loop-pc1-stream, 25 s"
 files = ["20261119_acdc1_fx5a-loop-pc1-stream_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:15:36. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx5a-pc1-stream (rc 0). Nach dem Program Change 9,4–10,8 % Stille am Ausgang, Abstand 4223 Frames, wie unter fx6a (messlog D77)."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Block 256, 1 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:15:36. Stream-Meldungen: 0. owl_read: reports/owl_read/B8-fx5a-pc1-stream (rc 0). Nach dem Program Change 9,4–10,8 % Stille am Ausgang, Abstand 4223 Frames, wie unter fx6a (messlog D77)."
 
 [[measurement]]
 id = "B8-fx6a-b-r1"
@@ -2268,7 +2268,7 @@ title = "B8-fx6a-b-r1 – acdc1 fx6a-open-inputs-8b, 60 s (Wiederholung 1)"
 files = ["20261119_acdc1_fx6a-open-inputs-8b-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:19:46. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. messlog D77."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:19:46. Stream-Meldungen: 0. owl_read: reports/owl_read/B8-fx6a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. messlog D77."
 
 [[measurement]]
 id = "B8-fx6a-b-r2"
@@ -2282,7 +2282,7 @@ title = "B8-fx6a-b-r2 – acdc1 fx6a-open-inputs-8b, 60 s (Wiederholung 2)"
 files = ["20261119_acdc1_fx6a-open-inputs-8b-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:21:00. Stream-Meldungen: 0. owl_read: out/owl_read/B8-fx6a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. messlog D77."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:21:00. Stream-Meldungen: 0. owl_read: reports/owl_read/B8-fx6a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. messlog D77."
 
 [[measurement]]
 id = "D78-fx7a-ledtest-umc"
@@ -2310,7 +2310,7 @@ title = "B9-fx7a-a-r1 – acdc1 fx7a-open-inputs-9a, 60 s (Wiederholung 1)"
 files = ["20261119_acdc1_fx7a-open-inputs-9a-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:05:52. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx7a-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Oszillator im Case abgesteckt (Nutzer). messlog D79."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:05:52. Stream-Meldungen: 0. owl_read: reports/owl_read/B9-fx7a-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Oszillator im Case abgesteckt (Nutzer). messlog D79."
 
 [[measurement]]
 id = "B9-fx7a-a-r2"
@@ -2324,7 +2324,7 @@ title = "B9-fx7a-a-r2 – acdc1 fx7a-open-inputs-9a, 60 s (Wiederholung 2)"
 files = ["20261119_acdc1_fx7a-open-inputs-9a-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:07:06. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx7a-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Oszillator im Case abgesteckt (Nutzer). messlog D79."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:07:06. Stream-Meldungen: 0. owl_read: reports/owl_read/B9-fx7a-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Oszillator im Case abgesteckt (Nutzer). messlog D79."
 
 [[measurement]]
 id = "B9-fx6a-r1"
@@ -2338,7 +2338,7 @@ title = "B9-fx6a-r1 – acdc1 fx6a-open-inputs-9, 60 s (Wiederholung 1)"
 files = ["20261119_acdc1_fx6a-open-inputs-9-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:17:54. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx6a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Start über dfu-util :leave nach dem Readback, kein Kaltstart (Case blieb an). Oszillator im Case abgesteckt (Nutzer). messlog D79."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:17:54. Stream-Meldungen: 0. owl_read: reports/owl_read/B9-fx6a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Start über dfu-util :leave nach dem Readback, kein Kaltstart (Case blieb an). Oszillator im Case abgesteckt (Nutzer). messlog D79."
 
 [[measurement]]
 id = "B9-fx6a-r2"
@@ -2352,7 +2352,7 @@ title = "B9-fx6a-r2 – acdc1 fx6a-open-inputs-9, 60 s (Wiederholung 2)"
 files = ["20261119_acdc1_fx6a-open-inputs-9-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:19:07. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx6a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Start über dfu-util :leave nach dem Readback, kein Kaltstart (Case blieb an). Oszillator im Case abgesteckt (Nutzer). messlog D79."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:19:07. Stream-Meldungen: 0. owl_read: reports/owl_read/B9-fx6a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Start über dfu-util :leave nach dem Readback, kein Kaltstart (Case blieb an). Oszillator im Case abgesteckt (Nutzer). messlog D79."
 
 [[measurement]]
 id = "B9-fx7a-b-r1"
@@ -2366,7 +2366,7 @@ title = "B9-fx7a-b-r1 – acdc1 fx7a-open-inputs-9b, 60 s (Wiederholung 1)"
 files = ["20261119_acdc1_fx7a-open-inputs-9b-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:21:14. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx7a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Start über dfu-util :leave nach dem Readback, kein Kaltstart (Case blieb an). Oszillator im Case abgesteckt (Nutzer). messlog D79."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:21:14. Stream-Meldungen: 0. owl_read: reports/owl_read/B9-fx7a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Start über dfu-util :leave nach dem Readback, kein Kaltstart (Case blieb an). Oszillator im Case abgesteckt (Nutzer). messlog D79."
 
 [[measurement]]
 id = "B9-fx7a-b-r2"
@@ -2380,7 +2380,7 @@ title = "B9-fx7a-b-r2 – acdc1 fx7a-open-inputs-9b, 60 s (Wiederholung 2)"
 files = ["20261119_acdc1_fx7a-open-inputs-9b-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:22:27. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx7a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Start über dfu-util :leave nach dem Readback, kein Kaltstart (Case blieb an). Oszillator im Case abgesteckt (Nutzer). messlog D79."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:22:27. Stream-Meldungen: 0. owl_read: reports/owl_read/B9-fx7a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Start über dfu-util :leave nach dem Readback, kein Kaltstart (Case blieb an). Oszillator im Case abgesteckt (Nutzer). messlog D79."
 
 [[measurement]]
 id = "B9-fx7a-c-r1"
@@ -2394,7 +2394,7 @@ title = "B9-fx7a-c-r1 – acdc1 fx7a-open-inputs-9c, 60 s (Wiederholung 1)"
 files = ["20261119_acdc1_fx7a-open-inputs-9c-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:30:54. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx7a-c-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Kaltstart durch den Nutzer (Case aus, USB ab, Case an, USB an). Oszillator im Case abgesteckt. messlog D79."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:30:54. Stream-Meldungen: 0. owl_read: reports/owl_read/B9-fx7a-c-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Kaltstart durch den Nutzer (Case aus, USB ab, Case an, USB an). Oszillator im Case abgesteckt. messlog D79."
 
 [[measurement]]
 id = "B9-fx7a-c-r2"
@@ -2408,7 +2408,7 @@ title = "B9-fx7a-c-r2 – acdc1 fx7a-open-inputs-9c, 60 s (Wiederholung 2)"
 files = ["20261119_acdc1_fx7a-open-inputs-9c-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:32:07. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx7a-c-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Kaltstart durch den Nutzer (Case aus, USB ab, Case an, USB an). Oszillator im Case abgesteckt. messlog D79."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:32:07. Stream-Meldungen: 0. owl_read: reports/owl_read/B9-fx7a-c-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Kaltstart durch den Nutzer (Case aus, USB ab, Case an, USB an). Oszillator im Case abgesteckt. messlog D79."
 
 [[measurement]]
 id = "B9-fx7a-loop"
@@ -2422,7 +2422,7 @@ title = "B9-fx7a-loop – acdc1 fx7a-loop, 60 s"
 files = ["20261119_acdc1_fx7a-loop_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:36:30. Stream-Meldungen: 0. owl_read: out/owl_read/B9-fx7a-loop (rc 0). Kabel Out 1–4 → In 1–4, Gain 12 Uhr. messlog D79."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 12:36:30. Stream-Meldungen: 0. owl_read: reports/owl_read/B9-fx7a-loop (rc 0). Kabel Out 1–4 → In 1–4, Gain 12 Uhr. messlog D79."
 
 [[measurement]]
 id = "B10-fx8a-a-r1"
@@ -2436,7 +2436,7 @@ title = "B10-fx8a-a-r1 – acdc1 fx8a-open-inputs-10a, 60 s (Wiederholung 1)"
 files = ["20261123_acdc1_fx8a-open-inputs-10a-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:52:59. Stream-Meldungen: 0. owl_read: out/owl_read/B10-fx8a-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (I-Cache an), acdc1 im Case. Vor der Aufnahme lief wieder der gemerkte Slot 12, acdc1 wurde vermutlich beim Umstecken neu gestartet. Regler 69/55/72/56 von 127. Oszillator im Case abgesteckt (Nutzer). messlog D85."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:52:59. Stream-Meldungen: 0. owl_read: reports/owl_read/B10-fx8a-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (I-Cache an), acdc1 im Case. Vor der Aufnahme lief wieder der gemerkte Slot 12, acdc1 wurde vermutlich beim Umstecken neu gestartet. Regler 69/55/72/56 von 127. Oszillator im Case abgesteckt (Nutzer). messlog D85."
 
 [[measurement]]
 id = "B10-fx8a-a-r2"
@@ -2450,7 +2450,7 @@ title = "B10-fx8a-a-r2 – acdc1 fx8a-open-inputs-10a, 60 s (Wiederholung 2)"
 files = ["20261123_acdc1_fx8a-open-inputs-10a-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:54:12. Stream-Meldungen: 0. owl_read: out/owl_read/B10-fx8a-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (I-Cache an), acdc1 im Case. Vor der Aufnahme lief wieder der gemerkte Slot 12, acdc1 wurde vermutlich beim Umstecken neu gestartet. Regler 69/55/72/56 von 127. Oszillator im Case abgesteckt (Nutzer). messlog D85."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:54:12. Stream-Meldungen: 0. owl_read: reports/owl_read/B10-fx8a-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (I-Cache an), acdc1 im Case. Vor der Aufnahme lief wieder der gemerkte Slot 12, acdc1 wurde vermutlich beim Umstecken neu gestartet. Regler 69/55/72/56 von 127. Oszillator im Case abgesteckt (Nutzer). messlog D85."
 
 [[measurement]]
 id = "B10-fx7a-r1"
@@ -2464,7 +2464,7 @@ title = "B10-fx7a-r1 – acdc1 fx7a-open-inputs-10, 60 s (Wiederholung 1)"
 files = ["20261123_acdc1_fx7a-open-inputs-10-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:56:16. Stream-Meldungen: 0. owl_read: out/owl_read/B10-fx7a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 9 v22.4.r-fx7a, geflasht aus fx8a (firmware/flashlog/20261123_build9-fx7a-ab10/), Start über dfu-util :leave. Regler etwa 12 Uhr. Oszillator im Case abgesteckt (Nutzer). messlog D85."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:56:16. Stream-Meldungen: 0. owl_read: reports/owl_read/B10-fx7a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 9 v22.4.r-fx7a, geflasht aus fx8a (firmware/flashlog/20261123_build9-fx7a-ab10/), Start über dfu-util :leave. Regler etwa 12 Uhr. Oszillator im Case abgesteckt (Nutzer). messlog D85."
 
 [[measurement]]
 id = "B10-fx7a-r2"
@@ -2478,7 +2478,7 @@ title = "B10-fx7a-r2 – acdc1 fx7a-open-inputs-10, 60 s (Wiederholung 2)"
 files = ["20261123_acdc1_fx7a-open-inputs-10-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:57:29. Stream-Meldungen: 0. owl_read: out/owl_read/B10-fx7a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 9 v22.4.r-fx7a, geflasht aus fx8a (firmware/flashlog/20261123_build9-fx7a-ab10/), Start über dfu-util :leave. Regler etwa 12 Uhr. Oszillator im Case abgesteckt (Nutzer). messlog D85."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:57:29. Stream-Meldungen: 0. owl_read: reports/owl_read/B10-fx7a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 9 v22.4.r-fx7a, geflasht aus fx8a (firmware/flashlog/20261123_build9-fx7a-ab10/), Start über dfu-util :leave. Regler etwa 12 Uhr. Oszillator im Case abgesteckt (Nutzer). messlog D85."
 
 [[measurement]]
 id = "B10-fx8a-b-r1"
@@ -2492,7 +2492,7 @@ title = "B10-fx8a-b-r1 – acdc1 fx8a-open-inputs-10b, 60 s (Wiederholung 1)"
 files = ["20261123_acdc1_fx8a-open-inputs-10b-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:59:22. Stream-Meldungen: 0. owl_read: out/owl_read/B10-fx8a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (I-Cache an), geflasht aus fx7a (firmware/flashlog/20261123_build10-fx8a-b/), Start über dfu-util :leave. Regler etwa 12 Uhr. Oszillator im Case abgesteckt (Nutzer). messlog D85."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 14:59:22. Stream-Meldungen: 0. owl_read: reports/owl_read/B10-fx8a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (I-Cache an), geflasht aus fx7a (firmware/flashlog/20261123_build10-fx8a-b/), Start über dfu-util :leave. Regler etwa 12 Uhr. Oszillator im Case abgesteckt (Nutzer). messlog D85."
 
 [[measurement]]
 id = "B10-fx8a-b-r2"
@@ -2506,7 +2506,7 @@ title = "B10-fx8a-b-r2 – acdc1 fx8a-open-inputs-10b, 60 s (Wiederholung 2)"
 files = ["20261123_acdc1_fx8a-open-inputs-10b-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:00:36. Stream-Meldungen: 0. owl_read: out/owl_read/B10-fx8a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (I-Cache an), geflasht aus fx7a (firmware/flashlog/20261123_build10-fx8a-b/), Start über dfu-util :leave. Regler etwa 12 Uhr. Oszillator im Case abgesteckt (Nutzer). messlog D85."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:00:36. Stream-Meldungen: 0. owl_read: reports/owl_read/B10-fx8a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (I-Cache an), geflasht aus fx7a (firmware/flashlog/20261123_build10-fx8a-b/), Start über dfu-util :leave. Regler etwa 12 Uhr. Oszillator im Case abgesteckt (Nutzer). messlog D85."
 
 [[measurement]]
 id = "B10-fx8a-loop"
@@ -2520,7 +2520,7 @@ title = "B10-fx8a-loop – acdc1 fx8a-loop, 60 s"
 files = ["20261123_acdc1_fx8a-loop_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:03:41. Stream-Meldungen: 0. owl_read: out/owl_read/B10-fx8a-loop (rc 0). Firmware Build 10 v22.4.r-fx8a (I-Cache an). Kabel Out 1–4 → In 1–4 (Nutzer), Regler etwa 12 Uhr. messlog D85."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:03:41. Stream-Meldungen: 0. owl_read: reports/owl_read/B10-fx8a-loop (rc 0). Firmware Build 10 v22.4.r-fx8a (I-Cache an). Kabel Out 1–4 → In 1–4 (Nutzer), Regler etwa 12 Uhr. messlog D85."
 
 [[measurement]]
 id = "ORG-fx8a-a-r1"
@@ -2534,7 +2534,7 @@ title = "ORG-fx8a-a-r1 – acdc1 fx8a-open-inputs-orga, 60 s (Wiederholung 1)"
 files = ["20261123_acdc1_fx8a-open-inputs-orga-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:56:32. Stream-Meldungen: 0. owl_read: out/owl_read/ORG-fx8a-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Messlog D86."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:56:32. Stream-Meldungen: 0. owl_read: reports/owl_read/ORG-fx8a-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Messlog D86."
 
 [[measurement]]
 id = "ORG-fx8a-a-r2"
@@ -2548,7 +2548,7 @@ title = "ORG-fx8a-a-r2 – acdc1 fx8a-open-inputs-orga, 60 s (Wiederholung 2)"
 files = ["20261123_acdc1_fx8a-open-inputs-orga-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:57:45. Stream-Meldungen: 0. owl_read: out/owl_read/ORG-fx8a-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Messlog D86."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 15:57:45. Stream-Meldungen: 0. owl_read: reports/owl_read/ORG-fx8a-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Messlog D86."
 
 [[measurement]]
 id = "ORG-orig-r1"
@@ -2562,7 +2562,7 @@ title = "ORG-orig-r1 – acdc1 original-open-inputs-orga, 60 s (Wiederholung 1)"
 files = ["20261123_acdc1_original-open-inputs-orga-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:00:05. Stream-Meldungen: 0. owl_read: out/owl_read/ORG-orig-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Flash firmware/flashlog/20261123_original-orga, :leave, A1. Messlog D86."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:00:05. Stream-Meldungen: 0. owl_read: reports/owl_read/ORG-orig-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Flash firmware/flashlog/20261123_original-orga, :leave, A1. Messlog D86."
 
 [[measurement]]
 id = "ORG-orig-r2"
@@ -2576,7 +2576,7 @@ title = "ORG-orig-r2 – acdc1 original-open-inputs-orga, 60 s (Wiederholung 2)"
 files = ["20261123_acdc1_original-open-inputs-orga-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:01:18. Stream-Meldungen: 0. owl_read: out/owl_read/ORG-orig-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Flash firmware/flashlog/20261123_original-orga, :leave, A1. Messlog D86."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:01:18. Stream-Meldungen: 0. owl_read: reports/owl_read/ORG-orig-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Flash firmware/flashlog/20261123_original-orga, :leave, A1. Messlog D86."
 
 [[measurement]]
 id = "ORG-fx8a-b-r1"
@@ -2590,7 +2590,7 @@ title = "ORG-fx8a-b-r1 – acdc1 fx8a-open-inputs-orgb, 60 s (Wiederholung 1)"
 files = ["20261123_acdc1_fx8a-open-inputs-orgb-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:03:21. Stream-Meldungen: 0. owl_read: out/owl_read/ORG-fx8a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Flash firmware/flashlog/20261123_build10-fx8a-nach-original, :leave, A1, danach Program Change auf Slot 1. Messlog D86."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:03:21. Stream-Meldungen: 0. owl_read: reports/owl_read/ORG-fx8a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Flash firmware/flashlog/20261123_build10-fx8a-nach-original, :leave, A1, danach Program Change auf Slot 1. Messlog D86."
 
 [[measurement]]
 id = "ORG-fx8a-b-r2"
@@ -2604,7 +2604,7 @@ title = "ORG-fx8a-b-r2 – acdc1 fx8a-open-inputs-orgb, 60 s (Wiederholung 2)"
 files = ["20261123_acdc1_fx8a-open-inputs-orgb-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:04:35. Stream-Meldungen: 0. owl_read: out/owl_read/ORG-fx8a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Flash firmware/flashlog/20261123_build10-fx8a-nach-original, :leave, A1, danach Program Change auf Slot 1. Messlog D86."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:04:35. Stream-Meldungen: 0. owl_read: reports/owl_read/ORG-fx8a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. acdc1 im Case. Flash firmware/flashlog/20261123_build10-fx8a-nach-original, :leave, A1, danach Program Change auf Slot 1. Messlog D86."
 
 [[measurement]]
 id = "B11-fx9a-loop-cold"
@@ -2618,7 +2618,7 @@ title = "B11-fx9a-loop-cold – acdc1 fx9a-loop-cold, 60 s"
 files = ["20261123_acdc1_fx9a-loop-cold_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:32:48. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx9a-loop-cold (rc 0). Build 11 fx9a (D-Cache an), Kurztest nach Kaltstart von Hand, Kabel Out 1-4 -> In 1-4, Slot 1 per Program Change, Regler 12 Uhr (D88)"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:32:48. Stream-Meldungen: 0. owl_read: reports/owl_read/B11-fx9a-loop-cold (rc 0). Build 11 fx9a (D-Cache an), Kurztest nach Kaltstart von Hand, Kabel Out 1-4 -> In 1-4, Slot 1 per Program Change, Regler 12 Uhr (D88)"
 
 [[measurement]]
 id = "B11-fx9a-loop10"
@@ -2632,7 +2632,7 @@ title = "B11-fx9a-loop10 – acdc1 fx9a-loop10, 600 s"
 files = ["20261123_acdc1_fx9a-loop10_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:39:32. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx9a-loop10 (rc 0). Build 11 fx9a (D-Cache an), Abnahme Loop-Test 10 min, Kabel Out 1-4 -> In 1-4, Slot 1, Regler 12 Uhr (D89)"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 16:39:32. Stream-Meldungen: 0. owl_read: reports/owl_read/B11-fx9a-loop10 (rc 0). Build 11 fx9a (D-Cache an), Abnahme Loop-Test 10 min, Kabel Out 1-4 -> In 1-4, Slot 1, Regler 12 Uhr (D89)"
 
 [[measurement]]
 id = "B11-fx9a-a-r1"
@@ -2646,7 +2646,7 @@ title = "B11-fx9a-a-r1 – acdc1 fx9a-open-inputs-11a, 60 s (Wiederholung 1)"
 files = ["20261123_acdc1_fx9a-open-inputs-11a-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:15:13. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx9a-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 11 v22.4.r-fx9a (D-Cache an), Sandwich Anfang. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:15:13. Stream-Meldungen: 0. owl_read: reports/owl_read/B11-fx9a-a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 11 v22.4.r-fx9a (D-Cache an), Sandwich Anfang. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
 
 [[measurement]]
 id = "B11-fx9a-a-r2"
@@ -2660,7 +2660,7 @@ title = "B11-fx9a-a-r2 – acdc1 fx9a-open-inputs-11a, 60 s (Wiederholung 2)"
 files = ["20261123_acdc1_fx9a-open-inputs-11a-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:16:27. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx9a-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 11 v22.4.r-fx9a (D-Cache an), Sandwich Anfang. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:16:27. Stream-Meldungen: 0. owl_read: reports/owl_read/B11-fx9a-a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 11 v22.4.r-fx9a (D-Cache an), Sandwich Anfang. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
 
 [[measurement]]
 id = "B11-fx8a-r1"
@@ -2674,7 +2674,7 @@ title = "B11-fx8a-r1 – acdc1 fx8a-open-inputs-11, 60 s (Wiederholung 1)"
 files = ["20261123_acdc1_fx8a-open-inputs-11-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:18:12. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx8a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (Kontrolle), Sandwich Mitte. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:18:12. Stream-Meldungen: 0. owl_read: reports/owl_read/B11-fx8a-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (Kontrolle), Sandwich Mitte. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
 
 [[measurement]]
 id = "B11-fx8a-r2"
@@ -2688,7 +2688,7 @@ title = "B11-fx8a-r2 – acdc1 fx8a-open-inputs-11, 60 s (Wiederholung 2)"
 files = ["20261123_acdc1_fx8a-open-inputs-11-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:19:25. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx8a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (Kontrolle), Sandwich Mitte. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:19:25. Stream-Meldungen: 0. owl_read: reports/owl_read/B11-fx8a-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 10 v22.4.r-fx8a (Kontrolle), Sandwich Mitte. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
 
 [[measurement]]
 id = "B11-fx9a-b-r1"
@@ -2702,7 +2702,7 @@ title = "B11-fx9a-b-r1 – acdc1 fx9a-open-inputs-11b, 60 s (Wiederholung 1)"
 files = ["20261123_acdc1_fx9a-open-inputs-11b-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:21:11. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx9a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 11 v22.4.r-fx9a (D-Cache an), Sandwich Ende. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:21:11. Stream-Meldungen: 0. owl_read: reports/owl_read/B11-fx9a-b-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 11 v22.4.r-fx9a (D-Cache an), Sandwich Ende. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
 
 [[measurement]]
 id = "B11-fx9a-b-r2"
@@ -2716,7 +2716,7 @@ title = "B11-fx9a-b-r2 – acdc1 fx9a-open-inputs-11b, 60 s (Wiederholung 2)"
 files = ["20261123_acdc1_fx9a-open-inputs-11b-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:22:24. Stream-Meldungen: 0. owl_read: out/owl_read/B11-fx9a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 11 v22.4.r-fx9a (D-Cache an), Sandwich Ende. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 17:22:24. Stream-Meldungen: 0. owl_read: reports/owl_read/B11-fx9a-b-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. Firmware Build 11 v22.4.r-fx9a (D-Cache an), Sandwich Ende. Eingänge offen, keine Kabel, Slot 1 vor dem Stream per Program Change, Regler 69/56/72/56 von 127, acdc1 im Case. Zustand des Oszillators im Case nicht erfragt. messlog D89."
 
 [[measurement]]
 id = "D90-vor-r1"
@@ -2730,7 +2730,7 @@ title = "D90-vor-r1 – acdc1 gnd-vor-open-inputs, 60 s (Wiederholung 1)"
 files = ["20261123_acdc1_gnd-vor-open-inputs-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 22:41:04. Stream-Meldungen: 0. owl_read: out/owl_read/D90-vor-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 22:41:04. Stream-Meldungen: 0. owl_read: reports/owl_read/D90-vor-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "D90-vor-r2"
@@ -2744,7 +2744,7 @@ title = "D90-vor-r2 – acdc1 gnd-vor-open-inputs, 60 s (Wiederholung 2)"
 files = ["20261123_acdc1_gnd-vor-open-inputs-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 22:42:18. Stream-Meldungen: 0. owl_read: out/owl_read/D90-vor-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 22:42:18. Stream-Meldungen: 0. owl_read: reports/owl_read/D90-vor-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet."
 
 [[measurement]]
 id = "D90b-vor-r1"
@@ -2758,7 +2758,7 @@ title = "D90b-vor-r1 – acdc1 gnd-vor-open-inputs, 60 s (Wiederholung 1)"
 files = ["20261124_acdc1_gnd-vor-open-inputs-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:34:48. Stream-Meldungen: 0. owl_read: out/owl_read/D90b-vor-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. D90b vorher: vor der Masse-Brücke Pin 15 ↔ Pin 33, acdc1 im Case, Regler 63/64/71/50, keine Kabel, Slot 1"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:34:48. Stream-Meldungen: 0. owl_read: reports/owl_read/D90b-vor-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. D90b vorher: vor der Masse-Brücke Pin 15 ↔ Pin 33, acdc1 im Case, Regler 63/64/71/50, keine Kabel, Slot 1"
 
 [[measurement]]
 id = "D90b-vor-r2"
@@ -2772,7 +2772,7 @@ title = "D90b-vor-r2 – acdc1 gnd-vor-open-inputs, 60 s (Wiederholung 2)"
 files = ["20261124_acdc1_gnd-vor-open-inputs-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:36:01. Stream-Meldungen: 0. owl_read: out/owl_read/D90b-vor-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. D90b vorher: vor der Masse-Brücke Pin 15 ↔ Pin 33, acdc1 im Case, Regler 63/64/71/50, keine Kabel, Slot 1"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 10:36:01. Stream-Meldungen: 0. owl_read: reports/owl_read/D90b-vor-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. D90b vorher: vor der Masse-Brücke Pin 15 ↔ Pin 33, acdc1 im Case, Regler 63/64/71/50, keine Kabel, Slot 1"
 
 [[measurement]]
 id = "D90b-nach-r1"
@@ -2786,7 +2786,7 @@ title = "D90b-nach-r1 – acdc1 gnd-nach-open-inputs, 60 s (Wiederholung 1)"
 files = ["20261124_acdc1_gnd-nach-open-inputs-r1_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:09:51. Stream-Meldungen: 0. owl_read: out/owl_read/D90b-nach-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. D90b nachher: Draht Pin 15 (GND) ↔ Pin 33 (AGND) auf der Rückseite des Xibeca-Moduls, acdc1 im Case, Regler 63/64/71/50, keine Kabel, Slot 1"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:09:51. Stream-Meldungen: 0. owl_read: reports/owl_read/D90b-nach-r1 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. D90b nachher: Draht Pin 15 (GND) ↔ Pin 33 (AGND) auf der Rückseite des Xibeca-Moduls, acdc1 im Case, Regler 63/64/71/50, keine Kabel, Slot 1"
 
 [[measurement]]
 id = "D90b-nach-r2"
@@ -2800,7 +2800,7 @@ title = "D90b-nach-r2 – acdc1 gnd-nach-open-inputs, 60 s (Wiederholung 2)"
 files = ["20261124_acdc1_gnd-nach-open-inputs-r2_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:11:04. Stream-Meldungen: 0. owl_read: out/owl_read/D90b-nach-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. D90b nachher: Draht Pin 15 (GND) ↔ Pin 33 (AGND) auf der Rückseite des Xibeca-Moduls, acdc1 im Case, Regler 63/64/71/50, keine Kabel, Slot 1"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Nullen, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:11:04. Stream-Meldungen: 0. owl_read: reports/owl_read/D90b-nach-r2 (rc 0). Stream zwischen den Wiederholungen geschlossen und neu geöffnet. D90b nachher: Draht Pin 15 (GND) ↔ Pin 33 (AGND) auf der Rückseite des Xibeca-Moduls, acdc1 im Case, Regler 63/64/71/50, keine Kabel, Slot 1"
 
 [[measurement]]
 id = "D90b-nach-loop"
@@ -2814,7 +2814,7 @@ title = "D90b-nach-loop – acdc1 gnd-nach-loop, 60 s"
 files = ["20261124_acdc1_gnd-nach-loop_g12_usb-stream.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
-note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:18:10. Stream-Meldungen: 0. owl_read: out/owl_read/D90b-nach-loop (rc 0). D90b nachher: Loop-Test Out n → In n, Draht Pin 15 ↔ Pin 33, Pegelvergleich gegen B11-fx9a-loop-cold"
+note = "48 kHz / pcm16, tools/acdc_rec.py (Gerät OWL-ACDC-FX, duplex, Ausgang Testsignal Out 1 Sinus 440 Hz @ -6.0 dBFS, Out 2 Sinus 530 Hz @ -6.0 dBFS, Out 3 Sinus 670 Hz @ -6.0 dBFS, Out 4 Sinus 790 Hz @ -6.0 dBFS, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:18:10. Stream-Meldungen: 0. owl_read: reports/owl_read/D90b-nach-loop (rc 0). D90b nachher: Loop-Test Out n → In n, Draht Pin 15 ↔ Pin 33, Pegelvergleich gegen B11-fx9a-loop-cold"
 
 [[measurement]]
 id = "D91-ledpath-umc"

@@ -16,12 +16,12 @@ Basis: OpenWare-Quelltext `RebelTechnology/OpenWare` @ `62a0187` (v22.5.0, 2023-
 | Samplerate | nominal 48 kHz. PLL3 98,2857 MHz, MCKDIV gerundet auf 8 → **≈ 47 991 Hz (−186 ppm)**. Das gilt für v22.5.0 und v22.4.q (acdc2). Ab v22.4.r im Hack-Branch (PLL3 P/Q 8, FRACN 262) sind es exakt 48 kHz, so läuft acdc1 | [Code], [gemessen] messlog D10 |
 | I/O | 4 Eingänge, 4 Ausgänge, ±10 V, DC-gekoppelt | [belegt] |
 | Bedienung | 4 Knobs (Input-Gain **und** Patch-Parameter A–D), 8 LEDs (Parameter AA–AD, BA–BD). Keine Taster, kein Gate/CV-Eingang, kein serielles MIDI in der Firmware. Auf der Rückseite sitzt ein 3-poliger Header „MIDI“ (roher UART), der dazu geplante MIDI-Expander erschien nie (Thread #2077). Siehe „MIDI-Header auf der Rückseite“ | [belegt] |
-| LEDs | PWM über TIM2/3/4/8, Prescaler 100, Periode 1023 → **≈ 2,32 kHz** (im Audioband). Das Tastverhältnis folgt dem Pegel | [Code] |
+| LEDs | PWM über TIM2/3/4/8, Prescaler 100, Periode 1023 → **≈ 2,32 kHz** (im Audioband). Das Tastverhältnis folgt dem Pegel. Eigene Builds ab fx7a: 48 kHz, siehe „Eigene Firmware auf acdc1“ | [Code] |
 | Versorgung | Eurorack-Bus (+12 V, ca. 200 mA). Nicht über USB versorgt | [belegt] |
 | Aufbau | Trägerplatine von Befaco (Buchsen, Op-Amps NE5532, Regler, LEDs, Versorgung) mit aufgestecktem Prozessor-Modul **Xibeca** von Rebel Technology (rote Platine, Rev02 auf acdc1: MCU, SDRAM, QSPI, Codec). Zwei Stiftleisten je 2 × 24. Noctua2 ist ein Vorläufer mit derselben Pinbelegung | [belegt: Schaltpläne, Foto Thread 2083 #4] |
 | Masse | Auf dem Modul AGND (Codec) und GND (MCU, Speicher, USB), verbunden über die Ferritperle L1 (0603). L2/L3 filtern +A3V3 und +A5V. Der Träger verbindet alle AGND-Pins (33, 47–50, 67, 71, 72) direkt mit seiner Masse, GND-Pins 15, 16, 85, 86. **Ein Draht Pin 15 ↔ Pin 33 auf dem Modul senkt das Rauschen der Eingänge deutlich**, siehe `06-hardware-mod-masse.md` | [Code: Schaltplan], [gemessen] messlog D90 |
 | Default-Gains | Input 104, Output 114 (v22.5.0). Im Hack-Branch (v22.4.q, v22.4.r): Input 88. Eigene Builds ab 1c: Output 125 (Patch 04). Alles Defaults: Gespeicherte Settings im Flash haben Vorrang | [Code] |
-| Firmware acdc1 | Heute **`v22.4.r-fx4b`** (eigener Build, seit 2026-11-17, davor `v22.4.r-fx3l` seit 2026-11-16). Ab Werk meldete das Gerät „v22.5.0“, es war aber ein Build aus `hack/acdc-output-levels` mit diesem Etikett, kein veröffentlichter Commit. Daher Blockgröße 8, die 6-kHz-Linie und der Takt von v22.4.r | [gemessen] messlog D3, D3a, D10, D49, D59 |
+| Firmware acdc1 | Heute **`v22.4.r-fx9a`** (eigener Build, seit 2026-11-23, Vorgänger in `05-firmware-plan.md`). Ab Werk meldete das Gerät „v22.5.0“, es war aber ein Build aus `hack/acdc-output-levels` mit diesem Etikett, kein veröffentlichter Commit. Daher Blockgröße 8, die 6-kHz-Linie und der Takt von v22.4.r | [gemessen] messlog D3, D3a, D10, D88 |
 | Firmware acdc2 | **v22.4.q** = Commit `e81cfc3` (2022-06-27) aus `hack/acdc-output-levels`, nie gemergt. `AUDIO_BLOCK_SIZE 8` (v22.5.0: 16), `AUDIO_INPUT_GAIN 88`, HPF aus, PLL/LED-Timer wie v22.5.0. Unsere Code-Analyse bezieht sich sonst auf v22.5.0 | [Code], Device-Status 2026-11-13 |
 
 ## USB
@@ -72,7 +72,7 @@ TX- und RX-Routing sind **unabhängig** voneinander schaltbar (im Quelltext gepr
 | `TX_PRE_FX` + `RX_PRE_FX` (antisvin, burstMembrane-Fork) | Eingänge → Patch → DAC | Rechner bekommt rohe Eingänge, DAW-Playback geht **in den Patch** |
 | **nur `TX_PRE_FX`** | Eingänge → Patch → DAC | Rechner bekommt rohe Eingänge, DAC = DAW-Playback ✅ **Zielverhalten** |
 
-- **Einschränkung bei „nur `TX_PRE_FX`“ (Build 2 `v22.4.r-fx1d`, ebenso 3d und fx3l):** Nimmt eine App vom AC/DC auf, startet macOS auch den Playback-Stream [gemessen, D20]. Dann gilt die rechte Spalte, und die Host-Stille überschreibt den Patch-Ausgang. Der FX ist also nur ohne Rechner-Stream an den Buchsen [Code]. Für Build 2 so hingenommen (`docs/05`, „Build 2 neu“).
+- **Einschränkung bei „nur `TX_PRE_FX`“ (Build 2 `v22.4.r-fx1d`, ebenso alle späteren Builds bis fx9a):** Nimmt eine App vom AC/DC auf, startet macOS auch den Playback-Stream [gemessen, D20]. Dann gilt die rechte Spalte, und die Host-Stille überschreibt den Patch-Ausgang. Der FX ist also nur ohne Rechner-Stream an den Buchsen [Code]. Für Build 2 so hingenommen (`docs/05`, „Build 2 neu“).
 
 Konsequenz für das Rauschen: Mit Stock-Routing (acdc2, Build 1d) landet ein **Filter-Patch in Slot 1 direkt in der USB-Aufnahme**. Mit `TX_PRE_FX` (acdc1 ab Build 2) nimmt der Rechner die rohen Eingänge auf, ein Patch im Gerät erreicht die Aufnahme nicht mehr [gemessen, messlog D25, B2]. Gefiltert wird dann im Rechner. Siehe `04-software-filter.md`.
 
@@ -132,10 +132,28 @@ GND ─────────────────────────�
 Vor dem Bauen zu klären:
 
 - Welcher MCU-Pin an Header-Pin 1 liegt (PB5 oder PB7). Test: Firmware-Build mit UART-MIDI und eine Drahtbrücke von Pin 3 nach Pin 1.
-- Ohne Risiko messbar, mit fx4b: Zwischen Pin 3 und Pin 2 sollten ≈ 3,3 V liegen (TX in Ruhe) [Code]. Das bestätigt TX und die Orientierung des Headers.
-- UART und DMA sind neue Arbeit für die MCU. Ein Build mit seriellem MIDI braucht den Rausch-Vergleich gegen fx4b (D33, D42).
+- Ohne Risiko messbar: Zwischen Pin 3 und Pin 2 sollten ≈ 3,3 V liegen (TX in Ruhe) [Code]. Das bestätigt TX und die Orientierung des Headers.
+- UART und DMA sind neue Arbeit für die MCU. Ein Build mit seriellem MIDI braucht den Rausch-Vergleich gegen die Alltags-Firmware (D33, D42).
 
-## Eigene Firmware auf acdc1 (Stand `v22.4.r-fx4b`, 2026-11-17)
+### Schritte, falls es dazu kommt
+
+Stand 2026-11-18: nichts davon ist begonnen (Nutzer: im Moment nicht wichtig, könnte später interessant werden). Ziel: MIDI-Controller steuern im Standalone-Betrieb Patch-Parameter (E–H und erweiterte, A–D gehören den Reglern). Jeder Firmware-Schritt mit `check_itcm`, Loop-Test und Rausch-A/B gegen die Alltags-Firmware.
+
+Serielles MIDI:
+
+1. Am Gerät messen: Header-Pin 3 gegen Pin 2 ≈ 3,3 V? Das bestätigt TX und die Orientierung.
+2. Firmware-Patch für UART-MIDI: 31250 Baud, `USE_UART_MIDI_RX` (TX optional), `UART_MIDI_HANDLE`, DMA-Kanal und Interrupts. Vorlage `XibecaDevKit`.
+3. Klären, welcher MCU-Pin an Header-Pin 1 liegt (PB5 = UART5 oder PB7 = USART1): Test-Build und Drahtbrücke Pin 3 → Pin 1.
+4. Zwischenplatine in Lochraster bauen: erst MIDI In (H11L1, 78L33), MIDI Out (74HC14) nur bei Bedarf.
+5. Typ A oder B an den MIDI-Buchsen der Controller prüfen. Controller nur mit USB bleiben außen vor.
+
+Alternative I2C statt MIDI (Frage des Nutzers, 2026-11-18): z. B. als Follower am ii-Bus eines monome crow. Für die Steuerung ist das der kürzere Weg: kein Optokoppler, keine Versorgung. MIDI und I2C teilen sich die Pins, es geht nur eines von beiden. Einzelheiten in der Notiz, Abschnitt 6.
+
+1. Vor dem Anschließen die Pinfolge kreuzen (ii = GND, SCL, SDA, AC/DC = SDA, GND, SCL) und die Busspannung klären. Die ii-Pull-ups gehen laut monome nach 5 V, also die 5-V-Festigkeit von PB6/PB7 im Datenblatt prüfen oder einen Pegelwandler bauen.
+2. Firmware-Patch: I2C1 als Follower mit eigener Adresse, Befehle auf Patch-Parameter legen (Format wie TELEXo, `0x11 Port High Low`).
+3. Ein- und Ausgänge erweitern geht nur für Steuerspannungen und Regler (das AC/DC führt den Bus, z. B. TELEXi), mit Rausch-A/B wegen der regelmäßigen Abfragen (D42). Audio geht über I2C nicht.
+
+## Eigene Firmware auf acdc1 (Stand `v22.4.r-fx9a`, 2026-11-27)
 
 Kurzfassung, Begründungen und Messungen in `05-firmware-plan.md` und `messlog.md`.
 
@@ -150,5 +168,11 @@ Kurzfassung, Begründungen und Messungen in `05-firmware-plan.md` und `messlog.m
 | Eingangs-LEDs | Mit TX-Stream roher Pegel (Quadratmittel × 4096, τ 40 ms), Rot 300 ms ab −0,1 dBFS. Gemessen alle 2 ms in `onLoop` auf dem Codec-DMA-Puffer (Patch 07d) | [gemessen] D34, D36 |
 | Speicher | Heißer Pfad (104 Funktionen, 12 392 B) und Vektortabelle im ITCM ab 0x3000 (Patch 11g). Patch-Heap im CCM 39,2 KB statt 52 KB | [Code: `check_itcm.py`], [gemessen] D47–D49, D50 |
 | Patch-Wahl | Boot-Menü (Patch 15b): Einschalten mit Regler 1, 2, 3 links und Regler 4 rechts. Regler 1 wählt unter den belegten Slots 1–15, Regler 4 bestätigt, Regler 3 oder 30 s brechen ab. Die Eingangs-LEDs zeigen den Slot binär. Der Slot wird als Ressource `ACDC.slot` im Patch-Flash gemerkt und startet beim nächsten Einschalten. Die Settings bleiben unberührt | [gemessen] D52, D53, D55, D57, D58 |
+| MIDI-Sendeweg | Unteilbar (Patch 16): Audio-Task, Hauptschleife und USB-Interrupt teilten sich Sendepuffer und Endpoint ohne Schutz. Der Patch sperrt kurz die Interrupts, gibt die Daten erst nach Abschluss der Übertragung frei und bremst Slot-Downloads (Flusskontrolle). Downloads neben einem laufenden Patch: 240 von 240 in Ordnung, vorher 60 von 79 mit anschließendem Hänger | [gemessen] D62, D63 |
+| LED-Modus | Im Boot-Menü wählt Regler 2 normal (linkes Drittel), nur Clip (Mitte) oder aus (rechts), gemerkt in der Ressource `ACDC.led` (Patch 17). Im Modus aus sinkt die LED-Verschiebung der Eingänge auf 1,7 % | [gemessen] D75 |
+| LED-PWM | 48 000 Hz statt 2320,54 Hz, im Takt der Abtastung (TIM2/3/4/8: Vorteiler 4, Period 999, Patch 18). Die PWM-Linie ist an Ein- und Ausgängen weg, LED-Werte unter 2,4 % bleiben dunkel | [gemessen] D78, D79 |
+| Caches | I-Cache (Patch 19) und D-Cache (Patch 20) sind an, die DMA-Puffer liegen in einer MPU-Region ohne Cache. Das Original schaltet beide nur mit `NDEBUG` ein, und der Release-Build setzt es nie. Plateau (Link plusram) 29 % statt 51 % CPU, Patches im DTCM unverändert | [gemessen] D83–D85, D87–D89 |
+| Bekannter Fehler | Ein Program Change bei offenem Stream bricht die USB-Wiedergabe bis zum nächsten Stream-Start (rund 10 % Stille, `fb clamp`). Älter als die eigenen Builds ab fx5a. Patch nur ohne offenen Stream wechseln | [gemessen] D76, D77 |
+| Hardware | acdc1 trägt seit 2026-11-24 den Masse-Draht Pin 15 ↔ Pin 33, siehe `06-hardware-mod-masse.md` | [gemessen] D90 |
 | ADC-Format | SAI1 liefert 24 Bit rechtsbündig **ohne Vorzeichen** (`SAI_DATASIZE_24`). Vor jeder Pegelrechnung das Vorzeichen erweitern | [Code], aufgefallen in D28 |
 | Eingangsbereich | Vollausschlag ≈ ±9,5 V, Offset ≈ −0,2…−0,4 V je Kanal | [gemessen] D29 (indirekt), D36 |

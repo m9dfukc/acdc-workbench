@@ -1,14 +1,66 @@
-<!-- i18n source=docs/02-noise-befunde.md sha256=7d0cba72c5734cd8410f134457e7a4d374805bc104505886871628daf039477e date=2026-11-27 -->
+<!-- i18n source=docs/02-noise-befunde.md sha256=5c7f8d840adb2439b43271a6891b73e12372a8cbc4f33f59962c460bb4cc85f2 date=2026-11-27 -->
 > English translation of [`docs/02-noise-befunde.md`](../../docs/02-noise-befunde.md), as of 2026-11-27. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 02 – Noise: findings, hypotheses, the isolator question
+
+## Status today (2026-11-27)
+
+A summary of all findings. Numbers and setup are in the lab notebook (`messlog.md`) under the ID given. The dated sections further down show the course of events, each as of its date. **Noise values from before 2026-11-24 apply without the ground wire and cannot be compared directly with new ones.**
+
+**Interference families** in the ADC data, strongly correlated on all channels:
+
+- **SOF comb** at k·≈1 kHz
+- **fs/8** = 6000.00 Hz (audio block rate at block size 8, sample-synchronous)
+- **Mixing products** n·f1k + m·6000 Hz
+- **LED PWM** 2320.98 Hz on acdc2, 2320.54 Hz on acdc1 with the factory firmware. Since fx7a the PWM runs at 48 kHz, the line is gone at inputs and outputs [measured, D78]
+- **Knob lines** and **lines from clocks of the MCU**, both weak (see below)
+
+**What lowers the families:**
+
+- **The ground between module and carrier is a main path of the interference [measured, D90].** On the Xibeca module only the ferrite bead L1 connects AGND (codec) and GND, the carrier puts all AGND pins directly on its ground [code: schematic]. The wire pin 15 ↔ pin 33 lowers fs/8 by 18 dB, the comb by 7 dB, the residual by 3 dB and the LED shift to a quarter. At the output the comb drops by 11 dB and fs/8 by 12 dB [measured, D91]. Not moved: 7384.62 / 1215.19 / 4401.90 Hz. The scan line 9633.80 Hz rises by 3.7 dB (−120 file dBFS). After that the comb carries 30–50 % of the noise power, an ideal notch bank would only bring 1.6–3 dB. Guide: `06-hardware-mod-ground.md`.
+- **Hot path in the ITCM [measured, D48, also holds for fx4b, D58]:** against 3d fs/8 −5.1 dB, mixing products −35 dB, residual −1.25 dB, RMS −1.1 dB, comb +0.2…+0.4 dB. With the hot path in the ITCM the flash position of the remaining code no longer matters (fx3lp within ≤ 0.25 dB of fx3l).
+- **In the firmware only USB code in the ITCM lowers the comb [measured, D42/D44]:** USB in flash +2.5…+3.5 dB against 3d, in the ITCM ±0.
+- **fx8a against the original firmware in one session [measured, D86]:** RMS −1.8 dB, residual −3.2 dB, fs/8 −5.2 dB, mixing products −22.6 dB, comb the same. Only the original shows the LED PWM line and a family at 75.72 Hz. The original records after the VCA of the default patch, corrected through the DC offset of the open inputs (`tools/family_table.py --dc-ref/--dc-correct`, method from D26). fx9a is at fs/8 −0.7 dB against fx8a and shows no new line (D89).
+
+**Where the families come from:**
+
+- **The comb hangs on the USB SOF of the host controller [measured, S2-6].** f0 depends on the port: Mac port 999.99 Hz, TB hub 999.868 or 999.997 Hz depending on the port (in the acdc1 clock). A notch filter would have to measure f0 per module and port.
+- **At the output the comb is gone without USB and already there without a stream [measured, D20].** Standalone, the output is clean.
+- **The position of the code in memory shifts the interference lines [measured, D33].** A pure padding build without a functional change changes fs/8, comb and mixing products by 1.5–4.5 dB.
+- **What the CPU does at block rate appears at fs/8 [measured, D42]:** a few µs of polling a DMA register per block raise fs/8 by ≈ 10.6 dB. Mechanism [hypothesis]: bus traffic or a current pulse.
+- **The CPU load of a patch raises fs/8 as well [measured, D69]:** Schliere (29 % CPU) against the default patch (6 %) in the same session: fs/8 +3.8 dB, mixing products +13.4 dB, residual and comb ±0.25 dB. An FX patch passes these lines and the comb on to the outputs, without an input signal they are what one hears (D68). The canceller `owl/include/AcdcInput.h` subtracts the block-rate lines at the input: −22…−25 dB at the output (D70, D71).
+- **Ground loop [measured, D21]:** only with the AC/DC at the Mac port and the UMC at the hub (+20 dB). Both at the hub → gone. No isolator needed. The daily chain is fine for recordings (D22/D23).
+- **Installation in the case [measured, D69]:** no deterioration in the ADC data against "beside the case" (residual −0.1 dB, fs/8 −0.2 dB, comb +0.65 dB two hours apart). The outputs have not been measured for this.
+
+**LEDs:**
+
+- **Proven at the output [measured, D67]:** a patch that lets LEDs glow dimmed puts 2321 Hz with multiples on the output, the level follows the LED pattern by up to 27 dB. For "red" the firmware lets green keep running at a duty cycle of 1023/1024 and sets the red pin anew every 2 ms [code], none of this can be measured at the output [measured, D72].
+- **Every change of an LED shifts the output [measured, D73]:** permanently red LEDs do not disturb, but every switching on or off gives a click (per LED about 6 times the noise in the bass, additive), blinking at 40 Hz raises the overall level by 17.6 dB. Patches should therefore switch LEDs rarely, never flickering, and never dim them permanently. Measurement patch: `owl/test/SchliereLedTestPatch.hpp`.
+- **The LED current shifts the zero point of all inputs [measured, D74]:** per lit input LED −2.9e-4 of full scale (≈ −2.9 mV, −71 dBFS), the same at in 1–3, measured by the patch itself at the raw inputs (`owl/test/SchliereLedPathPatch.hpp`). Directly at the output about 0.15 mV per LED comes on top with a digitally silent output. The PWM line is the same effect, switched 2321 times per second. Consequence [hypothesis]: the level LEDs of the firmware move the zero point of the recording in time with the envelope. The LED mode off (from fx6a) lowers the shift to 1.7 % (D75), the ground wire to a quarter (D90).
+
+**Knobs and MCU clocks:**
+
+- **Knobs set unequally raise lines of their own [measured, D58, D60, D61]:** 2200.95 / 4401.90 / 6602.85 Hz and 8549.33 Hz, coupled to the device clock, independent of the firmware (fx3l = fx4b).
+  - **What counts is the difference between the knobs, not the end stop [measured, D61].** All four at the same stop are like 12 o'clock (−114…−119 dB). One knob alone at the stop gives ≈ −100 dB, alternating left and right (LRLR) −94 dB. The level grows steadily with the distance.
+  - The pattern determines the line: LLRR raises 2200.95 and 6602.85 Hz, LRLR raises 4401.90 Hz. At 12 o'clock they stay 6…16 dB above the noise floor, they are never gone.
+  - [hypothesis] The sampling capacitor of the knob ADC is recharged from channel to channel. The source of the frequency 2200.95 Hz is open: the ADC scan rate folds to 9633.80 Hz, the LED PWM was at 2320.54 Hz.
+  - An FX patch passes them on to the output [measured, D72]: Schliere with knob 3 at the left stop −66…−73 dBFS at the UMC, as strong as the strongest comb lines, in the noise in the middle of the knob travel.
+  - Noise measurements therefore always with all knobs at 12 o'clock.
+- **Lines from clocks of the MCU [code, measured, D60]:** the scan rate of the knob ADC of 105 633.8 Hz folds to 9633.80 and 19 267.6 Hz (acdc2: 9653.46 Hz), −116…−129 dB, almost independent of the knobs. [hypothesis] 2000.0002 and 3000.0003 Hz are multiples of the 1 kHz system tick.
+
+**Otherwise:**
+
+- The gain knob is a **digital** gain in the default patch [sourced]. With `TX_PRE_FX` (acdc1) it no longer acts on the recording.
+- The noise drifts by 0.4 to 2 dB within a session (D44, D77). Comparisons between builds therefore need a control at the start and at the end.
+- Gain of an ideal notch bank: 4–10 dB with the default patch (M1/M2, series 2, both modules), ≈ 5.8 dB with fx3l (D48), 1.6–3 dB with the ground wire (D90). The filter in the computer has therefore been dropped (`04-software-filter.md`).
+- **Open:** listening test with a compressor at today's state, source of the knob lines, further ground pins. Everything in `TODO.md`.
 
 ## What is known in the forum [sourced]
 
 **Thread #2072 "Clock noise in AC/DC"** is the only source with measurements.
 
 - **atau** (2023-03 to 06):
-  - Setup: 2020 MacBook Pro, macOS 10.15, Logic, 48 kHz, FW v22.5.0, open inputs.
+  - Setup: 2020 MacBook Pro, macOS 10.15, a DAW, 48 kHz, FW v22.5.0, open inputs.
   - Noise pattern: **comb at k·1 kHz**, approx. **−30 dB at gain at 12 o'clock**, up to −18 dB at full gain.
   - Occurs on **two modules** (SN 191 and 250).
   - These had **no effect**: USB opto-isolator, other skiffs and power supplies, mechanical isolation, laptop on battery.
@@ -37,7 +89,7 @@
 |---|---|---|---|---|
 | H1 | **USB Full Speed frame clock (1 ms)** couples into the codec inputs on the PCB (packet current spikes, ground bounce) | Lines at k·1 kHz, only with an **active USB stream** | Measurement plan step 6 (standalone cross-check) | **[measured]** S2-6 (f0 follows the host controller) and S3/D20: gone at the output without USB, **already present without a stream** (SOF alone is enough) |
 | H2 | Classic ground loop to the host or via audio cables | 50/100/150 Hz + harmonics, possibly switching power supply whine. Changes with battery/isolator/ground lift | Steps 4 and 5 | **[measured] D20/D21:** ground loop only when the AC/DC is on the Mac port and output → second interface (UMC) on the hub. +20 dB, 59.98 Hz pulses (monitor on the hub), foreign comb 1000.03 Hz. Both devices on the same hub → gone. Not relevant in daily use (no AC/DC out → UMC) |
-| H3 | LED PWM ≈ 2.32 kHz | Lines at ≈2.32 kHz and multiples, **level-dependent** | A patch that sets all LED parameters to 0 | [hypothesis]. Line and level dependence [measured] (M1–M3), the LED-off test is missing |
+| H3 | LED PWM ≈ 2.32 kHz | Lines at ≈2.32 kHz and multiples, **level-dependent** | A patch that sets all LED parameters to 0 | **[measured]** Line and level dependence (M1–M3). Proven at the output with a patch that dims LEDs (D67). The LED current shifts the zero point of the inputs (D74), the PWM line is the same effect. In the LED mode off the shift drops to 1.7 % (D75), with the PWM at 48 kHz the line is gone (fx7a, D78) |
 | H4 | Clock/SAI edges (OutputDrive on, 8 TDM slots) | Broadband rise or lines at clock dividers | only by firmware experiment | [hypothesis], untested. Both modules run with OutputDrive off and 4 slots (hack branch) [code]. The sample-synchronous fs/8 line belongs to H7 |
 | H5 | USB TX rate control (shmuga bug, see 05) | **Click bursts** every few seconds in the recording, no stationary tone | Click detection in the measurement plan | **[measured] for the hack branch: not present.** 0 clicks in 360 s (series 2), in 10 min with the factory firmware (D6, D7) and with build 2 (D27). The shmuga bug concerns the USB path of v22.5.0, unchecked there. What was found instead is a bug in playback: block slips caused by feedback drift (D12–D18, fixed with patch 06) |
 | H6 | Analog gain structure, high gain on a line signal | Broadband noise, scales with the knob | Gain series | [hypothesis]. The knob is a digital gain in the default patch [sourced], so the gain series says nothing about an analog stage |
@@ -83,20 +135,7 @@ Details, tables and limitations: `messlog.md`. In short: I have the 1 kHz comb, 
 
 **In short:** A cheap test, but probably not the solution if I have the same 1 kHz comb as atau. For him the isolator changed nothing. It only helps with H2.
 
-Steps 4 (battery) and 5 (ground lift) of the measurement plan have been dropped, no purchase is planned. The purchase options remain here for reference:
-
-| Model | Speed | Price approx. | Suitability |
-|---|---|---|---|
-| Generic ADuM3160 board | LS/FS | 10–35 € | ✅ sufficient for the AC/DC (Full Speed). Set the jumper to **FS**, not LS |
-| Hifime ISO2 | FS | 29 $ | ✅ |
-| Olimex USB-ISO-HS (TI ISOUSB211) | LS/FS/HS auto | approx. 45 € | ✅ future-proof, also for HS devices (ES-8/ES-9) |
-| Topping HS01 | HS only | approx. 70 $ | ❌ does not detect USB 1.x / UAC1 devices |
-| iFi iDefender+ | – | approx. 59 $ | ground lift only, no isolation of the data lines |
-| Manikin Modul 2 (Eurorack) | HS | 179 € | too expensive for a test |
-
-The current limit of the isolator boards is not a problem with the AC/DC, because it is powered from the Eurorack bus.
-
-Open: There is no report that all 4×4 channels of the AC/DC stream through an isolator. VBUS detection at PA9 behind an isolator is also unconfirmed.
+Steps 4 (battery) and 5 (ground lift) of the measurement plan have been dropped, no purchase is planned. Models and their suitability for Full Speed are in `research/notes/general_ground_loop_filtering.md`.
 
 ## Further hardware measures (if H2)
 
@@ -142,4 +181,5 @@ All values on acdc1, raw inputs (`TX_PRE_FX`), open, daily-use chain, file dBFS,
 - **Mechanism [hypothesis]:** Return current of the module flowed through L1 and the AGND area to the carrier. The voltage across that path sat between the reference of the codec (AGND) and that of the input stage (carrier GND). All families that come from current pulses of the module drop together. This supports the hypotheses from D42 (current pulse at the block rate) and D74 (LED current shifts the zero point): the coupling path is largely the ground between module and carrier.
 - **Did not move:** 7384.62 and 1215.19 Hz, the knob line at 4401.90 Hz. The scan line of the knob ADC (9633.80 Hz) rises by 3.7 dB but stays at −120 file dBFS.
 - **Consequence:** The comb now carries 30–50 % of the noise power, fs/8 less than 1.5 %. An ideal notch bank would bring only 1.6–3.0 dB. The canceller `owl/include/AcdcInput.h` stays usable without changes, its benefit is smaller.
-- **Open:** A-B-A, outputs, listening test, whether further ground pins (16 ↔ 47/48) or shorting L1 directly bring more.
+- **Output [measured, D91]:** through the UMC against D74 without the wire, comb −11 dB, fs/8 −12 dB, LED blinking −12.6 dB.
+- **Open:** listening test, whether further ground pins (16 ↔ 47/48) or shorting L1 directly bring more. The A-B-A on acdc1 is dropped (desoldering too laborious), instead acdc2 later with a measurement before and after.

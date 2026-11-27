@@ -1,11 +1,11 @@
-<!-- i18n source=docs/05-firmware-plan.md sha256=69430e7e742d67d55b5cbd00bc2438567ea0d614e14fd4447a0c463c3884bbe5 date=2026-11-27 -->
+<!-- i18n source=docs/05-firmware-plan.md sha256=7ede177112507b5e86fecb2c9a4b2f0a2cf08eb721c139196a02e17a0a7b7c02 date=2026-11-27 -->
 > English translation of [`docs/05-firmware-plan.md`](../../docs/05-firmware-plan.md), as of 2026-11-27. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 05 – Firmware: Status, Forks, Build Plan
 
-> **Status 2026-11-23:** acdc1 runs **Build 10 `v22.4.r-fx8a`** (`e1b1097b…`, section "Build 10", lab notebook D83–D85, instruction cache on) as its daily firmware (the user's decision). The fallback is Build 9 `v22.4.r-fx7a` (`cac6fee0…`), then Build 8 `v22.4.r-fx6a` (`6a3fc427…`), then Build 7 `v22.4.r-fx5a` (`b69c25b3…`), Build 6b `v22.4.r-fx4b` (`a21f35c9…`), Build 5c `v22.4.r-fx3l` (`b55b94d8…`), then Build 3d (`d212cf8d…`).
+> **Status 2026-11-27:** acdc1 runs **Build 11 `v22.4.r-fx9a`** (`fd77ec3a…`, section "Build 11", lab notebook D87–D89, instruction and data cache on) as its daily firmware (the user's decision, 2026-11-23). The fallback is Build 10 `v22.4.r-fx8a` (`e1b1097b…`), then Build 9 `v22.4.r-fx7a` (`cac6fee0…`), Build 8 `v22.4.r-fx6a` (`6a3fc427…`), Build 7 `v22.4.r-fx5a` (`b69c25b3…`), Build 6b `v22.4.r-fx4b` (`a21f35c9…`), Build 5c `v22.4.r-fx3l` (`b55b94d8…`), after that Build 3d (`d212cf8d…`). The next build is to be made with Arm GNU 14.3.Rel1 (section "Trial build GCC 14.3 and 15.2").
 >
-> This document grew chronologically. "Runs on acdc1", "not agreed" and "next steps" in the sections on Build 1 to 4z describe the status of the respective section. What is open today is in `TODO.md`.
+> This document is the chronicle of the firmware and grew chronologically. "Runs on acdc1", "not agreed", "next steps" and "Order" describe the status of the respective section. What applies today is elsewhere: open points in `TODO.md`, the flash procedure and the rules for new builds in `07-tools-and-procedures.md`, the register of patches, builds and releases in `firmware/README.md`, the properties of the running firmware in `01-hardware-and-firmware.md`.
 
 ## Upstream status [sourced]
 
@@ -69,6 +69,7 @@ No source addresses the analog noise, the PCM3168A driver or the LED PWM.
 ### Toolchain and size
 
 - Upstream CI (`.github/workflows/c-cpp.yml`, v22.5.0): `carlosperate/arm-none-eabi-gcc-action`, Arm GNU **12.2.Rel1** [sourced: repo]. Installed since 2026-11-14 under `/Applications/ArmGNUToolchain/12.2.rel1/`.
+- Since 2026-11-15 the upstream CI builds with **14.3.Rel1** (`d3df5264`). Trial builds of fx9a with 14.3.Rel1 and 15.2.Rel1 exist (2026-11-27, not flashed), section "Trial build GCC 14.3 and 15.2". The default remains 12.2.
 - Sizes: acdc1 readback 106 608 B, release 109 080 B, limit 131 072 B (128 KB internal flash according to the build config).
 
 ## Agreed plan (review round 2026-11-14)
@@ -878,7 +879,73 @@ A build of `4ef038b6` without patches is byte-identical with fx9a (`firmware/bui
 
 **Addendum 2026-11-25, feedback from Rebel Technology on the forum:** The intent was "cache off only in Debug builds". `Hardware/xibeca.mk` sets `-DDEBUG` in the Debug build and neither `DEBUG` nor `NDEBUG` in the Release build [code]. Instead of switching the caches on unconditionally, `hardware.h` therefore now checks `#ifndef DEBUG` (patch 21, `21-cache-ifndef-debug.patch`). Setting `NDEBUG` in `xibeca.mk` would have been the other option, but it would also have affected all Xibeca targets and `assert()` in third-party code. A build of `4ef038b6` + patch 21 is byte-identical with fx9a (`firmware/builds/check-fx9a-ifndef-debug`, `fd77ec3a…`) [measured: build]. No flash needed, the version stays `v22.4.r-fx9a`. In the fork this is `54228769` on `acdc/fx1d`; a build of it is byte-identical as well (`firmware/builds/verify-fx1d-54228769`). Since 2026-11-25 the tag of the release `acdc-v22.4.r-fx9a` points to `54228769` (before: `b6bcdc33`); the `.bin` stays, `BUILD_INFO-v22.4.r-fx9a.txt` now comes from this verification build, and the text names the change. A release `acdc-v22.4.r-fx9a.1` existed briefly on 2026-11-25; it has been deleted again together with its tag (user). The second remark (`_DMA_DATA` is defined in `xibeca.ld`) referred to `8a401e75` and had already been corrected with `2b6ffa1b` and `e33f0756`.
 
+### Trial build GCC 14.3 and 15.2 (2026-11-27, not flashed)
+
+**Occasion:** Upstream merged `feature/gcc15-update` into `master` on 2026-11-15 (PR #89, `36eaf1c4`). We have had the build flags from it since Build 4 (patch 08, fork `151bd8bc`), but not the compiler. The upstream CI builds with **Arm GNU 14.3.Rel1**, not with 15 despite the branch name [sourced: repo, `upstream_master_2026-11-16.md`]. Question: what does a new compiler change in the fx9a binary?
+
+**Toolchains (user: both, 2026-11-27):** from developer.arm.com, macOS arm64, `arm-none-eabi`, SHA-256 checked against the `.sha256asc` from Arm. They are stored in `firmware/downloads/toolchains/` and unpacked to `firmware/downloads/toolchains/<version>/arm-none-eabi/` (same layout as 12.2). Only the user can move them to `/Applications/ArmGNUToolchain/` (owned by root). The binaries contain no paths, so the location does not change them.
+
+| Version | File | Size | SHA-256 |
+|---|---|---|---|
+| 14.3.Rel1 (build arm-14.174, GCC 14.3.1 20250623) | `arm-gnu-toolchain-14.3.rel1-darwin-arm64-arm-none-eabi.tar.xz` | 137 816 224 B | `30f4d08b219190a37cded6aa796f4549504902c53cfc3c7e044a8490b6eba1f7` |
+| 15.2.Rel1 (build arm-15.86, GCC 15.2.1 20251203) | `arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi.tar.xz` | 141 961 944 B | `1938a84b7105c192e3fb4fa5e893ba25f425f7ddab40515ae608cd40f68669a8` |
+
+There is no 15.1 for macOS, 15.2 is the newest 15.x (as of 2026-11-27).
+
+**Builds:** fork `54228769` (= fx9a), Libraries `9e8f64e`, no patches, only `TOOLROOT` differs:
+`TOOLROOT=$PWD/firmware/downloads/toolchains/14.3.rel1/arm-none-eabi/bin/ tools/build_acdc.sh cand-fx9a-gcc14 54228769 firmware/downloads/OpenWareLibraries-9e8f64e.tar.gz` (15.2 accordingly `cand-fx9a-gcc15`).
+
+**Comparison on the computer [measured on the computer, 2026-11-27]**, reference `verify-fx1d-54228769` (12.2, byte-identical to fx9a):
+
+| | 12.2.Rel1 (fx9a) | 14.3.Rel1 | 15.2.Rel1 |
+|---|---|---|---|
+| `ACDC.bin` | 110 520 B | 110 168 B (−352) | 112 568 B (+2048) |
+| SHA-256 | `fd77ec3a…` | `d3817345…` | `7cb63e7c…` |
+| deterministic (second build) | yes | yes | yes |
+| `.itcm_text` | 12 440 B | 11 888 B (−552) | 12 880 B (+440) |
+| end of ITCM `_eitcm_text` | 0x6338 | 0x6110 | 0x64f0 |
+| patch heap in CCM (up to 0x10000) | 40 136 B | 40 688 B (+552) | 39 696 B (−440) |
+| `.text` (flash) | 92 552 B | 92 736 B (+184) | 94 144 B (+1592) |
+| `.rodata` | 4 272 B | 4 280 B | 4 280 B |
+| `.data`, `.bss`, `.dmadata`, `.heapd2`, `.late_bss` | 544 / 28 876 / 16 656 / 73 728 / 48 | same | same |
+| warnings in the build log | 1 (RWX LOAD segment) | the same one | the same one |
+| `tools/check_itcm.py --ref acdc1-build11-fx9a` | PASSED | PASSED (0 FAIL, 0 WARN) | PASSED (0 FAIL, 0 WARN) |
+| veneers ITCM → flash | 27, all in COLD | 27, the same ones | 27, the same ones |
+| ITCM functions with a different size | – | 18 of 126 | 40 of 126 |
+| version in the binary | `AC/DC v22.4.r-fx9a` | same | same |
+
+Hot path in the disassembly (instructions normalised, addresses removed):
+
+| Function (ITCM) | 12.2 | 14.3 | 15.2 |
+|---|---|---|---|
+| `audioCallback` | 148 B | 148 B, two instructions swapped | 152 B |
+| `SAI_DMARxCplt`, `SAI_DMATxCplt` | 92 B each | 92 B each, different registers | 96 B each |
+| `usbd_rx_convert` | 188 B | 188 B, one comparison with swapped operands | 160 B |
+| `usbd_tx_convert` | 128 B | 128 B, **identical** | 116 B |
+| `usbd_audio_sof_callback` | 296 B | 312 B, reordered | 308 B |
+| `HAL_DMA_IRQHandler` | 1704 B | **1060 B** | 1726 B |
+| `codec_ndtr` | 20 B | 24 B | **200 B** |
+| `setLed` | 204 B | 220 B | 216 B |
+| `acdcOnLoopLate` / `acdcOnLoopDark` | 484 / 292 B | 548 / 264 B | 552 / 264 B |
+| `HAL_PCD_IRQHandler` | 1624 B | 1660 B | 1720 B |
+| `USBD_AUDIO_DataOut` / `DataIn` | 572 / 480 B | 584 / 464 B | 588 / 500 B |
+| `vTaskSwitchContext` | 164 B | 164 B, identical | 184 B |
+| sum of the functions in the ITCM | 12 298 B | 11 752 B | 12 742 B |
+
+- **`HAL_DMA_IRQHandler`** checks in every branch via `IS_DMA_STREAM_INSTANCE` whether it has a DMA or a BDMA stream (chains of 16 address comparisons). GCC 14.3 merges these chains: 56 instead of 99 `cmp`, 437 instead of 641 instructions. GCC 15.2 is back at 103 `cmp` [code]. The handler runs for every half and full block of the two SAI DMAs. How many cycles this saves at run time has not been measured.
+- **`codec_ndtr`** (`__HAL_DMA_GET_COUNTER`, called through `Codec::getSampleCounter()` from `USBD_AUDIO_DataOut`/`DataIn` and `usbd_audio_sof_callback`, so a few times per USB frame): under 12.2 and 14.3 one load of the NDTR register. Under 15.2 GCC computes the DMA/BDMA check with 16 comparisons in registers and discards the result, because both branches read the same register [code]. A single peripheral access remains, no additional bus traffic arises. It only costs cycles from the ITCM, about 70 instructions per call.
+- `device_cache_invalidate`, `SVC_Handler`, `Reset_Handler`: identical. `MPU_Config` under 15.2 and `PendSV_Handler` under both new compilers differ only in the spelling of the same instruction (`push` instead of `stmdb sp!`, `pop {pc}` instead of `ldr.w pc, [sp], #4`) [code].
+- The release build writes no map file (`build_acdc.sh` only copies it if it exists). The comparison of the layout therefore comes from the nm comparison in `check_itcm.md` (section 8): of 734 common functions only 4 sit at the same address with 14.3, 143 have a different size. With 15.2 it is 6 and 259. The ITCM functions from `SAI_DMATxCplt` on have moved forward by 0x284 with 14.3.
+- Results: `firmware/builds/cand-fx9a-gcc14/` and `cand-fx9a-gcc15/`, each with `BUILD_INFO.txt`, `build.log`, `check_itcm.md`/`.json`.
+
+**Assessment:**
+- **Do not pursue 15.2.** More code (+2 KB flash, +440 B ITCM, less patch heap), worse folding in `codec_ndtr` and `HAL_DMA_IRQHandler`, and the upstream CI does not test 15.
+- **14.3 is the candidate, a flash for the compiler alone is not worth it at present.** The benefit is small: 552 B more patch heap in the CCM, a shorter DMA interrupt, the same toolchain as upstream. The full acceptance (loop test 10 min, downloads 240/240, patch changes, noise sandwich against fx9a) costs a whole session, however. Almost all addresses change, in the ITCM too. The audio path (`audioCallback`, SAI callbacks, `usbd_rx/tx_convert`) is almost unchanged, so a difference in the noise is unlikely [hypothesis]. After D33/D48 it can only be ruled out by measuring, though.
+- **Proposal:** change the compiler together with the next build that needs a full acceptance anyway (the next functional build or the port to upstream `master`). One acceptance then covers both. Until then 12.2 remains the default in `tools/build_acdc.sh`.
+
 ### Fork `m9dfukc/OpenWare` (pushed 2026-11-14: https://github.com/m9dfukc/OpenWare/tree/acdc/thru-usb-feedback)
+
+> This section describes how the branch `acdc/thru-usb-feedback` came about (status 2026-11-15). The commits of `acdc/fx1d` are in the sections of the builds, the current state of the branches and releases in `firmware/README.md`.
 
 - **Local clone:** `firmware/OpenWare`. The branch was prepared in a separate clone `firmware/fork/OpenWare`. During the cleanup (2026-11-14) both were merged: `upstream` fetched, checked that all 55 refs, 27 branches, 27 tags and all commits of the old mirror are contained, then the mirror deleted and the fork clone moved to `firmware/OpenWare`. Remotes:
   - `fork` = `git@github.com:m9dfukc/OpenWare.git`
@@ -899,6 +966,8 @@ A build of `4ef038b6` without patches is byte-identical with fx9a (`firmware/bui
 
 ### Order
 
+> Plan of 2026-11-14 with addenda up to 2026-11-16, not continued since. The builds after that are in their own sections.
+
 1. Install the toolchain (user), write `tools/build_acdc.sh`, reproduction build + comparison with the readback.
 2. Build Build 1 and Build 2 (no flash yet).
 3. Preconditions E7: boot pad probe, reference recording, dry run. Dry run only after approval.
@@ -916,6 +985,8 @@ A build of `4ef038b6` without patches is byte-identical with fx9a (`firmware/bui
 
 ## Flashing – general notes
 
+The flash procedure as it applies today (script, start via `:leave`, fallbacks) is in `07-tools-and-procedures.md`, "Flashing". This section lists the routes into the module.
+
 - Route 1: OpenOCD via ST-Link (`program ACDC.bin 0x08000000 verify reset exit`, configuration stlink + stm32h7x, thread #2083 #15/#28). Never used in the project. With an ST-Link the firmware can also be debugged via SWD (connector J1 on the Xibeca board, 2×5 pins on a 1.27 mm pitch, unplug the module's USB when flashing via SWD, thread 2083 #19). Programmer: [STLINK-V3MINIE](https://www.st.com/en/development-tools/stlink-v3minie.html), software: [OpenOCD](https://openocd.org/).
 - Route 2: ST ROM DFU, either via SysEx `0x7E` (`owl_read.py --reset-to-dfu`, corresponds to "Reset to bootloader" on openwarelab.org/Tools/firmware.html) or via the boot pads at power-on. The AC/DC (Xibeca) has **no** OWL MIDI bootloader, only the ROM DFU.
 - The ROM DFU cannot be overwritten, so real bricking is practically ruled out. A build with broken USB is risky: then only boot pad/DFU or SWD still works.
@@ -927,7 +998,11 @@ A clean, public ACDC branch with TX_PRE_FX, USB fixes, a documented Libraries re
 
 **Status 2026-11-16:** The branch `acdc/fx1d` in the fork has this except for the LED PWM (README with measured values, tip `b7062ef2`). The forum posts in thread #2072 and #2244 are dropped (user 2026-11-16). Possibly the results come as a GitHub issue instead (`TODO.md`).
 
+**Status 2026-11-27:** Since fx7a the LED PWM also runs outside the audio band (48 kHz). The branch `acdc/fx1d` therefore has everything named above (tip `54228769`, release `acdc-v22.4.r-fx9a`). A merge with upstream (option A) remains an idea without a date (`TODO.md`), today patches 15b to 21 would come on top.
+
 ## DFU readback acdc1 (prepared 2026-11-14)
+
+> Historical: preparation of the first readback of the factory firmware (D3). "No `:leave`" applied to this purely reading access. Today the flash procedure starts the firmware via `:leave` (`07-tools-and-procedures.md`, "Flashing").
 
 Goal: Back up the firmware of acdc1 purely by reading. It is presumably a non-public build with working USB (see `messlog.md` D2, `docs/research/notes/firmware_update_threads_2026-11-14.md`). Then comparison with the release `ACDC.bin` (`firmware/releases/v22.5.0/ACDC.bin`, 109 080 B, SHA-256 `5f44a811…892c2b`).
 

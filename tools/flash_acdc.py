@@ -1,6 +1,6 @@
 """Flash a firmware build to acdc1 over the ROM DFU and keep a flash log.
 
-The steps are the flash procedure from CLAUDE.md:
+The steps are the flash procedure from docs/07-werkzeuge-und-ablaeufe.md:
   1. Offline checks of the binary (size, vector table, version string, BUILD_INFO.txt,
      check_itcm.json). Without --yes the tool stops here and touches no device.
   2. tools/owl_read.py -> <log>/owl_read_before, the device must be acdc1

@@ -4,7 +4,7 @@ For each step the tool says where the knobs belong, reads them over MIDI (CC 20-
 the settings request) and waits until they are there. Then it records with
 tools/acdc_rec.py (open inputs, zeros on the outputs, --owl-read) and goes on to the next
 step. At the end tools/line_levels.py measures the lines in all recordings and the tool
-writes out/<series>-session-table.md with the knob readings and the line levels.
+writes reports/<series>-session-table.md with the knob readings and the line levels.
 
 Positions per knob: L = left stop, R = right stop, M = 12 o'clock, or a number 0-127.
 A step is four positions, e.g. LMMM or 32,M,M,M. The default series is: all at 12 o'clock,
@@ -241,7 +241,7 @@ def main(argv=None) -> int:
 
     # Auswertung: Linienpegel je Aufnahme, davor die gelesenen Reglerwerte
     print(f"\a\n== Done: {len(done)} recordings. You can set the knobs as you like again. Measuring the lines …")
-    out = (rec_dir if a.simulate else ROOT / "out") / f"{a.series}-session-table.md"
+    out = (rec_dir if a.simulate else ROOT / "reports") / f"{a.series}-session-table.md"
     lines_md = out.with_name(out.stem + ".lines.tmp")
     cmd = [*a.rec_cmd.split(), str(ROOT / "tools" / "line_levels.py"), *[f"{d['id']}={d['wav']}" for d in done],
            "--freqs", *[str(f) for f in a.freqs], "--out", str(lines_md),

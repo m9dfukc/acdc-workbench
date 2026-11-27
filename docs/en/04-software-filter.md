@@ -1,7 +1,9 @@
-<!-- i18n source=docs/04-software-filter.md sha256=aecf5d6ab4962525fe40adc677b32c682ec33d8720f19ab6c2fa395e5b789712 date=2026-11-16 -->
-> English translation of [`docs/04-software-filter.md`](../../docs/04-software-filter.md), as of 2026-11-16. The German original is authoritative. This file is generated from it, do not edit it by hand.
+<!-- i18n source=docs/04-software-filter.md sha256=8d8ad5334eb125c7d97abc1cee33bdf3c6037ea453bab5b78600a774358488a5 date=2026-11-27 -->
+> English translation of [`docs/04-software-filter.md`](../../docs/04-software-filter.md), as of 2026-11-27. The German original is authoritative. This file is generated from it, do not edit it by hand.
 
 # 04 – Software filter (notch bank)
+
+> **Status 2026-11-27: not built and dropped** (the user's decision). With the ground wire on the module the comb still carries 30–50 % of the noise power, an ideal notch bank would only bring 1.6–3 dB [measured, lab notebook D90]. The document stays for reference: filter shape, parameters from the measurements and the design. If the listening test with a compressor shows a disturbing comb after all, the plan can be taken up again.
 
 Prerequisite: measurement plan steps 1–2 show a **stable, narrowband** comb, and f0 is measured.
 
@@ -39,11 +41,11 @@ Improvement according to M1/M2: ≈ 4–5 dB noise power at gain 12, ≈ 10 dB a
 
 ## 1. Python prototype (offline, for tuning)
 
-In the analysis project under `analysis/notch.py`. Goal: tune the parameters (f0, width, count) on real recordings before the FAUST patch is written.
+Planned as a module `notch.py` in the analysis package (not written). Goal: tune the parameters (f0, width, count) on real recordings before the FAUST patch is written.
 
 Specification:
 - One `scipy.signal.iirnotch(w0=k*f0, Q=k*f0/bw_k, fs=fs)` per harmonic, with `bw_k = bw * (1 + 0.1*k)`. Cascade as SOS (`sosfilt`, numerically stable). In addition `sosfiltfilt` for the zero-phase offline variant.
-- CLI: `uv run analysis/notch.py in.wav --f0 1000.13 --bw 3 --harmonics 23 -o out/in_notched.wav`
+- CLI: `uv run analysis/notch.py in.wav --f0 1000.13 --bw 3 --harmonics 23 -o reports/in_notched.wav`
 - Plot the before/after PSD overlaid. Output the RMS reduction and the remaining lines.
 - Test signal: recording of a real audio signal (sine sweep, music) **with** noise. Do a listening test for colouration and plot the phase response of the bank.
 - Carry the parameters that work well over into `docs/messlog.md`. They go into the FAUST patch.

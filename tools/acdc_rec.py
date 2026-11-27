@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Multichannel recording from the AC/DC (or another audio device): replaces host software with a multichannel recorder.
 
-Standard recording tool of this project (CLAUDE.md, section on recordings). It reproduces the earlier workflow with
+Standard recording tool of this project (docs/07-werkzeuge-und-ablaeufe.md, section "Aufnehmen"). It reproduces the earlier workflow with
 host software:
 - open the device by name (default "OWL-ACDC-FX"), 48 kHz, block size 256,
 - **duplex**: the output gets zeros, like the audio module of host software with no cable connected. The device is
@@ -381,7 +381,7 @@ def main() -> None:
         if a.prompt:
             input(f"Press Enter to start recording {mid or path.name} … ")
         print(f"Recording {mid or ''} → {path.name} ({a.duration:g} s + {a.settle:g} s settling)", flush=True)
-        hook = owl_read_hook(ROOT / "out" / "owl_read" / (mid or path.stem)) if a.owl_read and not a.simulate else None
+        hook = owl_read_hook(ROOT / "reports" / "owl_read" / (mid or path.stem)) if a.owl_read and not a.simulate else None
         gen = make_gen()
         take = Take(a, path, gen)
         try:

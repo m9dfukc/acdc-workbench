@@ -21,7 +21,7 @@ Usage (rtmidi has no wheel for Python 3.14, CoreMIDI is not available inside a s
   UV_CACHE_DIR=.uv-cache UV_NO_BUILD=1 uv run --no-project --python 3.12 \
       --with mido --with python-rtmidi python tools/owl_read.py [--out DIR] [--dump]
 
-Output: <out>/<device>/<YYYYMMDD>/device_report.json (default out: out/owl_read). With --dump
+Output: <out>/<device>/<YYYYMMDD>/device_report.json (default out: reports/owl_read). With --dump
 the report and the slots go to <out>/<device>/<YYYYMMDD>/owl/, so for a backup use `--out backup --dump`
 → backup/acdc1/<date>/owl/. If the target folder is not empty, nothing is overwritten: the folder
 name gets the time of day appended (e.g. 20261114_231500 or owl_231500).
@@ -278,7 +278,7 @@ def reassemble(msgs: list[mido.Message]) -> dict:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--port", default="OWL-ACDC", help="MIDI port name (substring)")
-    ap.add_argument("--out", type=Path, default=Path("out/owl_read"), help="base folder (for a backup: backup)")
+    ap.add_argument("--out", type=Path, default=Path("reports/owl_read"), help="base folder (for a backup: backup)")
     ap.add_argument("--dump", action="store_true", help="download all slots and resources")
     ap.add_argument("--slots", type=int, nargs="*", help="download only these slots (1..39, resources 40+n)")
     ap.add_argument("--reset-to-dfu", action="store_true", help="restart into the ROM DFU bootloader (needs --yes)")

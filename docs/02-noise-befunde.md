@@ -1,11 +1,63 @@
 # 02 – Noise: Befunde, Hypothesen, Isolator-Frage
 
+## Stand heute (2026-11-27)
+
+Kurzfassung aller Befunde. Zahlen und Aufbau stehen im Messlog (`messlog.md`) unter der genannten ID. Die datierten Abschnitte weiter unten zeigen den Verlauf, je mit dem Stand ihres Datums. **Rauschwerte vor dem 2026-11-24 gelten ohne Masse-Draht und sind mit neuen nicht direkt vergleichbar.**
+
+**Störfamilien** in den ADC-Daten, auf allen Kanälen stark korreliert:
+
+- **SOF-Kamm** bei k·≈1 kHz
+- **fs/8** = 6000,00 Hz (Audio-Blockrate bei Blockgröße 8, sample-synchron)
+- **Mischprodukte** n·f1k + m·6000 Hz
+- **LED-PWM** 2320,98 Hz auf acdc2, 2320,54 Hz auf acdc1 mit der Werks-Firmware. Seit fx7a läuft die PWM mit 48 kHz, die Linie ist an Ein- und Ausgängen weg [gemessen, D78]
+- **Regler-Linien** und **Linien aus Takten der MCU**, beide schwach (siehe unten)
+
+**Was die Familien senkt:**
+
+- **Masse zwischen Modul und Träger ist ein Hauptweg der Störungen [gemessen, D90].** Auf dem Xibeca-Modul verbindet nur die Ferritperle L1 AGND (Codec) und GND, der Träger legt alle AGND-Pins direkt auf seine Masse [Code: Schaltplan]. Der Draht Pin 15 ↔ Pin 33 senkt fs/8 um 18 dB, den Kamm um 7 dB, den Rest um 3 dB und die LED-Verschiebung auf ein Viertel. Am Ausgang sinken der Kamm um 11 dB und fs/8 um 12 dB [gemessen, D91]. Nicht bewegt: 7384,62 / 1215,19 / 4401,90 Hz. Die Scan-Linie 9633,80 Hz steigt um 3,7 dB (−120 Datei-dBFS). Der Kamm trägt danach 30–50 % der Rauschleistung, eine ideale Notch-Bank brächte nur noch 1,6–3 dB. Anleitung: `06-hardware-mod-masse.md`.
+- **Heißer Pfad im ITCM [gemessen, D48, gilt auch für fx4b, D58]:** gegen 3d fs/8 −5,1 dB, Mischprodukte −35 dB, Rest −1,25 dB, RMS −1,1 dB, Kamm +0,2…+0,4 dB. Liegt der heiße Pfad im ITCM, zählt die Flash-Lage des übrigen Codes nicht mehr (fx3lp ≤ 0,25 dB bei fx3l).
+- **Den Kamm senkt in der Firmware nur USB-Code im ITCM [gemessen, D42/D44]:** USB im Flash +2,5…+3,5 dB gegen 3d, im ITCM ±0.
+- **fx8a gegen die Original-Firmware in einer Sitzung [gemessen, D86]:** RMS −1,8 dB, Rest −3,2 dB, fs/8 −5,2 dB, Mischprodukte −22,6 dB, Kamm gleich. LED-PWM-Linie und eine Familie bei 75,72 Hz zeigt nur das Original. Das Original nimmt nach dem VCA des Default-Patches auf, korrigiert über den DC-Offset der offenen Eingänge (`tools/family_table.py --dc-ref/--dc-correct`, Verfahren aus D26). fx9a liegt gegen fx8a bei fs/8 −0,7 dB und zeigt keine neue Linie (D89).
+
+**Woher die Familien kommen:**
+
+- **Der Kamm hängt am USB-SOF des Host-Controllers [gemessen, S2-6].** f0 hängt vom Anschluss ab: Mac-Port 999,99 Hz, TB-Hub 999,868 oder 999,997 Hz je Port (im acdc1-Takt). Ein Notch-Filter müsste f0 je Modul und Anschluss messen.
+- **Am Ausgang ist der Kamm ohne USB weg und schon ohne Stream da [gemessen, D20].** Standalone ist der Ausgang sauber.
+- **Die Lage des Codes im Speicher verschiebt die Störlinien [gemessen, D33].** Ein reiner Füll-Build ohne Funktionsänderung ändert fs/8, Kamm und Mischprodukte um 1,5–4,5 dB.
+- **Was die CPU im Blocktakt tut, erscheint bei fs/8 [gemessen, D42]:** Ein paar µs Abfrage eines DMA-Registers pro Block heben fs/8 um ≈ 10,6 dB. Mechanismus [Hypothese]: Busverkehr bzw. Strompuls.
+- **Auch die Rechenlast eines Patches hebt fs/8 [gemessen, D69]:** Schliere (29 % CPU) gegen den Default-Patch (6 %) in derselben Sitzung: fs/8 +3,8 dB, Mischprodukte +13,4 dB, Rest und Kamm ±0,25 dB. Ein FX-Patch reicht diese Linien samt Kamm an die Ausgänge durch, ohne Eingangssignal sind sie das, was man hört (D68). Die Sperre `owl/include/AcdcInput.h` zieht die Blockraten-Linien am Eingang ab: am Ausgang −22…−25 dB (D70, D71).
+- **Masseschleife [gemessen, D21]:** nur mit AC/DC am Mac-Port und UMC am Hub (+20 dB). Beide am Hub → weg. Kein Isolator nötig. Die Alltags-Kette ist für Aufnahmen in Ordnung (D22/D23).
+- **Einbau ins Case [gemessen, D69]:** in den ADC-Daten keine Verschlechterung gegen „neben dem Case“ (Rest −0,1 dB, fs/8 −0,2 dB, Kamm +0,65 dB bei zwei Stunden Abstand). Die Ausgänge sind dazu nicht gemessen.
+
+**LEDs:**
+
+- **Am Ausgang bewiesen [gemessen, D67]:** Ein Patch, der LEDs gedimmt leuchten lässt, bringt 2321 Hz mit Vielfachen auf den Ausgang, der Pegel folgt dem LED-Muster um bis zu 27 dB. Bei „Rot“ lässt die Firmware Grün mit Tastgrad 1023/1024 weiterlaufen und setzt den roten Pin alle 2 ms neu [Code], am Ausgang ist davon nichts messbar [gemessen, D72].
+- **Jeder Wechsel einer LED verschiebt den Ausgang [gemessen, D73]:** Dauerhaft rote LEDs stören nicht, aber jedes Ein- oder Ausschalten gibt einen Knack (je LED etwa das 6-Fache des Rauschens im Bass, additiv), Blinken mit 40 Hz hebt den Gesamtpegel um 17,6 dB. Patches sollten LEDs deshalb selten und nie flackernd schalten und nie dauerhaft dimmen. Mess-Patch: `owl/test/SchliereLedTestPatch.hpp`.
+- **Der LED-Strom verschiebt den Nullpunkt aller Eingänge [gemessen, D74]:** je leuchtender Eingangs-LED −2,9e-4 Vollausschlag (≈ −2,9 mV, −71 dBFS), an In 1–3 gleich, vom Patch selbst an den rohen Eingängen gemessen (`owl/test/SchliereLedPathPatch.hpp`). Direkt am Ausgang kommen bei digital stummem Ausgang etwa 0,15 mV je LED dazu. Die PWM-Linie ist derselbe Effekt, 2321-mal pro Sekunde geschaltet. Folge [Hypothese]: Die Pegel-LEDs der Firmware bewegen den Nullpunkt der Aufnahme im Takt der Hüllkurve. Der LED-Modus aus (ab fx6a) senkt die Verschiebung auf 1,7 % (D75), der Masse-Draht auf ein Viertel (D90).
+
+**Regler und MCU-Takte:**
+
+- **Ungleich gestellte Regler heben eigene Linien an [gemessen, D58, D60, D61]:** 2200,95 / 4401,90 / 6602,85 Hz und 8549,33 Hz, an den Gerätetakt gekoppelt, unabhängig von der Firmware (fx3l = fx4b).
+  - **Es zählt der Unterschied zwischen den Reglern, nicht der Anschlag [gemessen, D61].** Alle vier am selben Anschlag liegen wie 12 Uhr (−114…−119 dB). Ein Regler allein am Anschlag bringt ≈ −100 dB, abwechselnd links und rechts (LRLR) −94 dB. Der Pegel wächst stetig mit dem Abstand.
+  - Das Muster bestimmt die Linie: LLRR hebt 2200,95 und 6602,85 Hz, LRLR hebt 4401,90 Hz. Auf 12 Uhr bleiben sie 6…16 dB über dem Grundrauschen, weg sind sie nie.
+  - [Hypothese] Der Abtastkondensator des Regler-ADC wird von Kanal zu Kanal umgeladen. Die Quelle der Frequenz 2200,95 Hz ist offen: Die ADC-Scanrate faltet auf 9633,80 Hz, die LED-PWM lag bei 2320,54 Hz.
+  - Ein FX-Patch reicht sie an den Ausgang durch [gemessen, D72]: Schliere mit Regler 3 am Linksanschlag −66…−73 dBFS am UMC, so stark wie die stärksten Kamm-Linien, in der Mitte des Regelwegs im Rauschen.
+  - Rauschmessungen deshalb immer mit allen Reglern auf 12 Uhr.
+- **Linien aus Takten der MCU [Code, gemessen, D60]:** Die Scanrate des Regler-ADC von 105 633,8 Hz faltet auf 9633,80 und 19 267,6 Hz (acdc2: 9653,46 Hz), −116…−129 dB, fast unabhängig von den Reglern. [Hypothese] 2000,0002 und 3000,0003 Hz sind Vielfache des 1-kHz-Systemtakts.
+
+**Sonst:**
+
+- Der Gain-Knob ist im Default-Patch ein **digitaler** Gain [belegt]. Mit `TX_PRE_FX` (acdc1) wirkt er nicht mehr auf die Aufnahme.
+- Das Rauschen driftet innerhalb einer Sitzung um 0,4 bis 2 dB (D44, D77). Vergleiche zwischen Builds brauchen deshalb eine Kontrolle am Anfang und am Ende.
+- Gewinn einer idealen Notch-Bank: 4–10 dB mit dem Default-Patch (M1/M2, Serie 2, beide Module), bei fx3l ≈ 5,8 dB (D48), mit Masse-Draht 1,6–3 dB (D90). Der Filter im Rechner ist deshalb gestrichen (`04-software-filter.md`).
+- **Offen:** Hörprobe mit Kompressor am heutigen Stand, Quelle der Regler-Linien, weitere Massepins. Alles in `TODO.md`.
+
 ## Was im Forum bekannt ist [belegt]
 
 **Thread #2072 „Clock noise in AC/DC“** ist die einzige Quelle mit Messungen.
 
 - **atau** (2023-03 bis 06):
-  - Setup: 2020er MacBook Pro, macOS 10.15, Logic, 48 kHz, FW v22.5.0, offene Eingänge.
+  - Setup: 2020er MacBook Pro, macOS 10.15, eine DAW, 48 kHz, FW v22.5.0, offene Eingänge.
   - Rauschbild: **Kamm bei k·1 kHz**, ca. **−30 dB bei Gain 12 Uhr**, bis −18 dB bei vollem Gain.
   - Tritt auf **zwei Geräten** auf (SN 191 und 250).
   - **Kein Effekt** hatten: USB-Optoisolator, andere Skiffs und Netzteile, mechanische Isolation, Laptop im Akkubetrieb.
@@ -34,7 +86,7 @@
 |---|---|---|---|---|
 | H1 | **USB-Full-Speed-Frame-Takt (1 ms)** koppelt auf der Platine in die Codec-Eingänge (Paket-Stromspitzen, Ground Bounce) | Linien bei k·1 kHz, nur bei **aktivem USB-Stream** | Messplan Schritt 6 (Standalone-Gegenprobe) | **[gemessen]** S2-6 (f0 folgt dem Host-Controller) und S3/D20: am Ausgang ohne USB weg, **schon ohne Stream da** (SOF allein reicht) |
 | H2 | Klassische Masseschleife zum Host oder über Audiokabel | 50/100/150 Hz + Obertöne, evtl. Schaltnetzteil-Pfeifen. Ändert sich mit Akku/Isolator/Ground-Lift | Schritte 4 und 5 | **[gemessen] D20/D21:** Masseschleife nur, wenn AC/DC am Mac-Port und Ausgang → zweites Interface (UMC) am Hub. +20 dB, 59,98-Hz-Impulse (Monitor am Hub), Fremdkamm 1000,03 Hz. Beide Geräte am selben Hub → weg. Im Alltag (kein AC/DC-Out → UMC) nicht relevant |
-| H3 | LED-PWM ≈ 2,32 kHz | Linien bei ≈2,32 kHz und Vielfachen, **pegelabhängig** | Patch, der alle LED-Parameter auf 0 setzt | [Hypothese]. Linie und Pegelabhängigkeit [gemessen] (M1–M3), der LED-aus-Test fehlt |
+| H3 | LED-PWM ≈ 2,32 kHz | Linien bei ≈2,32 kHz und Vielfachen, **pegelabhängig** | Patch, der alle LED-Parameter auf 0 setzt | **[gemessen]** Linie und Pegelabhängigkeit (M1–M3). Am Ausgang bewiesen mit einem Patch, der LEDs dimmt (D67). Der LED-Strom verschiebt den Nullpunkt der Eingänge (D74), die PWM-Linie ist derselbe Effekt. Im LED-Modus aus sinkt die Verschiebung auf 1,7 % (D75), mit der PWM bei 48 kHz ist die Linie weg (fx7a, D78) |
 | H4 | Clock/SAI-Flanken (OutputDrive an, 8 TDM-Slots) | Breitbandiger Anstieg oder Linien bei Taktteilern | nur per Firmware-Experiment | [Hypothese], ungetestet. Beide Geräte laufen mit OutputDrive aus und 4 Slots (Hack-Branch) [Code]. Die sample-synchrone fs/8-Linie gehört zu H7 |
 | H5 | USB-TX-Ratenregelung (shmuga-Bug, siehe 05) | **Klick-Bursts** alle paar Sekunden in der Aufnahme, kein stationärer Ton | Klick-Detektion im Messplan | **[gemessen] für den Hack-Branch: nicht vorhanden.** 0 Klicks in 360 s (Serie 2), in 10 min mit der Werks-Firmware (D6, D7) und mit Build 2 (D27). Der shmuga-Fehler betrifft den USB-Pfad von v22.5.0, dort ungeprüft. Gefunden wurde stattdessen ein Fehler im Playback: Block-Slips durch Feedback-Drift (D12–D18, behoben mit Patch 06) |
 | H6 | Analoge Gain-Struktur, hoher Gain auf Line-Signal | Breitbandiges Rauschen, skaliert mit dem Knob | Gain-Serie | [Hypothese]. Der Knob ist im Default-Patch ein digitaler Gain [belegt], die Gain-Serie sagt deshalb nichts über eine analoge Stufe |
@@ -80,20 +132,7 @@ Details, Tabellen und Einschränkungen: `messlog.md`. Kurz: Ich habe den 1-kHz-K
 
 **Kurz:** Ein billiger Test, aber wahrscheinlich nicht die Lösung, wenn ich denselben 1-kHz-Kamm habe wie atau. Bei ihm hat der Isolator nichts geändert. Er hilft nur bei H2.
 
-Die Schritte 4 (Akku) und 5 (Ground-Lift) aus dem Messplan sind entfallen, ein Kauf steht nicht an. Die Kaufoptionen bleiben zum Nachschlagen:
-
-| Modell | Speed | Preis ca. | Eignung |
-|---|---|---|---|
-| Generisches ADuM3160-Board | LS/FS | 10–35 € | ✅ reicht für AC/DC (Full Speed). Jumper auf **FS** stellen, nicht LS |
-| Hifime ISO2 | FS | 29 $ | ✅ |
-| Olimex USB-ISO-HS (TI ISOUSB211) | LS/FS/HS auto | ca. 45 € | ✅ zukunftssicher, auch für HS-Geräte (ES-8/ES-9) |
-| Topping HS01 | nur HS | ca. 70 $ | ❌ erkennt keine USB-1.x-/UAC1-Geräte |
-| iFi iDefender+ | – | ca. 59 $ | nur Ground-Lift, keine Isolation der Datenleitungen |
-| Manikin Modul 2 (Eurorack) | HS | 179 € | zu teuer für einen Test |
-
-Die Stromgrenze der Isolator-Boards ist beim AC/DC kein Problem, weil er aus dem Eurorack-Bus gespeist wird.
-
-Offen: Es gibt keinen Bericht, dass alle 4×4 Kanäle des AC/DC durch einen Isolator streamen. Auch die VBUS-Erkennung an PA9 hinter einem Isolator ist unbestätigt.
+Die Schritte 4 (Akku) und 5 (Ground-Lift) aus dem Messplan sind entfallen, ein Kauf steht nicht an. Modelle und ihre Eignung für Full Speed stehen in `research/notes/general_ground_loop_filtering.md`.
 
 ## Weitere Hardware-Maßnahmen (falls H2)
 
@@ -139,4 +178,5 @@ Alle Werte an acdc1, rohe Eingänge (`TX_PRE_FX`), offen, Alltags-Kette, Datei-d
 - **Mechanismus [Hypothese]:** Rückstrom des Moduls floss über L1 und die AGND-Fläche zum Träger. Die Spannung darüber lag zwischen dem Bezug des Codecs (AGND) und dem der Eingangsstufe (Träger-GND). Alle Familien, die aus Strompulsen des Moduls stammen, sinken gemeinsam. Das stützt die Hypothesen aus D42 (Strompuls im Blocktakt) und D74 (LED-Strom verschiebt den Nullpunkt): Der Kopplungsweg ist zum großen Teil die Masse zwischen Modul und Träger.
 - **Nicht bewegt:** 7384,62 und 1215,19 Hz, die Regler-Linie 4401,90 Hz. Die Scan-Linie des Regler-ADC (9633,80 Hz) steigt um 3,7 dB, bleibt aber bei −120 Datei-dBFS.
 - **Folge:** Der Kamm trägt jetzt 30–50 % der Rauschleistung, fs/8 unter 1,5 %. Eine ideale Notch-Bank brächte nur noch 1,6–3,0 dB. Die Sperre `owl/include/AcdcInput.h` bleibt ohne Änderung brauchbar, ihr Nutzen ist kleiner.
-- **Offen:** A-B-A, Ausgänge, Hörprobe, ob weitere Massepins (16 ↔ 47/48) oder ein direkter Kurzschluss von L1 noch mehr bringen.
+- **Ausgang [gemessen, D91]:** über den UMC gegen D74 ohne Draht Kamm −11 dB, fs/8 −12 dB, LED-Blinken −12,6 dB.
+- **Offen:** Hörprobe, ob weitere Massepins (16 ↔ 47/48) oder ein direkter Kurzschluss von L1 noch mehr bringen. Das A-B-A an acdc1 entfällt (Ablöten zu aufwendig), stattdessen später acdc2 mit Messung vorher und nachher.

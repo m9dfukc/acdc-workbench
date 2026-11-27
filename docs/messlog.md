@@ -1,7 +1,118 @@
 # Messlog
 
-Jede Messung bekommt einen Eintrag. Kurzfassung in der Tabelle, Details darunter.
+Jede Messung bekommt einen Eintrag unter „Details“. Der Index führt alle Einträge mit Datum auf. Die Tabelle darunter fasst nur die ersten Serien zusammen (M1 bis S2-6), ab D1 steht alles im Eintrag selbst.
 Pegel sind Linienamplituden in dBFS (Sinus mit Vollaussteuerung = 0 dBFS), sofern nicht anders angegeben.
+
+## Index
+
+<!-- messlog-index:start -->
+| ID | Datum | Eintrag |
+|---|---|---|
+| – | 2026-11-13 | Nachmessung mit Peak-Interpolation |
+| – | – | Woraus besteht die Rauschleistung? (Kanal 2) |
+| – | – | Deutung |
+| – | 2026-11-13 | Neuauswertung mit `analysis/` |
+| – | 2026-11-13 | Serie 2 (S2-1 … S2-4, 2026-11-13) |
+| S2-6 | 2026-11-13 | Hub gegen direkt am Mac (acdc1, 2026-11-13) |
+| – | 2026-11-14 | Durchleitung Eingang → Ausgang (S3-Planung, 2026-11-14) |
+| D1 | 2026-11-14 | acdc1 per SysEx ausgelesen und gesichert |
+| D2 | 2026-11-14 | Durchleitung mit `_Lich_Nichts`, ohne Store/Flash |
+| D3 | 2026-11-14 | Firmware-Readback acdc1 per ROM-DFU |
+| D3a | 2026-11-14 | Nachtrag: Fingerabdruck korrigiert, `237c63d` per Disassembly belegt |
+| D4 | 2026-11-14 | Boot-Pad-Probe, Versuch 1 |
+| D5 | 2026-11-14 | Generalprobe: Readback-Abbild zurückgeflasht |
+| D6 | 2026-11-14 | Referenzaufnahme E7-ref: alte Firmware, 10 min mit Playback |
+| D7 | 2026-11-14 | Referenz mit Rückführung E7-ref-loop: alte Firmware, Slips |
+| D8 | 2026-11-14 | Oszillator direkt gegen Rückführung, gleichzeitig aufgenommen |
+| D9 | 2026-11-14 | Build 1 `v22.4.s-thru1` auf acdc1 geflasht, Abnahme A1 |
+| D10 | 2026-11-14 | Build 1 ohne Audio: Ursache Takt v22.4.s |
+| D11 | 2026-11-14 | Build 1b `v22.4.r-thru1` auf acdc1 geflasht, A1 |
+| D12 | 2026-11-14 | A6 mit Build 1b: Block-Slips im USB-Audio |
+| D13 | 2026-11-14 | Analyse der Block-Slips aus D12 |
+| D14 | 2026-11-14 | Flash Build 1c, A1 |
+| D15 | 2026-11-14 | A6 mit Build 1c |
+| D16 | 2026-11-14 | Langlauf 30 min mit Build 1c |
+| D17 | 2026-11-14 | Flash Build 1d, A1 |
+| D18 | 2026-11-14 | Langlauf 30 min mit Build 1d |
+| D19 | 2026-11-15 | A5 mit Build 1d: offene Eingänge |
+| D20 | 2026-11-15 | A7 = S3 mit Build 1d: Kamm an den Ausgängen je USB-Zustand |
+| D21 | 2026-11-15 | Masseschleife: Serie G |
+| D22 | 2026-11-15 | Alltags-Aufbau: G4 (Ausgang) und G4-in (Eingänge) |
+| D23 | 2026-11-15 | A/B Eingänge: TB-Hub direkt gegen Alltags-Kette (G5/G6, 2026-11-15) |
+| D24 | 2026-11-15 | A5 zweimal mit Build 1d: Sitzungsstreuung vor Build 2 |
+| D25 | 2026-11-15 | Build 2 `v22.4.r-fx1d` geflasht, A1 und B1 |
+| D26 | 2026-11-15 | A5/B3 mit Build 2: rohe Eingänge offen, Vergleich mit 1d |
+| D27 | 2026-11-15 | A6 mit Build 2: Rückführung 10 min |
+| D28 | 2026-11-15 | Build 3 `v22.4.r-fx2` geflasht: Eingangs-LEDs mit Stream dauerhaft rot |
+| D29 | 2026-11-15 | Build 3b `v22.4.r-fx2b` geflasht, A1–A3, LED-Test mit Stream |
+| D30 | 2026-11-15 | A/B Build 3b gegen B3: offene Eingänge, 2 × 60 s |
+| D31 | 2026-11-15 | Kontrolle: Build 2 zurück, 2 × 60 s in derselben Sitzung |
+| D32 | 2026-11-15 | Build 3c `v22.4.r-fx2c` (LED-Messung in `onLoop`): geflasht, A1, A/B gegen die Kontrolle |
+| D33 | 2026-11-15 | Füllbyte-Test `v22.4.r-fx1p`: Die Lage im Speicher verschiebt die Störlinien |
+| D34 | 2026-11-15 | Build 3d `v22.4.r-fx2d` (LED-Code am Ende des Speichers): geflasht, A1, A/B |
+| D35 | 2026-11-16 | Gegenprobe Aufnahme-Werkzeug: `tools/acdc_rec.py` gegen Host-Software mit Mehrkanal-Recorder |
+| D36 | 2026-11-16 | Build-4-Sitzung: Clip-Test 3d (Q5) mit Loop Out → In |
+| D37 | 2026-11-16 | Build-4-Sitzung: 3d-Kontrolle, fx3i (ITCM), 3d-Endkontrolle, offene Eingänge |
+| D38 | 2026-11-16 | fx3i: USB-Playback gestört, Loop-Test gegen 3d |
+| D39 | 2026-11-16 | Build 4x: fx3i-Varianten (Halbierung), Loop-Test je Variante |
+| D40 | 2026-11-16 | Kanal 4: der letzte Sample jedes Blocks ist 16 Frames alt (Auswertung D38/D39, 2026-11-16) |
+| D41 | 2026-11-16 | Build 4y fx3j (= noD + RX-Warten, Patch 11e + 12): geflasht, A1, Loop-Test |
+| D42 | 2026-11-16 | Build-4y-Sitzung: Rauschen 3d → fx3j → noD → 3d, offene Eingänge |
+| D43 | 2026-11-16 | Build 4z fx3k (= noD + RX-Callback, Patch 11f + 12b): gebaut, geprüft, geflasht, A1, Loop-Test |
+| D44 | 2026-11-16 | Build-4z-Sitzung: Rauschen 3d → fx3k → 3d, offene Eingänge |
+| D45 | 2026-11-16 | Build 5: Diagnose-Zähler im USB-Pfad, USB im ITCM gegen USB im Flash, Loop |
+| D46 | 2026-11-16 | Diagnose 13b: Die SOF-Kette läuft mit USB im ITCM fast in jedem Frame zweimal |
+| D47 | 2026-11-16 | Build 5c fx3l (alle Gruppen im ITCM + 12b + 14): geflasht, A1, Loop-Test |
+| D48 | 2026-11-16 | Build-5-Sitzung: Rauschen fx3l, fx3lp, 3d-Endkontrolle, offene Eingänge |
+| D49 | 2026-11-16 | fx3l für den Alltagstest auf acdc1 |
+| D50 | 2026-11-17 | Patch-Upload per `owl_write.py`, vier FX-Patches auf acdc1, Build 6 fx4a gebaut |
+| D51 | 2026-11-17 | Build 6 fx4a geflasht |
+| D52 | 2026-11-17 | fx4a: Boot-Menü am Gerät, A1 |
+| D53 | 2026-11-17 | Menü-Abnahme (Nutzer), neue Patch-Builds, acdc1 antwortet nach einem Slot-Download nicht mehr auf MIDI |
+| D54 | 2026-11-17 | Ursache des MIDI-Ausfalls eingegrenzt, neue Patch-Builds gespeichert |
+| D55 | 2026-11-17 | Build 6b fx4b geflasht |
+| D56 | 2026-11-17 | Tanh3: Störgeräusche = Aliasing, neue Fassung mit vierfachem Oversampling |
+| D57 | 2026-11-17 | fx4b: Loop-Test, auch mit Tanh3 unter Last |
+| D58 | 2026-11-17 | Build-6-Sitzung: Rauschen fx4b gegen fx3l, offene Eingänge |
+| D59 | 2026-11-17 | fx4b wird Alltags-Firmware, Fork-Branch nachgezogen |
+| D60 | 2026-11-18 | Reglerserie K1: Welche Regler und welcher Anschlag heben die Linien bei 2200,95 Hz? |
+| D61 | 2026-11-18 | Reglerserie K2: Nicht der Anschlag zählt, sondern der Unterschied zwischen den Reglern |
+| D62 | 2026-11-18 | MIDI-Sendeweg: Fehler auf fx4b reproduziert, Patch 16 und Build 7 `fx5a` |
+| D63 | 2026-11-18 | fx5a geflasht, Download-Stresstest und Loop-Test |
+| D64 | 2026-11-18 | Build-7-Sitzung: Rauschen fx5a gegen fx4b, offene Eingänge |
+| D65 | 2026-11-18 | fx5a ist die Alltags-Firmware |
+| D66 | 2026-11-18 | Patch „Schliere“: lange Allpass-Kette, Host-Test, Slot 6 |
+| D67 | 2026-11-18 | Das Fiepsen in Schliere ist die LED-PWM: Out 1 über das zweite Interface aufgenommen |
+| D68 | 2026-11-18 | Schliere Fassung 2: LED-Linie um 31 dB kleiner, es bleiben die Blockraten-Linien |
+| D69 | 2026-11-18 | Case-Sitzung: rohe Eingänge im Case, Schliere gegen Default-Patch |
+| D70 | 2026-11-18 | Sperre für die Blockraten-Linien: am Rechner geprüft, Schliere Fassung 3 gebaut |
+| D71 | 2026-11-18 | Schliere Fassung 3 am Gerät: Blockraten-Linien am Ausgang um 22 bis 25 dB kleiner |
+| D72 | 2026-11-18 | Schliere Fassung 3: Störgeräusch bei leuchtenden LEDs? |
+| D73 | 2026-11-18 | LED-Test-Patch: Stören die LEDs selbst? |
+| D74 | 2026-11-18 | LED-Strom: Eingang oder Ausgang? |
+| D75 | 2026-11-18 | Build 8 `v22.4.r-fx6a` auf acdc1: Flash, LED-Modi am Gerät |
+| D76 | 2026-11-19 | fx6a: Loop-Test bestanden, Program Change bei offenem Stream bricht die Wiedergabe |
+| D77 | 2026-11-19 | Build-8-Sitzung: Rauschen fx6a gegen fx5a, Gegenprobe zum Program Change unter fx5a |
+| D78 | 2026-11-19 | Build 9 `v22.4.r-fx7a` auf acdc1: Flash und A1 |
+| D79 | 2026-11-19 | Build-9-Sitzung: Rauschen fx7a gegen fx6a |
+| D80 | 2026-11-19 | Schliere: Tap- und Feedback-Modulation, Fassung 4 und Schliere M |
+| D81 | 2026-11-21 | SchliereL: Kette aus 160 Stufen |
+| D82 | 2026-11-23 | Plateau: erster Lauf am Gerät aus dem RAM |
+| D83 | 2026-11-23 | Plateau mit Taktzählern: Die Caches der MCU sind aus |
+| D84 | 2026-11-23 | Build 10 `v22.4.r-fx8a` (I-Cache an) auf acdc1: Flash, A1, Rechenlast, Patch-Wechsel |
+| D85 | 2026-11-23 | Build-10-Sitzung: Rauschen fx8a gegen fx7a, Loop-Test |
+| D86 | 2026-11-23 | Original-Sitzung: Werks-Firmware gegen fx8a, offene Eingänge |
+| D87 | 2026-11-23 | D-Cache vorbereiten: DMA-Puffer, MPU-Region, Korrektur zu `_DMA_DATA` |
+| D88 | 2026-11-23 | Build 11 `v22.4.r-fx9a` (D-Cache an) auf acdc1: Flash, A1, Kaltstart, kurzer Loop-Test |
+| D89 | 2026-11-23 | Build 11 `v22.4.r-fx9a`: Abnahme (Loop 10 min, Rechenlast, Patch-Wechsel, Downloads, Rauschen) und neue Slot-Belegung |
+| D90 | 2026-11-23 | Masse-Brücke auf dem Xibeca-Modul: Draht Pin 15 (GND) ↔ Pin 33 (AGND) |
+| D91 | 2026-11-24 | Masse-Draht: Ausgang am UMC |
+| D92 | 2026-11-27 | Patches mit den Compiler-Flags aus OwlProgram-`develop`: Rechenlast am Gerät |
+| D93 | 2026-11-27 | Patches mit den neuen Compiler-Flags: Ausgang alt gegen neu am UMC |
+| D94 | 2026-11-27 | Slots 2–8 mit den Neubauten gespeichert |
+<!-- messlog-index:end -->
+
+## Kurztabelle der ersten Serien (M1 bis S2-6)
 
 | # | Datum | Gerät | Dateien | Setup | Befund | Fazit |
 |---|---|---|---|---|---|---|
@@ -16,8 +127,8 @@ Pegel sind Linienamplituden in dBFS (Sinus mit Vollaussteuerung = 0 dBFS), sofer
 
 Gerät acdc2: Firmware **v22.4.q**, Slot 1 = Patch „ACDC“ (9,32 KB, Default-Patch), CPU 15 %, UUID `00250049:31315102:39333437` (Device-Status openwarelab, 2026-11-13).
 
-Auswertung: `uv run python -m analysis M1` (bzw. M2, M3) → `out/M1/` usw. Messdaten-Metadaten in `recordings/manifest.toml`.
-Alte Plots des ersten Skripts: `out/v0/*.png`. Ihre Texte enthalten noch die überholte Gain-Deutung.
+Auswertung: `uv run python -m analysis M1` (bzw. M2, M3) → `reports/M1/` usw. Messdaten-Metadaten in `recordings/manifest.toml`.
+Alte Plots des ersten Skripts: `reports/v0/*.png`. Ihre Texte enthalten noch die überholte Gain-Deutung.
 
 Dateien umbenannt (2026-11-13): `channel-N.wav` → `20261113_acdc2_inputs-bridged_g12_usb-stream_chN.wav`, `channel-N-001.wav` → `…_g17_…`, `channel-N-002.wav` → `20261113_acdc2_sine838-dpo_g1145_usb-stream_chN.wav`.
 
@@ -105,7 +216,7 @@ Das neue Tool fittet f0 gewichtet über alle Harmonischen und trennt Linienfamil
 
 ### Serie 2 (S2-1 … S2-4, 2026-11-13)
 
-Aufnahmen: 4-Kanal-WAV, Float32, 96 kHz (wieder hochgerechnet, aber sauber 2×: fs/8 liegt exakt auf 6000,0000 Hz), offene Eingänge. Dateinamen tragen 20261114, aufgenommen am 2026-11-13. Auswertung: `out/S2-*/`. Seit dieser Serie rechnet das Tool Rausch-Kennzahlen im Hörband (Hochpass 20 Hz) und weist die Drift < 20 Hz separat aus.
+Aufnahmen: 4-Kanal-WAV, Float32, 96 kHz (wieder hochgerechnet, aber sauber 2×: fs/8 liegt exakt auf 6000,0000 Hz), offene Eingänge. Dateinamen tragen 20261114, aufgenommen am 2026-11-13. Auswertung: `reports/S2-*/`. Seit dieser Serie rechnet das Tool Rausch-Kennzahlen im Hörband (Hochpass 20 Hz) und weist die Drift < 20 Hz separat aus.
 
 **1. Mischprodukt-Mechanismus bestätigt [gemessen].** Die Musterperiode folgt aus dem Abstand von 6·f1k zur 6-kHz-Blockrate, vorhergesagt vor der Messung:
 
@@ -316,7 +427,7 @@ Ablauf und Dateien (`firmware/flashlog/20261114_generalprobe/`):
 
 ### D6 – Referenzaufnahme E7-ref: alte Firmware, 10 min mit Playback (2026-11-14)
 
-**Setup:** acdc1 nach D5 (Readback-Abbild, meldet v22.5.0, enthält `237c63d`), am Thunderbolt-Hub. Host-Software, Engine 48 kHz. Aufnahme der 4 Eingänge, gleichzeitig Playback auf Out 1–4: Sinus 220 / 330 / 470 / 590 Hz (Out 1…4), Pegel nicht notiert. Ausgänge nicht auf die Eingänge geführt, Eingänge offen, Gain 12 Uhr. Datei `recordings/20261114_acdc1_ref-10min_g12_usb-rxtx.4chan.000.wav`, 48 kHz / 32 Bit float nativ, 600,9 s. Manifest-ID `E7-ref`, Auswertung `out/E7-ref/` (`--ref S2-4`).
+**Setup:** acdc1 nach D5 (Readback-Abbild, meldet v22.5.0, enthält `237c63d`), am Thunderbolt-Hub. Host-Software, Engine 48 kHz. Aufnahme der 4 Eingänge, gleichzeitig Playback auf Out 1–4: Sinus 220 / 330 / 470 / 590 Hz (Out 1…4), Pegel nicht notiert. Ausgänge nicht auf die Eingänge geführt, Eingänge offen, Gain 12 Uhr. Datei `recordings/20261114_acdc1_ref-10min_g12_usb-rxtx.4chan.000.wav`, 48 kHz / 32 Bit float nativ, 600,9 s. Manifest-ID `E7-ref`, Auswertung `reports/E7-ref/` (`--ref S2-4`).
 
 **Ergebnis [gemessen]:**
 - **Klicks: 0** auf allen 4 Kanälen in 10 min. Alle 119 Analysefenster gültig. f0 des 1-kHz-Kamms streut nur 0,1 ppm (999,8676 Hz), fs/8 liegt exakt auf 6000,0000 Hz.
@@ -355,7 +466,7 @@ Fehlalarme ohne Eingriff: 0.
 
 ### D7 – Referenz mit Rückführung E7-ref-loop: alte Firmware, Slips (2026-11-14)
 
-**Setup:** acdc1 wie D6 (alte Firmware nach D5), am Thunderbolt-Hub. Patchkabel Out 1→In 1 … Out 4→In 4. Host-Software, Engine 48 kHz, Sinus 440 / 530 / 670 / 790 Hz auf Out 1…4, in der Host-Software kein Eingang auf einen Ausgang. Gain 12 Uhr, Playback-Pegel nicht notiert. Datei `recordings/20261114_acdc1_ref-loop-10min_g12_usb-rxtx.4chan.000.wav`, 48 kHz / 32 Bit float, 600,4 s. Manifest-ID `E7-ref-loop`, Auswertung `out/E7-ref-loop/` (`--ref E7-ref`), Phasen-Ergebnis `out/E7-ref-loop/phase_slips.json`.
+**Setup:** acdc1 wie D6 (alte Firmware nach D5), am Thunderbolt-Hub. Patchkabel Out 1→In 1 … Out 4→In 4. Host-Software, Engine 48 kHz, Sinus 440 / 530 / 670 / 790 Hz auf Out 1…4, in der Host-Software kein Eingang auf einen Ausgang. Gain 12 Uhr, Playback-Pegel nicht notiert. Datei `recordings/20261114_acdc1_ref-loop-10min_g12_usb-rxtx.4chan.000.wav`, 48 kHz / 32 Bit float, 600,4 s. Manifest-ID `E7-ref-loop`, Auswertung `reports/E7-ref-loop/` (`--ref E7-ref`), Phasen-Ergebnis `reports/E7-ref-loop/phase_slips.json`.
 
 **Pegel – keine Übersteuerung (korrigiert):** In der Datei reichen die Spitzen bis −1,023 (In 1), bei In 2–4 bis −0,87…−0,92. Ein Clipping ist das nicht:
 - Es gibt keine flachen Kuppen. Die Extremwerte kommen je Kanal nur 1–3-mal vor, die Werte um das Maximum verlaufen glatt wie ein Sinus.
@@ -468,7 +579,7 @@ Ablauf wie D9, Dateien in `firmware/flashlog/20261114_build1b-thru1/`. DFU per S
 
 **A4 [gemessen, per Gehör]: bestanden.** Läuft das Host-Playback, liegt es an den Ausgängen an. Wird es gestoppt, kommt die Durchleitung zurück. Der Wechsel geht in beide Richtungen sauber.
 
-**A5 [gemessen]: im Mittel bestanden, pro Kanal ±1,8 dB.** Aufnahme `A5-b1b` (`recordings/20261114_acdc1_b1b-open-inputs_g12_usb-stream.4chan.000.wav`, 120,5 s, 48 kHz nativ, Eingänge offen, Gain 12 Uhr, Hub, Host-Software ohne Playback). Auswertung `out/A5-b1b/` (`--ref S2-4`). Pegel als Datei-dBFS, beide Aufnahmen mit Host-Faktor 2.
+**A5 [gemessen]: im Mittel bestanden, pro Kanal ±1,8 dB.** Aufnahme `A5-b1b` (`recordings/20261114_acdc1_b1b-open-inputs_g12_usb-stream.4chan.000.wav`, 120,5 s, 48 kHz nativ, Eingänge offen, Gain 12 Uhr, Hub, Host-Software ohne Playback). Auswertung `reports/A5-b1b/` (`--ref S2-4`). Pegel als Datei-dBFS, beide Aufnahmen mit Host-Faktor 2.
 
 | Größe | S2-4 (alte FW), Mittel | A5 (Build 1b), Mittel | Δ Mittel | Δ Kanal 1 / 2 / 3 / 4 |
 |---|---|---|---|---|
@@ -493,7 +604,7 @@ Ablauf wie D9, Dateien in `firmware/flashlog/20261114_build1b-thru1/`. DFU per S
 
 ### D12 – A6 mit Build 1b: Block-Slips im USB-Audio (2026-11-14)
 
-**Setup:** wie D7 (`E7-ref-loop`): gleicher Host-Patch, Kabel Out n → In n, Sinus 440 / 530 / 670 / 790 Hz, Gain 12 Uhr, Hub, 10 min. Datei `recordings/20261114_acdc1_b1b-loop-10min_g12_usb-rxtx.4chan.000.wav`, Manifest `A6-b1b`, Auswertung `out/A6-b1b/` (`--ref E7-ref-loop`, `phase_slips.json`). Pegel am Eingang −5,8 dBFS Datei, ≈ −11,8 dBFS am Gerät (Ausgang −5,5 dB, D11).
+**Setup:** wie D7 (`E7-ref-loop`): gleicher Host-Patch, Kabel Out n → In n, Sinus 440 / 530 / 670 / 790 Hz, Gain 12 Uhr, Hub, 10 min. Datei `recordings/20261114_acdc1_b1b-loop-10min_g12_usb-rxtx.4chan.000.wav`, Manifest `A6-b1b`, Auswertung `reports/A6-b1b/` (`--ref E7-ref-loop`, `phase_slips.json`). Pegel am Eingang −5,8 dBFS Datei, ≈ −11,8 dBFS am Gerät (Ausgang −5,5 dB, D11).
 
 **Ergebnis [gemessen]: A6 nicht bestanden.**
 - **12 Phasensprünge und 12 Klicks pro Kanal.** Auf allen 4 Kanälen liegen sie zur selben Zeit und mit derselben Sample-Zahl, das spricht für den gemeinsamen USB- bzw. Audio-Pfad. Bei der alten Firmware (E7-ref-loop, D7) waren es 0.
@@ -557,7 +668,7 @@ Alle anderen Symbole sind gleich groß, also bleiben Takt, Codec-Setup und Rever
 
 **Vorab, Nutzer am Gerät [gemessen]:** Ausgangspegel am Scope wieder wie mit der alten Firmware (Patch 04 wirkt). Durchleitung ohne USB geht weiter.
 
-**Setup:** wie D12 (`A6-b1b`): gleicher Host-Patch, Kabel Out n → In n, Sinus 440 / 530 / 670 / 790 Hz, Gain 12 Uhr, Hub. Datei `recordings/20261114_acdc1_b1c-loop-10min_g12_usb-rxtx.4chan.000.wav` (604,5 s, 32-Bit-Float), Manifest `A6-b1c`. Auswertung in `out/A6-b1c/`: `--ref E7-ref-loop`, dazu `phase_slips.json/.txt`.
+**Setup:** wie D12 (`A6-b1b`): gleicher Host-Patch, Kabel Out n → In n, Sinus 440 / 530 / 670 / 790 Hz, Gain 12 Uhr, Hub. Datei `recordings/20261114_acdc1_b1c-loop-10min_g12_usb-rxtx.4chan.000.wav` (604,5 s, 32-Bit-Float), Manifest `A6-b1c`. Auswertung in `reports/A6-b1c/`: `--ref E7-ref-loop`, dazu `phase_slips.json/.txt`.
 
 **Ergebnis [gemessen]: A6 bestanden.**
 - **0 Phasensprünge und 0 Klicks auf allen 4 Kanälen** (D12: je 12). Ein 1-Sample-Slip läge 6 000–16 600× über dem Phasenrauschen, wäre also nicht zu übersehen. Bei gleicher Rate wie in D12 (6 Blöcke in 10 min) wäre die Wahrscheinlichkeit für 0 Ereignisse ≈ 0,25 %. Das stützt den Mechanismus aus D13 (Race in `usbd_audio_get_rx_count`) stark. Bewiesen ist er damit nicht, dafür fehlt der Langlauf.
@@ -575,7 +686,7 @@ Alle anderen Symbole sind gleich groß, also bleiben Takt, Codec-Setup und Rever
 
 ### D16 – Langlauf 30 min mit Build 1c (2026-11-14)
 
-**Setup:** wie D15, 1 800 s. Datei `recordings/20261114_acdc1_b1c-loop-30min_g12_usb-rxtx.4chan.000.wav`, Manifest `A6L-b1c`, Auswertung `out/A6L-b1c/phase_slips.json/.txt`. Die Standard-Analyse (Klicks) wurde wegen der Dateigröße noch nicht gerechnet.
+**Setup:** wie D15, 1 800 s. Datei `recordings/20261114_acdc1_b1c-loop-30min_g12_usb-rxtx.4chan.000.wav`, Manifest `A6L-b1c`, Auswertung `reports/A6L-b1c/phase_slips.json/.txt`. Die Standard-Analyse (Klicks) wurde wegen der Dateigröße noch nicht gerechnet.
 
 **Ergebnis [gemessen]: Langlauf nicht bestanden.**
 - **25 Phasensprünge, auf allen 4 Kanälen zur selben Zeit und gleich groß.** Erstes Ereignis bei 54,6 s, letztes bei 1 793 s. Muster wie D12: Paare aus 2–3 und dann ≈ 0,33 s später 5–6 Samples. Summe −99,1 Samples ≈ 12,4 Blöcke à 8, immer in Richtung Verzögerung. Abstände 14–320 s, im Mittel ≈ 145 s.
@@ -610,7 +721,7 @@ Alle anderen Symbole sind gleich groß, also bleiben Takt, Codec-Setup und Rever
 
 ### D18 – Langlauf 30 min mit Build 1d (2026-11-14)
 
-**Setup:** wie D16, 1 804,6 s, ≈ 22:36:37–23:06:42. Datei `recordings/20261114_acdc1_b1d-loop-30min_g12_usb-rxtx.4chan.000.wav`, Manifest `A6L-b1d`, Auswertung `out/A6L-b1d/phase_slips.json/.txt`. Vorher kurz A2 (Durchleitung ohne USB): geht, laut Nutzer.
+**Setup:** wie D16, 1 804,6 s, ≈ 22:36:37–23:06:42. Datei `recordings/20261114_acdc1_b1d-loop-30min_g12_usb-rxtx.4chan.000.wav`, Manifest `A6L-b1d`, Auswertung `reports/A6L-b1d/phase_slips.json/.txt`. Vorher kurz A2 (Durchleitung ohne USB): geht, laut Nutzer.
 
 **Ergebnis [gemessen]:**
 - **Keine Block-Slips mehr.** Build 1c hatte unter denselben Bedingungen 25 Sprünge ≈ 12 Blöcke (D16), Build 1d hat **keinen einzigen** Sprung vom Typ „2–3 + 5–6 Samples“. Die Pufferstand-Regelung (Patch 06) behebt die Drift aus D12/D16.
@@ -630,7 +741,7 @@ Alle anderen Symbole sind gleich groß, also bleiben Takt, Codec-Setup und Rever
 
 ### D19 – A5 mit Build 1d: offene Eingänge (2026-11-15)
 
-**Setup:** wie A5-b1b (D11). acdc1 mit Build 1d `v22.4.r-thru1d`, Eingänge offen (nichts gesteckt), Gain 12 Uhr, Thunderbolt-Hub, Host-Software 48 kHz, Audio-Modul ohne Playback, Mehrkanal-Recorder. Aufnahme am Morgen ≈ 10:17–10:19. Datei `recordings/20261115_acdc1_b1d-open-inputs_g12_usb-stream.4chan.000.wav` (121,0 s, 48 kHz nativ, 32 Bit float). Manifest `A5-b1d`, Auswertung `out/A5-b1d/` (`--ref A5-b1b`). Pegel als Datei-dBFS, alle drei Aufnahmen mit Host-Faktor 2.
+**Setup:** wie A5-b1b (D11). acdc1 mit Build 1d `v22.4.r-thru1d`, Eingänge offen (nichts gesteckt), Gain 12 Uhr, Thunderbolt-Hub, Host-Software 48 kHz, Audio-Modul ohne Playback, Mehrkanal-Recorder. Aufnahme am Morgen ≈ 10:17–10:19. Datei `recordings/20261115_acdc1_b1d-open-inputs_g12_usb-stream.4chan.000.wav` (121,0 s, 48 kHz nativ, 32 Bit float). Manifest `A5-b1d`, Auswertung `reports/A5-b1d/` (`--ref A5-b1b`). Pegel als Datei-dBFS, alle drei Aufnahmen mit Host-Faktor 2.
 
 **Ergebnis [gemessen]: A5 bestanden.** Gemessen am Kanalmittel (Kriterium aus D11) ist das Rauschen gegenüber Build 1b nicht schlechter, sondern ≈ 1 dB besser.
 
@@ -676,7 +787,7 @@ Alle anderen Symbole sind gleich groß, also bleiben Takt, Codec-Setup und Rever
 | S3-a | USB des AC/DC gezogen, Case an | `…_s3a-out-via-umc_g12_usb-off.2chan.000.wav` |
 | S3-b2 | wie b, am Serienende | `…_s3b2-out-via-umc_g12_usb-plugged.2chan.000.wav` |
 
-Auswertung: `out/S3-*/` (`--ref S3-b`). Die Zuordnung der Linien wurde mit einer eigenen Peak-Suche um 1/2/3/6 kHz, 50 und 60 Hz gemacht (Hann über die volle Länge, Bin 8,3 mHz).
+Auswertung: `reports/S3-*/` (`--ref S3-b`). Die Zuordnung der Linien wurde mit einer eigenen Peak-Suche um 1/2/3/6 kHz, 50 und 60 Hz gemacht (Hann über die volle Länge, Bin 8,3 mHz).
 
 **Zwei Zeitbasen.** Die UMC-Dateien laufen im Takt des UMC, die AC/DC-Dateien im Takt von acdc1. Die fs/8-Linie von acdc1 (6000,0000 Hz im eigenen Takt) erscheint im UMC bei 6001,111 Hz. Das ergibt das Verhältnis **UMC/acdc1 = 1,000185 (185 ppm)**. Die 59,98-Hz-Linie bestätigt das (59,9831 / 59,9720), ebenso der Fremdkamm (1000,2198 / 1000,0346). Frequenzen unten mit „UMC“ bzw. „AC/DC“ markiert.
 
@@ -722,7 +833,7 @@ Auswertung: `out/S3-*/` (`--ref S3-b`). Die Zuordnung der Linien wurde mit einer
 
 ### D21 – Masseschleife: Serie G (2026-11-15)
 
-**Setup:** wie S3-b (D20): acdc1 Build 1d, Eingänge offen, Gain 12 Uhr, Out 1 → MTM Startup → UMC In 1, USB gesteckt ohne Stream, Host-Software nimmt nur den UMC auf (Datei mit Host-Faktor 2), 120 s. Umgebung laut Nutzer: Mac über den Thunderbolt-Hub versorgt, externer Monitor am Hub, kein Isolator und keine DI-Box vorhanden. Case, Hub-Netzteil und Mac-Netzteil hängen an derselben Doppelsteckdose, aber an zwei verschiedenen Leisten. Je Messung wurde genau eine Verbindung gegenüber G0 geändert. Manifest `G0`, `G2`, `G2a`, `G1`, Auswertung `out/G*/` (`--ref G0`).
+**Setup:** wie S3-b (D20): acdc1 Build 1d, Eingänge offen, Gain 12 Uhr, Out 1 → MTM Startup → UMC In 1, USB gesteckt ohne Stream, Host-Software nimmt nur den UMC auf (Datei mit Host-Faktor 2), 120 s. Umgebung laut Nutzer: Mac über den Thunderbolt-Hub versorgt, externer Monitor am Hub, kein Isolator und keine DI-Box vorhanden. Case, Hub-Netzteil und Mac-Netzteil hängen an derselben Doppelsteckdose, aber an zwei verschiedenen Leisten. Je Messung wurde genau eine Verbindung gegenüber G0 geändert. Manifest `G0`, `G2`, `G2a`, `G1`, Auswertung `reports/G*/` (`--ref G0`).
 
 | ID | Änderung gegenüber G0 | Datei |
 |---|---|---|
@@ -769,7 +880,7 @@ Auswertung: `out/S3-*/` (`--ref S3-b`). Die Zuordnung der Linien wurde mit einer
 - Die AC/DC-Eingänge dienen für Aufnahmen aus dem Rack. Die Ausgänge führen CV oder Audio zurück ins Rack, der UMC ist nur Ausgabe an Boxen/Kopfhörer. **AC/DC-Out → UMC-In kommt nicht vor.**
 - USB-Kette: AC/DC → passiver USB-Hub → USB-Hub im Monitor → TB-Hub. G3 (ohne Hub) entfällt.
 
-**G4** (`20261115_acdc1_g4-daily-hub-chain_g12_usb-plugged.2chan.000.wav`, Manifest `G4`, `out/G4/`, `--ref G1`): Aufbau wie G1 (Out 1 → Startup → UMC In 1, USB gesteckt, kein Stream), aber das AC/DC hängt an der Alltags-USB-Kette.
+**G4** (`20261115_acdc1_g4-daily-hub-chain_g12_usb-plugged.2chan.000.wav`, Manifest `G4`, `reports/G4/`, `--ref G1`): Aufbau wie G1 (Out 1 → Startup → UMC In 1, USB gesteckt, kein Stream), aber das AC/DC hängt an der Alltags-USB-Kette.
 
 **Ergebnis G4 [gemessen]: sauber.**
 - RMS −76,1 dB, Rest −77,9 dB, so gut wie G1 (−75,1) und S3-a ohne USB (−75,9).
@@ -779,7 +890,7 @@ Auswertung: `out/S3-*/` (`--ref S3-b`). Die Zuordnung der Linien wurde mit einer
 
 **G4-in, erste Versuche ungültig:** `…_g4-in-daily-hub-chain_…` (mit Kabel Out 1 → UMC) und `…_g4-in-daily-no-out_…` sind **digital 0, in jedem Sample**. Ursache unbekannt, vermutlich Patch oder Gerätewahl in der Host-Software. Im Manifest als UNGÜLTIG markiert.
 
-**G4-in-no-out-2** (`20261115_acdc1_g4-in-daily-no-out-2_g12_usb-duplex.4chan.000.wav`, Manifest `G4-in-no-out-2`, `out/G4-in-no-out-2/`, `--ref A5-b1d`): AC/DC-Eingänge 1–4 offen, Gain 12 Uhr, Ausgänge frei, Alltags-USB-Kette, Host-Software Duplex (AC/DC ausgewählt, Stille an die Ausgänge), UMC-Ausgänge an Boxen/Kopfhörer. 120 s, Datei mit Host-Faktor 2.
+**G4-in-no-out-2** (`20261115_acdc1_g4-in-daily-no-out-2_g12_usb-duplex.4chan.000.wav`, Manifest `G4-in-no-out-2`, `reports/G4-in-no-out-2/`, `--ref A5-b1d`): AC/DC-Eingänge 1–4 offen, Gain 12 Uhr, Ausgänge frei, Alltags-USB-Kette, Host-Software Duplex (AC/DC ausgewählt, Stille an die Ausgänge), UMC-Ausgänge an Boxen/Kopfhörer. 120 s, Datei mit Host-Faktor 2.
 
 | Größe (Kanalmittel, Datei-dBFS) | A5-b1d (TB-Hub direkt, morgens) | S3-d-in (Mac-Port + Schleife) | G4-in-no-out-2 (Alltag) |
 |---|---|---|---|
@@ -815,7 +926,7 @@ Auswertung: `out/S3-*/` (`--ref S3-b`). Die Zuordnung der Linien wurde mit einer
 - G5: AC/DC-USB direkt am TB-Hub (wie A5), `20261115_acdc1_g5-in-tbhub-direct_g12_usb-duplex.4chan.000.wav`
 - G6: wieder Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), `20261115_acdc1_g6-in-daily-chain-again_g12_usb-duplex.4chan.000.wav`
 
-Manifest `G5`, `G6`, Auswertung `out/G5/`, `out/G6/` (`--ref G4-in-no-out-2`). Kanalmittel, Datei-dBFS (Host-Faktor 2):
+Manifest `G5`, `G6`, Auswertung `reports/G5/`, `reports/G6/` (`--ref G4-in-no-out-2`). Kanalmittel, Datei-dBFS (Host-Faktor 2):
 
 | Größe | A5-b1d (morgens, 120 s) | G4-in-no-out-2 (15:19) | G5 TB-Hub direkt | G6 Alltags-Kette | Δ G6 − G5 |
 |---|---|---|---|---|---|
@@ -857,7 +968,7 @@ Median-Rauschdichte Kanal 1 [dB/Hz], erste 60 s jeder Datei:
   - `recordings/20261115_acdc1_b1d-open-inputs-r2_g12_usb-stream.4chan.000.wav` (120,1 s)
 
   Beide 48 kHz / 32 Bit float, keine Null-Samples.
-- Manifest `A5-b1d-r1`, `A5-b1d-r2`, Auswertung `out/A5-b1d-r{1,2}/` (`--ref A5-b1d`).
+- Manifest `A5-b1d-r1`, `A5-b1d-r2`, Auswertung `reports/A5-b1d-r{1,2}/` (`--ref A5-b1d`).
 
 **Ergebnis [gemessen]** (Datei-dBFS, Mittel über die 4 Kanäle):
 
@@ -938,9 +1049,9 @@ Einzelne Mischprodukte, Kanal 1 (wie in D19):
 - **60 s** statt 120 s (Musterperiode der Mischprodukte 1,26 s, also ≈ 48 Perioden)
 - r1 ≈ 16:18, Host-Software ganz neu gestartet, r2 ≈ 16:20
 - Dateien `recordings/20261115_acdc1_fx1d-open-inputs-r{1,2}_g12_usb-stream.4chan.000.wav` (je 60,3 s, keine Null-Samples)
-- Manifest `B3-fx1d-r1/-r2`, Auswertung `out/B3-fx1d-r{1,2}/`
+- Manifest `B3-fx1d-r1/-r2`, Auswertung `reports/B3-fx1d-r{1,2}/`
 
-Zum fairen Vergleich wurden die 1d-Aufnahmen aus D24 auf dieselbe Länge gekürzt (erste 60,3 s) und ausgewertet: `out/A5-b1d-r{1,2}-60s/`. Die gekürzten WAVs waren nur temporär.
+Zum fairen Vergleich wurden die 1d-Aufnahmen aus D24 auf dieselbe Länge gekürzt (erste 60,3 s) und ausgewertet: `reports/A5-b1d-r{1,2}-60s/`. Die gekürzten WAVs waren nur temporär.
 
 **Patch-Faktor:** Bei 1d lief die USB-Aufnahme durch den VCA des Default-Patches (Gain = (2·Knob)²), bei Build 2 nicht.
 - Vorhersage aus den Knob-Werten vor dem Flash (CC 20–23 = 62/61/61/58): 1d leiser um 0,42 / 0,70 / 0,70 / 1,57 dB.
@@ -979,7 +1090,7 @@ Zum fairen Vergleich wurden die 1d-Aufnahmen aus D24 auf dieselbe Länge gekürz
 - Wie A6L-b1d (D18), aber 10 min, Build 2 `v22.4.r-fx1d`, Alltags-Kette.
 - Kabel Out n → In n, Gain 12 Uhr. Host-Software auf „OWL-ACDC-FX“ spielt Sinus 440/530/670/790 Hz auf Out 1…4 (RX POST_FX überschreibt den Patch). Mehrkanal-Recorder nimmt In 1…4 auf (rohe Eingänge, TX PRE_FX).
 - Datei `recordings/20261115_acdc1_fx1d-loop-10min_g12_usb-rxtx.4chan.000.wav` (599,98 s, keine Null-Bereiche), Ende ≈ 16:37.
-- Manifest `A6-fx1d`, Auswertung `out/A6-fx1d/` (Standard-Analyse und `phase_slips.json/.txt`).
+- Manifest `A6-fx1d`, Auswertung `reports/A6-fx1d/` (Standard-Analyse und `phase_slips.json/.txt`).
 
 **Ergebnis [gemessen]:**
 - **`phase_slips.py`: 0 Ereignisse auf allen 4 Kanälen.** Ein Slip von 1 Sample läge 5 000–16 000-fach über dem Phasenrauschen. Amplitude 0,2 dBFS (Datei), Spanne 0,1–99,9 % = 0,00 dB.
@@ -1071,7 +1182,7 @@ Zum fairen Vergleich wurden die 1d-Aufnahmen aus D24 auf dieselbe Länge gekürz
 - Alltags-Kette, Host-Software „OWL-ACDC-FX“, Audio-Modul ohne Playback, Mehrkanal-Recorder
 - r1 ≈ 17:42 (Host-Software frisch gestartet), r2 ≈ 17:43 (nach Neustart der Host-Software)
 - Dateien `recordings/20261115_acdc1_fx2b-open-inputs-r{1,2}_g12_usb-stream.4chan.000.wav` (60,3 s / 59,8 s, keine Null-Samples)
-- Manifest `B3-fx2b-r1/-r2`, Auswertung `out/B3-fx2b-r{1,2}/` (`--ref B3-fx1d-r{1,2}`)
+- Manifest `B3-fx2b-r1/-r2`, Auswertung `reports/B3-fx2b-r{1,2}/` (`--ref B3-fx1d-r{1,2}`)
 - Kein Patch-Faktor nötig, beide Builds nehmen vor dem Patch auf. DC −6,12 gegen −6,06 % FS, also gleiche Verstärkung.
 
 **Ergebnis [gemessen]** (Datei-dBFS, Mittel über die 4 Kanäle):
@@ -1109,7 +1220,7 @@ Zum fairen Vergleich wurden die 1d-Aufnahmen aus D24 auf dieselbe Länge gekürz
 **Aufnahme:**
 - Setup wie D30, r1 ≈ 17:49, r2 ≈ 17:51, Host-Software vor jedem Lauf neu gestartet
 - Dateien `recordings/20261115_acdc1_fx1d-kontrolle-open-inputs-r{1,2}_g12_usb-stream.4chan.000.wav` (60,3 s, keine Null-Zeilen)
-- Manifest `B3-fx1d-k-r1/-r2`, Auswertung `out/B3-fx1d-k-r{1,2}/`
+- Manifest `B3-fx1d-k-r1/-r2`, Auswertung `reports/B3-fx1d-k-r{1,2}/`
 - Meldung danach, Host-Software noch offen: `tx ovf 0.4652 1.0000 32.0000` (Stream-Ende beim Neustart der Host-Software, wie D25)
 
 **Ergebnis [gemessen]** (Datei-dBFS, Mittel über 4 Kanäle und beide Läufe):
@@ -1152,7 +1263,7 @@ Zum fairen Vergleich wurden die 1d-Aufnahmen aus D24 auf dieselbe Länge gekürz
 **A/B [gemessen]:**
 - Setup wie D30/D31, r1 ≈ 18:05, r2 ≈ 18:07, Host-Software vor jedem Lauf neu gestartet
 - Dateien `recordings/20261115_acdc1_fx2c-open-inputs-r{1,2}_g12_usb-stream.4chan.000.wav` (60,3 s, keine Null-Zeilen)
-- Manifest `B3-fx2c-r1/-r2`, Auswertung `out/B3-fx2c-r{1,2}/` (`--ref B3-fx1d-k-r{1,2}`)
+- Manifest `B3-fx2c-r1/-r2`, Auswertung `reports/B3-fx2c-r{1,2}/` (`--ref B3-fx1d-k-r{1,2}`)
 - Meldung danach: `tx ovf 0.4861 1.0000 32.0000` (Stream-Ende), CPU 12 %
 
 Datei-dBFS, Mittel über 4 Kanäle und beide Läufe:
@@ -1199,7 +1310,7 @@ Datei-dBFS, Mittel über 4 Kanäle und beide Läufe:
 **Aufnahme:**
 - Setup wie D30–D32, r1 ≈ 18:15, r2 ≈ 18:17
 - Dateien `recordings/20261115_acdc1_fx1p-open-inputs-r{1,2}_g12_usb-stream.4chan.000.wav` (60,4 s / 60,5 s, keine Null-Zeilen)
-- Manifest `B3-fx1p-r1/-r2`, Auswertung `out/B3-fx1p-r{1,2}/`
+- Manifest `B3-fx1p-r1/-r2`, Auswertung `reports/B3-fx1p-r{1,2}/`
 - Meldung danach `tx ovf 1.0000 1.0000 32.0000` (Stream-Ende)
 
 **Ergebnis [gemessen]** (Datei-dBFS, Mittel über 4 Kanäle und beide Läufe):
@@ -1252,7 +1363,7 @@ Datei-dBFS, Mittel über 4 Kanäle und beide Läufe:
 **Aufnahme:**
 - r1 ≈ 18:27, r2 ≈ 18:29, Host-Software vor jedem Lauf neu gestartet
 - Dateien `recordings/20261115_acdc1_fx2d-open-inputs-r{1,2}_g12_usb-stream.4chan.000.wav` (60,3 s / 63,0 s, keine Null-Zeilen)
-- Manifest `B3-fx2d-r1/-r2`, Auswertung `out/B3-fx2d-r{1,2}/`
+- Manifest `B3-fx2d-r1/-r2`, Auswertung `reports/B3-fx2d-r{1,2}/`
 - Meldung danach: `fb 48.0004 96.2500`
 
 **Ergebnis [gemessen]** (Datei-dBFS, Mittel über 4 Kanäle und beide Läufe):
@@ -1288,10 +1399,10 @@ Datei-dBFS, Mittel über 4 Kanäle und beide Läufe:
 
 **Setup:** acdc1 mit Build 3d `v22.4.r-fx2d`, Alltags-Kette (passiver Hub → Monitor-Hub → TB-Hub), Eingänge offen, Gain 12 Uhr, Slot 1 ACDC.
 - `X1-vcv`: Host-Software, Audio-Modul auf OWL-ACDC-FX (48 kHz, Block 256, ohne Playback-Kabel), Mehrkanal-Recorder, 60 s, ≈ 16:28. Danach Host-Software beendet.
-- `X1-rec`: `tools/acdc_rec.py` (duplex, Ausgang Nullen, Block 256, 16 Bit PCM, 3 s verworfen, `scale = 2.0`), 60 s, direkt danach, mit `--owl-read` (Report `out/owl_read/X1-rec/`). 0 Stream-Meldungen.
+- `X1-rec`: `tools/acdc_rec.py` (duplex, Ausgang Nullen, Block 256, 16 Bit PCM, 3 s verworfen, `scale = 2.0`), 60 s, direkt danach, mit `--owl-read` (Report `reports/owl_read/X1-rec/`). 0 Stream-Meldungen.
 - Vorher ein 10-s-Probelauf mit dem Skript (nur Scratchpad, ohne Manifest): fs/8 bei 6000,0000 Hz, Kamm bei 999,862 Hz.
 
-**Ergebnis** (Mittel über 4 Kanäle in Leistung, Datei-dBFS wie die Aufnahmen aus der Host-Software; Auswertung `out/X1-vcv/`, `out/X1-rec/`):
+**Ergebnis** (Mittel über 4 Kanäle in Leistung, Datei-dBFS wie die Aufnahmen aus der Host-Software; Auswertung `reports/X1-vcv/`, `reports/X1-rec/`):
 
 | Größe | X1-vcv | X1-rec | Δ |
 |---|---|---|---|
@@ -1329,7 +1440,7 @@ Datei-dBFS, Mittel über 4 Kanäle und beide Läufe:
 
 ### D37 – Build-4-Sitzung: 3d-Kontrolle, fx3i (ITCM), 3d-Endkontrolle, offene Eingänge (2026-11-16)
 
-**Setup:** acdc1, Alltags-Kette, Eingänge offen, Gain 12 Uhr, Slot 1 ACDC, je 2 × 60 s mit `tools/acdc_rec.py` (Stream zwischen den Läufen neu geöffnet, `--owl-read`). Reihenfolge: `B4-3d` (3d) → Flash fx3i (`firmware/flashlog/20261116_build4-fx3i/`, Readback bytegleich `8fedebf7…`) → A1 → `B4-fx3i` → Loop-Test (D38) → Flash 3d zurück (`firmware/flashlog/20261116_build3d-fx2-zurueck/`, Readback bytegleich `d212cf8d…`) → Loop-Test → `B4-3d-end`. **fx3ip wurde nicht gemessen** (wegen D38). Tabelle: `out/B4-session-table.md` (`tools/family_table.py`).
+**Setup:** acdc1, Alltags-Kette, Eingänge offen, Gain 12 Uhr, Slot 1 ACDC, je 2 × 60 s mit `tools/acdc_rec.py` (Stream zwischen den Läufen neu geöffnet, `--owl-read`). Reihenfolge: `B4-3d` (3d) → Flash fx3i (`firmware/flashlog/20261116_build4-fx3i/`, Readback bytegleich `8fedebf7…`) → A1 → `B4-fx3i` → Loop-Test (D38) → Flash 3d zurück (`firmware/flashlog/20261116_build3d-fx2-zurueck/`, Readback bytegleich `d212cf8d…`) → Loop-Test → `B4-3d-end`. **fx3ip wurde nicht gemessen** (wegen D38). Tabelle: `reports/B4-session-table.md` (`tools/family_table.py`).
 - A1 fx3i: `AC/DC v22.4.r-fx3i`, `SR/BS/CH 48000 8 4`, Patches und Settings unverändert.
 
 **Ergebnis** (Datei-dBFS, Mittel über 4 Kanäle in Leistung; Δ gegen das Mittel der beiden 3d-Kontrollen):
@@ -1374,7 +1485,7 @@ Datei-dBFS, Mittel über 4 Kanäle und beide Läufe:
 
 ### D39 – Build 4x: fx3i-Varianten (Halbierung), Loop-Test je Variante (2026-11-16, abends)
 
-**Setup:** acdc1, Alltags-Kette, Gain 12 Uhr, Patchkabel Out n → In n, je 60 s `tools/acdc_rec.py --sine 440 530 670 790` (−6 dBFS, 1 s Einblenden, `--owl-read`), danach `tools/phase_slips.py` und neu `tools/stale_samples.py` (einzelne falsche Samples, JSON in `out/B4x/`). Varianten: `docs/05` „Build 4x“, Patches 11a–11c, alle mit `check_itcm.py --groups …` geprüft. Jeder Flash einzeln freigegeben, Readback jeweils bytegleich, A1 jeweils bestanden (Version, `SR/BS/CH 48000 8 4`, Slots ACDC/ACDC/[Lich]). Flashlogs `firmware/flashlog/20261116_build4x-{noD,noC,onlyD}/`, `…_build3d-fx2-zurueck-4x/`. Reihenfolge: 3d-Kontrolle → noD → noC → onlyD → 3d zurück → 3d-Endkontrolle. fx3i-novt wurde gebaut, aber nicht geflasht (H-e durch noD erledigt).
+**Setup:** acdc1, Alltags-Kette, Gain 12 Uhr, Patchkabel Out n → In n, je 60 s `tools/acdc_rec.py --sine 440 530 670 790` (−6 dBFS, 1 s Einblenden, `--owl-read`), danach `tools/phase_slips.py` und neu `tools/stale_samples.py` (einzelne falsche Samples, JSON in `reports/B4x/`). Varianten: `docs/05` „Build 4x“, Patches 11a–11c, alle mit `check_itcm.py --groups …` geprüft. Jeder Flash einzeln freigegeben, Readback jeweils bytegleich, A1 jeweils bestanden (Version, `SR/BS/CH 48000 8 4`, Slots ACDC/ACDC/[Lich]). Flashlogs `firmware/flashlog/20261116_build4x-{noD,noC,onlyD}/`, `…_build3d-fx2-zurueck-4x/`. Reihenfolge: 3d-Kontrolle → noD → noC → onlyD → 3d zurück → 3d-Endkontrolle. fx3i-novt wurde gebaut, aber nicht geflasht (H-e durch noD erledigt).
 
 **Ergebnis:**
 
@@ -1422,7 +1533,7 @@ Datei-dBFS, Mittel über 4 Kanäle und beide Läufe:
 
 ### D42 – Build-4y-Sitzung: Rauschen 3d → fx3j → noD → 3d, offene Eingänge (2026-11-16, spätabends)
 
-**Setup:** acdc1, Alltags-Kette, Eingänge offen, Gain 12 Uhr, je 2 × 60 s `tools/acdc_rec.py --reps 2 --owl-read` (Stream dazwischen neu geöffnet). Reihenfolge: `B4y-3d` → Flash fx3j → Loop (D41) → `B4y-fx3j` → Flash noD (`firmware/flashlog/20261116_build4x-noD-rauschen/`, A1) → `B4y-noD` → Flash 3d (`…_build3d-fx2-zurueck-4y/`, Readback bytegleich, A1) → `B4y-3d-end`. fx3jp gebaut, aber nicht gemessen. Tabelle `out/B4y-session-table.md` (`tools/family_table.py`).
+**Setup:** acdc1, Alltags-Kette, Eingänge offen, Gain 12 Uhr, je 2 × 60 s `tools/acdc_rec.py --reps 2 --owl-read` (Stream dazwischen neu geöffnet). Reihenfolge: `B4y-3d` → Flash fx3j → Loop (D41) → `B4y-fx3j` → Flash noD (`firmware/flashlog/20261116_build4x-noD-rauschen/`, A1) → `B4y-noD` → Flash 3d (`…_build3d-fx2-zurueck-4y/`, Readback bytegleich, A1) → `B4y-3d-end`. fx3jp gebaut, aber nicht gemessen. Tabelle `reports/B4y-session-table.md` (`tools/family_table.py`).
 
 **Ergebnis** (Datei-dBFS, Mittel über 4 Kanäle; Δ gegen das Mittel der vier 3d-Läufe):
 
@@ -1458,14 +1569,14 @@ Datei-dBFS, Mittel über 4 Kanäle und beide Läufe:
 
 **Ergebnis:**
 - `phase_slips.py`: 0 Ereignisse auf allen Kanälen, MAD 0,00–0,01 mrad, Spanne 0,00 dB.
-- `stale_samples.py`: 0 falsche Samples in 2 s und in 30 s (1,44 Mio. je Kanal). Kanal 4 bei −6,06 dBFS wie 3d. JSON in `out/B4z/`.
+- `stale_samples.py`: 0 falsche Samples in 2 s und in 30 s (1,44 Mio. je Kanal). Kanal 4 bei −6,06 dBFS wie 3d. JSON in `reports/B4z/`.
 - Meldung `fb 48.0003 46.5156` (verworfene Feedback-Messung wie bei noD in D42), **kein `fb clamp`**. CPU mit Stream 7 %.
 
 **Deutung:** [gemessen] Patch 12b behebt den veralteten Eingangs-Sample (D40) ohne Abfrage-Schleife. Das USB-Playback bleibt mit dem um ≈ 1 Wort späteren Blockstart stabil. Funktional ist fx3k in Ordnung.
 
 ### D44 – Build-4z-Sitzung: Rauschen 3d → fx3k → 3d, offene Eingänge (2026-11-16, spätabends)
 
-**Setup:** wie D42 (acdc1, Alltags-Kette, Eingänge offen, Gain 12 Uhr, je 2 × 60 s `acdc_rec.py --reps 2 --owl-read --analyze`). Reihenfolge: `B4z-3d` (19:03) → Flash fx3k → Loop (D43) → `B4z-fx3k` (19:13) → Flash 3d (`firmware/flashlog/20261116_build3d-fx2-zurueck-4z/`, Readback bytegleich mit `d212cf8d…`, A1: `v22.4.r-fx2d`, `48000 8 4`, Slots unverändert) → `B4z-3d-end` (19:17). fx3kp wurde nicht gemessen: Abbruchkriterium Kamm, siehe unten. fx2e (3d + 12b) wurde gebaut, aber nicht gemessen (Nutzer: nur, falls fx3k bei fs/8 auffällt). Tabelle `out/B4z-session-table.md`.
+**Setup:** wie D42 (acdc1, Alltags-Kette, Eingänge offen, Gain 12 Uhr, je 2 × 60 s `acdc_rec.py --reps 2 --owl-read --analyze`). Reihenfolge: `B4z-3d` (19:03) → Flash fx3k → Loop (D43) → `B4z-fx3k` (19:13) → Flash 3d (`firmware/flashlog/20261116_build3d-fx2-zurueck-4z/`, Readback bytegleich mit `d212cf8d…`, A1: `v22.4.r-fx2d`, `48000 8 4`, Slots unverändert) → `B4z-3d-end` (19:17). fx3kp wurde nicht gemessen: Abbruchkriterium Kamm, siehe unten. fx2e (3d + 12b) wurde gebaut, aber nicht gemessen (Nutzer: nur, falls fx3k bei fs/8 auffällt). Tabelle `reports/B4z-session-table.md`.
 
 **Ergebnis** (Datei-dBFS, Mittel über 4 Kanäle; Δ gegen das Mittel der vier 3d-Läufe):
 
@@ -1531,14 +1642,14 @@ Datei-dBFS, Mittel über 4 Kanäle und beide Läufe:
 
 **Ergebnis:**
 - 0 Slips, MAD ≤ 0,02 mrad, Spanne 0,00 dB.
-- 0 veraltete Samples in 30 s, Kanal 4 −6,06 dBFS (`out/B5/`).
+- 0 veraltete Samples in 30 s, Kanal 4 −6,06 dBFS (`reports/B5/`).
 - Meldung `tx ovf 1.0000 1.0000 32` (Stream-Start), **kein `fb clamp`**, CPU mit Stream 8 %.
 
 **Deutung:** [gemessen] Mit Patch 14 läuft der USB-Code im ITCM fehlerfrei, der Fehler aus D38/D39 ist behoben.
 
 ### D48 – Build-5-Sitzung: Rauschen fx3l, fx3lp, 3d-Endkontrolle, offene Eingänge (2026-11-16, nachts)
 
-**Setup:** wie D44. Reihenfolge: (Diagnose D45/D46) → fx3l Loop (D47) → `B5c-fx3l` → Flash fx3lp (`…_build5cp-fx3lp/`, bytegleich, A1) → `B5c-fx3lp` → Flash 3d (`…_build3d-fx2-zurueck-5/`, Readback bytegleich mit `d212cf8d…`, A1 bestanden) → `B5-3d-end`. In dieser Sitzung gab es keine 3d-Startkontrolle. Als Referenz dienen die 3d-Endkontrollen von B4z (≈ 2,5 h vorher) und B5. Die beiden stimmen auf ≤ 0,1 dB überein (fs/8 −78,30/−78,29, Kamm −74,95/−74,88). Tabelle `out/B5-session-table.md`.
+**Setup:** wie D44. Reihenfolge: (Diagnose D45/D46) → fx3l Loop (D47) → `B5c-fx3l` → Flash fx3lp (`…_build5cp-fx3lp/`, bytegleich, A1) → `B5c-fx3lp` → Flash 3d (`…_build3d-fx2-zurueck-5/`, Readback bytegleich mit `d212cf8d…`, A1 bestanden) → `B5-3d-end`. In dieser Sitzung gab es keine 3d-Startkontrolle. Als Referenz dienen die 3d-Endkontrollen von B4z (≈ 2,5 h vorher) und B5. Die beiden stimmen auf ≤ 0,1 dB überein (fs/8 −78,30/−78,29, Kamm −74,95/−74,88). Tabelle `reports/B5-session-table.md`.
 
 **Ergebnis** (Datei-dBFS; Δ gegen das Mittel von B4z-3d-end und B5-3d-end, je r1/r2):
 
@@ -1596,7 +1707,7 @@ Datei-dBFS, Mittel über 4 Kanäle und beide Läufe:
 - Nicht gebaut: `TapeDelay.dsp` und `FaustTapeDelay.dsp`. Dafür fehlt der FAUST-Compiler.
 - Gehört wurde noch keiner der Patches.
 
-**Gerät:** Sicherung vorher `backup/acdc1/20261117/owl/` (nur Slot 1 belegt, Storage 10 240 B). Danach Slots 1–5 belegt, Storage 105 984 / 8 388 608 B, per Program Change zurück auf Slot 1 („ACDC“ läuft). Logs: `out/owl_write/acdc1/20261117/`.
+**Gerät:** Sicherung vorher `backup/acdc1/20261117/owl/` (nur Slot 1 belegt, Storage 10 240 B). Danach Slots 1–5 belegt, Storage 105 984 / 8 388 608 B, per Program Change zurück auf Slot 1 („ACDC“ läuft). Logs: `reports/owl_write/acdc1/20261117/`.
 
 **Nebenbefund:** Nach jedem Store bzw. Patch-Wechsel steht als letzte Meldung `fb 0.0859 48.0156` bzw. `fb 0.0625 48.0078` (verworfene Feedback-Messung, vgl. D18). [Hypothese] Der Flash-Schreibvorgang und der Patch-Start halten die SOF-Auswertung kurz auf. Kein `fb clamp`.
 
@@ -1681,7 +1792,7 @@ Das Gerät antwortete danach weiter. Der Fehler tritt also auch mit einem alten,
 
 **Folge für die Werkzeuge:** `owl_write.py` nimmt mit `--backup-file` eine lokale Kopie als Sicherung, wenn Größe und CRC zum Slot passen, und lädt nach dem Store nur noch auf Wunsch zurück (`--download-check`). `owl_read.py --dump` kann bei laufendem Patch beschädigte Dateien liefern, das Feld `ok` im Report beachten.
 
-**Store [gemessen]:** Sicherung je Slot aus `owl-patches/builds-owl2/` (Größe und CRC wie auf dem Gerät), danach Name, Größe und CRC vom Gerät zurückgelesen. Kein Download. Logs `out/owl_write/acdc1/20261117/`, Sicherungen `backup/acdc1/20261117/owl_write_2238*/` und `…_223904/`.
+**Store [gemessen]:** Sicherung je Slot aus `owl-patches/builds-owl2/` (Größe und CRC wie auf dem Gerät), danach Name, Größe und CRC vom Gerät zurückgelesen. Kein Download. Logs `reports/owl_write/acdc1/20261117/`, Sicherungen `backup/acdc1/20261117/owl_write_2238*/` und `…_223904/`.
 
 | Slot | Patch | Größe B | CRC32 | CPU neu | CPU alt (D53) |
 |---|---|---|---|---|---|
@@ -1752,7 +1863,7 @@ Das Gerät antwortete danach weiter. Der Fehler tritt also auch mit einem alten,
 
 **Setup:** acdc1, Alltags-Kette, Loop-Kabel entfernt (Nutzer), Eingänge offen, `tools/acdc_rec.py` duplex mit Nullen am Ausgang, je 2 × 60 s. In allen Läufen lief Slot 1 „ACDC“ (bei fx4b per Program Change, weil dort der gemerkte Slot 5 startet). Regler unverändert 2 / 127 / 2 / 2 (nicht 12 Uhr, wirken mit `TX_PRE_FX` nicht auf die Aufnahme), Dateiname deshalb mit `gvar`. Rack und Verkabelung während der Sitzung nicht verändert (Nutzer gebeten).
 
-**Reihenfolge:** `B6b-fx4b-r1/r2` (23:07) → Flash fx3l (`firmware/flashlog/20261117_build5c-fx3l-kontrolle/`, Readback bytegleich, A1: `v22.4.r-fx3l`, `SR/BS/CH 48000 8 4`, Slots 1–5) → `B6b-fx3l-r1/r2` (23:12) → Flash fx4b (`…_build6b-fx4b-zurueck/`, Readback bytegleich, A1: `v22.4.r-fx4b`) → `B6b-fx4b-end-r1/r2` (23:16). Die Kontrolle liegt also in der Mitte, der Prüfling am Anfang und am Ende. Tabelle `out/B6b-session-table.md`.
+**Reihenfolge:** `B6b-fx4b-r1/r2` (23:07) → Flash fx3l (`firmware/flashlog/20261117_build5c-fx3l-kontrolle/`, Readback bytegleich, A1: `v22.4.r-fx3l`, `SR/BS/CH 48000 8 4`, Slots 1–5) → `B6b-fx3l-r1/r2` (23:12) → Flash fx4b (`…_build6b-fx4b-zurueck/`, Readback bytegleich, A1: `v22.4.r-fx4b`) → `B6b-fx4b-end-r1/r2` (23:16). Die Kontrolle liegt also in der Mitte, der Prüfling am Anfang und am Ende. Tabelle `reports/B6b-session-table.md`.
 
 **Ergebnis** (Datei-dBFS, Mittel über 4 Kanäle; Δ gegen das Mittel der fx3l-Kontrolle):
 
@@ -1825,7 +1936,7 @@ Das Gerät antwortete danach weiter. Der Fehler tritt also auch mit einem alten,
 
 ### D60 – Reglerserie K1: Welche Regler und welcher Anschlag heben die Linien bei 2200,95 Hz? (2026-11-18, 13:27–13:42)
 
-**Setup:** acdc1, fx4b, Alltags-Kette, Eingänge offen, Slot 1 „ACDC“ (per Program Change, vorher lief Tanh3). Geführte Serie mit `tools/knob_series.py --series K1`: Das Werkzeug liest die Regler als CC 20–23, wartet auf die Stellung und nimmt dann mit `tools/acdc_rec.py` 30 s auf (duplex, Nullen am Ausgang, `--owl-read`). Zehn Aufnahmen `K1-01-MMMM` … `K1-10-MMMM`: alle auf 12 Uhr, dann jeder Regler einzeln am Links- und am Rechtsanschlag (die anderen auf 12 Uhr), am Ende wieder alle auf 12 Uhr. Gelesene Werte: Anschläge 2 und 127, „12 Uhr“ 54…73. Zwischen `K1-02` und `K1-03` lagen etwa 6 min Pause. Tabelle mit allen Kanälen: `out/K1-session-table.md`, Werte: `out/K1-lines.json`, Geräte-Reports: `out/owl_read/K1-*`.
+**Setup:** acdc1, fx4b, Alltags-Kette, Eingänge offen, Slot 1 „ACDC“ (per Program Change, vorher lief Tanh3). Geführte Serie mit `tools/knob_series.py --series K1`: Das Werkzeug liest die Regler als CC 20–23, wartet auf die Stellung und nimmt dann mit `tools/acdc_rec.py` 30 s auf (duplex, Nullen am Ausgang, `--owl-read`). Zehn Aufnahmen `K1-01-MMMM` … `K1-10-MMMM`: alle auf 12 Uhr, dann jeder Regler einzeln am Links- und am Rechtsanschlag (die anderen auf 12 Uhr), am Ende wieder alle auf 12 Uhr. Gelesene Werte: Anschläge 2 und 127, „12 Uhr“ 54…73. Zwischen `K1-02` und `K1-03` lagen etwa 6 min Pause. Tabelle mit allen Kanälen: `reports/K1-session-table.md`, Werte: `reports/K1-lines.json`, Geräte-Reports: `reports/owl_read/K1-*`.
 
 **Auswertung:** `tools/line_levels.py` (neu): Pegel direkt bei der Linienfrequenz, Hann über die ganze Aufnahme, Datei-dBFS. Es trifft die Handwerte aus D58 auf 0,1 dB. Der Abstand zum Grundrauschen ist dieselbe Messung an 42 Stellen neben der Linie (Median), Rauschen allein ergibt ≈ 0 dB.
 
@@ -1874,7 +1985,7 @@ Das Gerät antwortete danach weiter. Der Fehler tritt also auch mit einem alten,
 
 ### D61 – Reglerserie K2: Nicht der Anschlag zählt, sondern der Unterschied zwischen den Reglern (2026-11-18, 13:52–14:02)
 
-**Setup:** wie D60, gleiche Sitzung, Rack unverändert. `tools/knob_series.py --series K2 --steps MMMM LLLL RRRR LRLR LLRR 8,M,M,M 24,M,M,M 44,M,M,M MMMM`, neun Aufnahmen von 30 s. Buchstaben und Zahlen stehen für Regler 1–4 in dieser Reihenfolge (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr, Zahl = CC-Wert). Gelesene Werte und alle Kanäle: `out/K2-session-table.md`, `out/K2-lines.json`.
+**Setup:** wie D60, gleiche Sitzung, Rack unverändert. `tools/knob_series.py --series K2 --steps MMMM LLLL RRRR LRLR LLRR 8,M,M,M 24,M,M,M 44,M,M,M MMMM`, neun Aufnahmen von 30 s. Buchstaben und Zahlen stehen für Regler 1–4 in dieser Reihenfolge (L = Linksanschlag, R = Rechtsanschlag, M = 12 Uhr, Zahl = CC-Wert). Gelesene Werte und alle Kanäle: `reports/K2-session-table.md`, `reports/K2-lines.json`.
 
 **Ergebnis** (Leistungsmittel über 4 Kanäle, Datei-dBFS, `tools/line_levels.py`):
 
@@ -1912,7 +2023,7 @@ Das Gerät antwortete danach weiter. Der Fehler tritt also auch mit einem alten,
 
 **Anlass:** D53/D54. Ziel war ein Test, der den Fehler verlässlich auslöst, und ein Fix.
 
-**Werkzeug:** `tools/dump_stress.py` lädt bei laufendem Patch alle belegten Slots in Runden herunter und prüft jeden Download gegen Größe und CRC aus der Slot-Liste. Es schreibt `out/<name>-session-table.md` und `out/dump_stress/<name>.json`. Nur lesend, bis auf einen Program Change (RAM). Antwortet das Gerät nach einem beschädigten Download nicht mehr, bricht es ab.
+**Werkzeug:** `tools/dump_stress.py` lädt bei laufendem Patch alle belegten Slots in Runden herunter und prüft jeden Download gegen Größe und CRC aus der Slot-Liste. Es schreibt `reports/<name>-session-table.md` und `reports/dump_stress/<name>.json`. Nur lesend, bis auf einen Program Change (RAM). Antwortet das Gerät nach einem beschädigten Download nicht mehr, bricht es ab.
 
 **Basislinie fx4b [gemessen]:** `D62-fx4b-slot2`, 15:42, Slot 2 TapeDelay läuft (32 % CPU), Alltags-Kette.
 
@@ -1983,7 +2094,7 @@ Das Gerät antwortete danach weiter. Der Fehler tritt also auch mit einem alten,
 
 **Setup:** acdc1, Alltags-Kette, Eingänge offen, Slot 1, Regler 60 / 62…63 / 63 / 62…63, `acdc_rec.py`, je Block 2 × 60 s. Reihenfolge fx4b → fx5a → fx4b → fx5a, dazwischen je ein Flash mit Neustart (`firmware/flashlog/20261118_build7-fx5a/`, `…_build6b-fx4b-zurueck/`, `…_build7-fx5a-2/`, alle Readbacks bytegleich, A1 je bestanden). Zwischen dem ersten fx5a-Block und der zweiten Kontrolle lagen die Loop-Tests (D63), vor dem zweiten fx5a-Block etwa 14 min Pause.
 
-Familienpegel, Mittel je Block, Δ gegen das Mittel der vier fx4b-Aufnahmen, Datei-dBFS (`out/B7-session-table.md`):
+Familienpegel, Mittel je Block, Δ gegen das Mittel der vier fx4b-Aufnahmen, Datei-dBFS (`reports/B7-session-table.md`):
 
 | Block | Start | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. | Kamm-f0 Hz |
 |---|---|---|---|---|---|---|---|
@@ -2049,13 +2160,13 @@ Gewählt ist das Zustandsvariablenfilter (trapezförmige Integration, Allpass = 
 **Build:** `SRC=owl tools/build_owl_patch.sh Schliere SchlierePatch SchlierePatch.hpp`, OWL3, patchram. `owl-patches/builds/Schliere/`: 17 196 B, CRC `0x99171e91`, `patch.bin` `bf9c0c5d…`, Quelle `e1407810…`.
 
 **Am Gerät (acdc1, fx5a) [gemessen]:**
-1. Vorher (`out/owl_read/acdc1/20261118_173350/`): Slot 1 „ACDC“ läuft, CPU 5 %, Slots 1–5 belegt, Storage 108 032 B.
+1. Vorher (`reports/owl_read/acdc1/20261118_173350/`): Slot 1 „ACDC“ läuft, CPU 5 %, Slots 1–5 belegt, Storage 108 032 B.
 2. `owl_write.py Schliere.syx --run` (17:34): 84 Pakete in 1,4 s, läuft aus dem RAM.
 3. **CPU 28 %**, drei Lesungen, Regler 61–63 von 127 (alle um 12 Uhr), Speicher 1040 B.
 4. Das Gerät war danach kurz nicht am USB. Ein erster Store-Versuch brach deshalb ab, bevor etwas gesendet wurde („MIDI port not found“).
 5. Wieder am USB (17:39): Schliere lief weiter aus dem RAM, CPU 28 %, Slot 6 frei.
-6. `owl_write.py Schliere.syx --store 6 --yes` (Freigabe des Nutzers): Slot 6 „Schliere“, 17 196 B, CRC `0x99171e91` zurückgelesen (`out/owl_write/acdc1/20261118/owl_write_173957.json`).
-7. `owl_read.py --slots 6` (`out/owl_read/acdc1/20261118_174016/`): Download `ok`, bytegleich mit `patch.bin`. Slots 1–5 unverändert, Storage 125 440 B, Programm 6 läuft, CPU 29 % bei Reglern 25 / 69 / 35 / 51.
+6. `owl_write.py Schliere.syx --store 6 --yes` (Freigabe des Nutzers): Slot 6 „Schliere“, 17 196 B, CRC `0x99171e91` zurückgelesen (`reports/owl_write/acdc1/20261118/owl_write_173957.json`).
+7. `owl_read.py --slots 6` (`reports/owl_read/acdc1/20261118_174016/`): Download `ok`, bytegleich mit `patch.bin`. Slots 1–5 unverändert, Storage 125 440 B, Programm 6 läuft, CPU 29 % bei Reglern 25 / 69 / 35 / 51.
 
 **Fazit:** Schliere liegt auf Slot 6 von acdc1 und braucht 28–29 % CPU [gemessen]. Die Last hängt kaum von den Reglern ab [Code: die Kette rechnet immer alle 61 Stufen].
 
@@ -2075,11 +2186,11 @@ Gewählt ist das Zustandsvariablenfilter (trapezförmige Integration, Allpass = 
 - **Fassung 2 (`owl-patches/builds/Schliere/`, 17 268 B, CRC `0xcd590595`, `e2fb0332…`, Quelle `321e0cc5…`):** LEDs nur noch aus oder rot. Rot ist ein statischer Pin, Grün steht dabei auf Tastgrad 1023/1024 [Code], die Grundwelle der PWM ist damit rechnerisch 50 dB kleiner als bei 60 %. LED 4 zeigt nur noch die Begrenzung. Host-Test 26 Fälle bestanden. Fassung 1 liegt in `owl-patches/builds/Schliere-v1/` (`bf9c0c5d…`) und auf Slot 6.
 - **Probe ohne neuen Build:** Tap zwischen zwei Rastpunkte und Feedback auf null stellen, dann sind in Fassung 1 alle vier LEDs aus. Verschwindet das Fiepsen, ist es die LED-PWM. Das wäre zugleich der fehlende Beweis für H3.
 - **Nicht ausgeschlossen:** höhere Blockraten-Linie (6 kHz) durch die Rechenlast (D42), der Kamm am Ausgang bei gestecktem USB (D20).
-- **Fassung 2 im RAM [gemessen], 17:49:** `owl_write.py Schliere.syx --run`, 85 Pakete in 1,4 s. Danach läuft Programm 0 „Schliere“ mit 17 268 B, CPU 28 %, Regler 42 / 83 / 115 / 68. Slots 1–6 unverändert, auf Slot 6 liegt weiter Fassung 1 (`out/owl_read/acdc1/20261118_174928/`). Das Hörurteil des Nutzers zum Vergleich steht aus.
+- **Fassung 2 im RAM [gemessen], 17:49:** `owl_write.py Schliere.syx --run`, 85 Pakete in 1,4 s. Danach läuft Programm 0 „Schliere“ mit 17 268 B, CPU 28 %, Regler 42 / 83 / 115 / 68. Slots 1–6 unverändert, auf Slot 6 liegt weiter Fassung 1 (`reports/owl_read/acdc1/20261118_174928/`). Das Hörurteil des Nutzers zum Vergleich steht aus.
 - **Hörurteil zu Fassung 2 (Nutzer, ≈ 17:55):** Das Fiepsen ist unverändert da. Die gedimmten LEDs sind damit nicht die Ursache, jedenfalls nicht allein. H3 bleibt ohne Beweis.
 - **Neuer Umstand (Nutzer):** acdc1 ist heute zum ersten Mal ins Case geschraubt. Bei allen bisherigen Messungen und beim Hören lag das Modul neben dem Case. Der Nutzer vermutet Einstreuungen aus dem Case und will Schritt für Schritt selbst eingrenzen [Hypothese, ungeprüft]. Ob das Fiepsen an Schliere hängt oder mit jedem Patch auftritt, ist damit offen.
 - **Zurückschalten:** Der Programmwechsel auf Slot 6 scheiterte, weil acdc1 nicht am USB war („MIDI port not found“). Gesendet wurde nichts. Fassung 2 läuft bis zum nächsten Neustart aus dem RAM, danach startet der gemerkte Slot. Auf Slot 6 liegt Fassung 1, die Quelle `owl/schliere/SchlierePatch.hpp` und der Build in `owl-patches/builds/Schliere/` sind Fassung 2.
-- **Zurückgeschaltet [gemessen], 18:07:** `owl_read.py --program 6` (Auftrag des Nutzers). Es läuft wieder Fassung 1 aus Slot 6 (17 196 B), CPU 28 %, Slots 1–6 unverändert (`out/owl_read/acdc1/20261118_180730/`). Der Programmwechsel wird nicht gemerkt.
+- **Zurückgeschaltet [gemessen], 18:07:** `owl_read.py --program 6` (Auftrag des Nutzers). Es läuft wieder Fassung 1 aus Slot 6 (17 196 B), CPU 28 %, Slots 1–6 unverändert (`reports/owl_read/acdc1/20261118_180730/`). Der Programmwechsel wird nicht gemerkt.
 
 ### D67 – Das Fiepsen in Schliere ist die LED-PWM: Out 1 über das zweite Interface aufgenommen (2026-11-18, 18:16)
 
@@ -2087,7 +2198,7 @@ Gewählt ist das Zustandsvariablenfilter (trapezförmige Integration, Allpass = 
 
 **Setup:** acdc1 fx5a, ins Case geschraubt, USB gesteckt, kein Stream am AC/DC. Slot 6 „Schliere“ Fassung 1 nach einem Neustart. Kein Eingang gepatcht, alle Regler auf 12 Uhr. acdc1 Out 1 → UMC202HD In 1 (Kette des Nutzers, Pegel nicht kalibriert). Der Nutzer dreht Regler 3 (Tap) langsam zum Rechtsanschlag, zurück zum Linksanschlag und wieder auf 12 Uhr.
 
-**Aufnahme:** `D67-schliere-out1-umc`, `20261118_acdc1_schliere-out1-via-umc-tap_g12_usb-plugged.wav`, 30 s, 48 kHz, 24 Bit, `acdc_rec.py --device UMC202HD --input-only --channels 2 --progress 1 --prompt` im Terminal des Nutzers (Zeitanzeige im Sekundentakt). Plot `out/D67-schliere-out1-umc/spectrogram.png`. Alle Pegel in dBFS des UMC.
+**Aufnahme:** `D67-schliere-out1-umc`, `20261118_acdc1_schliere-out1-via-umc-tap_g12_usb-plugged.wav`, 30 s, 48 kHz, 24 Bit, `acdc_rec.py --device UMC202HD --input-only --channels 2 --progress 1 --prompt` im Terminal des Nutzers (Zeitanzeige im Sekundentakt). Plot `reports/D67-schliere-out1-umc/spectrogram.png`. Alle Pegel in dBFS des UMC.
 
 **Ergebnis [gemessen]:**
 
@@ -2116,7 +2227,7 @@ Gewählt ist das Zustandsvariablenfilter (trapezförmige Integration, Allpass = 
 
 **Frage:** Beseitigt Fassung 2 (LEDs nur aus oder rot) die LED-PWM-Linie aus D67, und was fiept dann noch?
 
-**Setup:** wie D67, dieselbe Kette und dieselbe Reglerbewegung (alle Regler 12 Uhr, Regler 3 rechts, links, 12 Uhr). Fassung 2 per `owl_write.py --run` im RAM (17 268 B, `e2fb0332…`, CPU 28 %, `out/owl_write/acdc1/20261118/owl_write_182100.json`). Aufnahme `D68-schliere-v2-out1-umc`, `20261118_acdc1_schliere-v2-out1-via-umc-tap_g12_usb-plugged.wav`, 30 s. Plot beider Fassungen: `out/D68-schliere-v2-out1-umc/spectrogram_f1_f2.png`. Pegel in dBFS des UMC, je Linie aus Sekundenspektren (Band ±6 Hz).
+**Setup:** wie D67, dieselbe Kette und dieselbe Reglerbewegung (alle Regler 12 Uhr, Regler 3 rechts, links, 12 Uhr). Fassung 2 per `owl_write.py --run` im RAM (17 268 B, `e2fb0332…`, CPU 28 %, `reports/owl_write/acdc1/20261118/owl_write_182100.json`). Aufnahme `D68-schliere-v2-out1-umc`, `20261118_acdc1_schliere-v2-out1-via-umc-tap_g12_usb-plugged.wav`, 30 s. Plot beider Fassungen: `reports/D68-schliere-v2-out1-umc/spectrogram_f1_f2.png`. Pegel in dBFS des UMC, je Linie aus Sekundenspektren (Band ±6 Hz).
 
 **Ergebnis [gemessen]:** Mittel über 30 s, in Klammern Maximum und Minimum der Sekundenwerte.
 
@@ -2157,7 +2268,7 @@ Gewählt ist das Zustandsvariablenfilter (trapezförmige Integration, Allpass = 
 
 Vergleich mit den vier fx5a-Aufnahmen von heute Nachmittag neben dem Case (D64, Slot 1, Regler 60…63).
 
-**Familienpegel [gemessen]**, Mittel je Block, Datei-dBFS, Δ gegen `C1-acdc` (`out/C1-session-table.md`):
+**Familienpegel [gemessen]**, Mittel je Block, Datei-dBFS, Δ gegen `C1-acdc` (`reports/C1-session-table.md`):
 
 | Block | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
 |---|---|---|---|---|---|
@@ -2221,7 +2332,7 @@ Die beiden Wiederholungen je Block liegen bei RMS, Rest, Kamm und fs/8 höchsten
 
 **Setup:** acdc1 fx5a im Case, USB gesteckt, kein Stream, kein Eingang gepatcht. Out 1 → UMC202HD In 1, Kette und Pegel in der Sitzung unverändert. Regler fest auf 68 / 57…58 / 58 / 72 von 127 (vor jedem Block gelesen). Je 30 s, `acdc_rec.py --device UMC202HD --input-only`, 24 Bit. Reihenfolge mit `owl_write.py --run`: Fassung 2 (`D71-schliere-f2-a`) → Fassung 3 (`D71-schliere-f3-r1/-r2`) → Fassung 2 (`D71-schliere-f2-b`). Nach jedem Laden 6 s Wartezeit. CPU: Fassung 2 29…30 %, Fassung 3 30 %, Speicher 1040 und 1128 B.
 
-**Auswertung:** Linienpegel aus dem Spektrum über 30 s, Bänder ±0,25 Hz, Kanal 1, dBFS des UMC. Der Takt des UMC liegt 183 ppm über dem von acdc1 (6000 Hz erscheinen bei 6001,10 Hz), die Linien sind entsprechend umgerechnet. Plot `out/D71-schliere-f3-out1-umc/psd_f2_f3.png`.
+**Auswertung:** Linienpegel aus dem Spektrum über 30 s, Bänder ±0,25 Hz, Kanal 1, dBFS des UMC. Der Takt des UMC liegt 183 ppm über dem von acdc1 (6000 Hz erscheinen bei 6001,10 Hz), die Linien sind entsprechend umgerechnet. Plot `reports/D71-schliere-f3-out1-umc/psd_f2_f3.png`.
 
 | Linie (im Takt von acdc1) | F2 a | F3 r1 | F3 r2 | F2 b | F3 − F2 |
 |---|---|---|---|---|---|
@@ -2249,11 +2360,11 @@ Die beiden Wiederholungen je Block liegen bei RMS, Rest, Kamm und fs/8 höchsten
 - Nur Out 1. Der Pegel am UMC war ein anderer als in D67/D68, die Zahlen sind nur innerhalb dieser Sitzung vergleichbar.
 - Am Ende läuft Fassung 3 aus dem RAM (`owl_write_…`, 17 860 B). Auf Slot 6 liegt weiter Fassung 1.
 
-**Nachtrag D71 – Fassung 3 auf Slot 6 (19:17, Freigabe des Nutzers):** `owl_write.py Schliere.syx --store 6 --yes --backup-file owl-patches/builds/Schliere-v1/patch.bin`. Die Sicherung von Fassung 1 passte in Größe und CRC zum Slot (`backup/acdc1/20261118/owl_write_191742/`). Slot 6 danach „Schliere“, 17 860 B, CRC `0x936d0028`. `owl_read.py --slots 6`: Download `ok`, bytegleich mit dem Build von Fassung 3 (`db33b525…`). Slots 1–5 unverändert, Storage 125 952 B, Programm 6 läuft mit 30 % CPU (`out/owl_read/acdc1/20261118_191753/`).
+**Nachtrag D71 – Fassung 3 auf Slot 6 (19:17, Freigabe des Nutzers):** `owl_write.py Schliere.syx --store 6 --yes --backup-file owl-patches/builds/Schliere-v1/patch.bin`. Die Sicherung von Fassung 1 passte in Größe und CRC zum Slot (`backup/acdc1/20261118/owl_write_191742/`). Slot 6 danach „Schliere“, 17 860 B, CRC `0x936d0028`. `owl_read.py --slots 6`: Download `ok`, bytegleich mit dem Build von Fassung 3 (`db33b525…`). Slots 1–5 unverändert, Storage 125 952 B, Programm 6 läuft mit 30 % CPU (`reports/owl_read/acdc1/20261118_191753/`).
 
 ---
 
-## D72 – Schliere Fassung 3: Störgeräusch bei leuchtenden LEDs? (2026-11-18, 22:14)
+### D72 – Schliere Fassung 3: Störgeräusch bei leuchtenden LEDs? (2026-11-18, 22:14)
 
 **Anlass:** Hörurteil des Nutzers zu Fassung 3: viel besser. Sobald die LEDs aufleuchten, hört er aber wieder ein leises Störgeräusch, und bei „Rot“ leuchten Rot und Grün zusammen. Seine These: Die LEDs sind generell für die Störgeräusche verantwortlich, auch bei Aufnahmen.
 
@@ -2264,7 +2375,7 @@ Die beiden Wiederholungen je Block liegen bei RMS, Rest, Kamm und fs/8 höchsten
 
 **Setup:** acdc1 fx5a im Case, USB gesteckt, kein Stream, kein Eingang gepatcht, Slot 6 (Schliere Fassung 3). Out 1 → UMC202HD In 1, UMC-Gain vom Nutzer deutlich erhöht (nach den Kamm-Linien etwa +23 dB gegen D71). Regler 1, 2, 4 auf 12 Uhr. Regler 3 (Tap) erst am Linksanschlag, dann zum Rechtsanschlag, dort bis zum Ende. Nach dem Spektrogramm lief die Drehung etwa von 7,5 bis 22,5 s, schneller als geplant.
 
-**Aufnahme:** `D72-schliere-f3-tap-leds-umc`, `20261118_acdc1_schliere-f3-out1-via-umc-tap-sweep_g12_usb-plugged.wav`, 45 s, 48 kHz, 24 Bit, `acdc_rec.py --device UMC202HD --input-only --channels 2 --prompt --progress 1`. Plot `out/D72-schliere-f3-tap-leds-umc/spectrogram.png`. Alle Pegel in dBFS des UMC, Kanal 1. Takt des UMC 188 ppm über dem von acdc1, f0 des Kamms 999,868 Hz.
+**Aufnahme:** `D72-schliere-f3-tap-leds-umc`, `20261118_acdc1_schliere-f3-out1-via-umc-tap-sweep_g12_usb-plugged.wav`, 45 s, 48 kHz, 24 Bit, `acdc_rec.py --device UMC202HD --input-only --channels 2 --prompt --progress 1`. Plot `reports/D72-schliere-f3-tap-leds-umc/spectrogram.png`. Alle Pegel in dBFS des UMC, Kanal 1. Takt des UMC 188 ppm über dem von acdc1, f0 des Kamms 999,868 Hz.
 
 **Auswertung:** Zwei ruhende Abschnitte, in denen die LEDs dauerhaft leuchten: A = Linksanschlag (0,5–7 s, Rastpunkt 1, LED 1) und B = Rechtsanschlag (25–44,8 s, Rastpunkt 7, LED 1–3). Spektrum mit 0,37 Hz (A) und 0,18 Hz (B) Auflösung. „über Umgebung“ = stärkster Bin in ±0,4 Hz gegen den Median der Nachbarschaft, bei reinem Rauschen ergibt dieses Maß bis etwa +8 dB.
 
@@ -2295,15 +2406,15 @@ Verlauf der Regler-Linien in Fenstern von 1 s: am Linksanschlag 16–21 dB über
 
 ---
 
-## D73 – LED-Test-Patch: Stören die LEDs selbst? (2026-11-18, 22:29)
+### D73 – LED-Test-Patch: Stören die LEDs selbst? (2026-11-18, 22:29)
 
 **Frage (aus D72):** Trägt eine leuchtende LED etwas zum Ausgang bei, wenn sich sonst nichts ändert? D72 konnte „LED leuchtet“ nicht von „Abgriff steht auf einem Rastpunkt“ trennen.
 
-**Mess-Patch:** `owl/test/SchliereLedTestPatch.hpp`, eine von `SchlierePatch` abgeleitete Klasse. Der Klang ist unverändert (`SchlierePatch::processAudio()` läuft wie auf Slot 6, dieselbe Funktion mit 0xab0 Bytes im ELF), nur die vier LED-Werte werden danach überschrieben. Ablauf je 5 s, ab dem Laden, wiederholt: aus, LED 1 rot, LED 1–3 rot, LED 1–4 rot, aus, LED 1–3 blinken rot mit 40 Hz (12,5 ms an, 12,5 ms aus), aus, LED 1–3 grün mit 60 %. Host-Test `owl/test/ledtest_test.cpp` (10 Fälle, Zeitplan). Build `owl-patches/builds/SchliereLedTest/` (15 412 B, CRC `0x1ce0c9a6`, `fbfca250…`). Geladen mit `owl_write.py --run` um 22:26 (nur RAM, `out/owl_write/acdc1/20261118/owl_write_222628.json`), Stand davor `out/owl_read/acdc1/20261118_222618/`: Programm 6, Regler 62 / 51 / 58 / 58.
+**Mess-Patch:** `owl/test/SchliereLedTestPatch.hpp`, eine von `SchlierePatch` abgeleitete Klasse. Der Klang ist unverändert (`SchlierePatch::processAudio()` läuft wie auf Slot 6, dieselbe Funktion mit 0xab0 Bytes im ELF), nur die vier LED-Werte werden danach überschrieben. Ablauf je 5 s, ab dem Laden, wiederholt: aus, LED 1 rot, LED 1–3 rot, LED 1–4 rot, aus, LED 1–3 blinken rot mit 40 Hz (12,5 ms an, 12,5 ms aus), aus, LED 1–3 grün mit 60 %. Host-Test `owl/test/ledtest_test.cpp` (10 Fälle, Zeitplan). Build `owl-patches/builds/SchliereLedTest/` (15 412 B, CRC `0x1ce0c9a6`, `fbfca250…`). Geladen mit `owl_write.py --run` um 22:26 (nur RAM, `reports/owl_write/acdc1/20261118/owl_write_222628.json`), Stand davor `reports/owl_read/acdc1/20261118_222618/`: Programm 6, Regler 62 / 51 / 58 / 58.
 
-**Setup:** acdc1 fx5a im Case, USB gesteckt, kein Stream, kein Eingang gepatcht. Out 1 → UMC202HD In 1, UMC-Gain wie D72. Regler vom Nutzer vor der Aufnahme gestellt und dann nicht bewegt: 78 / 45 / 77 / 1 von 127 (nach der Aufnahme gelesen, `out/owl_read/acdc1/20261118_223105/`), Feedback also am Linksanschlag. CPU 29 %.
+**Setup:** acdc1 fx5a im Case, USB gesteckt, kein Stream, kein Eingang gepatcht. Out 1 → UMC202HD In 1, UMC-Gain wie D72. Regler vom Nutzer vor der Aufnahme gestellt und dann nicht bewegt: 78 / 45 / 77 / 1 von 127 (nach der Aufnahme gelesen, `reports/owl_read/acdc1/20261118_223105/`), Feedback also am Linksanschlag. CPU 29 %.
 
-**Aufnahme:** `D73-schliere-ledtest-umc`, `20261118_acdc1_schliere-ledtest-out1-via-umc_g12_usb-plugged.wav`, 90 s, 48 kHz, 24 Bit, `acdc_rec.py --device UMC202HD --input-only --channels 2 --prompt --progress 1`. Plot `out/D73-schliere-ledtest-umc/led_phases.png`. Alle Pegel in dBFS des UMC, Kanal 1.
+**Aufnahme:** `D73-schliere-ledtest-umc`, `20261118_acdc1_schliere-ledtest-out1-via-umc_g12_usb-plugged.wav`, 90 s, 48 kHz, 24 Bit, `acdc_rec.py --device UMC202HD --input-only --channels 2 --prompt --progress 1`. Plot `reports/D73-schliere-ledtest-umc/led_phases.png`. Alle Pegel in dBFS des UMC, Kanal 1.
 
 **Auswertung:** Die Lage der Phasen folgt aus der grünen Phase (2321-Hz-Linie an bei 29,813 und 69,806 s, aus bei 34,810 und 74,804 s). Je Zustand alle Phasen gemittelt, je 0,6 s nach und 0,4 s vor einem Wechsel ausgelassen. Linien: stärkster Bin in ±0,8 Hz, Raster 0,73 Hz.
 
@@ -2346,15 +2457,15 @@ Blinken mit 40 Hz: Grundton −28,3 dBFS, 120 Hz −40,1, 200 Hz −41,3, je 35�
 
 ---
 
-## D74 – LED-Strom: Eingang oder Ausgang? (2026-11-18, 22:39–22:47)
+### D74 – LED-Strom: Eingang oder Ausgang? (2026-11-18, 22:39–22:47)
 
 **Frage (aus D73):** Entsteht die Verschiebung durch den LED-Strom am Eingang (ADC), von wo der Patch sie durchreicht, oder am Ausgang? Nur im ersten Fall trifft sie auch die Aufnahmen.
 
-**Mess-Patch:** `owl/test/SchliereLedPathPatch.hpp`, von `SchlierePatch` abgeleitet. Zehn Phasen zu je 5 s, wiederholt: (0) Schliere, LEDs aus, (1) Schliere, LED 1–3 blinken mit 40 Hz, (2) Ausgänge digital null, aus, (3) null, blinken, (4) null, aus, (5) null, LED 1–4 rot, (6) null, aus, (7) null, Eichton 300 Hz mit Amplitude 0,001 an Out 1, (8) alle Ausgänge = 4 × In 1, aus, (9) 4 × In 1, blinken. Der Patch misst dazu selbst an den rohen Eingängen 1–3 und meldet per `debugMessage` in 1e-7 Vollausschlag: „LEDblink“ = Mittel bei LED an minus LED aus in Phase 3 (ohne die ersten 4 ms nach jedem Wechsel, über alle Durchläufe), „LEDstat“ = Mittel in Phase 5 minus Mittel der Phasen 4 und 6 (je ohne die erste Sekunde). In den Phasen 2–7 liegt am Ausgang kein Signal, das auf die Eingänge übersprechen könnte. Host-Test `owl/test/ledpath_test.cpp` (11 Fälle: Zeitplan, Ausgänge je Phase, die Messung findet eine eingebaute Verschiebung auf 0,1 % wieder). Build `owl-patches/builds/SchliereLedPath/` (20 108 B, CRC `0xb0fa2194`, `98fdd642…`), geladen mit `owl_write.py --run` um 22:39 (nur RAM, `out/owl_write/acdc1/20261118/owl_write_223933.json`).
+**Mess-Patch:** `owl/test/SchliereLedPathPatch.hpp`, von `SchlierePatch` abgeleitet. Zehn Phasen zu je 5 s, wiederholt: (0) Schliere, LEDs aus, (1) Schliere, LED 1–3 blinken mit 40 Hz, (2) Ausgänge digital null, aus, (3) null, blinken, (4) null, aus, (5) null, LED 1–4 rot, (6) null, aus, (7) null, Eichton 300 Hz mit Amplitude 0,001 an Out 1, (8) alle Ausgänge = 4 × In 1, aus, (9) 4 × In 1, blinken. Der Patch misst dazu selbst an den rohen Eingängen 1–3 und meldet per `debugMessage` in 1e-7 Vollausschlag: „LEDblink“ = Mittel bei LED an minus LED aus in Phase 3 (ohne die ersten 4 ms nach jedem Wechsel, über alle Durchläufe), „LEDstat“ = Mittel in Phase 5 minus Mittel der Phasen 4 und 6 (je ohne die erste Sekunde). In den Phasen 2–7 liegt am Ausgang kein Signal, das auf die Eingänge übersprechen könnte. Host-Test `owl/test/ledpath_test.cpp` (11 Fälle: Zeitplan, Ausgänge je Phase, die Messung findet eine eingebaute Verschiebung auf 0,1 % wieder). Build `owl-patches/builds/SchliereLedPath/` (20 108 B, CRC `0xb0fa2194`, `98fdd642…`), geladen mit `owl_write.py --run` um 22:39 (nur RAM, `reports/owl_write/acdc1/20261118/owl_write_223933.json`).
 
 **Setup:** acdc1 fx5a im Case, USB gesteckt, kein Stream, kein Eingang gepatcht, Regler 61 / 68 / 62 / 58 von 127, nicht bewegt. CPU 28–31 %.
 
-### Messung am Eingang (vom Patch selbst, über `owl_read.py`)
+#### Messung am Eingang (vom Patch selbst, über `owl_read.py`)
 
 | gelesen | Meldung | In 1 | In 2 | In 3 |
 |---|---|---|---|---|
@@ -2364,9 +2475,9 @@ Blinken mit 40 Hz: Grundton −28,3 dBFS, 120 Hz −40,1, 200 Hz −41,3, je 35�
 | 22:46:58 | LEDstat | −11796 | −11469 | −11656 |
 | 22:47:36 | LEDblink | −7973 | −7927 | −8309 |
 
-Einheit 1e-7 Vollausschlag, bei ±10 V also 1 ≙ 1 µV. Reports in `out/owl_read/acdc1/20261118_2240*/` und `…_2246*/`, `…_2247*/`.
+Einheit 1e-7 Vollausschlag, bei ±10 V also 1 ≙ 1 µV. Reports in `reports/owl_read/acdc1/20261118_2240*/` und `…_2246*/`, `…_2247*/`.
 
-### Aufnahme am Ausgang
+#### Aufnahme am Ausgang
 
 `D74-schliere-ledpath-umc`, `20261118_acdc1_schliere-ledpath-out1-via-umc_g12_usb-plugged.wav`, 110 s, 48 kHz, 24 Bit, Out 1 → UMC202HD In 1, UMC-Gain wie D72/D73, `acdc_rec.py --device UMC202HD --input-only --channels 2 --prompt --progress 1`. Lage der Phasen aus dem Eichton (an bei 27,234 und 77,224 s). Eichton: −22,14 dBFS am UMC für 0,001 Vollausschlag am Ausgang, also 1 Vollausschlag UMC ≙ 0,01279 Vollausschlag von acdc1 ≈ 128 mV (bei 10 V).
 
@@ -2400,7 +2511,7 @@ Schalten von vier LEDs bei stummem Ausgang (Tiefpass 300 Hz): +0,51 / +0,56 mV b
 
 ---
 
-## D75 – Build 8 `v22.4.r-fx6a` auf acdc1: Flash, LED-Modi am Gerät (2026-11-18, 23:10–23:45)
+### D75 – Build 8 `v22.4.r-fx6a` auf acdc1: Flash, LED-Modi am Gerät (2026-11-18, 23:10–23:45)
 
 **Anlass:** Abnahme von Build 8 (Patch 17, LED-Modus im Boot-Menü über Regler 2, `docs/05`, „Build 8“). Freigabe des Nutzers für den Flash.
 
@@ -2433,13 +2544,13 @@ Eine Messung um 23:24 zeigte noch die volle Verschiebung (−9329 / −7226 / �
 - Welcher Modus bei der Messung um 23:24 eingestellt war. Wäre es nur Clip gewesen, hätte der Modus ohne Stream einen Fehler.
 - Rausch-A/B gegen fx5a, Loop-Test, Download-Stresstest (`docs/05`, „Build 8“, Abnahme 5).
 
-### Nachtrag 2026-11-19, 10:10–10:14: Modus nur Clip ohne Stream, nach Aus und Ein
+#### Nachtrag 2026-11-19, 10:10–10:14: Modus nur Clip ohne Stream, nach Aus und Ein
 
 **Setup:** Der Nutzer hat das Kabel Out 2 → In 1 gezogen und das Case aus- und eingeschaltet, ohne das Menü zu öffnen. acdc1 im Case, alle Eingänge offen, kein Stream. Zuletzt gewählt war am Vorabend nur Clip.
 
-- **Zustand nach dem Neustart** (`out/owl_read/20261119_fx6a_after-restart/`): `v22.4.r-fx6a`, es läuft Slot 6 (Schliere, 29 % CPU), Storage 126 208 B, Regler 66 / 61 / 64 / 61.
+- **Zustand nach dem Neustart** (`reports/owl_read/20261119_fx6a_after-restart/`): `v22.4.r-fx6a`, es läuft Slot 6 (Schliere, 29 % CPU), Storage 126 208 B, Regler 66 / 61 / 64 / 61.
 - **Kabelprobe vor dem Mess-Patch:** Der Mess-Patch gibt in zwei Phasen 4 × In 1 auf alle Ausgänge, mit einem Kabel Out 2 → In 1 wäre das eine Schleife. Deshalb zuerst 3 s Sinus 220 Hz mit −40 dBFS an Out 2 bei offenem Stream (`acdc_rec.py --no-manifest`, Datei nur im Scratch-Ordner): an In 1–4 liegt 220 Hz bei −92…−99 dBFS (Datei), mit Kabel wären es etwa −34 dBFS. Kein Kabel.
-- **Mess-Patch** `SchliereLedPath` um 10:11:28 mit `owl_write.py --run` geladen (nur RAM, `out/owl_write/acdc1/20261119/owl_write_101128.json`), 14-mal ausgelesen (`out/owl_read/20261119_fx6a_clip-nostream/01…14`). Einheit 1e-7 Vollausschlag, In 1 / In 2 / In 3:
+- **Mess-Patch** `SchliereLedPath` um 10:11:28 mit `owl_write.py --run` geladen (nur RAM, `reports/owl_write/acdc1/20261119/owl_write_101128.json`), 14-mal ausgelesen (`reports/owl_read/20261119_fx6a_clip-nostream/01…14`). Einheit 1e-7 Vollausschlag, In 1 / In 2 / In 3:
 
 | gelesen | Meldung | Wert |
 |---|---|---|
@@ -2448,14 +2559,14 @@ Eine Messung um 23:24 zeigte noch die volle Verschiebung (−9329 / −7226 / �
 | 10:12:45 | LEDblink (laufendes Mittel über beide Durchläufe) | +26 / +27 / +33 |
 | 10:13:01 | LEDstat | +272 / +257 / +156 |
 
-- Danach per Program Change auf Slot 1 (`out/owl_read/20261119_fx6a_slot1/`: ACDC, 5 % CPU, `SR/BS/CH 48000 8 4`).
+- Danach per Program Change auf Slot 1 (`reports/owl_read/20261119_fx6a_slot1/`: ACDC, 5 % CPU, `SR/BS/CH 48000 8 4`).
 
 **Deutung:**
 - **[gemessen] Nach Aus und Ein ohne Menü ist ein dunkler Modus aktiv, die Eingänge bleiben ohne Stream ruhig:** beim Blinken 0,3 % der Verschiebung im Modus normal (etwa −50 dB), statisch 0,6–2,2 %. Im Modus normal stünden hier −8000 und −12000. Damit ist der Modus gemerkt und nur Clip ohne Stream stört nicht.
 - Ob nur Clip oder aus gemerkt ist, trennt diese Messung nicht: Ohne Stream tun beide Modi dasselbe [Code]. Die Ressourcen `ACDC.slot` und `ACDC.led` lassen sich mit `owl_read.py --slots 40…43` nicht lesen (keine Antwort). Den Unterschied zeigt erst die Clip-Probe mit Stream.
 - Der statische Rest streut von Durchlauf zu Durchlauf um den Faktor 2 bis 4 (+70…+272). [Hypothese] Das ist langsame Drift der offenen Eingänge im 5-s-Fenster und keine feste Wirkung der LED-Parameter. Der Blink-Wert ist gegen Drift unempfindlich und liegt heute bei +2e-6…+3e-6, am Vorabend im Modus aus bei +1e-5. Der „Rest von +2e-5“ aus der ersten Messung ist damit keine feste Größe.
 
-### Zweiter Nachtrag 2026-11-19, 10:21: Clip-Probe im gemerkten Modus
+#### Zweiter Nachtrag 2026-11-19, 10:21: Clip-Probe im gemerkten Modus
 
 **Setup:** Wie oben, dazu Kabel Out 2 → In 1 (vom Nutzer gesteckt, vorher Slot 1 geprüft: ACDC, 5 % CPU). In 2–4 offen, Regler 66 / 61 / 64 / 62. `acdc_rec.py --dc 0 -1 0 0 --dc-ramp 20 --duration 30 --owl-read`, Manifest `D75-fx6a-clip-ramp-neg-b`, 16 Bit (Datei = Gerätewerte). Zum Vergleich die Aufnahme vom Vorabend (`D75-fx6a-clip-ramp-neg`) mit derselben Auswertung.
 
@@ -2480,9 +2591,9 @@ Die Stufe bleibt bis zum Ende der Aufnahme stehen (heute −215…−258e-6 gege
 
 **Zur Messung um 23:24 (Nutzer, 2026-11-19):** Er meint, es sei nur Clip eingestellt gewesen, ist aber nicht sicher. Welche LED bei der Rampe am Vorabend leuchtete, weiß er nicht mehr. Heute ist nur Clip ohne Stream ruhig, allerdings aus der Ressource gelesen und nicht frisch im Menü gewählt. Im Code ist der Weg derselbe (`acdc_boot.led_mode`). Probe: nur Clip im Menü wählen und sofort ohne Stream messen.
 
-### Dritter Nachtrag 2026-11-19, 10:36–10:39: nur Clip frisch aus dem Menü, ohne Stream
+#### Dritter Nachtrag 2026-11-19, 10:36–10:39: nur Clip frisch aus dem Menü, ohne Stream
 
-**Setup:** Der Nutzer hat das Kabel gezogen, das Boot-Menü geöffnet, mit Regler 2 nur Clip gewählt und mit Regler 4 bestätigt, danach kein Aus und Ein. Zustand (`out/owl_read/20261119_fx6a_after-menu-clip/`): Slot 6 (Schliere, 30 % CPU), Storage 126 208 B, Regler 68 / 59 / 63 / 61. Kabelprobe wie im ersten Nachtrag (220 Hz, −40 dBFS an Out 2, 4 s Stream): In 1–4 bei −93…−100 dBFS, kein Kabel. Mess-Patch um 10:36:18 geladen (`out/owl_write/acdc1/20261119/owl_write_103618.json`), 20-mal ausgelesen (`out/owl_read/20261119_fx6a_clip-menu-nostream/01…20`), danach Program Change auf Slot 1.
+**Setup:** Der Nutzer hat das Kabel gezogen, das Boot-Menü geöffnet, mit Regler 2 nur Clip gewählt und mit Regler 4 bestätigt, danach kein Aus und Ein. Zustand (`reports/owl_read/20261119_fx6a_after-menu-clip/`): Slot 6 (Schliere, 30 % CPU), Storage 126 208 B, Regler 68 / 59 / 63 / 61. Kabelprobe wie im ersten Nachtrag (220 Hz, −40 dBFS an Out 2, 4 s Stream): In 1–4 bei −93…−100 dBFS, kein Kabel. Mess-Patch um 10:36:18 geladen (`reports/owl_write/acdc1/20261119/owl_write_103618.json`), 20-mal ausgelesen (`reports/owl_read/20261119_fx6a_clip-menu-nostream/01…20`), danach Program Change auf Slot 1.
 
 | gelesen | Meldung | Wert (1e-7 Vollausschlag, In 1 / In 2 / In 3) |
 |---|---|---|
@@ -2498,7 +2609,7 @@ Die Stufe bleibt bis zum Ende der Aufnahme stehen (heute −215…−258e-6 gege
 - Einschränkung: Zwischen Menü und Messung lief für die Kabelprobe 4 s lang ein Stream. Ein Fehler, der nur ohne jeden Stream seit dem Einschalten auftritt, wäre damit nicht ausgeschlossen. Im Code gibt es dafür keinen Anhalt [Code].
 - Der statische Wert streut wieder (+5…+84), der Blink-Wert liegt stabil bei +3e-6…+5e-6.
 
-### Vierter Nachtrag 2026-11-19, 10:39–10:43: Download-Stresstest
+#### Vierter Nachtrag 2026-11-19, 10:39–10:43: Download-Stresstest
 
 `tools/dump_stress.py`, LED-Modus nur Clip, kein Kabel, kein Stream, je 20 Runden über alle sechs Slots.
 
@@ -2507,19 +2618,19 @@ Die Stufe bleibt bis zum Ende der Aufnahme stehen (heute −215…−258e-6 gege
 | `D75-fx6a-slot2` | TapeDelay | 31–32 % | 120 | 0 | nein |
 | `D75-fx6a-slot5` | Tanh3 | 50–51 % | 120 | 0 | nein |
 
-Tabellen in `out/D75-fx6a-slot2-session-table.md` und `out/D75-fx6a-slot5-session-table.md`, danach Program Change auf Slot 1. **[gemessen] 240 von 240 Downloads in Ordnung, wie fx5a (D63).** Der Lauf mit Audio-Stream fehlt noch, er gehört zum Loop-Test.
+Tabellen in `reports/D75-fx6a-slot2-session-table.md` und `reports/D75-fx6a-slot5-session-table.md`, danach Program Change auf Slot 1. **[gemessen] 240 von 240 Downloads in Ordnung, wie fx5a (D63).** Der Lauf mit Audio-Stream fehlt noch, er gehört zum Loop-Test.
 
 **Offen (ersetzt die Liste oben):**
 - Warum die Stufe einer roten LED heute doppelt so groß ist wie am Vorabend.
 - Rausch-A/B gegen fx5a (weitere Flashes). Loop-Test und Stresstest mit Stream: D76.
 
-## D76 – fx6a: Loop-Test bestanden, Program Change bei offenem Stream bricht die Wiedergabe (2026-11-19, 10:44–10:55)
+### D76 – fx6a: Loop-Test bestanden, Program Change bei offenem Stream bricht die Wiedergabe (2026-11-19, 10:44–10:55)
 
 **Anlass:** Abnahme Build 8, Punkt 5 (Loop-Test wie D57/D63). Dabei ein neuer Fehler, der mit Build 8 vermutlich nichts zu tun hat.
 
-**Setup:** acdc1 im Case, fx6a, LED-Modus nur Clip, Alltags-Kette, vier Patchkabel Out n → In n (Nutzer), Regler 68 / 60 / 63 / 60. `acdc_rec.py --sine 440 530 670 790` (−6 dBFS, 1 s Einblenden), danach `phase_slips.py` und `stale_samples.py` (JSON in `out/B8/`).
+**Setup:** acdc1 im Case, fx6a, LED-Modus nur Clip, Alltags-Kette, vier Patchkabel Out n → In n (Nutzer), Regler 68 / 60 / 63 / 60. `acdc_rec.py --sine 440 530 670 790` (−6 dBFS, 1 s Einblenden), danach `phase_slips.py` und `stale_samples.py` (JSON in `reports/B8/`).
 
-### Loop-Test
+#### Loop-Test
 
 | ID | laufender Patch | Slips | veraltete Samples | Geräte-Meldung | CPU |
 |---|---|---|---|---|---|
@@ -2532,7 +2643,7 @@ Tabellen in `out/D75-fx6a-slot2-session-table.md` und `out/D75-fx6a-slot5-sessio
 - Die Meldung `tx ovf 0.3819 0.9513 4` im ersten Lauf ist neu: Der Sendepuffer war zu 95 % voll, vier Samples (ein Frame) wurden verworfen [Code: `usbd_tx_convert`]. In den 60 s der Aufnahme gibt es keinen Slip, das Ereignis lag also in den 3 s davor (Stream-Start). Sonst steht dort `… 1.0000 32`.
 - **[gemessen] Loop-Test bestanden**, auch unter 52 % Patch-Last und während der Downloads. Damit zusammen mit D75: 288 von 288 Downloads in Ordnung.
 
-### Program Change bei offenem Stream
+#### Program Change bei offenem Stream
 
 Im ersten Tanh3-Lauf (`B8-fx6a-loop-tanh3`) hatte ich die Reihenfolge geändert: erst den Stream geöffnet, dann per Program Change auf Slot 5 geschaltet (damit Tanh3 mit den Kabeln nie ohne Stream läuft). Ergebnis: Die Wiedergabe setzt periodisch aus. Zwei kurze Läufe (25 s, Program Change etwa 5 s nach dem Start) grenzen das ein:
 
@@ -2558,7 +2669,7 @@ Im ersten Tanh3-Lauf (`B8-fx6a-loop-tanh3`) hatte ich die Reihenfolge geändert:
 - Ob auch die Aufnahme (TX) in diesem Zustand Samples verliert, ist nicht gemessen: dafür braucht es eine Quelle, die nicht über die Wiedergabe läuft.
 - Der Loop-Test lief im LED-Modus nur Clip. Im Modus normal ist der Code der LED-Schleife derselbe wie unter fx5a.
 
-## D77 – Build-8-Sitzung: Rauschen fx6a gegen fx5a, Gegenprobe zum Program Change unter fx5a (2026-11-19, 10:58–11:23)
+### D77 – Build-8-Sitzung: Rauschen fx6a gegen fx5a, Gegenprobe zum Program Change unter fx5a (2026-11-19, 10:58–11:23)
 
 **Anlass:** Letzter Punkt der Abnahme von Build 8 (`docs/05`, „Build 8“, Abnahme 5) und Gegenprobe zu D76. Freigabe des Nutzers für beide Flashes.
 
@@ -2566,9 +2677,9 @@ Im ersten Tanh3-Lauf (`B8-fx6a-loop-tanh3`) hatte ich die Reihenfolge geändert:
 
 **Störgröße (Nutzer):** Bei `B8-fx6a-a` und bei allen Messungen des Vormittags davor (D75-Nachträge, D76) hing ein Oszillator im Case am Strom, am Vorabend nicht. Ab `B8-fx5a` ist er abgesteckt.
 
-### Rauschen
+#### Rauschen
 
-Tabelle `out/B8-session-table.md` (`family_table.py`, Datei-dBFS, Mittel über 4 Kanäle und 2 Läufe, Δ gegen fx5a):
+Tabelle `reports/B8-session-table.md` (`family_table.py`, Datei-dBFS, Mittel über 4 Kanäle und 2 Läufe, Δ gegen fx5a):
 
 | Messung | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
 |---|---|---|---|---|---|
@@ -2586,13 +2697,13 @@ Tabelle `out/B8-session-table.md` (`family_table.py`, Datei-dBFS, Mittel über 4
 - Die Drift von 2 dB in 20 Minuten (Start der Blöcke 11:00, 11:09, 11:19) ist größer als in früheren Sitzungen (0,4…0,8 dB, D44). Sie trifft auch den breitbandigen Rest. Ursache offen: Aufwärmen nach den Neustarts, der Oszillator (abgesteckt wurde es lauter, nicht leiser), etwas anderes im Case. Eine Aussage auf wenige Zehntel dB erlaubt die Sitzung deshalb nicht.
 - Der Vergleich der dunklen Modi gegen normal (Linie der LED-PWM mit Signal) steht aus. Mit offenen Eingängen leuchten die LEDs auch im Modus normal nicht.
 
-### Program Change bei offenem Stream unter fx5a
+#### Program Change bei offenem Stream unter fx5a
 
 `B8-fx5a-pc1-stream`: Loop Out 1 → In 1, 440 Hz, Program Change Slot 1 → 1 etwa 5 s nach dem Start. Danach 9,4…10,8 % Stille, 214 Aussetzer, Abstand 4223 Frames, Länge 387 Frames (Median), Meldung am Ende `tx ovf 0.4375 1.0000 32`.
 
 **[gemessen] Der Fehler aus D76 tritt unter fx5a genauso auf.** Er ist älter als Build 8 und kein Mangel von Patch 17. Ab welchem Build es ihn gibt, ist offen (Kandidaten: die Feedback-Regelung aus Patch 06 oder schon die Original-Firmware).
 
-### LED-Verschiebung im Modus normal an diesem Tag
+#### LED-Verschiebung im Modus normal an diesem Tag
 
 Mess-Patch `SchliereLedPath`, Einheit 1e-7 Vollausschlag, In 1 / In 2 / In 3:
 
@@ -2613,7 +2724,7 @@ Die Verschiebung ist heute 25…35 % größer als am Vorabend, mit und ohne Oszi
 
 ---
 
-## D78 – Build 9 `v22.4.r-fx7a` auf acdc1: Flash und A1 (2026-11-19, 11:46–11:47)
+### D78 – Build 9 `v22.4.r-fx7a` auf acdc1: Flash und A1 (2026-11-19, 11:46–11:47)
 
 **Anlass:** Abnahme von Build 9 (Patch 18, LED-PWM mit 48 000 Hz statt 2320,54 Hz, `docs/05`, „Build 9“). Freigabe des Nutzers für den Flash.
 
@@ -2621,11 +2732,11 @@ Die Verschiebung ist heute 25…35 % größer als am Vorabend, mit und ohne Oszi
 
 **Zustand danach:** Slot 6 (Schliere) läuft als gemerkter Slot, CPU 29 %, Regler 62 / 58 / 65 / 63 von 127. LED-Modus normal (gemerkt aus D77, nicht neu gewählt). Kein Kabel gesteckt, kein Stream. Oszillator im Case weiter abgesteckt (Nutzer), wie am Ende von D77.
 
-### LED-Linie am Ausgang (11:53)
+#### LED-Linie am Ausgang (11:53)
 
-**Setup:** wie D73: Mess-Patch `SchliereLedTest` (nur RAM, `owl_write.py --run` um 11:50, `out/owl_write/acdc1/20261119/owl_write_115008.json`), Out 1 → UMC202HD In 1, UMC-Gain unverändert seit D73 (Nutzer), kein Stream an acdc1. Vorher Kabelprobe (−60 dBFS Sinus an alle Ausgänge, an keinem Eingang über −95 dB, also kein Kabel an den Eingängen). Regler 62 / 58 / 66 / 63 von 127 (nach der Aufnahme gelesen), nicht bewegt. CPU 31 %.
+**Setup:** wie D73: Mess-Patch `SchliereLedTest` (nur RAM, `owl_write.py --run` um 11:50, `reports/owl_write/acdc1/20261119/owl_write_115008.json`), Out 1 → UMC202HD In 1, UMC-Gain unverändert seit D73 (Nutzer), kein Stream an acdc1. Vorher Kabelprobe (−60 dBFS Sinus an alle Ausgänge, an keinem Eingang über −95 dB, also kein Kabel an den Eingängen). Regler 62 / 58 / 66 / 63 von 127 (nach der Aufnahme gelesen), nicht bewegt. CPU 31 %.
 
-**Aufnahme:** `D78-fx7a-ledtest-umc`, `20261119_acdc1_fx7a-schliere-ledtest-out1-via-umc_g12_usb-plugged.wav`, 90 s, 48 kHz, 24 Bit, `scale = 1`, `acdc_rec.py --device UMC202HD --input-only --channels 2 --format pcm24 --scale 1 --prompt --progress 1`. Lage der Phasen aus dem 40-Hz-Blinken (an bei 28,5 und 68,45 s), weil die grüne Phase keine Linie mehr hat. D73 mit demselben Skript neu ausgewertet (Blinken an bei 19,9 und 59,9 s). Je Phase 0,6 s nach dem Wechsel bis 1,0 s vor dem nächsten, Welch 65 536 Punkte, Linie = stärkster Bin in ±0,8 Hz. Skripte in `out/D78-fx7a-ledtest-umc/` (`phases.py`, `ctrl.py`). Alle Pegel in dBFS des UMC, Kanal 1.
+**Aufnahme:** `D78-fx7a-ledtest-umc`, `20261119_acdc1_fx7a-schliere-ledtest-out1-via-umc_g12_usb-plugged.wav`, 90 s, 48 kHz, 24 Bit, `scale = 1`, `acdc_rec.py --device UMC202HD --input-only --channels 2 --format pcm24 --scale 1 --prompt --progress 1`. Lage der Phasen aus dem 40-Hz-Blinken (an bei 28,5 und 68,45 s), weil die grüne Phase keine Linie mehr hat. D73 mit demselben Skript neu ausgewertet (Blinken an bei 19,9 und 59,9 s). Je Phase 0,6 s nach dem Wechsel bis 1,0 s vor dem nächsten, Welch 65 536 Punkte, Linie = stärkster Bin in ±0,8 Hz. Skripte in `reports/D78-fx7a-ledtest-umc/` (`phases.py`, `ctrl.py`). Alle Pegel in dBFS des UMC, Kanal 1.
 
 | | D73 fx5a aus | D73 grün 60 % | D78 fx7a aus | D78 grün 60 % |
 |---|---|---|---|---|
@@ -2650,9 +2761,9 @@ Suche nach neuen Linien, grün gegen das Mittel der drei Aus-Phasen, 50 Hz–20 
 - Ob die Faltung der 48 kHz in den ADC-Daten wirklich bei ≈ 0 Hz landet, zeigt diese Aufnahme nicht (UMC wechselspannungsgekoppelt, Ausgang nach dem Patch). Das prüft die Messung an den Eingängen.
 - Nur Out 1, nur die Eingangs-LEDs gedimmt.
 
-### LED-Verschiebung an den Eingängen (11:59–12:01)
+#### LED-Verschiebung an den Eingängen (11:59–12:01)
 
-**Setup:** Mess-Patch `SchliereLedPath` aus D74 (nur RAM, `owl_write.py --run` um 11:59, `out/owl_write/acdc1/20261119/owl_write_115907.json`). Kein Kabel gesteckt (Out 1 → UMC vorher gezogen), kein Stream, Regler wie oben, LED-Modus normal, Oszillator abgesteckt. Zwölf Mal `owl_read.py` im Abstand von etwa 13 s, Reports in `out/owl_read/acdc1/20261119_1159*/` bis `…_1201*/`. Einheit 1e-7 Vollausschlag (≙ µV bei ±10 V), In 1 / In 2 / In 3.
+**Setup:** Mess-Patch `SchliereLedPath` aus D74 (nur RAM, `owl_write.py --run` um 11:59, `reports/owl_write/acdc1/20261119/owl_write_115907.json`). Kein Kabel gesteckt (Out 1 → UMC vorher gezogen), kein Stream, Regler wie oben, LED-Modus normal, Oszillator abgesteckt. Zwölf Mal `owl_read.py` im Abstand von etwa 13 s, Reports in `reports/owl_read/acdc1/20261119_1159*/` bis `…_1201*/`. Einheit 1e-7 Vollausschlag (≙ µV bei ±10 V), In 1 / In 2 / In 3.
 
 | Build | gelesen | LEDblink (3 LEDs, 40 Hz) | LEDstat (4 LEDs dauerhaft) |
 |---|---|---|---|
@@ -2667,7 +2778,7 @@ Suche nach neuen Linien, grün gegen das Mittel der drei Aus-Phasen, 50 Hz–20 
 
 Danach läuft weiter `SchliereLedPath` im RAM.
 
-### Helligkeit am Gerät
+#### Helligkeit am Gerät
 
 Laut Nutzer passt die Helligkeit der LEDs unter fx7a („led helligkeit passt“, 12:05).
 
@@ -2675,11 +2786,11 @@ Laut Nutzer passt die Helligkeit der LEDs unter fx7a („led helligkeit passt“
 
 ---
 
-## D79 – Build-9-Sitzung: Rauschen fx7a gegen fx6a (2026-11-19, ab 12:05)
+### D79 – Build-9-Sitzung: Rauschen fx7a gegen fx6a (2026-11-19, ab 12:05)
 
 **Setup:** acdc1 im Case, Alltags-Kette, Eingänge offen (Kabelprobe in D78), Regler 12 Uhr, Slot 1 ACDC (vor dem Stream per Program Change gewählt), LED-Modus normal, Oszillator im Case abgesteckt, je 2 × 60 s `acdc_rec.py --reps 2 --owl-read`. Reihenfolge: `B9-fx7a-a` → Flash fx6a (`firmware/flashlog/20261119_build8-fx6a-ab9/`, Readback bytegleich) → `B9-fx6a` → Flash fx7a → `B9-fx7a-b`.
 
-### Neustart über `dfu-util :leave` statt von Hand (12:20)
+#### Neustart über `dfu-util :leave` statt von Hand (12:20)
 
 **Anlass:** Der Nutzer fragte, ob der Neustart mit Case aus, USB ab, Case an, USB an nötig ist. Nur Case aus und an reicht nicht, weil das USB-Kabel das Board versorgt und es im DFU bleibt (D3).
 
@@ -2689,7 +2800,7 @@ Laut Nutzer passt die Helligkeit der LEDs unter fx7a („led helligkeit passt“
 
 **Unterschied zum Kaltstart [Hypothese]:** Der Codec und alles andere außerhalb der MCU bleiben unter Strom. Ob der ROM-Bootloader beim Verlassen einen Reset auslöst oder springt, ist nicht geprüft. Die Firmware lief nach dem Start jedenfalls mit richtiger Version, Abtastrate und Slots.
 
-### Beobachtung: Das Modul fiept hörbar (Nutzer, etwa 12:10)
+#### Beobachtung: Das Modul fiept hörbar (Nutzer, etwa 12:10)
 
 Mit acdc1 im DFU-Modus (nach dem Flash von fx6a, vor dem Neustart, also ohne Firmware, Audio und LED-PWM) hört der Nutzer ein leises Fiepen aus dem Modul, ohne dass etwas angeschlossen ist. Fast konstant, vielleicht leicht wandernd, geschätzt 800–1000 Hz, zu leise für eine genaue Angabe. Heute schon vorher gehört, gestern vielleicht auch (da mit Kopfhörern).
 
@@ -2697,9 +2808,9 @@ Mit acdc1 im DFU-Modus (nach dem Flash von fx6a, vor dem Neustart, also ohne Fir
 
 **Deutung [Hypothese]:** Da es im DFU-Modus auftritt, hängt es nicht an Build 8 oder 9. Dass es sich mit dem USB-Kabel ändert, spricht für eine Abhängigkeit von Laststrom oder Versorgung über USB (USB-Schnittstelle aktiv, Strom über VBUS oder die Kabelmasse). Ein leiser Ton, der mit der Last wandert, passt zu einem Schaltregler im Pulsbetrieb bei geringer Last, dessen Spule oder ein Keramikkondensator hörbar mitschwingt. Ob die Quelle auf dem Modul oder im Netzteil des Cases sitzt, ist offen. Ob es mit den elektrischen Störlinien zusammenhängt, ebenfalls.
 
-### Rauschen (12:05–12:35)
+#### Rauschen (12:05–12:35)
 
-Tabelle `out/B9-session-table.md` (`family_table.py`, Datei-dBFS, Mittel über 4 Kanäle, Δ gegen fx6a). Alle sechs Läufe ohne Stream-Fehler (am Ende nur `tx ovf … 32` vom Stream-Start), CPU 6–7 %, Regler 12 Uhr.
+Tabelle `reports/B9-session-table.md` (`family_table.py`, Datei-dBFS, Mittel über 4 Kanäle, Δ gegen fx6a). Alle sechs Läufe ohne Stream-Fehler (am Ende nur `tx ovf … 32` vom Stream-Start), CPU 6–7 %, Regler 12 Uhr.
 
 | | Start | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
 |---|---|---|---|---|---|---|
@@ -2732,25 +2843,25 @@ Auch hier keine LED-PWM-Linie in den rohen Eingängen.
 
 **Fazit:** Build 9 bringt beim Rauschen keinen Nachteil gegen fx6a und nimmt die LED-PWM-Linie aus Ausgängen (D78) und rohen Eingängen. Der Start über `dfu-util :leave` taugt als Ersatz für den Neustart von Hand. Die Drift des Kamms (+2,4 dB in 26 Minuten) ist wie in D77 nicht erklärt.
 
-### Loop-Test (12:36)
+#### Loop-Test (12:36)
 
 Kabel Out 1–4 → In 1–4 (Nutzer), Gain 12 Uhr, Slot 1, `acdc_rec.py --sine 440 530 670 790 --duration 60 --owl-read`, Aufnahme `B9-fx7a-loop` (`20261119_acdc1_fx7a-loop_g12_usb-stream.wav`). Stream-Meldungen 0, Geräte-Meldung am Ende `tx ovf 1.0000 1.0000 32` (Stream-Start).
 
 - `phase_slips.py`: Pegel −6,0…−6,1 dBFS, Streuung 0,00 dB, 0 Ereignisse auf allen vier Kanälen (1-Sample-Sprung 5800- bis 14 000-fach über dem Phasenrauschen).
 - `stale_samples.py`: 0 von 96 000 Samples falsch auf allen vier Kanälen.
-- Ergebnisse in `out/B9-fx7a-loop/` (`phase_slips.json`, `stale_samples.json`).
+- Ergebnisse in `reports/B9-fx7a-loop/` (`phase_slips.json`, `stale_samples.json`).
 
 **[gemessen] Loop-Test bestanden.** Die Abnahme von Build 9 ist damit vollständig (D78, D79). Über die Alltags-Firmware entscheidet der Nutzer.
 
 Danach: Kabel stecken noch, Slot 1 läuft.
 
-### Folge für den Flash-Ablauf (Entscheidung des Nutzers, 2026-11-19)
+#### Folge für den Flash-Ablauf (Entscheidung des Nutzers, 2026-11-19)
 
 `:leave` ist ab jetzt der Standard: `tools/flash_acdc.py` liest nach dem Readback ein zweites Mal nur lesend mit `:leave` zurück, wartet, bis das DFU-Gerät verschwindet, und macht A1 selbst. Kaltstart von Hand nur noch mit `--cold`: wenn `:leave` scheitert, wenn ein Build am Einschalten etwas ändert (Takt, Codec-Init), wenn der Test das Einschalten betrifft und auf dem Rückweg nach einem Problem. Im Skript bisher nur gegen Attrappen getestet.
 
 **Entscheidung (Nutzer, 2026-11-19):** fx7a ist die Alltags-Firmware auf acdc1. Rückweg fx6a, dann fx5a.
 
-## D80 – Schliere: Tap- und Feedback-Modulation, Fassung 4 und Schliere M (2026-11-19, nachmittags, am Rechner)
+### D80 – Schliere: Tap- und Feedback-Modulation, Fassung 4 und Schliere M (2026-11-19, nachmittags, am Rechner)
 
 **Anlass (Nutzer, 2026-11-19):** Moduliert man in Schliere den Tap, klingt es hart, bei Audio-Rate vermutlich mit Aliasing. Steckt man Out 2, 3 oder 4 auf In 4 (Feedback-CV), klingt es nach hartem digitalem Clipping in den Höhen. Frage: Wie macht das Vorbild das, und gibt es eine elegantere Art?
 
@@ -2859,7 +2970,7 @@ Bei Tap-CV ±1 V liegt der Ton selbst bei −7 dB, die Seitenbänder bei −0,9 
 - **Build und Slot:** `owl-patches/builds/SchliereS/`: 18 156 B, CRC `0xd9b2a0f9`, `9be06b12…`. Auf Slot 11 gespeichert (war leer), zurückgemeldet mit Größe und CRC, **39 % CPU**. Danach läuft Slot 11. Im Boot-Menü ist 11 = LED 1, 2 und 4.
 - Begriff: Im Deutschen heißt es „Oversampling“ (Nutzer), README und Messlog sind angepasst.
 
-## D81 – SchliereL: Kette aus 160 Stufen (2026-11-21, am Rechner)
+### D81 – SchliereL: Kette aus 160 Stufen (2026-11-21, am Rechner)
 
 **Anlass (Nutzer, 2026-11-21):** Schliere soll mindestens so viele Stufen haben wie das Vorbild. Die alten Varianten bleiben, wie sie sind.
 
@@ -2879,16 +2990,16 @@ Bei Tap-CV ±1 V liegt der Ton selbst bei −7 dB, die Seitenbänder bei −0,9 
 
 **Einschränkungen:** Nicht gehört. Rechenlast vor dem Laden geschätzt aus D80 (≈ 0,43 % je Stufe, S 39 %): ≈ 82 %, gemessen 70 % (Nachtrag). Mehr Rechenlast hebt fs/8 und die Mischprodukte (D69). Das Rauschen der float-Kette bei 160 Stufen ist nicht gemessen.
 
-**Nachtrag (2026-11-21, 12:11): auf Slot 12 geladen.** Freigabe des Nutzers. Vorher Sicherung mit `owl_read.py --out backup --dump` nach `backup/acdc1/20261121/owl/`: elf Slots, alle `ok`, Größen und CRC wie in D80, Slot 12 leer. `owl_write.py owl-patches/builds/SchliereL/SchliereL.syx --store 12 --yes`, zurückgemeldet als 'SchliereL', 22 948 B, `0xb2496457` (`out/owl_write/acdc1/20261121/owl_write_121126.json`). Danach läuft Slot 12 (Program Change, nicht gemerkt).
-- **Rechenlast [gemessen]:** dreimal ausgelesen (`out/owl_read/20261121_schliereL_1…3/`), jedes Mal `CPU: 70% Memory: 2640`. Alle Regler am Linksanschlag (2, bei Regler 1 einmal 1 von 127). Die Kette wird immer ganz gerechnet, die Last hängt kaum von den Reglern ab [Hypothese]. Geschätzt waren ≈ 82 %. Je zusätzliche Stufe sind es damit ≈ 0,31 % (S 39 %, 99 Stufen mehr).
+**Nachtrag (2026-11-21, 12:11): auf Slot 12 geladen.** Freigabe des Nutzers. Vorher Sicherung mit `owl_read.py --out backup --dump` nach `backup/acdc1/20261121/owl/`: elf Slots, alle `ok`, Größen und CRC wie in D80, Slot 12 leer. `owl_write.py owl-patches/builds/SchliereL/SchliereL.syx --store 12 --yes`, zurückgemeldet als 'SchliereL', 22 948 B, `0xb2496457` (`reports/owl_write/acdc1/20261121/owl_write_121126.json`). Danach läuft Slot 12 (Program Change, nicht gemerkt).
+- **Rechenlast [gemessen]:** dreimal ausgelesen (`reports/owl_read/20261121_schliereL_1…3/`), jedes Mal `CPU: 70% Memory: 2640`. Alle Regler am Linksanschlag (2, bei Regler 1 einmal 1 von 127). Die Kette wird immer ganz gerechnet, die Last hängt kaum von den Reglern ab [Hypothese]. Geschätzt waren ≈ 82 %. Je zusätzliche Stufe sind es damit ≈ 0,31 % (S 39 %, 99 Stufen mehr).
 - Alle zwölf Slots melden Name, Größe und CRC wie vorher.
 - Nicht gehört, die Ausgänge sind nicht gemessen. Bei 70 % Last sind höhere Blockraten-Linien und Mischprodukte zu erwarten als bei S (D69) [Hypothese].
 
-## D82 – Plateau: erster Lauf am Gerät aus dem RAM (2026-11-23, 13:51)
+### D82 – Plateau: erster Lauf am Gerät aus dem RAM (2026-11-23, 13:51)
 
 **Anlass:** Plateau-Port (`owl/plateau/`, Valleys Plateau aus ValleyRackFree 2.4.5 in float) zum ersten Mal am Gerät, Freigabe des Nutzers. Nur RAM, kein Slot.
 
-**Setup:** acdc1 mit fx7a, Einbau im Case. Vorher lief Slot 12 (SchliereL, per Program Change), alle Regler am Linksanschlag (CC 20–23: 2, 1, 2, 1). Ob Kabel stecken und ob ein Stream offen war, ist nicht notiert. Vorher `owl_read.py` (`out/owl_read/acdc1/20261123/`), dann `owl_write.py owl-patches/builds/Plateau/Plateau.syx --run` (33 828 B, CRC `0x9594a7be`, PLUSRAM, 164 Pakete in 2,4 s, `out/owl_write/acdc1/20261123/owl_write_135129.json`), 3 s später `owl_read.py` (`out/owl_read/acdc1/20261123_135150/`).
+**Setup:** acdc1 mit fx7a, Einbau im Case. Vorher lief Slot 12 (SchliereL, per Program Change), alle Regler am Linksanschlag (CC 20–23: 2, 1, 2, 1). Ob Kabel stecken und ob ein Stream offen war, ist nicht notiert. Vorher `owl_read.py` (`reports/owl_read/acdc1/20261123/`), dann `owl_write.py owl-patches/builds/Plateau/Plateau.syx --run` (33 828 B, CRC `0x9594a7be`, PLUSRAM, 164 Pakete in 2,4 s, `reports/owl_write/acdc1/20261123/owl_write_135129.json`), 3 s später `owl_read.py` (`reports/owl_read/acdc1/20261123_135150/`).
 
 **Ergebnis [gemessen]:**
 - Program Message `Plateau KiB 30 66 461 28`: ITCM 30, DTCM 66, AXI 461, SDRAM 28 KiB. Das ist genau die Belegung aus dem Host-Test und dem Plan im README. Nur der Pre-Delay liegt im SDRAM.
@@ -2902,13 +3013,13 @@ Bei Tap-CV ±1 V liegt der Ton selbst bei −7 dB, die Seitenbänder bei −0,9 
 
 **Einschränkungen:** Einmal gelesen, alle Regler am Linksanschlag (Mix trocken, Space klein, Decay kurz). Die Rechenlast des Kerns hängt kaum von den Reglern ab [Hypothese], gemessen ist das nicht. Nicht gehört, Ausgänge nicht gemessen. Nächster Schritt: Taktzähler (DWT) je Abschnitt im Patch messen und als Program Message melden, dann den Pre-Delay testweise ins AXI legen.
 
-## D83 – Plateau mit Taktzählern: Die Caches der MCU sind aus (2026-11-23, 14:06–14:12)
+### D83 – Plateau mit Taktzählern: Die Caches der MCU sind aus (2026-11-23, 14:06–14:12)
 
 **Anlass:** D82, 51 % CPU für Plateau, etwa fünfmal mehr als die Befehlszahl erwarten lässt. Freigabe des Nutzers für einen Mess-Build mit Taktzähler.
 
 **Mess-Patch:** `owl/test/PlateauProfilePatch.hpp`, Klasse `PlateauProfilePatch`. Das ist Plateau unverändert, dazu Messpunkte `PLATEAU_PROBE(n)` in `PlateauPatch.hpp` und `PlateauCore.h`. Im normalen Build sind sie leer: Plateau neu gebaut ist bytegleich mit dem Stand aus D82 (`11c0e9d6…`). Die Messpunkte lesen den DWT-Zykluszähler, den die Firmware zu Beginn jedes Blocks auf 0 setzt [Code, `ProgramManager.cpp`]. Beim Start misst der Patch einmal Lesezugriffe mit 32 Byte Abstand (neue Cache-Zeile je Zugriff, zweiter Durchgang zählt) über den größten Plateau-Puffer je Speicherbereich und Schreibzugriffe ins SDRAM. Er meldet abwechselnd `PA` (Takte pro Sample je Abschnitt) und `PB` (Summe, langsamster Block, Kosten eines Messpunkts, Zugriffszeiten, Cache-Bits aus SCB->CCR). Host-Test `owl/test/plateau_profile_test.cpp`. Build `owl-patches/builds/PlateauProfile/` (29 644 B, CRC `0xc893c62b`, PLUSRAM). Im Mess-Build ist `tank` in `processAudio` eingebettet, in Plateau nicht.
 
-**Ablauf:** zweimal `owl_write.py … --run` (14:06 ohne, 14:11 mit Cache-Bits), dazwischen und danach `owl_read.py` (`out/owl_read/20261123_plateauprofile_*`). Der Nutzer hatte die Regler inzwischen bewegt (CC 20–23 etwa 36, 120, 44, 8, später Regler 2 auf 2 und Regler 3 gedreht).
+**Ablauf:** zweimal `owl_write.py … --run` (14:06 ohne, 14:11 mit Cache-Bits), dazwischen und danach `owl_read.py` (`reports/owl_read/20261123_plateauprofile_*`). Der Nutzer hatte die Regler inzwischen bewegt (CC 20–23 etwa 36, 120, 44, 8, später Regler 2 auf 2 und Regler 3 gedreht).
 
 **Ergebnis [gemessen]:**
 
@@ -2936,7 +3047,7 @@ Bei Tap-CV ±1 V liegt der Ton selbst bei −7 dB, die Seitenbänder bei −0,9 
 
 **Einschränkungen:** Wenige Lesungen, Regler nicht auf festen Stellungen, keine Aufnahme. Der langsamste Block schwankt stark (einmal 10 754 Takte pro Sample, Ursache offen, etwa MIDI-Verkehr durch `owl_read.py`). Ob die Abschnitte mit Cache gleichmäßig schneller werden, ist nicht gemessen. Danach lief `PlateauProfile` aus dem RAM weiter.
 
-## D84 – Build 10 `v22.4.r-fx8a` (I-Cache an) auf acdc1: Flash, A1, Rechenlast, Patch-Wechsel (2026-11-23, 14:32–)
+### D84 – Build 10 `v22.4.r-fx8a` (I-Cache an) auf acdc1: Flash, A1, Rechenlast, Patch-Wechsel (2026-11-23, 14:32–)
 
 **Anlass:** D83, beide Caches aus. Build 10 = fx7a + Patch 19 (I-Cache an, D-Cache weiter aus, `docs/05`, „Build 10“). Freigabe des Nutzers zum Flashen.
 
@@ -2963,7 +3074,7 @@ Bei Tap-CV ±1 V liegt der Ton selbst bei −7 dB, die Seitenbänder bei −0,9 
 - Plateau selbst (ohne Messpunkte): **35 %** statt 51 % (D82). Speichermeldung unverändert `Plateau KiB 30 66 461 28`.
 - Deutung: Ohne I-Cache bremste der Befehlsabruf alles gleich (die Leseschleife brauchte überall 24 Takte). Jetzt zeigt die Schleife die Datenzugriffe selbst: TCM 5–6 Takte, AXI ohne D-Cache 15, SDRAM 46 [gemessen]. Plateau liegt mit 461 KiB im AXI, der Rest von 3500 Takten hängt vermutlich an diesen Datenzugriffen und an Zustand und Stack im AXI [Hypothese]. Den Abschnitt s (wenige Dutzend Befehle, 511 Takte) erklärt das Rechnen allein nicht.
 
-**Patch-Wechsel [gemessen]:** Program Change durch alle zwölf Slots, dann `--run` Plateau, Program Change 6, `--run` PlateauProfile, nach jedem Schritt `owl_read.py` (`out/owl_read/20261123_fx8a_switch_*`). Jeder Patch läuft und meldet sich, Plateau mit der Speichermeldung, PlateauProfile mit Cache-Bits 2 und denselben Takten wie vorher. Kein Hänger, kein Fehler. Der I-Cache wird beim Wechsel also invalidiert, wie im Code (`device_cache_invalidate`).
+**Patch-Wechsel [gemessen]:** Program Change durch alle zwölf Slots, dann `--run` Plateau, Program Change 6, `--run` PlateauProfile, nach jedem Schritt `owl_read.py` (`reports/owl_read/20261123_fx8a_switch_*`). Jeder Patch läuft und meldet sich, Plateau mit der Speichermeldung, PlateauProfile mit Cache-Bits 2 und denselben Takten wie vorher. Kein Hänger, kein Fehler. Der I-Cache wird beim Wechsel also invalidiert, wie im Code (`device_cache_invalidate`).
 
 **Rechenlast der Slots unter fx8a [gemessen]**, alle mit Link patchram (DTCM), Regler 40, 119, 22–23, 8, in Klammern der letzte Wert unter fx7a oder älter, mit anderen Reglerstellungen:
 
@@ -2984,19 +3095,19 @@ Bei Tap-CV ±1 V liegt der Ton selbst bei −7 dB, die Seitenbänder bei −0,9 
 
 - Wie erwartet: Patches im DTCM holen ihre Befehle am Cache vorbei, ihre Last ändert sich nicht messbar [Hypothese, Reglerstellungen nicht gleich]. Die Unterschiede bei M, S und L passen zur Abhängigkeit von den Reglern (M: Tap), eine Messung bei gleichen Stellungen fehlt. Schneller würden diese Patches erst mit Link plusram.
 
-**Download-Stresstest [gemessen]:** `tools/dump_stress.py`, je 10 Runden über alle zwölf Slots, einmal bei laufendem Slot 5 (Tanh3, 50 %), einmal bei Slot 2 (TapeDelay), danach Program Change auf 12. **240 von 240 Downloads in Ordnung**, kein Hänger (`out/D84-fx8a-slot5-session-table.md`, `out/D84-fx8a-slot2-session-table.md`). Kein Kabel bekannt, ob ein Stream offen war, ist nicht notiert.
+**Download-Stresstest [gemessen]:** `tools/dump_stress.py`, je 10 Runden über alle zwölf Slots, einmal bei laufendem Slot 5 (Tanh3, 50 %), einmal bei Slot 2 (TapeDelay), danach Program Change auf 12. **240 von 240 Downloads in Ordnung**, kein Hänger (`reports/D84-fx8a-slot5-session-table.md`, `reports/D84-fx8a-slot2-session-table.md`). Kein Kabel bekannt, ob ein Stream offen war, ist nicht notiert.
 
 **Einschränkungen und offen:** Rauschen gegen fx7a (Kontrolle am Anfang und Ende) und Loop-Test fehlen noch, beide brauchen den Nutzer am Gerät (Kabel, Reglerstellung 12 Uhr). Erst danach ist die Abnahme vollständig und über die Alltags-Firmware zu entscheiden. Danach läuft Slot 12 per Program Change. **Rückweg ist fx7a.**
 
-## D85 – Build-10-Sitzung: Rauschen fx8a gegen fx7a, Loop-Test (2026-11-23, ab etwa 14:45)
+### D85 – Build-10-Sitzung: Rauschen fx8a gegen fx7a, Loop-Test (2026-11-23, ab etwa 14:45)
 
 **Setup:** acdc1 im Case, Alltags-Kette, Eingänge offen, keine Kabel, Oszillator im Case abgesteckt (Nutzer), Regler etwa 12 Uhr (CC 69/55–56/72/56 von 127), Slot 1 ACDC (vor dem Stream per Program Change gewählt), LED-Modus wie gemerkt, je 2 × 60 s `acdc_rec.py --reps 2 --owl-read`. Vor der ersten Aufnahme lief wieder der gemerkte Slot 12, acdc1 war also neu gestartet worden, vermutlich beim Umstecken (Kaltstart). Reihenfolge: `B10-fx8a-a` → Flash fx7a (`firmware/flashlog/20261123_build9-fx7a-ab10/`, Readback bytegleich, `:leave`, A1) → `B10-fx7a` → Flash fx8a (`firmware/flashlog/20261123_build10-fx8a-b/`, ebenso) → `B10-fx8a-b`. Diesmal ist der Testkandidat an beiden Enden, die Kontrolle fx7a in der Mitte.
 
 **Nebenbei [gemessen]:** Slot 12 (SchliereL, patchram) direkt nach den Flashes bei gleichen Reglern: fx7a 70 %, fx8a 71 %. Patches im DTCM werden durch den I-Cache nicht schneller, wie erwartet (D84).
 
-### Rauschen
+#### Rauschen
 
-Tabelle `out/B10-session-table.md` (`family_table.py`, Datei-dBFS, Mittel über 4 Kanäle, Δ gegen fx7a). Alle sechs Läufe ohne Stream-Fehler (am Ende nur `tx ovf … 32` vom Stream-Start), CPU 6–8 %.
+Tabelle `reports/B10-session-table.md` (`family_table.py`, Datei-dBFS, Mittel über 4 Kanäle, Δ gegen fx7a). Alle sechs Läufe ohne Stream-Fehler (am Ende nur `tx ovf … 32` vom Stream-Start), CPU 6–8 %.
 
 | | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
 |---|---|---|---|---|---|
@@ -3017,13 +3128,13 @@ Weitere Linien: Die Analyse findet keine neue Linie. Der bekannte Kamm bei k · 
 - Größenordnung: +0,6 dB bei fs/8 ist kleiner als das, was ein FX-Patch mit 29 % Last bringt (+3,8 dB, D69). Plateau spart unter fx8a 16 Prozentpunkte Last.
 - Der Rest liegt in dieser Sitzung rund 3 dB tiefer als in D79 (−78,8 gegen −75,6 dBFS), bei derselben Firmware fx7a. Ursache offen (Umgebung, anderer Tag).
 
-### Loop-Test
+#### Loop-Test
 
 Kabel Out 1–4 → In 1–4 (Nutzer), Regler etwa 12 Uhr, Slot 1, `acdc_rec.py --sine 440 530 670 790 --duration 60 --owl-read`, Aufnahme `B10-fx8a-loop` (`20261123_acdc1_fx8a-loop_g12_usb-stream.wav`). Stream-Meldungen 0, Geräte-Meldung am Ende `tx ovf 1.0000 1.0000 32` (Stream-Start), CPU 7 %.
 
 - `phase_slips.py`: Pegel −6,0…−6,1 dBFS, Streuung 0,00 dB, 0 Ereignisse auf allen vier Kanälen.
 - `stale_samples.py`: 0 von 96 000 Samples falsch auf allen vier Kanälen.
-- Ergebnisse in `out/B10-fx8a-loop/`.
+- Ergebnisse in `reports/B10-fx8a-loop/`.
 
 **[gemessen] Loop-Test bestanden.** Die Abnahme von Build 10 ist damit vollständig (D84, D85): Flash, A1, Cache-Bits 2, Patch-Wechsel, Downloads 240/240, Loop-Test. Beim Rauschen fs/8 +0,6 dB, sonst gleich. Über die Alltags-Firmware entscheidet der Nutzer.
 
@@ -3031,7 +3142,7 @@ Danach: Kabel stecken noch, fx8a, Slot 1 läuft.
 
 **Entscheidung (Nutzer, 2026-11-23):** fx8a ist die Alltags-Firmware auf acdc1. Rückweg fx7a, dann fx6a.
 
-## D86 – Original-Sitzung: Werks-Firmware gegen fx8a, offene Eingänge (2026-11-23, abends)
+### D86 – Original-Sitzung: Werks-Firmware gegen fx8a, offene Eingänge (2026-11-23, abends)
 
 **Anlass:** Für die Rauschtabelle der READMEs fehlte ein Vergleich mit der Original-Firmware in derselben Sitzung. Bisher gab es nur S2-4 (2026-11-13, früherer Aufnahmeweg, TB-Hub direkt, neben dem Case). Freigabe der beiden Flashes durch den Nutzer im Chat.
 
@@ -3046,9 +3157,9 @@ Alle sechs Aufnahmen ohne Stream-Meldungen und ohne Klicks.
 
 **Gain-Korrektur:** Die Werks-Firmware nimmt nach dem VCA des Default-Patches auf, fx8a roh (`TX_PRE_FX`). Den Gain je Kanal misst das DC-Verhältnis der offenen Eingänge gegen das Mittel der vier fx8a-Läufe (Verfahren aus D26, dafür neu `family_table.py --dc-ref/--dc-correct`, gegen D26 nachgerechnet auf ≤ 0,05 dB gleich): **+0,85 / −2,73 / +1,63 / −2,64 dB** (Kanal 1–4), in r1 und r2 auf 0,01 dB gleich. Aus den CC-Werten vorhergesagt wären (2·CC/127)² = +1,44 / −2,18 / +2,18 / −2,18 dB, also je Kanal 0,5–0,6 dB mehr. [Hypothese] Die 7-Bit-CC-Werte bilden die Regler-Parameter nicht genau ab (wie die kleineren Abweichungen in D26). Der DC von fx8a driftet zwischen Anfang und Ende um 0,1 dB.
 
-### Rauschen
+#### Rauschen
 
-Tabelle `out/ORG-session-table.md` (Datei-dBFS, Mittel über 4 Kanäle, Δ gegen das Mittel der vier fx8a-Läufe, Original gain-korrigiert):
+Tabelle `reports/ORG-session-table.md` (Datei-dBFS, Mittel über 4 Kanäle, Δ gegen das Mittel der vier fx8a-Läufe, Original gain-korrigiert):
 
 | | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
 |---|---|---|---|---|---|
@@ -3076,7 +3187,7 @@ In Geräte-dBFS (−6,02 dB), wie in den READMEs: Original gegen fx8a RMS −77,
 
 **Danach:** fx8a, Slot 1 per Program Change, gemerkt bleibt Slot 12, keine Kabel.
 
-## D87 – D-Cache vorbereiten: DMA-Puffer, MPU-Region, Korrektur zu `_DMA_DATA` (2026-11-23, am Rechner)
+### D87 – D-Cache vorbereiten: DMA-Puffer, MPU-Region, Korrektur zu `_DMA_DATA` (2026-11-23, am Rechner)
 
 **Anlass:** Planung von Build 11 (D-Cache an). Nur lesend, Quellbaum von fx8a (`firmware/_work/acdc1-build10-fx8a/`) und ELF von Build 10.
 
@@ -3095,7 +3206,7 @@ In Geräte-dBFS (−6,02 dB), wie in den READMEs: Original gegen fx8a RMS −77,
 **Folge:** Planung von Build 11 in einer Fragerunde mit dem Nutzer (siehe `docs/05`, „Build 11“, sobald abgestimmt). Die falsche Aussage ist in `docs/05` (de/en), D83, `CLAUDE.md`, `TODO.md` und im Fork-README korrigiert, Patch 19 bleibt unverändert (Prüfsumme in `BUILD_INFO.txt`).
 
 
-## D88 – Build 11 `v22.4.r-fx9a` (D-Cache an) auf acdc1: Flash, A1, Kaltstart, kurzer Loop-Test (2026-11-23, ab etwa 16:25)
+### D88 – Build 11 `v22.4.r-fx9a` (D-Cache an) auf acdc1: Flash, A1, Kaltstart, kurzer Loop-Test (2026-11-23, ab etwa 16:25)
 
 **Anlass:** Build 11 nach Plan (`docs/05`, „Build 11“, Punkt 10), Flash mit Freigabe des Nutzers (2026-11-23). Vorher lief fx8a mit Slot 12 (SchliereL), keine Kabel. acdc1 im Case, Alltags-Kette.
 
@@ -3109,7 +3220,7 @@ In Geräte-dBFS (−6,02 dB), wie in den READMEs: Original gegen fx8a RMS −77,
 
 **Fazit:** Punkt 10 des Plans bestanden. Die DMA-Puffer bleiben mit D-Cache kohärent, soweit 60 s Loop das zeigen. Offen ist die Abnahme nach Punkt 11 (Loop-Test 10 min, Patch-Wechsel, Downloads 240/240, Plateau-Store auf Slot 13, PlateauProfile, Rausch-Sandwich gegen fx8a). Cache-Bits und Takte sind noch nicht gemessen. Rückweg fx8a.
 
-## D89 – Build 11 `v22.4.r-fx9a`: Abnahme (Loop 10 min, Rechenlast, Patch-Wechsel, Downloads, Rauschen) und neue Slot-Belegung (2026-11-23, ab etwa 16:40)
+### D89 – Build 11 `v22.4.r-fx9a`: Abnahme (Loop 10 min, Rechenlast, Patch-Wechsel, Downloads, Rauschen) und neue Slot-Belegung (2026-11-23, ab etwa 16:40)
 
 **Setup:** acdc1 im Case, Alltags-Kette, fx9a seit D88. Regler auf 12 Uhr (CC 68–69/55–56/72/56 von 127), bei den fx8a-Werten aus D84 standen sie auf 40/119/22/8. Abnahme nach `docs/05`, „Build 11“, Punkt 11, Freigabe des Nutzers.
 
@@ -3118,7 +3229,7 @@ In Geräte-dBFS (−6,02 dB), wie in den READMEs: Original gegen fx8a RMS −77,
 - `stale_samples.py`: 0 von 28 656 000 Samples falsch auf allen vier Kanälen.
 - Geräte-Meldung am Ende `tx ovf 0.3888 1.0000 32.0000`. Dieselbe Form kommt beim Öffnen oder Schließen eines Streams vor (D25, D75). In den 600 s gibt es weder Slip noch veraltetes Sample, das Ereignis lag also in den 3 s Einschwingzeit.
 
-**Rechenlast [gemessen]:** Kabel ab, `owl_write.py … --run`, danach je `owl_read.py` (`out/owl_read/20261123_fx9a_plateauprofile_*`, `…_plateau_*`).
+**Rechenlast [gemessen]:** Kabel ab, `owl_write.py … --run`, danach je `owl_read.py` (`reports/owl_read/20261123_fx9a_plateauprofile_*`, `…_plateau_*`).
 
 | | fx8a (D84) | fx9a |
 |---|---|---|
@@ -3139,9 +3250,9 @@ In Geräte-dBFS (−6,02 dB), wie in den READMEs: Original gegen fx8a RMS −77,
 - **Die Leseschleife bleibt bei 15 Takten für das AXI, das ist kein Gegenbeweis [Code].** Sie liest mit einer neuen Cache-Zeile je Zugriff über den größten Plateau-Puffer im Bereich (`latencyTest()` in `owl/test/PlateauProfilePatch.hpp`), der weit größer ist als die 16 KB D-Cache. Beide Durchgänge treffen deshalb nie den Cache, sie messen die Zeit eines Fehlzugriffs. Das Ziel „Leseschleife AXI gegen 5 Takte“ aus dem Plan war eine falsche Erwartung. Maßgeblich ist die Zeit von Plateau.
 - Einschränkung: Reglerstellungen anders als in D84. Unter fx7a lagen Messungen mit verschiedenen Reglern innerhalb von 3 % (D83).
 
-**Patch-Wechsel [gemessen]:** zwei Runden mit Program Change durch alle zwölf Slots, dann `--run` Plateau, Program Change 6, `--run` PlateauProfile, nach jedem Schritt `owl_read.py` (`out/owl_read/20261123_fx9a_switch_r*`). Jeder Patch läuft und meldet sich, PlateauProfile beide Male mit Cache-Bits 3 und 2650–2651 Takten. Kein Hänger, kein Fehler. Last der Slots bei Reglern 12 Uhr (patchram, DTCM): ACDC 5 %, TapeDelay 31 %, Grainz 13 %, RingsReverb 15 %, Tanh3 50 %, SchliereA 29–30 %, M 37 %, Z 32 %, W 32 %, O 37–39 %, S 39 %, L 70–71 %. TapeDelay, RingsReverb, Tanh3, SchliereA, S und L liegen wie unter fx8a (D84). Grainz (D84: 76 %) und SchliereM (25 %) hängen stark von den Reglern ab [Hypothese].
+**Patch-Wechsel [gemessen]:** zwei Runden mit Program Change durch alle zwölf Slots, dann `--run` Plateau, Program Change 6, `--run` PlateauProfile, nach jedem Schritt `owl_read.py` (`reports/owl_read/20261123_fx9a_switch_r*`). Jeder Patch läuft und meldet sich, PlateauProfile beide Male mit Cache-Bits 3 und 2650–2651 Takten. Kein Hänger, kein Fehler. Last der Slots bei Reglern 12 Uhr (patchram, DTCM): ACDC 5 %, TapeDelay 31 %, Grainz 13 %, RingsReverb 15 %, Tanh3 50 %, SchliereA 29–30 %, M 37 %, Z 32 %, W 32 %, O 37–39 %, S 39 %, L 70–71 %. TapeDelay, RingsReverb, Tanh3, SchliereA, S und L liegen wie unter fx8a (D84). Grainz (D84: 76 %) und SchliereM (25 %) hängen stark von den Reglern ab [Hypothese].
 
-**Download-Stresstest [gemessen]:** `tools/dump_stress.py`, je 10 Runden über alle zwölf Slots bei laufendem Slot 5 (Tanh3) und Slot 2 (TapeDelay), danach Slot 1. **240 von 240 in Ordnung**, kein Hänger (`out/D89-fx9a-slot5-session-table.md`, `out/D89-fx9a-slot2-session-table.md`).
+**Download-Stresstest [gemessen]:** `tools/dump_stress.py`, je 10 Runden über alle zwölf Slots bei laufendem Slot 5 (Tanh3) und Slot 2 (TapeDelay), danach Slot 1. **240 von 240 in Ordnung**, kein Hänger (`reports/D89-fx9a-slot5-session-table.md`, `reports/D89-fx9a-slot2-session-table.md`).
 
 **Neue Slot-Belegung (Wunsch des Nutzers, 2026-11-23) [gemessen]:** Schliere A, M, Z, W und O entfernt, Plateau hinter RingsReverb, der Rest rückt nach. Statt des Store-Tests auf Slot 13 aus dem Plan.
 - Vorher Sicherung aller Slots mit `owl_read.py --out backup --dump` nach `backup/acdc1/20261123/owl_171118/`, alle zwölf `ok`.
@@ -3151,7 +3262,7 @@ In Geräte-dBFS (−6,02 dB), wie in den READMEs: Original gegen fx8a RMS −77,
 - Die Kopien der alten Slots stehen in `backup/acdc1/20261123/owl_write_*/` und `owl_171118/`, die Builds in `owl-patches/builds/`.
 - **Gemerkt ist weiter Slot 12, der jetzt leer ist.** Beim Einschalten startet dann Slot 1 [Code, Patch 15b: `acdcBootSelect()` fällt auf `DEFAULT_PROGRAM` zurück]. Einen anderen Slot merkt das Boot-Menü. Wird später wieder etwas auf Slot 12 gespeichert, startet das beim Einschalten.
 
-**Rauschen fx9a gegen fx8a [gemessen]:** acdc1 im Case, Eingänge offen, keine Kabel, Regler 69/56/72/56 von 127, Slot 1 vor jedem Stream per Program Change, je 2 × 60 s `acdc_rec.py --reps 2 --owl-read`. Zustand des Oszillators im Case nicht erfragt, in der Sitzung niemand am Case. Reihenfolge: `B11-fx9a-a` (17:15) → Flash fx8a (`firmware/flashlog/20261123_build10-fx8a-sandwich11/`, Readback bytegleich, `:leave`, A1) → `B11-fx8a` → Flash fx9a (`firmware/flashlog/20261123_build11-fx9a-sandwich/`, ebenso) → `B11-fx9a-b` (bis 17:23). Alle sechs Läufe ohne Stream-Fehler. Tabelle `out/B11-session-table.md` (`family_table.py`, Datei-dBFS, Mittel über 4 Kanäle, Δ gegen fx8a):
+**Rauschen fx9a gegen fx8a [gemessen]:** acdc1 im Case, Eingänge offen, keine Kabel, Regler 69/56/72/56 von 127, Slot 1 vor jedem Stream per Program Change, je 2 × 60 s `acdc_rec.py --reps 2 --owl-read`. Zustand des Oszillators im Case nicht erfragt, in der Sitzung niemand am Case. Reihenfolge: `B11-fx9a-a` (17:15) → Flash fx8a (`firmware/flashlog/20261123_build10-fx8a-sandwich11/`, Readback bytegleich, `:leave`, A1) → `B11-fx8a` → Flash fx9a (`firmware/flashlog/20261123_build11-fx9a-sandwich/`, ebenso) → `B11-fx9a-b` (bis 17:23). Alle sechs Läufe ohne Stream-Fehler. Tabelle `reports/B11-session-table.md` (`family_table.py`, Datei-dBFS, Mittel über 4 Kanäle, Δ gegen fx8a):
 
 | | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
 |---|---|---|---|---|---|
@@ -3162,7 +3273,7 @@ In Geräte-dBFS (−6,02 dB), wie in den READMEs: Original gegen fx8a RMS −77,
 | `B11-fx9a-b-r1` | −73,02 (−0,21) | −78,78 (−0,12) | −75,02 (−0,14) | −83,03 (**−0,70**) | −116,25 (−4,36) |
 | `B11-fx9a-b-r2` | −72,99 (−0,18) | −78,87 (−0,21) | −74,93 (−0,06) | −83,06 (**−0,74**) | −113,90 (−2,01) |
 
-Einzelne Linien (`line_levels.py`, `out/B11-lines-table.md`): 2000 und 3000 Hz unter fx8a −103…−105 dBFS, unter fx9a-a −110…−115, unter fx9a-b −105…−108. 1215,19 Hz (≈ 96 000/79) und 7384,62 Hz (= 96 000/13) liegen in allen sechs Läufen auf 0,3 dB gleich, sie stehen in fx9a-a nur deshalb unter den „stärksten übrigen Linien“, weil 2000/3000 Hz dort tiefer liegen. Beide gab es schon in B3 (fx1p, fx2b, fx2c).
+Einzelne Linien (`line_levels.py`, `reports/B11-lines-table.md`): 2000 und 3000 Hz unter fx8a −103…−105 dBFS, unter fx9a-a −110…−115, unter fx9a-b −105…−108. 1215,19 Hz (≈ 96 000/79) und 7384,62 Hz (= 96 000/13) liegen in allen sechs Läufen auf 0,3 dB gleich, sie stehen in fx9a-a nur deshalb unter den „stärksten übrigen Linien“, weil 2000/3000 Hz dort tiefer liegen. Beide gab es schon in B3 (fx1p, fx2b, fx2c).
 
 **Deutung:**
 - **[gemessen] fx9a senkt fs/8 um 0,7 dB gegen fx8a.** Alle vier fx9a-Läufe liegen −0,65 bis −0,85 dB unter fx8a, vor und nach der Kontrolle gleich. fx8a liegt mit −82,32 dBFS wie in D85 (−82,32…−82,40). fx9a landet damit etwa beim Stand von fx7a (−82,95 in D85), der Anstieg durch den I-Cache ist ausgeglichen.
@@ -3172,7 +3283,7 @@ Einzelne Linien (`line_levels.py`, `out/B11-lines-table.md`): 2000 und 3000 Hz u
 
 **Fazit:** Alle Kriterien aus `docs/05`, „Build 11“, Punkt 1 sind erfüllt: Plateau 29 % statt 35 % (unter 30 %), fs/8 −0,7 dB (Grenze +1 dB), keine neue Linie, Loop 10 min, zwei Wechselrunden, 240/240 Downloads, vier Stores mit Rückladen, vier Löschungen. Die Leseschleife war als Kriterium falsch gewählt (siehe oben). Statt des Store-Tests auf Slot 13 lief die neue Belegung (Stores mit `--download-check`). **Die Abnahme ist vollständig. fx9a ist die Alltags-Firmware (Entscheidung des Nutzers, 2026-11-23), Rückweg fx8a.** Zustand danach: fx9a, Slot 1 läuft, gemerkt Slot 12 (leer), keine Kabel.
 
-## D90 – Masse-Brücke auf dem Xibeca-Modul: Draht Pin 15 (GND) ↔ Pin 33 (AGND) (2026-11-23 und 2026-11-24)
+### D90 – Masse-Brücke auf dem Xibeca-Modul: Draht Pin 15 (GND) ↔ Pin 33 (AGND) (2026-11-23 und 2026-11-24)
 
 **Anlass:** Antwort im Forum (modwiggler) auf den eigenen Beitrag: Die Ferritperle zwischen AGND und GND auf dem Prozessor-Modul überbrücken, die Spannung über ihr koppele in die Messung. Der Beitrag stützte sich auf den Plan von Noctua2. Schaltplan-Befund dazu in `docs/06-hardware-mod-masse.md` und `docs/01`, „Masse“: Im AC/DC steckt das Modul Xibeca (gleiche Pinbelegung, gleiche drei Ferrite L1–L3 wie Noctua2). L1 (0603) verbindet AGND und GND auf dem Modul. Die Trägerplatine von Befaco verbindet alle AGND-Pins des Moduls direkt mit GND [Code: Schaltplan]. L1 liegt also schon parallel zu einem Weg über die Steckerleiste. Erwartet war deshalb ein kleiner Effekt [Hypothese], das hat sich nicht bestätigt.
 
@@ -3180,7 +3291,7 @@ Einzelne Linien (`line_levels.py`, `out/B11-lines-table.md`): 2000 und 3000 Hz u
 
 **Setup:** acdc1 im Case, fx9a, Slot 1, Regler 63/64/71/50 von 127 (vor und nach dem Umbau gleich), keine Kabel, Alltags-Kette, Eingänge offen, je 2 × 60 s `acdc_rec.py --reps 2 --owl-read`. Vorher-Kontrolle am Vortag `D90-vor-r1/r2` (2026-11-23, 22:41, Regler 66/56/73/56). Am Messtag `D90b-vor-r1/r2` (10:34), Umbau, `D90b-nach-r1/r2` (11:09). Alle Läufe ohne Stream-Meldungen. Kamm-f0 999,864 Hz in allen Läufen (gleicher Anschluss).
 
-**Familien (`family_table.py`, `out/D90-session-table.md`, Datei-dBFS, Mittel über 4 Kanäle, Δ gegen D90b-vor):**
+**Familien (`family_table.py`, `reports/D90-session-table.md`, Datei-dBFS, Mittel über 4 Kanäle, Δ gegen D90b-vor):**
 
 | Messung | RMS ≥ 20 Hz | Rest | Kamm | fs/8 | Mischprod. |
 |---|---|---|---|---|---|
@@ -3193,7 +3304,7 @@ Einzelne Linien (`line_levels.py`, `out/B11-lines-table.md`): 2000 und 3000 Hz u
 
 Breitbandiger Boden (Median der PSD-Differenz, ohne Linien): 20–200 Hz −4,0 dB, 200–2000 Hz −3,3 dB, 2–8 kHz −2,4 dB, 8–20 kHz −1,9 dB. Plot `docs/img/psd_gnd_mod.png`.
 
-**Einzelne Linien (`line_levels.py`, Tabelle `out/D90b-lines-table.md`, Datei-dBFS, Leistungsmittel über vier Kanäle und zwei Läufe):**
+**Einzelne Linien (`line_levels.py`, Tabelle `reports/D90b-lines-table.md`, Datei-dBFS, Leistungsmittel über vier Kanäle und zwei Läufe):**
 
 | Linie | vorher | nachher | Δ |
 |---|---|---|---|
@@ -3232,7 +3343,7 @@ Je LED heißt das ≈ −1,0e-4 statt ≈ −4,0e-4 Vollausschlag (D74 maß −2
 
 **Fazit:** Die Masse-Brücke ist die bisher wirksamste Einzelmaßnahme gegen das Rauschen der Eingänge, stärker als alle Firmware-Schritte zusammen (fx2d → fx9a: fs/8 ≈ −5 dB). acdc1 behält den Draht. acdc2 bleibt unverändert (Referenz). Anleitung: `docs/06-hardware-mod-masse.md`. Offen: A-B-A, Ausgänge, Hörprobe, Rückmeldung ins Forum.
 
-## D91 – Masse-Draht: Ausgang am UMC (2026-11-24, 11:38–11:45)
+### D91 – Masse-Draht: Ausgang am UMC (2026-11-24, 11:38–11:45)
 
 **Anlass:** D90 hat nur die rohen Eingänge gemessen. Wirkt der Draht Pin 15 ↔ Pin 33 auch am Ausgang? Kein Rückbau des Drahts (Nutzer: zu viel Aufwand). Vergleich deshalb mit D74 (2026-11-18, ohne Draht, fx5a, gleicher Mess-Patch, gleiche Kette).
 
@@ -3241,7 +3352,7 @@ Je LED heißt das ≈ −1,0e-4 statt ≈ −4,0e-4 Vollausschlag (D74 maß −2
 1. `D91-ledpath-umc`: Mess-Patch `SchliereLedPath` aus D74 (`owl_write.py --run`, 11:38:52, nur RAM), 110 s, `acdc_rec.py --device UMC202HD --input-only --channels 2 --format pcm24`.
 2. Program Change auf Slot 1, dann `D91-slot1-umc-r1/r2`: Default-Patch (Durchleitung In 1 → Out 1), 2 × 60 s.
 
-**Auswertung je Phase:** neues Werkzeug `tools/ledpath_phases.py`. Es legt das Raster der Phasen über den Eichton (Phase 7, 300 Hz, 0,001 Vollausschlag an Out 1), rechnet mit seinem Pegel auf den Ausgang von acdc1 um und misst je Phase 1,0–4,5 s nach Beginn, gemittelt über die Durchläufe. Tabellen `out/D74-ledpath-phases.txt` und `out/D91-ledpath-phases.txt`. Eichton: D74 −22,69 dBFS am UMC, D91 −22,65 dBFS (UMC In 1).
+**Auswertung je Phase:** neues Werkzeug `tools/ledpath_phases.py`. Es legt das Raster der Phasen über den Eichton (Phase 7, 300 Hz, 0,001 Vollausschlag an Out 1), rechnet mit seinem Pegel auf den Ausgang von acdc1 um und misst je Phase 1,0–4,5 s nach Beginn, gemittelt über die Durchläufe. Tabellen `reports/D74-ledpath-phases.txt` und `reports/D91-ledpath-phases.txt`. Eichton: D74 −22,69 dBFS am UMC, D91 −22,65 dBFS (UMC In 1).
 
 Pegel in dB bezogen auf Vollausschlag am Ausgang von acdc1, UMC In 1 (In 2 auf ±2 dB gleich):
 
@@ -3271,13 +3382,13 @@ Pegel in dB bezogen auf Vollausschlag am Ausgang von acdc1, UMC In 1 (In 2 auf �
 
 **Fazit:** Der Masse-Draht senkt Kamm, fs/8 und LED-Verschiebung auch am Ausgang um 9–19 dB. Nach der Messung läuft Slot 1, kein Stream, nichts gespeichert.
 
-## D92 – Patches mit den Compiler-Flags aus OwlProgram-`develop`: Rechenlast am Gerät (2026-11-27, 10:56–11:09)
+### D92 – Patches mit den Compiler-Flags aus OwlProgram-`develop`: Rechenlast am Gerät (2026-11-27, 10:56–11:09)
 
 **Anlass:** OwlProgram-`develop` (PR #132) baut Patches ohne `-fno-builtin`, `-ffreestanding` und `-mtune=cortex-m4`. Unser SDK (`owl-patches/OwlProgram/`, `master` `60f44ab`) setzt alle drei, deshalb ruft jeder Patch `fabsf`, `sqrtf`, `fmaxf` und `floorf` aus newlib auf, statt einen FPU-Befehl zu nutzen. Vergleich am Rechner und Builds: `docs/research/notes/owlprogram_develop_2026-11-27.md`.
 
 **Builds:** `owl-patches/builds-flagtest/base/` (bisheriges SDK, die sieben FX-Patches der Slots 2–8 und PlateauProfile, alle bytegleich mit den Builds in `owl-patches/builds/`) und `owl-patches/builds-flagtest/fpu/` (SDK-Kopie `owl-patches/OwlProgram-fpu/`, nur die Flag-Zeile aus `develop`, Bibliotheken damit neu gebaut). Arm GNU 12.2.Rel1, Quellen unverändert. In den `process`-Funktionen sind mit fpu alle Aufrufe von `fabsf`/`sqrtf`/`fmaxf`/`floorf` weg [Code].
 
-**Setup:** acdc1 im Case, fx9a, mit Masse-Draht (D90), keine Kabel, Eingänge offen, kein Stream. Regler 63/64/71/50 von 127, während der Messung höchstens ±1. Vorher Slot 1 (ACDC, 5 %, `out/owl_read/20261127_flagtest_before/`). Je Patch `owl_write.py <patch.bin> --run` (nur RAM) in der Folge base → fpu → base, je 4 s warten, dann drei `owl_read.py` (`out/owl_read/20261127_flagtest_<patch>_<base1|fpu|base2>_<n>/`). Am Ende `owl_read.py --program 1`. Nichts gespeichert.
+**Setup:** acdc1 im Case, fx9a, mit Masse-Draht (D90), keine Kabel, Eingänge offen, kein Stream. Regler 63/64/71/50 von 127, während der Messung höchstens ±1. Vorher Slot 1 (ACDC, 5 %, `reports/owl_read/20261127_flagtest_before/`). Je Patch `owl_write.py <patch.bin> --run` (nur RAM) in der Folge base → fpu → base, je 4 s warten, dann drei `owl_read.py` (`reports/owl_read/20261127_flagtest_<patch>_<base1|fpu|base2>_<n>/`). Am Ende `owl_read.py --program 1`. Nichts gespeichert.
 
 **Ergebnis [gemessen]** (Firmware-Anzeige `PROGRAM_STATS`, ganze Prozent, Mittel aus 6 base- und 3 fpu-Ablesungen):
 
@@ -3309,13 +3420,13 @@ PlateauProfile (Takte pro Sample je Abschnitt, Mittel aus je drei Meldungen `PA 
 
 **Nachtrag (2026-11-27, Nutzer: übernehmen):** Die Flag-Zeile steht jetzt in `owl-patches/OwlProgram/compile.mk` (Original `compile.mk.orig-60f44ab`). Die acht Builds in `owl-patches/builds/` sind damit neu gebaut und bytegleich mit den gemessenen fpu-Builds [gemessen: Build]. Die Slots 2–8 tragen weiter die alten Builds, gespeichert wird erst nach einem Vergleich am Ausgang und mit Freigabe.
 
-## D93 – Patches mit den neuen Compiler-Flags: Ausgang alt gegen neu am UMC (2026-11-27, 11:24–11:44)
+### D93 – Patches mit den neuen Compiler-Flags: Ausgang alt gegen neu am UMC (2026-11-27, 11:24–11:44)
 
 **Anlass:** Vor dem Speichern der Neubauten aus D92 (Flags aus OwlProgram-`develop`) prüfen, ob sich am Ausgang etwas ändert (Wunsch des Nutzers). Mit offenem Stream gibt acdc1 USB-Playback statt des Patches aus, deshalb über den UMC wie in D91.
 
 **Setup:** acdc1 fx9a mit Masse-Draht, im Case, USB gesteckt, kein Stream, AC/DC-Eingänge offen, keine weiteren Kabel. Out 1 → UMC202HD In 1 **und** In 2, UMC-Gain wie in D74/D91. Regler 63/64/71/50 von 127. Kontrolle vorab mit Slot 1, 10 s ohne Manifest: RMS −42,9 dBFS an UMC In 1 (D91: −43,0). Je Patch `owl_write.py --run` (nur RAM) in der Folge alt → neu → alt, je 4 s warten, dann 30 s `acdc_rec.py --device UMC202HD --input-only --channels 2 --format pcm24` (IDs `D93-<patch>-old1|new|old2`). Alt = `owl-patches/builds-flagtest/base/<patch>/patch.bin` (= Slot-Builds), neu = `owl-patches/builds/<patch>/patch.bin`. Alle 21 Aufnahmen ohne Stream-Meldungen, Spitzen höchstens −20,5 dBFS. Danach Program Change auf Slot 1.
 
-**Auswertung:** neues Werkzeug `tools/ab_bands.py` (`out/D93-ab-bands.md`): RMS ≥ 20 Hz, 30 Terzbänder 25 Hz–20 kHz gegen die Streuung der beiden alten Läufe ± 1 dB, Linien ≥ 12 dB über dem Grund, Knackser > 10 × RMS. Dazu `tools/line_levels.py` für Kamm und Blockraten-Linien (`out/D93-lines-table.md`).
+**Auswertung:** neues Werkzeug `tools/ab_bands.py` (`reports/D93-ab-bands.md`): RMS ≥ 20 Hz, 30 Terzbänder 25 Hz–20 kHz gegen die Streuung der beiden alten Läufe ± 1 dB, Linien ≥ 12 dB über dem Grund, Knackser > 10 × RMS. Dazu `tools/line_levels.py` für Kamm und Blockraten-Linien (`reports/D93-lines-table.md`).
 
 **Ergebnis [gemessen]** (UMC In 1, Datei-dBFS, In 2 gleich auf ±0,2 dB):
 
@@ -3337,7 +3448,7 @@ PlateauProfile (Takte pro Sample je Abschnitt, Mittel aus je drei Meldungen `PA 
 
 **Fazit:** Am Ausgang ist zwischen den alten und den neuen Builds kein Unterschied messbar. Pegel, Spektrum und Linien liegen in der Streuung der alten Läufe. Nach der Messung läuft Slot 1, nichts gespeichert. Die Kabel Out 1 → UMC stecken noch.
 
-## D94 – Slots 2–8 mit den Neubauten gespeichert (2026-11-27, 12:04–12:08)
+### D94 – Slots 2–8 mit den Neubauten gespeichert (2026-11-27, 12:04–12:08)
 
 **Anlass:** Nach D92 (Rechenlast) und D93 (Ausgang gleich) die Neubauten mit den Flags aus OwlProgram-`develop` auf acdc1 speichern (Freigabe des Nutzers).
 
@@ -3356,6 +3467,6 @@ PlateauProfile (Takte pro Sample je Abschnitt, Mittel aus je drei Meldungen `PA 
 | 8 | SchliereL | 22 948, `0xb2496457` | 22 908, `0xc44b013f` | bytegleich |
 
 - Kontrolle `owl_read.py --out backup --dump` → `backup/acdc1/20261127/owl_120645/`: alle acht Slots `ok`, CRCs wie in der Tabelle, Slot 1 unverändert.
-- Rechenlast per Program Change, Regler 63/64/71/50 (`out/owl_read/20261127_stored_slot<N>/`): TapeDelay 25 %, Grainz 12 %, RingsReverb 14 %, Plateau 27 %, Tanh3 45 %, SchliereS 35 %, SchliereL 59 %, wie aus dem RAM in D92.
+- Rechenlast per Program Change, Regler 63/64/71/50 (`reports/owl_read/20261127_stored_slot<N>/`): TapeDelay 25 %, Grainz 12 %, RingsReverb 14 %, Plateau 27 %, Tanh3 45 %, SchliereS 35 %, SchliereL 59 %, wie aus dem RAM in D92.
 
 **Fazit:** Slots 2–8 tragen die Neubauten. Danach Program Change auf Slot 1, gemerkt ist weiter Slot 12 (leer, beim Einschalten startet Slot 1). Rückweg: die alten Builds aus `owl-patches/builds-flagtest/base/` bzw. die Kopien in `backup/acdc1/20261127/owl/` mit `--store`.

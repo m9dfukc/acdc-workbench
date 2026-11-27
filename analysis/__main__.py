@@ -42,7 +42,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m analysis", description="AC/DC noise analysis (docs/03).")
     ap.add_argument("inputs", nargs="+", help="Manifest ID (e.g. M1) or one or more WAV files")
     ap.add_argument("--manifest", type=Path, default=Path("recordings/manifest.toml"))
-    ap.add_argument("--out", type=Path, default=Path("out"), help="Base directory, results go to <out>/<name>/")
+    ap.add_argument("--out", type=Path, default=Path("reports"), help="Base directory, results go to <out>/<name>/")
     ap.add_argument("--name", help="Name of the result directory (default: manifest ID or file name)")
     ap.add_argument("--ref", nargs="+", help="Reference (manifest ID or files) to overlay and compare")
     ap.add_argument("--device-fs", type=float, default=48000.0, help="Nominal sample rate of the AC/DC [Hz]")

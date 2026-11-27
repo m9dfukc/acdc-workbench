@@ -29,6 +29,7 @@ PAIRS = {
     "docs/04-software-filter.md": "docs/en/04-software-filter.md",
     "docs/05-firmware-plan.md": "docs/en/05-firmware-plan.md",
     "docs/06-hardware-mod-masse.md": "docs/en/06-hardware-mod-ground.md",
+    "docs/07-werkzeuge-und-ablaeufe.md": "docs/en/07-tools-and-procedures.md",
     "docs/99-quellen.md": "docs/en/99-sources.md",
 }
 

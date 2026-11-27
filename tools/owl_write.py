@@ -47,7 +47,7 @@ Usage (CoreMIDI is not available inside a sandbox, rtmidi needs Python 3.12):
   python3 tools/owl_write.py PATCH --syx-out x.syx   (offline)
 
 Output: <out>/<device>/<YYYYMMDD>/owl_write_<HHMMSS>.json (default out:
-out/owl_write). Backups of overwritten slots go to
+reports/owl_write). Backups of overwritten slots go to
 <backup>/<device>/<YYYYMMDD>/owl_write_<HHMMSS>/ (default backup: backup).
 """
 
@@ -280,7 +280,7 @@ def main(argv=None) -> int:
                          "if its size and CRC match the slot")
     ap.add_argument("--port", default="OWL-ACDC", help="MIDI port name (substring)")
     ap.add_argument("--delay", type=float, default=0.01, help="pause between upload packets in seconds")
-    ap.add_argument("--out", type=Path, default=Path("out/owl_write"), help="base folder for the log")
+    ap.add_argument("--out", type=Path, default=Path("reports/owl_write"), help="base folder for the log")
     ap.add_argument("--backup", type=Path, default=Path("backup"), help="base folder for slot backups")
     args = ap.parse_args(argv)
 
