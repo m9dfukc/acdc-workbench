@@ -18,7 +18,7 @@ Safety:
     the backup). The slot number is always sent: the firmware empties the
     WHOLE patch storage when the number is missing. Afterwards all other slots
     must read back unchanged. Slot numbers do not shift, the slot stays empty.
-    Not yet tried on the device.
+    Tried on acdc1 on 2026-11-27 (slot 9, other slots unchanged).
   - --store needs --yes. Slot 1 (the patch that starts at power-on) needs
     --allow-slot1 in addition.
   - An occupied target slot is saved first. If that backup fails, nothing is

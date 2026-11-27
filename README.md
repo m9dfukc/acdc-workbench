@@ -2,7 +2,7 @@
 
 A workbench for the **Befaco / Rebel Technology AC/DC**, the Eurorack USB audio interface that runs the OpenWare firmware. It reads out the module, records from it automatically, analyses the noise spectrum, builds the firmware reproducibly and documents every flash.
 
-It started as a hunt for the noise in my AC/DC recordings. The tooling that grew around that hunt is now the main result. The firmware itself lives in a fork: [m9dfukc/OpenWare](https://github.com/m9dfukc/OpenWare), branch `acdc/fx1d`, included here as a submodule. The own OWL patches live in [m9dfukc/acdc-patches](https://github.com/m9dfukc/acdc-patches), included as the submodule `owl/`.
+It started as a hunt for the noise in my AC/DC recordings. The tooling that grew around that hunt is now the main result. The firmware itself lives in a fork: [m9dfukc/OpenWare](https://github.com/m9dfukc/OpenWare), branch `acdc/fx1d`, included here as a submodule. The own OWL patches live in [m9dfukc/acdc-patches](https://github.com/m9dfukc/acdc-patches), included as the submodule `owl/`. Its patch loader page, <https://m9dfukc.github.io/acdc-patches/>, lets other AC/DC owners run, store or erase patch files (.bin or .syx, e.g. from the releases) from a Chromium-based browser over Web MIDI, without a toolchain.
 
 > **Unofficial, and narrow in scope.** Everything was measured on one module, with one computer, on macOS. A second module serves as an untouched reference. Flashing is at your own risk: back up the firmware of your module first.
 

@@ -2,7 +2,7 @@
 
 Eine Werkbank für das **Befaco / Rebel Technology AC/DC**, das Eurorack-USB-Audiointerface mit OpenWare-Firmware. Sie liest das Modul aus, nimmt automatisch auf, wertet das Rauschspektrum aus, baut die Firmware reproduzierbar und protokolliert jeden Flash.
 
-Anlass war das Rauschen in meinen AC/DC-Aufnahmen. Die Werkzeuge, die dabei entstanden sind, sind inzwischen das wichtigste Ergebnis. Die Firmware selbst liegt in einem Fork: [m9dfukc/OpenWare](https://github.com/m9dfukc/OpenWare), Branch `acdc/fx1d`, hier als Submodul eingebunden. Die eigenen OWL-Patches liegen in [m9dfukc/acdc-patches](https://github.com/m9dfukc/acdc-patches), eingebunden als Submodul `owl/`.
+Anlass war das Rauschen in meinen AC/DC-Aufnahmen. Die Werkzeuge, die dabei entstanden sind, sind inzwischen das wichtigste Ergebnis. Die Firmware selbst liegt in einem Fork: [m9dfukc/OpenWare](https://github.com/m9dfukc/OpenWare), Branch `acdc/fx1d`, hier als Submodul eingebunden. Die eigenen OWL-Patches liegen in [m9dfukc/acdc-patches](https://github.com/m9dfukc/acdc-patches), eingebunden als Submodul `owl/`. Mit der Ladeseite <https://m9dfukc.github.io/acdc-patches/> können andere AC/DC-Besitzer Patch-Dateien (.bin oder .syx, z. B. aus den Releases) ohne Toolchain aus einem Chromium-Browser per Web MIDI starten, speichern oder aus einem Slot löschen.
 
 > **Inoffiziell und eng gefasst.** Gemessen wurde an einem Modul, mit einem Rechner, unter macOS. Ein zweites Modul dient als unberührte Referenz. Flashen geschieht auf eigene Gefahr: vorher die Firmware des eigenen Moduls sichern.
 
