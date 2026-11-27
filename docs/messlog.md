@@ -3270,3 +3270,92 @@ Pegel in dB bezogen auf Vollausschlag am Ausgang von acdc1, UMC In 1 (In 2 auf �
 **Einschränkungen:** Vergleich über sechs Tage und zwei Firmware-Stände (fx5a → fx9a). fx9a allein senkt fs/8 gegen fx5a um höchstens ≈ 1 dB (D79, D85, D89), die LED-PWM-Frequenz (fx7a) spielt beim Blinken mit 40 Hz keine Rolle. Die Phasen 0, 2 und 8 tragen nach D74 noch den Ausschwinger des UMC nach dem Wechsel der Ausgangsart, die Auswertung beginnt deshalb erst 1 s nach Phasenbeginn. Kein A-B-A.
 
 **Fazit:** Der Masse-Draht senkt Kamm, fs/8 und LED-Verschiebung auch am Ausgang um 9–19 dB. Nach der Messung läuft Slot 1, kein Stream, nichts gespeichert.
+
+## D92 – Patches mit den Compiler-Flags aus OwlProgram-`develop`: Rechenlast am Gerät (2026-11-27, 10:56–11:09)
+
+**Anlass:** OwlProgram-`develop` (PR #132) baut Patches ohne `-fno-builtin`, `-ffreestanding` und `-mtune=cortex-m4`. Unser SDK (`owl-patches/OwlProgram/`, `master` `60f44ab`) setzt alle drei, deshalb ruft jeder Patch `fabsf`, `sqrtf`, `fmaxf` und `floorf` aus newlib auf, statt einen FPU-Befehl zu nutzen. Vergleich am Rechner und Builds: `docs/research/notes/owlprogram_develop_2026-11-27.md`.
+
+**Builds:** `owl-patches/builds-flagtest/base/` (bisheriges SDK, die sieben FX-Patches der Slots 2–8 und PlateauProfile, alle bytegleich mit den Builds in `owl-patches/builds/`) und `owl-patches/builds-flagtest/fpu/` (SDK-Kopie `owl-patches/OwlProgram-fpu/`, nur die Flag-Zeile aus `develop`, Bibliotheken damit neu gebaut). Arm GNU 12.2.Rel1, Quellen unverändert. In den `process`-Funktionen sind mit fpu alle Aufrufe von `fabsf`/`sqrtf`/`fmaxf`/`floorf` weg [Code].
+
+**Setup:** acdc1 im Case, fx9a, mit Masse-Draht (D90), keine Kabel, Eingänge offen, kein Stream. Regler 63/64/71/50 von 127, während der Messung höchstens ±1. Vorher Slot 1 (ACDC, 5 %, `out/owl_read/20261127_flagtest_before/`). Je Patch `owl_write.py <patch.bin> --run` (nur RAM) in der Folge base → fpu → base, je 4 s warten, dann drei `owl_read.py` (`out/owl_read/20261127_flagtest_<patch>_<base1|fpu|base2>_<n>/`). Am Ende `owl_read.py --program 1`. Nichts gespeichert.
+
+**Ergebnis [gemessen]** (Firmware-Anzeige `PROGRAM_STATS`, ganze Prozent, Mittel aus 6 base- und 3 fpu-Ablesungen):
+
+| Patch (Slot) | base1 | fpu | base2 | Δ |
+|---|---|---|---|---|
+| Plateau (5) | 31 / 29 / 29 | 27 / 29 / 27 | 29 / 29 / 29 | 29,3 → 27,7 % (−6 %) |
+| Tanh3 (6) | 50 / 52 / 50 | 45 / 45 / 45 | 50 / 50 / 50 | 50,3 → 45,0 % (−11 %) |
+| SchliereS (7) | 38 / 39 / 38 | 35 / 35 / 35 | 39 / 39 / 39 | 38,7 → 35,0 % (−9 %) |
+| SchliereL (8) | 70 / 71 / 71 | 60 / 58 / 58 | 70 / 71 / 71 | 70,7 → 58,7 % (−17 %) |
+| TapeDelay (2) | 31 / 31 / 32 | 25 / 25 / 25 | 31 / 33 / 31 | 31,5 → 25,0 % (−21 %) |
+| Grainz (3) | 13 / 13 / 13 | 12 / 12 / 12 | 13 / 13 / 13 | 13,0 → 12,0 % (−8 %) |
+| RingsReverb (4) | 15 / 17 / 15 | 14 / 14 / 14 | 15 / 15 / 15 | 15,3 → 14,0 % (−9 %) |
+
+PlateauProfile (Takte pro Sample je Abschnitt, Mittel aus je drei Meldungen `PA …`, base1 und base2 gleich):
+
+| | c | i | n | t | o | s | p | Summe |
+|---|---|---|---|---|---|---|---|---|
+| base | 404 | 370 | 468 | 679 | 236 | 293 | 207 | 2644–2668 |
+| fpu | 338 | 314 | 434 | 657 | **279** | 245 | 195 | 2445–2483 (−7 %) |
+
+**Deutung:**
+- Jeder Patch wird schneller, base liegt vor und nach fpu gleich. Am meisten gewinnen TapeDelay (−6,5 Prozentpunkte), SchliereL (−12) und Tanh3 (−5). In diesen Patches steckt `fabsf` bzw. `sqrtf` in der Schleife je Sample: Limiter (`owl/AcdcOutput.h`), Pegelmesser (Tanh3), Sättigung und Hüllkurven (Schliere) [Code].
+- Plateau gewinnt wenig (−7 % Takte), es hängt am Speicherzugriff (D84). Der Abschnitt o (14 Abgriffe) wird um 43 Takte langsamer, die anderen Abschnitte schneller. Ursache nicht untersucht [Hypothese: andere Befehlsfolge oder Lage der Schleife].
+- Grainz und RingsReverb liegen nur 1 Prozentpunkt tiefer, die Anzeige rundet auf ganze Prozent.
+
+**Einschränkungen:** Nur die Rechenlast. Klang und Ausgang sind nicht verglichen. `fabsf`, `sqrtf`, `fmaxf` und `floorf` liefern als FPU-Befehl dieselben Werte wie newlib, Unterschiede könnten nur aus einer anderen Reihenfolge der Rechnung unter `-ffast-math` kommen [Hypothese]. Die Rechenlast eines Patches hebt fs/8 (D69), weniger Last sollte eher helfen [Hypothese], nicht gemessen.
+
+**Fazit:** Die Flags aus `develop` senken die Rechenlast aller sieben FX-Patches auf den Slots 2–8 um 1–12 Prozentpunkte (5–21 %), ohne Änderung an den Quellen. Nach der Messung läuft Slot 1, kein Stream, nichts gespeichert.
+
+**Nachtrag (2026-11-27, Nutzer: übernehmen):** Die Flag-Zeile steht jetzt in `owl-patches/OwlProgram/compile.mk` (Original `compile.mk.orig-60f44ab`). Die acht Builds in `owl-patches/builds/` sind damit neu gebaut und bytegleich mit den gemessenen fpu-Builds [gemessen: Build]. Die Slots 2–8 tragen weiter die alten Builds, gespeichert wird erst nach einem Vergleich am Ausgang und mit Freigabe.
+
+## D93 – Patches mit den neuen Compiler-Flags: Ausgang alt gegen neu am UMC (2026-11-27, 11:24–11:44)
+
+**Anlass:** Vor dem Speichern der Neubauten aus D92 (Flags aus OwlProgram-`develop`) prüfen, ob sich am Ausgang etwas ändert (Wunsch des Nutzers). Mit offenem Stream gibt acdc1 USB-Playback statt des Patches aus, deshalb über den UMC wie in D91.
+
+**Setup:** acdc1 fx9a mit Masse-Draht, im Case, USB gesteckt, kein Stream, AC/DC-Eingänge offen, keine weiteren Kabel. Out 1 → UMC202HD In 1 **und** In 2, UMC-Gain wie in D74/D91. Regler 63/64/71/50 von 127. Kontrolle vorab mit Slot 1, 10 s ohne Manifest: RMS −42,9 dBFS an UMC In 1 (D91: −43,0). Je Patch `owl_write.py --run` (nur RAM) in der Folge alt → neu → alt, je 4 s warten, dann 30 s `acdc_rec.py --device UMC202HD --input-only --channels 2 --format pcm24` (IDs `D93-<patch>-old1|new|old2`). Alt = `owl-patches/builds-flagtest/base/<patch>/patch.bin` (= Slot-Builds), neu = `owl-patches/builds/<patch>/patch.bin`. Alle 21 Aufnahmen ohne Stream-Meldungen, Spitzen höchstens −20,5 dBFS. Danach Program Change auf Slot 1.
+
+**Auswertung:** neues Werkzeug `tools/ab_bands.py` (`out/D93-ab-bands.md`): RMS ≥ 20 Hz, 30 Terzbänder 25 Hz–20 kHz gegen die Streuung der beiden alten Läufe ± 1 dB, Linien ≥ 12 dB über dem Grund, Knackser > 10 × RMS. Dazu `tools/line_levels.py` für Kamm und Blockraten-Linien (`out/D93-lines-table.md`).
+
+**Ergebnis [gemessen]** (UMC In 1, Datei-dBFS, In 2 gleich auf ±0,2 dB):
+
+| Patch | RMS alt1 / neu / alt2 | Δ neu gegen alt | Terzbänder außerhalb | Knackser |
+|---|---|---|---|---|
+| TapeDelay | −43,85 / −43,98 / −43,98 | −0,07 | 4 von 30 (25–50 Hz, höchstens +1,3 dB) | 0 / 0 / 0 |
+| Grainz | −46,88 / −47,00 / −46,78 | −0,16 | 0 | 0 / 0 / 0 |
+| RingsReverb | −46,64 / −46,63 / −46,62 | ±0,00 | 0 | 0 / 0 / 0 |
+| Plateau | −39,56 / −39,54 / −39,54 | +0,01 | 1 (250 Hz, +0,1 dB) | 0 / 0 / 0 |
+| Tanh3 | −36,06 / −35,93 / −35,93 | +0,07 | 0 | 0 / 0 / 0 |
+| SchliereS | −44,67 / −44,75 / −44,77 | −0,02 | 0 | 0 / 0 / 0 |
+| SchliereL | −45,32 / −45,31 / −45,26 | −0,02 | 0 (In 2: 1, 6350 Hz, +0,7 dB) | 0 / 0 / 0 |
+
+- **„Neue Linien“ zwischen 840 und 930 Hz sind ein Messeffekt.** `ab_bands.py` meldet je Patch eine Linie nur in neu (TapeDelay 921 Hz, Tanh3 876 Hz mit Vielfachen bei 1750 Hz, SchliereS 858 Hz, SchliereL 843 Hz). Dieselbe Linie steht aber in allen Läufen mit gleichem Pegel (−66…−78 dBFS), nur ihre Frequenz fällt über die Sitzung stetig: TapeDelay 927 → 921 → 916 Hz (11:28–11:30), Tanh3 884 → 875 → 869 Hz, SchliereS 862 → 858 → 854 Hz, SchliereL 849 → 843 → 837 Hz (11:42–11:44). Eine driftende Quelle außerhalb der Firmware [Hypothese: ein Oszillator im Case, der auf die offenen Eingänge übersprechen kann]. Tanh3 bildet daraus Obertöne.
+- **Kamm und Blockraten-Linien:** 999,86 / 6000 / 12 000 / 18 000 Hz liegen 0–9 dB über dem Grund des UMC (−93…−112 dBFS) und streuen zwischen alt1 und alt2 um bis zu 7 dB. Neu liegt in dieser Streuung, keine Richtung. Die von `ab_bands.py` gemeldeten Linien bei 6001 und 18 003 Hz (Tanh3, SchliereL) sind davon gedeckt.
+- Keine Knackser, keine Aussetzer, keine Stille, kein Pegelsprung.
+
+**Einschränkungen:** Offene Eingänge, also Rauschen und Störlinien als Eingangssignal. Damit fallen grobe Fehler auf (Stille, NaN, Knackser, falscher Pegel, neue Störlinien), feine Unterschiede in der Klangfarbe bei echtem Signal nicht. Nur Out 1. Die Linien bei 840–930 Hz stammen nicht aus den Builds, ihre Quelle ist offen.
+
+**Fazit:** Am Ausgang ist zwischen den alten und den neuen Builds kein Unterschied messbar. Pegel, Spektrum und Linien liegen in der Streuung der alten Läufe. Nach der Messung läuft Slot 1, nichts gespeichert. Die Kabel Out 1 → UMC stecken noch.
+
+## D94 – Slots 2–8 mit den Neubauten gespeichert (2026-11-27, 12:04–12:08)
+
+**Anlass:** Nach D92 (Rechenlast) und D93 (Ausgang gleich) die Neubauten mit den Flags aus OwlProgram-`develop` auf acdc1 speichern (Freigabe des Nutzers).
+
+**Ablauf [gemessen]:**
+- Vorher Sicherung `owl_read.py --out backup --dump` → `backup/acdc1/20261127/owl/`, alle acht Slots `ok`, CRCs wie die alten Builds (`owl-patches/builds-flagtest/base/`).
+- Je Slot `owl_write.py owl-patches/builds/<name>/patch.bin --store N --yes --backup-file owl-patches/builds-flagtest/base/<name>/patch.bin --download-check`. Kopien der alten Slots in `backup/acdc1/20261127/owl_write_*/`.
+
+| Slot | Patch | alt (B, CRC) | neu (B, CRC) | Rücklesen |
+|---|---|---|---|---|
+| 2 | TapeDelay | 30 036, `0xe104abf8` | 29 404, `0x03b86f53` | bytegleich |
+| 3 | Grainz | 26 700, `0xcc5b8e81` | 26 284, `0xc6bb816b` | bytegleich |
+| 4 | RingsReverb | 21 556, `0x14db59ec` | 21 156, `0x417c218c` | bytegleich |
+| 5 | Plateau | 33 828, `0x9594a7be` | 33 300, `0x8b4ad79d` | bytegleich |
+| 6 | Tanh3 | 18 580, `0xaed73395` | 18 452, `0x4df60e82` | bytegleich |
+| 7 | SchliereS | 18 156, `0xd9b2a0f9` | 18 068, `0x95ea2c25` | bytegleich |
+| 8 | SchliereL | 22 948, `0xb2496457` | 22 908, `0xc44b013f` | bytegleich |
+
+- Kontrolle `owl_read.py --out backup --dump` → `backup/acdc1/20261127/owl_120645/`: alle acht Slots `ok`, CRCs wie in der Tabelle, Slot 1 unverändert.
+- Rechenlast per Program Change, Regler 63/64/71/50 (`out/owl_read/20261127_stored_slot<N>/`): TapeDelay 25 %, Grainz 12 %, RingsReverb 14 %, Plateau 27 %, Tanh3 45 %, SchliereS 35 %, SchliereL 59 %, wie aus dem RAM in D92.
+
+**Fazit:** Slots 2–8 tragen die Neubauten. Danach Program Change auf Slot 1, gemerkt ist weiter Slot 12 (leer, beim Einschalten startet Slot 1). Rückweg: die alten Builds aus `owl-patches/builds-flagtest/base/` bzw. die Kopien in `backup/acdc1/20261127/owl/` mit `--store`.

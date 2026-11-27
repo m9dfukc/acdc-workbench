@@ -2857,3 +2857,297 @@ files = ["20261124_acdc1_gnd-slot1-out1-via-umc-r2_g12_usb-plugged.wav"]
 scale = 2.0
 recorder = "tools/acdc_rec.py"
 note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:42:19. Stream-Meldungen: 0. Stream zwischen den Wiederholungen geschlossen und neu geöffnet. messlog D91"
+
+[[measurement]]
+id = "D93-tapedelay-old1"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang alt (-fno-builtin -ffreestanding -mtune=cortex-m4), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: TapeDelay old1, patch.bin CRC32 0xe104abf8"
+title = "D93-tapedelay-old1 – acdc1 flagtest-tapedelay-old1-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-tapedelay-old1-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:28:36. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-tapedelay-new"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang neu (Flags aus OwlProgram-develop), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: TapeDelay new, patch.bin CRC32 0x03b86f53"
+title = "D93-tapedelay-new – acdc1 flagtest-tapedelay-new-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-tapedelay-new-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:29:22. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-tapedelay-old2"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang alt (-fno-builtin -ffreestanding -mtune=cortex-m4), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: TapeDelay old2, patch.bin CRC32 0xe104abf8"
+title = "D93-tapedelay-old2 – acdc1 flagtest-tapedelay-old2-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-tapedelay-old2-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:30:07. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-grainz-old1"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang alt (-fno-builtin -ffreestanding -mtune=cortex-m4), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: Grainz old1, patch.bin CRC32 0xcc5b8e81"
+title = "D93-grainz-old1 – acdc1 flagtest-grainz-old1-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-grainz-old1-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:30:52. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-grainz-new"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang neu (Flags aus OwlProgram-develop), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: Grainz new, patch.bin CRC32 0xc6bb816b"
+title = "D93-grainz-new – acdc1 flagtest-grainz-new-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-grainz-new-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:31:38. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-grainz-old2"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang alt (-fno-builtin -ffreestanding -mtune=cortex-m4), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: Grainz old2, patch.bin CRC32 0xcc5b8e81"
+title = "D93-grainz-old2 – acdc1 flagtest-grainz-old2-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-grainz-old2-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:32:23. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-ringsreverb-old1"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang alt (-fno-builtin -ffreestanding -mtune=cortex-m4), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: RingsReverb old1, patch.bin CRC32 0x14db59ec"
+title = "D93-ringsreverb-old1 – acdc1 flagtest-ringsreverb-old1-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-ringsreverb-old1-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:33:08. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-ringsreverb-new"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang neu (Flags aus OwlProgram-develop), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: RingsReverb new, patch.bin CRC32 0x417c218c"
+title = "D93-ringsreverb-new – acdc1 flagtest-ringsreverb-new-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-ringsreverb-new-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:33:53. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-ringsreverb-old2"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang alt (-fno-builtin -ffreestanding -mtune=cortex-m4), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: RingsReverb old2, patch.bin CRC32 0x14db59ec"
+title = "D93-ringsreverb-old2 – acdc1 flagtest-ringsreverb-old2-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-ringsreverb-old2-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:34:38. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-plateau-old1"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang alt (-fno-builtin -ffreestanding -mtune=cortex-m4), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: Plateau old1, patch.bin CRC32 0x9594a7be"
+title = "D93-plateau-old1 – acdc1 flagtest-plateau-old1-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-plateau-old1-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:35:24. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-plateau-new"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang neu (Flags aus OwlProgram-develop), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: Plateau new, patch.bin CRC32 0x8b4ad79d"
+title = "D93-plateau-new – acdc1 flagtest-plateau-new-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-plateau-new-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:36:10. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-plateau-old2"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang alt (-fno-builtin -ffreestanding -mtune=cortex-m4), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: Plateau old2, patch.bin CRC32 0x9594a7be"
+title = "D93-plateau-old2 – acdc1 flagtest-plateau-old2-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-plateau-old2-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:36:56. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-tanh3-old1"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang alt (-fno-builtin -ffreestanding -mtune=cortex-m4), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: Tanh3 old1, patch.bin CRC32 0xaed73395"
+title = "D93-tanh3-old1 – acdc1 flagtest-tanh3-old1-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-tanh3-old1-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:37:41. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-tanh3-new"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang neu (Flags aus OwlProgram-develop), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: Tanh3 new, patch.bin CRC32 0x4df60e82"
+title = "D93-tanh3-new – acdc1 flagtest-tanh3-new-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-tanh3-new-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:38:26. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-tanh3-old2"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang alt (-fno-builtin -ffreestanding -mtune=cortex-m4), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: Tanh3 old2, patch.bin CRC32 0xaed73395"
+title = "D93-tanh3-old2 – acdc1 flagtest-tanh3-old2-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-tanh3-old2-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:39:11. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-schlieres-old1"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang alt (-fno-builtin -ffreestanding -mtune=cortex-m4), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: SchliereS old1, patch.bin CRC32 0xd9b2a0f9"
+title = "D93-schlieres-old1 – acdc1 flagtest-schlieres-old1-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-schlieres-old1-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:39:56. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-schlieres-new"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang neu (Flags aus OwlProgram-develop), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: SchliereS new, patch.bin CRC32 0x95ea2c25"
+title = "D93-schlieres-new – acdc1 flagtest-schlieres-new-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-schlieres-new-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:40:41. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-schlieres-old2"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang alt (-fno-builtin -ffreestanding -mtune=cortex-m4), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: SchliereS old2, patch.bin CRC32 0xd9b2a0f9"
+title = "D93-schlieres-old2 – acdc1 flagtest-schlieres-old2-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-schlieres-old2-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:41:26. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-schlierel-old1"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang alt (-fno-builtin -ffreestanding -mtune=cortex-m4), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: SchliereL old1, patch.bin CRC32 0xb2496457"
+title = "D93-schlierel-old1 – acdc1 flagtest-schlierel-old1-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-schlierel-old1-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:42:11. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-schlierel-new"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang neu (Flags aus OwlProgram-develop), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: SchliereL new, patch.bin CRC32 0xc44b013f"
+title = "D93-schlierel-new – acdc1 flagtest-schlierel-new-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-schlierel-new-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:42:56. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"
+
+[[measurement]]
+id = "D93-schlierel-old2"
+date = "2026-11-27"
+device = "UMC202HD In 1+2 ← acdc1 Out 1 (beide UMC-Eingänge am selben Ausgang), acdc1 fx9a mit Masse-Draht, ins Case geschraubt"
+test = "Patch-Ausgang alt (-fno-builtin -ffreestanding -mtune=cortex-m4), AC/DC-Eingänge offen, Regler 63/64/71/50"
+gain = "g12"
+usb = "acdc1: usb-plugged, kein Stream. UMC: Hub"
+patch = "RAM: SchliereL old2, patch.bin CRC32 0xb2496457"
+title = "D93-schlierel-old2 – acdc1 flagtest-schlierel-old2-out1-via-umc, 30 s"
+files = ["20261127_acdc1_flagtest-schlierel-old2-out1-via-umc_g12_usb-plugged.wav"]
+scale = 2.0
+recorder = "tools/acdc_rec.py"
+note = "48 kHz / pcm24, tools/acdc_rec.py (Gerät UMC202HD 192k, nur Eingang, Block 256, 3 s verworfen). scale = 2 → Datei-dBFS wie die Aufnahmen aus der Host-Software. Start 11:43:42. Stream-Meldungen: 0. messlog D93, Reihenfolge alt → neu → alt je Patch"

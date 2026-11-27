@@ -29,6 +29,7 @@ English version: [README.md](README.md)
 | `tools/line_levels.py` | Pegel einzelner Linien je Kanal, direkt bei der Linienfrequenz gemessen, über mehrere Aufnahmen, mit Abstand zum Grundrauschen |
 | `tools/crosstalk_lines.py`, `tools/click_sensitivity.py` | Übersprechen von Testtönen der Ausgänge auf die Eingänge; Empfindlichkeit des Klick-Detektors für eingebaute USB-Fehler |
 | `tools/ledpath_phases.py` | Pegel je Phase einer Aufnahme mit dem Mess-Patch für den LED-Pfad, an einem zweiten Interface aufgenommen und über einen eingebauten Eichton auf den Ausgang des Moduls umgerechnet |
+| `tools/ab_bands.py` | A/B/A-Vergleich dreier Aufnahmen, etwa alter Build, neuer Build, alter Build: Pegel, Terzbänder gegen die Streuung der A-Läufe, neue Linien, Knackser |
 | `tools/knob_series.py` | Geführte Aufnahmeserie mit den Reglern in vorgegebenen Stellungen: liest die Regler per MIDI, wartet auf die Stellung, nimmt auf und schreibt am Ende eine Tabelle der Linienpegel |
 
 ## Befunde bisher

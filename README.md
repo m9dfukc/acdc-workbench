@@ -29,6 +29,7 @@ Deutsche Fassung: [README.de.md](README.de.md)
 | `tools/line_levels.py` | Level of single lines per channel, measured right at the line frequency, across several recordings, with the distance to the noise floor |
 | `tools/crosstalk_lines.py`, `tools/click_sensitivity.py` | Crosstalk of test tones from the outputs to the inputs; sensitivity of the click detector to injected USB faults |
 | `tools/ledpath_phases.py` | Levels per phase of a recording with the LED path measurement patch, taken at a second interface and referred to the module's output through a built-in calibration tone |
+| `tools/ab_bands.py` | A/B/A comparison of three recordings, e.g. old build, new build, old build: levels, third-octave bands against the spread of the A runs, new lines, clicks |
 | `tools/knob_series.py` | Guided series of recordings with the knobs in given positions: reads the knobs over MIDI, waits until they are in place, records, and writes a table of the line levels at the end |
 
 ## Findings so far

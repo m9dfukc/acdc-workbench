@@ -20,7 +20,9 @@
 # missing include without touching it.
 #
 # Environment:
-#   SDK       OwlProgram tree (default: owl-patches/OwlProgram)
+#   SDK       OwlProgram tree (default: owl-patches/OwlProgram). Its compile.mk should use the
+#             flags of OwlProgram develop (no -fno-builtin/-ffreestanding/-mtune, D92), the
+#             script warns otherwise and writes the compile.mk checksum to BUILD_INFO.txt
 #   SRC       folder with the patch sources (default: owl-patches/acdc-patches)
 #   OUT       output base folder (default: owl-patches/builds)
 #   PLATFORM  OWL3 (default: Cortex-M7 code, FPU fpv5-d16) or OWL2 (Cortex-M4 code that
@@ -32,10 +34,12 @@
 #   TOOLROOT  toolchain bin directory with a trailing slash
 #             (default: /Applications/ArmGNUToolchain/12.2.rel1/arm-none-eabi/bin/)
 #   JOBS      parallel make jobs for the libraries (default: 8)
+#   WORK      folder for the throwaway build trees (default: owl-patches/_work). A separate
+#             one keeps test builds (other SDK or flags) from replacing the regular trees
 set -euo pipefail
 
 if [ $# -lt 3 ]; then
-  sed -n '2,34p' "$0" >&2
+  sed -n '2,38p' "$0" >&2
   exit 2
 fi
 
@@ -64,22 +68,31 @@ case "$NAME" in (*/*|""|.|..) echo "Invalid name: $NAME" >&2; exit 2;; esac
 [ -f "$SRC/$FILE" ] || { echo "Patch file not found: $SRC/$FILE" >&2; exit 2; }
 [ "$LIMIT" != 1 ] || [ -f "$ROOT/owl/AcdcOutput.h" ] || { echo "owl/AcdcOutput.h missing: git submodule update --init owl" >&2; exit 2; }
 
-WORK="$ROOT/owl-patches/_work"
+WORK="${WORK:-$ROOT/owl-patches/_work}"
 BUILD="$WORK/$NAME-$PLATFORM-$LINK"
 LIBBUILD="$WORK/_libs-$PLATFORM"
 STAMP="$SDK/Libraries/.platform"
+# Flags des SDK: compile.mk ist lokal geändert (Flags aus OwlProgram-develop, D92). Die Prüfsumme
+# kommt in den Stempel der Bibliotheken (andere Flags = neu bauen) und in BUILD_INFO.txt
+MKSHA="$(shasum -a 256 "$SDK/compile.mk" | cut -d' ' -f1)"
+if grep -Eq '^[^#]*(-fno-builtin|-ffreestanding)' "$SDK/compile.mk"; then
+  BUILTINS="off (-fno-builtin/-ffreestanding in compile.mk)"
+  echo "Warning: $SDK/compile.mk still sets -fno-builtin/-ffreestanding: fabsf, sqrtf etc. become newlib calls (D92)" >&2
+else
+  BUILTINS="on"
+fi
 
 cd "$SDK"
 
-# 1. Bibliotheken: liegen im SDK-Baum, deshalb je Plattform neu bauen
-if [ ! -f Libraries/libowlprg.a ] || [ ! -f Libraries/libdaisysp.a ] || [ "$(cat "$STAMP" 2>/dev/null)" != "$PLATFORM" ]; then
+# 1. Bibliotheken: liegen im SDK-Baum, deshalb je Plattform und je compile.mk neu bauen
+if [ ! -f Libraries/libowlprg.a ] || [ ! -f Libraries/libdaisysp.a ] || [ "$(cat "$STAMP" 2>/dev/null)" != "$PLATFORM $MKSHA" ]; then
   echo "Building the OwlProgram libraries for $PLATFORM"
   rm -rf "$LIBBUILD" Libraries/libowlprg.a Libraries/libdaisysp.a
   mkdir -p "$LIBBUILD"
   make -s -j"$JOBS" -f compile.mk libs PLATFORM="$PLATFORM" CONFIG=Release BUILD="$LIBBUILD" \
        BUILDROOT=. PATCHNAME=libs PATCHSOURCE=./PatchSource 2>&1 | grep -v xcrun_db || true
   [ -f Libraries/libowlprg.a ] && [ -f Libraries/libdaisysp.a ] || { echo "Library build failed" >&2; exit 1; }
-  echo "$PLATFORM" > "$STAMP"
+  echo "$PLATFORM $MKSHA" > "$STAMP"
 fi
 
 # 2. Patch. Mit Zusatz-Headern bindet eine Hülle im Build-Ordner erst diese, dann die Patch-Datei ein
@@ -124,6 +137,7 @@ sha() { shasum -a 256 "$1" | cut -d' ' -f1; }
   [ ${#PRELUDE[@]} -gt 0 ] && echo "prelude:    ${PRELUDE[*]}"
   echo "source:     $SRC"
   echo "sdk:        $SDK"
+  echo "sdk_flags:  compile.mk sha256 $MKSHA, builtins $BUILTINS"
   echo "platform:   $PLATFORM, link $LINK ($(basename "$LDSCRIPT"))"
   [ "$LIMIT" = 1 ] && echo "limiter:    owl/AcdcOutput.h sha256 $(sha "$ROOT/owl/AcdcOutput.h")"
   echo "toolchain:  $("${TOOLROOT}arm-none-eabi-gcc" --version | head -1)"
